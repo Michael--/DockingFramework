@@ -71,11 +71,12 @@
     <Compile Include="Docking\TabStrip.cs" />
     <Compile Include="TextEditor\Gui\GtkWorkarounds.cs" />
     <Compile Include="Components\HslColor.cs" />
-    <Compile Include="TextEditor\HelperMethods.cs" />
     <Compile Include="TextEditor\TextSegment\TextSegment.cs" />
     <Compile Include="NRefactory\Editor\ISegment.cs" />
-    <Compile Include="TextEditor\Document\DocumentChangeEventArgs.cs" />
-    <Compile Include="NRefactory\Editor\TextChangeEventArgs.cs" />
+    <Compile Include="Helper\HelperMethods.cs" />
+    <Compile Include="TextEditor\Platform.cs" />
+    <Compile Include="TextEditor\Gui\PangoUtil.cs" />
+    <Compile Include="TextEditor\Highlighting\SemanticRule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -87,6 +88,8 @@
     <Folder Include="NRefactory\" />
     <Folder Include="NRefactory\Editor\" />
     <Folder Include="TextEditor\Document\" />
+    <Folder Include="Helper\" />
+    <Folder Include="TextEditor\Highlighting\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Docking\stock-auto-hide.png" />

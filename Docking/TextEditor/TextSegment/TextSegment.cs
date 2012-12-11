@@ -219,12 +219,14 @@ namespace Mono.TextEditor
 			return Offset ^ Length;
 		}
 
+#if false // disabled MR
 		public DocumentRegion GetRegion (TextDocument document)
 		{
 			if (document == null)
 				throw new System.ArgumentNullException ("document");
 			return new DocumentRegion (document.OffsetToLocation (Offset), document.OffsetToLocation (EndOffset));
 		}
+#endif
 
 		public static TextSegment FromBounds (int startOffset, int endOffset)
 		{
