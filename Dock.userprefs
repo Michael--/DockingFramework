@@ -1,0 +1,13 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Docking/TextEditor/Gui/GtkWorkarounds.cs">
+    <Files>
+      <File FileName="Docking/Docking/AutoHideBox.cs" Line="279" Column="81" />
+      <File FileName="Docking/TextEditor/Gui/GtkWorkarounds.cs" Line="205" Column="17" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

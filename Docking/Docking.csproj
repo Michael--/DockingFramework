@@ -19,6 +19,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -27,6 +28,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -34,6 +36,14 @@
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Private>False</Private>
     </Reference>
+    <Reference Include="Mono.Cairo" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="Mono.Posix" />
+    <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -59,10 +69,24 @@
     <Compile Include="Docking\PlaceholderWindow.cs" />
     <Compile Include="Docking\ShadedContainer.cs" />
     <Compile Include="Docking\TabStrip.cs" />
+    <Compile Include="TextEditor\Gui\GtkWorkarounds.cs" />
+    <Compile Include="Components\HslColor.cs" />
+    <Compile Include="TextEditor\HelperMethods.cs" />
+    <Compile Include="TextEditor\TextSegment\TextSegment.cs" />
+    <Compile Include="NRefactory\Editor\ISegment.cs" />
+    <Compile Include="TextEditor\Document\DocumentChangeEventArgs.cs" />
+    <Compile Include="NRefactory\Editor\TextChangeEventArgs.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Docking\" />
+    <Folder Include="TextEditor\" />
+    <Folder Include="TextEditor\Gui\" />
+    <Folder Include="Components\" />
+    <Folder Include="TextEditor\TextSegment\" />
+    <Folder Include="NRefactory\" />
+    <Folder Include="NRefactory\Editor\" />
+    <Folder Include="TextEditor\Document\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Docking\stock-auto-hide.png" />
