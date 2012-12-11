@@ -70,7 +70,6 @@
     <Compile Include="Docking\TabStrip.cs" />
     <Compile Include="TextEditor\Gui\GtkWorkarounds.cs" />
     <Compile Include="Components\HslColor.cs" />
-    <Compile Include="TextEditor\TextSegment\TextSegment.cs" />
     <Compile Include="NRefactory\Editor\ISegment.cs" />
     <Compile Include="Helper\HelperMethods.cs" />
     <Compile Include="TextEditor\Platform.cs" />
@@ -83,7 +82,6 @@
     <Folder Include="TextEditor\" />
     <Folder Include="TextEditor\Gui\" />
     <Folder Include="Components\" />
-    <Folder Include="TextEditor\TextSegment\" />
     <Folder Include="NRefactory\" />
     <Folder Include="NRefactory\Editor\" />
     <Folder Include="TextEditor\Document\" />

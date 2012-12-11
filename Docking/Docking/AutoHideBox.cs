@@ -38,7 +38,7 @@ namespace MonoDevelop.Components.Docking
 {
 	class AutoHideBox: DockFrameTopLevel
 	{
-		const bool ANIMATE = true;
+        public bool ANIMATE { get; set; }
 		
 		static Gdk.Cursor resizeCursorW = new Gdk.Cursor (Gdk.CursorType.SbHDoubleArrow);
 		static Gdk.Cursor resizeCursorH = new Gdk.Cursor (Gdk.CursorType.SbVDoubleArrow);
@@ -62,6 +62,7 @@ namespace MonoDevelop.Components.Docking
 		
 		public AutoHideBox(DockFrame frame, DockItem item, Gtk.PositionType pos, int size)
         {
+            ANIMATE = true;
             this.position = pos;
             this.frame = frame;
             this.targetSize = size;
