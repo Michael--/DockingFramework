@@ -1,9 +1,10 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Docking/TextEditor/Gui/GtkWorkarounds.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Docking/Docking/AutoHideBox.cs">
     <Files>
-      <File FileName="Docking/Docking/AutoHideBox.cs" Line="279" Column="81" />
-      <File FileName="Docking/TextEditor/Gui/GtkWorkarounds.cs" Line="205" Column="17" />
+      <File FileName="Docking/Docking/DockItemContainer.cs" Line="66" Column="56" />
+      <File FileName="Docking/Docking/AutoHideBox.cs" Line="30" Column="1" />
+      <File FileName="Docking/TextEditor/Highlighting/SemanticRule.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

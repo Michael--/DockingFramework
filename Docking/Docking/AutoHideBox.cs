@@ -28,7 +28,6 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
 
-//#define ANIMATE_DOCKING
 
 using System;
 using Gtk;
@@ -39,7 +38,7 @@ namespace MonoDevelop.Components.Docking
 {
 	class AutoHideBox: DockFrameTopLevel
 	{
-		const bool ANIMATE = false;
+		const bool ANIMATE = true;
 		
 		static Gdk.Cursor resizeCursorW = new Gdk.Cursor (Gdk.CursorType.SbHDoubleArrow);
 		static Gdk.Cursor resizeCursorH = new Gdk.Cursor (Gdk.CursorType.SbVDoubleArrow);
@@ -61,64 +60,86 @@ namespace MonoDevelop.Components.Docking
 		
 		const int gripSize = 8;
 		
-		public AutoHideBox (DockFrame frame, DockItem item, Gtk.PositionType pos, int size)
-		{
-			this.position = pos;
-			this.frame = frame;
-			this.targetSize = size;
-			horiz = pos == PositionType.Left || pos == PositionType.Right;
-			startPos = pos == PositionType.Top || pos == PositionType.Left;
-			Events = Events | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
+		public AutoHideBox(DockFrame frame, DockItem item, Gtk.PositionType pos, int size)
+        {
+            this.position = pos;
+            this.frame = frame;
+            this.targetSize = size;
+            horiz = pos == PositionType.Left || pos == PositionType.Right;
+            startPos = pos == PositionType.Top || pos == PositionType.Left;
+            Events = Events | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
 			
-			Box fr;
-			CustomFrame cframe = new CustomFrame ();
-			switch (pos) {
-				case PositionType.Left: cframe.SetMargins (1, 1, 0, 1); break;
-				case PositionType.Right: cframe.SetMargins (1, 1, 1, 0); break;
-				case PositionType.Top: cframe.SetMargins (0, 1, 1, 1); break;
-				case PositionType.Bottom: cframe.SetMargins (1, 0, 1, 1); break;
-			}
-			EventBox sepBox = new EventBox ();
-			cframe.Add (sepBox);
+            Box fr;
+            CustomFrame cframe = new CustomFrame();
+            switch (pos)
+            {
+            case PositionType.Left:
+                cframe.SetMargins(1, 1, 0, 1);
+                break;
+            case PositionType.Right:
+                cframe.SetMargins(1, 1, 1, 0);
+                break;
+            case PositionType.Top:
+                cframe.SetMargins(0, 1, 1, 1);
+                break;
+            case PositionType.Bottom:
+                cframe.SetMargins(1, 0, 1, 1);
+                break;
+            }
+            EventBox sepBox = new EventBox();
+            cframe.Add(sepBox);
 			
-			if (horiz) {
-				fr = new HBox ();
-				sepBox.Realized += delegate { sepBox.GdkWindow.Cursor = resizeCursorW; };
-				sepBox.WidthRequest = gripSize;
-			} else {
-				fr = new VBox ();
-				sepBox.Realized += delegate { sepBox.GdkWindow.Cursor = resizeCursorH; };
-				sepBox.HeightRequest = gripSize;
-			}
+            if (horiz)
+            {
+                fr = new HBox();
+                sepBox.Realized += delegate
+                {
+                    sepBox.GdkWindow.Cursor = resizeCursorW;
+                };
+                sepBox.WidthRequest = gripSize;
+            } else
+            {
+                fr = new VBox();
+                sepBox.Realized += delegate
+                {
+                    sepBox.GdkWindow.Cursor = resizeCursorH;
+                };
+                sepBox.HeightRequest = gripSize;
+            }
 			
-			sepBox.Events = EventMask.AllEventsMask;
+            sepBox.Events = EventMask.AllEventsMask;
 			
-			if (pos == PositionType.Left || pos == PositionType.Top)
-				fr.PackEnd (cframe, false, false, 0);
-			else
-				fr.PackStart (cframe, false, false, 0);
+            if (pos == PositionType.Left || pos == PositionType.Top)
+                fr.PackEnd(cframe, false, false, 0);
+            else
+                fr.PackStart(cframe, false, false, 0);
 
-			Add (fr);
-			ShowAll ();
-			Hide ();
+            Add(fr);
+            ShowAll();
+            Hide();
 			
-#if ANIMATE_DOCKING
-			scrollable = new ScrollableContainer ();
-			scrollable.ScrollMode = false;
-			scrollable.Show ();
-#endif
+            if (ANIMATE)
+            {
+                scrollable = new ScrollableContainer();
+                scrollable.ScrollMode = false;
+                scrollable.Show();
+            }
 
-			if (item.Widget.Parent != null) {
-				((Gtk.Container)item.Widget.Parent).Remove (item.Widget);
-			}
+            if (item.Widget.Parent != null)
+            {
+                ((Gtk.Container)item.Widget.Parent).Remove(item.Widget);
+            }
 
-			item.Widget.Show ();
-#if ANIMATE_DOCKING
-			scrollable.Add (item.Widget);
-			fr.PackStart (scrollable, true, true, 0);
-#else
-			fr.PackStart (item.Widget, true, true, 0);
-#endif
+            item.Widget.Show();
+            if (ANIMATE)
+            {
+                scrollable.Add(item.Widget);
+                fr.PackStart(scrollable, true, true, 0);
+            }
+            else
+            {
+                fr.PackStart(item.Widget, true, true, 0);
+            }
 			
 			sepBox.ButtonPressEvent += OnSizeButtonPress;
 			sepBox.ButtonReleaseEvent += OnSizeButtonRelease;
@@ -133,46 +154,53 @@ namespace MonoDevelop.Components.Docking
 			set { disposed = value; }
 		}
 		
-		public void AnimateShow ()
-		{
-#if ANIMATE_DOCKING
-			animating = true;
-			scrollable.ScrollMode = true;
-			scrollable.SetSize (position, targetSize);
+		public void AnimateShow()
+        {
+            if (ANIMATE)
+            {
+                animating = true;
+                scrollable.ScrollMode = true;
+                scrollable.SetSize(position, targetSize);
 			
-			switch (position) {
-			case PositionType.Left:
-				WidthRequest = 0;
-				break;
-			case PositionType.Right:
-				targetPos = X = X + WidthRequest;
-				WidthRequest = 0;
-				break;
-			case PositionType.Top:
-				HeightRequest = 0;
-				break;
-			case PositionType.Bottom:
-				targetPos = Y = Y + HeightRequest;
-				HeightRequest = 0;
-				break;
-			}
-			Show ();
-			GLib.Timeout.Add (10, RunAnimateShow);
-#else
-			Show ();
-#endif
+                switch (position)
+                {
+                case PositionType.Left:
+                    WidthRequest = 0;
+                    break;
+                case PositionType.Right:
+                    targetPos = X = X + WidthRequest;
+                    WidthRequest = 0;
+                    break;
+                case PositionType.Top:
+                    HeightRequest = 0;
+                    break;
+                case PositionType.Bottom:
+                    targetPos = Y = Y + HeightRequest;
+                    HeightRequest = 0;
+                    break;
+                }
+                Show();
+                GLib.Timeout.Add(10, RunAnimateShow);
+            }
+            else
+            {
+                Show();
+            }
 		}
 		
-		public void AnimateHide ()
-		{
-#if ANIMATE_DOCKING
-			animating = true;
-			scrollable.ScrollMode = true;
-			scrollable.SetSize (position, targetSize);
-			GLib.Timeout.Add (10, RunAnimateHide);
-#else
-			Hide ();
-#endif
+		public void AnimateHide()
+        {
+            if (ANIMATE)
+            {
+                animating = true;
+                scrollable.ScrollMode = true;
+                scrollable.SetSize(position, targetSize);
+                GLib.Timeout.Add(10, RunAnimateHide);
+            }
+            else
+            {
+                Hide();
+            }
 		}
 		
 		bool RunAnimateShow ()
@@ -396,5 +424,4 @@ namespace MonoDevelop.Components.Docking
 			base.OnSizeAllocated (alloc);
 		}
 	}
-
 }
