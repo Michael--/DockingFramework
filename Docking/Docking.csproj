@@ -70,7 +70,6 @@
     <Compile Include="Docking\TabStrip.cs" />
     <Compile Include="TextEditor\Gui\GtkWorkarounds.cs" />
     <Compile Include="Components\HslColor.cs" />
-    <Compile Include="NRefactory\Editor\ISegment.cs" />
     <Compile Include="Helper\HelperMethods.cs" />
     <Compile Include="TextEditor\Platform.cs" />
     <Compile Include="TextEditor\Gui\PangoUtil.cs" />
@@ -81,11 +80,7 @@
     <Folder Include="TextEditor\" />
     <Folder Include="TextEditor\Gui\" />
     <Folder Include="Components\" />
-    <Folder Include="NRefactory\" />
-    <Folder Include="NRefactory\Editor\" />
-    <Folder Include="TextEditor\Document\" />
     <Folder Include="Helper\" />
-    <Folder Include="TextEditor\Highlighting\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Docking\stock-auto-hide.png">
