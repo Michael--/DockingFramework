@@ -74,7 +74,6 @@
     <Compile Include="Helper\HelperMethods.cs" />
     <Compile Include="TextEditor\Platform.cs" />
     <Compile Include="TextEditor\Gui\PangoUtil.cs" />
-    <Compile Include="TextEditor\Highlighting\SemanticRule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

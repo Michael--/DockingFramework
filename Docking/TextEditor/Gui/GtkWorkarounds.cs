@@ -856,13 +856,6 @@ namespace Mono.TextEditor
 		[DllImport("gtksharpglue-2", CallingConvention=CallingConvention.Cdecl)]
 		static extern void gtksharp_container_override_forall (IntPtr gtype, ForallDelegate cb);
 
-		public static string MarkupLinks (string text)
-		{
-			if (Mono.TextEditor.GtkWorkarounds.GtkMinorVersion < 18)
-				return text;
-			return HighlightUrlSemanticRule.UrlRegex.Replace (text, MatchToUrl);
-		}
-
 		static string MatchToUrl (System.Text.RegularExpressions.Match m)
 		{
 			var s = m.ToString ();
