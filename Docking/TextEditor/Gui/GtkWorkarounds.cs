@@ -102,6 +102,7 @@ namespace Mono.TextEditor
 			}
 			
 			//opt into the fixes on GTK+ >= 2.24.8
+#if false
 			if (Platform.IsMac) {
 				try {
 					gdk_quartz_set_fix_modifiers (true);
@@ -109,7 +110,7 @@ namespace Mono.TextEditor
 					oldMacKeyHacks = true;
 				}
 			}
-			
+#endif	
 			keymap.KeysChanged += delegate {
 				mappedKeys.Clear ();
 			};
