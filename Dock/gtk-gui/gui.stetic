@@ -18,4 +18,28 @@
       <placeholder />
     </child>
   </widget>
+  <widget class="Gtk.Bin" id="Dock.TestWidget" design-size="300 300">
+    <property name="MemberName" />
+    <property name="Visible">False</property>
+    <child>
+      <widget class="Gtk.Fixed" id="fixed1">
+        <property name="MemberName" />
+        <property name="HasWindow">False</property>
+        <child>
+          <widget class="Gtk.Button" id="buttonMakeVisible">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">TextOnly</property>
+            <property name="Label" translatable="yes">Make visible</property>
+            <property name="UseUnderline">True</property>
+            <signal name="Clicked" handler="OnButtonMakeVisibleClicked" />
+          </widget>
+          <packing>
+            <property name="X">25</property>
+            <property name="Y">21</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
 </stetic-interface>

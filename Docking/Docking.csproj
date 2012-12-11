@@ -92,10 +92,20 @@
     <Folder Include="TextEditor\Highlighting\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Docking\stock-auto-hide.png" />
-    <EmbeddedResource Include="Docking\stock-close-12.png" />
-    <EmbeddedResource Include="Docking\stock-dock.png" />
-    <EmbeddedResource Include="Docking\stock-menu-left-12.png" />
-    <EmbeddedResource Include="Docking\stock-menu-right-12.png" />
+    <EmbeddedResource Include="Docking\stock-auto-hide.png">
+      <LogicalName>stock-auto-hide.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Docking\stock-close-12.png">
+      <LogicalName>stock-close-12.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Docking\stock-dock.png">
+      <LogicalName>stock-dock.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Docking\stock-menu-left-12.png">
+      <LogicalName>stock-menu-left-12.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Docking\stock-menu-right-12.png">
+      <LogicalName>stock-menu-right-12.png</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

@@ -2,6 +2,7 @@ using System;
 using Gtk;
 using MonoDevelop.Components.Docking;
 using System.IO;
+using Dock;
 
 public partial class MainWindow: Gtk.Window
 {	
@@ -43,7 +44,7 @@ public partial class MainWindow: Gtk.Window
         // AddSimpleDockItem("qwe", "qwe", "right/Bottom");
 
 
-#if false
+#if true
         DockItem testWidget = df.AddItem("testWidget");
         testWidget.Behavior = DockItemBehavior.CantClose;
         testWidget.DefaultLocation = "right/Bottom";
@@ -69,8 +70,8 @@ public partial class MainWindow: Gtk.Window
         Build ();
         // ShowAll();
         
-//        if (!testWidget.Visible)
-//            testWidget.Visible = true;
+        if (!testWidget.Visible)
+            testWidget.Visible = true;
     }
     
     void AddSimpleDockItem (String label, String content, String location)
