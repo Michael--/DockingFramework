@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8DDC0184-EBA8-4264-993D-E47173F12814}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Docking</RootNamespace>
+    <AssemblyName>Docking</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MyClass.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Docking\AutoHideBox.cs" />
+    <Compile Include="Docking\DockBar.cs" />
+    <Compile Include="Docking\DockBarItem.cs" />
+    <Compile Include="Docking\DockContainer.cs" />
+    <Compile Include="Docking\DockFrame.cs" />
+    <Compile Include="Docking\DockFrameTopLevel.cs" />
+    <Compile Include="Docking\DockGroup.cs" />
+    <Compile Include="Docking\DockGroupItem.cs" />
+    <Compile Include="Docking\DockGroupType.cs" />
+    <Compile Include="Docking\DockItem.cs" />
+    <Compile Include="Docking\DockItemBehavior.cs" />
+    <Compile Include="Docking\DockItemContainer.cs" />
+    <Compile Include="Docking\DockItemStatus.cs" />
+    <Compile Include="Docking\DockItemToolbar.cs" />
+    <Compile Include="Docking\DockLayout.cs" />
+    <Compile Include="Docking\DockObject.cs" />
+    <Compile Include="Docking\DockPosition.cs" />
+    <Compile Include="Docking\PlaceholderWindow.cs" />
+    <Compile Include="Docking\ShadedContainer.cs" />
+    <Compile Include="Docking\TabStrip.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Docking\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Docking\stock-auto-hide.png" />
+    <EmbeddedResource Include="Docking\stock-close-12.png" />
+    <EmbeddedResource Include="Docking\stock-dock.png" />
+    <EmbeddedResource Include="Docking\stock-menu-left-12.png" />
+    <EmbeddedResource Include="Docking\stock-menu-right-12.png" />
+  </ItemGroup>
+</Project>
