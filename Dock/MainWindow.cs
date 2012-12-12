@@ -27,7 +27,7 @@ public partial class MainWindow: Gtk.Window
         doc_item.Behavior = DockItemBehavior.Normal;
         doc_item.Expand = true;
         doc_item.DrawFrame = false;
-        doc_item.Label = "Documentos";
+        doc_item.Label = "Documents";
         Gtk.Notebook nb = new Notebook ();
         nb.AppendPage (new Label ("Other page"), new Label ("The label"));
         nb.AppendPage (new TextView (), new Image ("gtk-new", IconSize.Menu));
@@ -44,7 +44,7 @@ public partial class MainWindow: Gtk.Window
 
         // Add widget created with designer
         DockItem testWidget = df.AddItem("testWidget");
-        testWidget.Behavior = DockItemBehavior.CantClose;
+        testWidget.Behavior = DockItemBehavior.Normal;
         testWidget.DefaultLocation = "right/Bottom";
         testWidget.DefaultVisible = true;
         testWidget.DrawFrame = true;
@@ -65,12 +65,6 @@ public partial class MainWindow: Gtk.Window
             df.CreateLayout ("test", true);
         }
         df.CurrentLayout = "test";
-        //df.HandlePadding = 0;
-        //df.HandleSize = 10;        
-                       
-        // (test) workaround to make test widget visable in all cases
-        if (!testWidget.Visible)
-            testWidget.Visible = true;
     }
     
     void AddSimpleDockItem (String label, String content, String location)
@@ -98,4 +92,15 @@ public partial class MainWindow: Gtk.Window
         df.SaveLayouts(config);
         Application.Quit();
     }
+
+    protected void OnUndoActionActivated(object sender, EventArgs e)
+    {
+        foreach (DockItem item in df.GetItems()) 
+        {
+            if (!item.Visible && item.Label.Length > 0)
+                item.Visible = true;
+        }
+    }
+
+
 }

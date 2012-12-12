@@ -5,7 +5,7 @@ namespace Dock
 	public partial class TestWidget
 	{
 		private global::Gtk.Fixed fixed1;
-		private global::Gtk.Button buttonMakeVisible;
+		private global::Gtk.Button buttonPushMe;
 		
 		protected virtual void Build ()
 		{
@@ -18,13 +18,13 @@ namespace Dock
 			this.fixed1.Name = "fixed1";
 			this.fixed1.HasWindow = false;
 			// Container child fixed1.Gtk.Fixed+FixedChild
-			this.buttonMakeVisible = new global::Gtk.Button ();
-			this.buttonMakeVisible.CanFocus = true;
-			this.buttonMakeVisible.Name = "buttonMakeVisible";
-			this.buttonMakeVisible.UseUnderline = true;
-			this.buttonMakeVisible.Label = global::Mono.Unix.Catalog.GetString ("Make visible");
-			this.fixed1.Add (this.buttonMakeVisible);
-			global::Gtk.Fixed.FixedChild w1 = ((global::Gtk.Fixed.FixedChild)(this.fixed1 [this.buttonMakeVisible]));
+			this.buttonPushMe = new global::Gtk.Button ();
+			this.buttonPushMe.CanFocus = true;
+			this.buttonPushMe.Name = "buttonPushMe";
+			this.buttonPushMe.UseUnderline = true;
+			this.buttonPushMe.Label = global::Mono.Unix.Catalog.GetString ("Push me...");
+			this.fixed1.Add (this.buttonPushMe);
+			global::Gtk.Fixed.FixedChild w1 = ((global::Gtk.Fixed.FixedChild)(this.fixed1 [this.buttonPushMe]));
 			w1.X = 25;
 			w1.Y = 21;
 			this.Add (this.fixed1);
@@ -32,7 +32,7 @@ namespace Dock
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
-			this.buttonMakeVisible.Clicked += new global::System.EventHandler (this.OnButtonMakeVisibleClicked);
+			this.buttonPushMe.Activated += new global::System.EventHandler (this.OnButtonPushMeActivated);
 		}
 	}
 }

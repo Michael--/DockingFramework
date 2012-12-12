@@ -14,7 +14,7 @@ namespace Dock
             this.Build();
         }
 
-        protected void OnButtonMakeVisibleClicked(object sender, EventArgs e)
+        protected void OnButtonPushMeActivated(object sender, EventArgs e)
         {
             foreach (DockItem item in df.GetItems()) 
             {

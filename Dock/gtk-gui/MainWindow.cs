@@ -22,7 +22,7 @@ public partial class MainWindow
 		this.FileAction = new global::Gtk.Action ("FileAction", global::Mono.Unix.Catalog.GetString ("File"), null, null);
 		this.FileAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("File");
 		w1.Add (this.FileAction, null);
-		this.undoAction = new global::Gtk.Action ("undoAction", null, null, "gtk-undo");
+		this.undoAction = new global::Gtk.Action ("undoAction", null, global::Mono.Unix.Catalog.GetString ("Make all hidden widgets visible again"), "gtk-undo");
 		w1.Add (this.undoAction, null);
 		this.QuitAction = new global::Gtk.Action ("QuitAction", global::Mono.Unix.Catalog.GetString ("Quit"), null, null);
 		this.QuitAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Quit");
@@ -53,6 +53,7 @@ public partial class MainWindow
 		this.toolbar1 = ((global::Gtk.Toolbar)(this.UIManager.GetWidget ("/toolbar1")));
 		this.toolbar1.Name = "toolbar1";
 		this.toolbar1.ShowArrow = false;
+		this.toolbar1.IconSize = ((global::Gtk.IconSize)(2));
 		this.vbox1.Add (this.toolbar1);
 		global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.toolbar1]));
 		w3.Position = 1;
@@ -66,8 +67,8 @@ public partial class MainWindow
 		this.theDockFrame.HandlePadding = 0;
 		this.theDockFrame.DefaultItemWidth = 0;
 		this.theDockFrame.DefaultItemHeight = 0;
-		this.theDockFrame.AutoShowDelay = ((uint)(0));
-		this.theDockFrame.AutoHideDelay = ((uint)(0));
+		this.theDockFrame.AutoShowDelay = ((uint)(250));
+		this.theDockFrame.AutoHideDelay = ((uint)(250));
 		this.vbox1.Add (this.theDockFrame);
 		global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.theDockFrame]));
 		w4.Position = 2;
@@ -85,6 +86,7 @@ public partial class MainWindow
 		}
 		this.Show ();
 		this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.OnDeleteEvent);
+		this.undoAction.Activated += new global::System.EventHandler (this.OnUndoActionActivated);
 		this.QuitAction.Activated += new global::System.EventHandler (this.OnQuitActionActivated);
 	}
 }

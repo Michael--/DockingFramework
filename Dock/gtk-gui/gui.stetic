@@ -20,6 +20,8 @@
         <property name="Type">Action</property>
         <property name="Label" translatable="yes" />
         <property name="StockId">gtk-undo</property>
+        <property name="Tooltip" translatable="yes">Make all hidden widgets visible again</property>
+        <signal name="Activated" handler="OnUndoActionActivated" />
       </action>
       <action id="QuitAction">
         <property name="Type">Action</property>
@@ -60,6 +62,7 @@
           <widget class="Gtk.Toolbar" id="toolbar1">
             <property name="MemberName" />
             <property name="ShowArrow">False</property>
+            <property name="IconSize">SmallToolbar</property>
             <node name="toolbar1" type="Toolbar">
               <node type="Toolitem" action="undoAction" />
             </node>
@@ -79,8 +82,8 @@
             <property name="HandlePadding">0</property>
             <property name="DefaultItemWidth">0</property>
             <property name="DefaultItemHeight">0</property>
-            <property name="AutoShowDelay">0</property>
-            <property name="AutoHideDelay">0</property>
+            <property name="AutoShowDelay">250</property>
+            <property name="AutoHideDelay">250</property>
           </widget>
           <packing>
             <property name="Position">2</property>
@@ -115,13 +118,13 @@
         <property name="MemberName" />
         <property name="HasWindow">False</property>
         <child>
-          <widget class="Gtk.Button" id="buttonMakeVisible">
+          <widget class="Gtk.Button" id="buttonPushMe">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
             <property name="Type">TextOnly</property>
-            <property name="Label" translatable="yes">Make visible</property>
+            <property name="Label" translatable="yes">Push me...</property>
             <property name="UseUnderline">True</property>
-            <signal name="Clicked" handler="OnButtonMakeVisibleClicked" />
+            <signal name="Activated" handler="OnButtonPushMeActivated" />
           </widget>
           <packing>
             <property name="X">25</property>
