@@ -11,17 +11,18 @@ public partial class MainWindow: Gtk.Window
 
     public MainWindow(): base (Gtk.WindowType.Toplevel)
     {
-        // this.DeleteEvent += new DeleteEventHandler(this.OnDeleteEvent);
-        
+        // todo: should re-load from persistence
         SetSizeRequest (800, 600);
-        
+
+        // Create designer elements
+        Build ();
+
+        // add elements programmatically
         df = new DockFrame ();
         df.DefaultItemHeight = 100;
         df.DefaultItemWidth = 100;
         df.Homogeneous = false;
-        
-        Add (df);
-        
+
         DockItem doc_item = df.AddItem ("Document");
         doc_item.Behavior = DockItemBehavior.Normal;
         doc_item.Expand = true;
@@ -30,8 +31,7 @@ public partial class MainWindow: Gtk.Window
         Gtk.Notebook nb = new Notebook ();
         nb.AppendPage (new Label ("Other page"), new Label ("The label"));
         nb.AppendPage (new TextView (), new Image ("gtk-new", IconSize.Menu));
-        //      nb.AppendPage( new TextEditor(), new Label( "Editor" ) );
-        
+
         nb.ShowAll ();
         doc_item.Content = nb;
         doc_item.DefaultVisible = true;
@@ -41,10 +41,8 @@ public partial class MainWindow: Gtk.Window
         AddSimpleDockItem("left", "This is a test", "Document/Left");
         AddSimpleDockItem("right", "Content", "Document/Right");
         AddSimpleDockItem("right_bottom", "Hello", "right/Bottom");
-        // AddSimpleDockItem("qwe", "qwe", "right/Bottom");
 
-
-#if true
+        // Add widget created with designer
         DockItem testWidget = df.AddItem("testWidget");
         testWidget.Behavior = DockItemBehavior.CantClose;
         testWidget.DefaultLocation = "right/Bottom";
@@ -52,8 +50,8 @@ public partial class MainWindow: Gtk.Window
         testWidget.DrawFrame = true;
         testWidget.Label = "TestWidget";
         testWidget.Content = new TestWidget(df);
-#endif
-        
+
+        // layout from file or new
         if (File.Exists (config))
         {
             df.LoadLayouts (config);
@@ -64,12 +62,17 @@ public partial class MainWindow: Gtk.Window
         }
         df.CurrentLayout = "test";
         df.HandlePadding = 0;
-        df.HandleSize = 10;
-        
-        
-        Build ();
-        // ShowAll();
-        
+        df.HandleSize = 10;        
+
+        // add to the vertical box in the lowest position and redraw
+        vbox1.Add(df);
+        // Box.BoxChild bc = (Box.BoxChild)this.vbox1[df];
+        // bc.Position = vbox1.Children.Length - 1;
+
+        if (this.Child != null) 
+            this.Child.ShowAll ();
+               
+        // (test) workaround to make test widget visable in all cases
         if (!testWidget.Visible)
             testWidget.Visible = true;
     }
