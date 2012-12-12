@@ -87,7 +87,6 @@ public partial class MainWindow: Gtk.Window
         item.Label = label;
         item.DrawFrame = true;
         item.Content = new Label (content);
-        
     }
     
     protected void OnDeleteEvent (object sender, DeleteEventArgs a)
@@ -95,5 +94,12 @@ public partial class MainWindow: Gtk.Window
         df.SaveLayouts(config);
         Application.Quit();
         a.RetVal = true;
+    }
+
+    protected void OnQuitActionActivated(object sender, EventArgs e)
+    {
+        // todo: close window which will call OnDeleteEvent() above. Don't know how to do at the moement 
+        df.SaveLayouts(config);
+        Application.Quit();
     }
 }

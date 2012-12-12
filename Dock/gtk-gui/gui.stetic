@@ -21,6 +21,13 @@
         <property name="Label" translatable="yes" />
         <property name="StockId">gtk-undo</property>
       </action>
+      <action id="QuitAction">
+        <property name="Type">Action</property>
+        <property name="Accelerator">&lt;Primary&gt;&lt;Mod2&gt;q</property>
+        <property name="Label" translatable="yes">Quit</property>
+        <property name="ShortLabel" translatable="yes">Quit</property>
+        <signal name="Activated" handler="OnQuitActionActivated" />
+      </action>
     </action-group>
     <property name="MemberName" />
     <property name="Title" translatable="yes">MainWindow</property>
@@ -34,7 +41,9 @@
           <widget class="Gtk.MenuBar" id="menubar3">
             <property name="MemberName" />
             <node name="__gtksharp_146_Stetic_Editor_ActionMenuBar" type="Menubar">
-              <node type="Menu" action="FileAction" />
+              <node type="Menu" action="FileAction">
+                <node type="Menuitem" action="QuitAction" />
+              </node>
             </node>
           </widget>
           <packing>
