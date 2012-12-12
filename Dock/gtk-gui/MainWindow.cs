@@ -11,6 +11,7 @@ public partial class MainWindow
 	private global::Gtk.MenuBar menubar3;
 	private global::Gtk.Toolbar toolbar1;
 	private global::MonoDevelop.Components.Docking.DockFrame theDockFrame;
+	private global::Gtk.Statusbar statusbar1;
 	
 	protected virtual void Build ()
 	{
@@ -31,6 +32,9 @@ public partial class MainWindow
 		this.Name = "MainWindow";
 		this.Title = global::Mono.Unix.Catalog.GetString ("MainWindow");
 		this.WindowPosition = ((global::Gtk.WindowPosition)(4));
+		this.AllowShrink = true;
+		this.DefaultWidth = 800;
+		this.DefaultHeight = 600;
 		// Container child MainWindow.Gtk.Container+ContainerChild
 		this.vbox1 = new global::Gtk.VBox ();
 		this.vbox1.Name = "vbox1";
@@ -67,12 +71,18 @@ public partial class MainWindow
 		this.vbox1.Add (this.theDockFrame);
 		global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.theDockFrame]));
 		w4.Position = 2;
+		// Container child vbox1.Gtk.Box+BoxChild
+		this.statusbar1 = new global::Gtk.Statusbar ();
+		this.statusbar1.Name = "statusbar1";
+		this.statusbar1.Spacing = 6;
+		this.vbox1.Add (this.statusbar1);
+		global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.statusbar1]));
+		w5.Position = 3;
+		w5.Expand = false;
 		this.Add (this.vbox1);
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();
 		}
-		this.DefaultWidth = 400;
-		this.DefaultHeight = 300;
 		this.Show ();
 		this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.OnDeleteEvent);
 		this.QuitAction.Activated += new global::System.EventHandler (this.OnQuitActionActivated);

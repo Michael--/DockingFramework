@@ -51,6 +51,10 @@ public partial class MainWindow: Gtk.Window
         testWidget.Label = "TestWidget";
         testWidget.Content = new TestWidget(df);
 
+        // push simple message with its 'unique' context id
+        this.statusbar1.Push(1, "Hello Statusbar");
+     
+
         // layout from file or new
         if (File.Exists (config))
         {
