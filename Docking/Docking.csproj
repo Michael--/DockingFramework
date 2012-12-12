@@ -73,6 +73,7 @@
     <Compile Include="Helper\HelperMethods.cs" />
     <Compile Include="TextEditor\Platform.cs" />
     <Compile Include="TextEditor\Gui\PangoUtil.cs" />
+    <Compile Include="gtk-gui\generated.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -97,6 +98,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Docking\stock-menu-right-12.png">
       <LogicalName>stock-menu-right-12.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="gtk-gui\gui.stetic">
+      <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

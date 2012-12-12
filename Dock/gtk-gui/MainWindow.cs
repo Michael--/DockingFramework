@@ -10,6 +10,7 @@ public partial class MainWindow
 	private global::Gtk.VBox vbox1;
 	private global::Gtk.MenuBar menubar3;
 	private global::Gtk.Toolbar toolbar1;
+	private global::MonoDevelop.Components.Docking.DockFrame theDockFrame;
 	
 	protected virtual void Build ()
 	{
@@ -53,6 +54,19 @@ public partial class MainWindow
 		w3.Position = 1;
 		w3.Expand = false;
 		w3.Fill = false;
+		// Container child vbox1.Gtk.Box+BoxChild
+		this.theDockFrame = new global::MonoDevelop.Components.Docking.DockFrame ();
+		this.theDockFrame.Name = "theDockFrame";
+		this.theDockFrame.CompactGuiLevel = 0;
+		this.theDockFrame.HandleSize = 0;
+		this.theDockFrame.HandlePadding = 0;
+		this.theDockFrame.DefaultItemWidth = 0;
+		this.theDockFrame.DefaultItemHeight = 0;
+		this.theDockFrame.AutoShowDelay = ((uint)(0));
+		this.theDockFrame.AutoHideDelay = ((uint)(0));
+		this.vbox1.Add (this.theDockFrame);
+		global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.theDockFrame]));
+		w4.Position = 2;
 		this.Add (this.vbox1);
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();

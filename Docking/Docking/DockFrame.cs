@@ -37,6 +37,7 @@ using Gdk;
 
 namespace MonoDevelop.Components.Docking
 {
+    [System.ComponentModel.ToolboxItem(true)]
 	public class DockFrame: HBox
 	{
 		internal const double ItemDockCenterArea = 0.4;

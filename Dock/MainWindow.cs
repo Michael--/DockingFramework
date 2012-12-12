@@ -18,7 +18,7 @@ public partial class MainWindow: Gtk.Window
         Build ();
 
         // add elements programmatically
-        df = new DockFrame ();
+        df = this.theDockFrame;
         df.DefaultItemHeight = 100;
         df.DefaultItemWidth = 100;
         df.Homogeneous = false;
@@ -61,17 +61,9 @@ public partial class MainWindow: Gtk.Window
             df.CreateLayout ("test", true);
         }
         df.CurrentLayout = "test";
-        df.HandlePadding = 0;
-        df.HandleSize = 10;        
-
-        // add to the vertical box in the lowest position and redraw
-        vbox1.Add(df);
-        // Box.BoxChild bc = (Box.BoxChild)this.vbox1[df];
-        // bc.Position = vbox1.Children.Length - 1;
-
-        if (this.Child != null) 
-            this.Child.ShowAll ();
-               
+        //df.HandlePadding = 0;
+        //df.HandleSize = 10;        
+                       
         // (test) workaround to make test widget visable in all cases
         if (!testWidget.Visible)
             testWidget.Visible = true;

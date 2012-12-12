@@ -69,7 +69,20 @@
           </packing>
         </child>
         <child>
-          <placeholder />
+          <widget class="MonoDevelop.Components.Docking.DockFrame" id="theDockFrame">
+            <property name="MemberName" />
+            <property name="CompactGuiLevel">0</property>
+            <property name="HandleSize">0</property>
+            <property name="HandlePadding">0</property>
+            <property name="DefaultItemWidth">0</property>
+            <property name="DefaultItemHeight">0</property>
+            <property name="AutoShowDelay">0</property>
+            <property name="AutoHideDelay">0</property>
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">False</property>
+          </packing>
         </child>
       </widget>
     </child>
