@@ -23,24 +23,17 @@ public partial class MainWindow: Gtk.Window
         mDockFrame.DefaultItemWidth = 100;
         mDockFrame.Homogeneous = false;
 
-        DockItem doc_item = mDockFrame.AddItem ("Document");
-        doc_item.Behavior = DockItemBehavior.Normal;
+		Gtk.Notebook nb = new Notebook ();
+		DockItem doc_item = AddSimpleDockItem("Document", nb, null);
         doc_item.Expand = true;
-        doc_item.DrawFrame = false;
-        doc_item.Label = "Documents";
-        Gtk.Notebook nb = new Notebook ();
-        nb.AppendPage (new Label ("Other page"), new Label ("The label"));
+ 		nb.AppendPage (new Label ("Other page"), new Label ("The label"));
         nb.AppendPage (new TextView (), new Image ("gtk-new", IconSize.Menu));
-
         nb.ShowAll ();
-        doc_item.Content = nb;
-        doc_item.DefaultVisible = true;
-        doc_item.Visible = true;
         
         // See enum DockPosition
-        AddSimpleDockItem("Test1", "This is a test", "Document/Left");
-		AddSimpleDockItem("Test2", "This is a test", "Document/Right");
-		AddSimpleDockItem("Test3", "This is a test", "right/Bottom");
+		AddSimpleDockItem("Test1", new Label ("This is a test"), "Document/Left");
+		AddSimpleDockItem("Test2", new Label ("This is a test"), "Document/Right");
+		AddSimpleDockItem("Test3", new Label ("This is a test"), "right/Bottom");
 
         // Add widget created with designer
         DockItem testWidget = mDockFrame.AddItem("testWidget");
@@ -64,17 +57,19 @@ public partial class MainWindow: Gtk.Window
         mDockFrame.CurrentLayout = "test";
     }
     
-    void AddSimpleDockItem (String label, String content, String location)
+	DockItem AddSimpleDockItem (String label, Widget content, String location)
     {
         DockItem item = mDockFrame.AddItem (label);
         item.Behavior = DockItemBehavior.Normal;
-        item.DefaultLocation = location;
+		if (location != null)
+        	item.DefaultLocation = location;
         item.DefaultVisible = true;
         item.Visible = true;
         item.Label = label;
         item.DrawFrame = true;
-        item.Content = new Label (content);
-    }
+        item.Content = content;
+		return item;
+	}
     
     protected void OnDeleteEvent (object sender, DeleteEventArgs a)
     {
