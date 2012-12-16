@@ -6,8 +6,8 @@ using Dock;
 
 public partial class MainWindow: Gtk.Window
 {	
-    DockFrame df;
-    String config = "TestHow2Dock-config.layout.xml";
+    DockFrame mDockFrame;
+    String mConfig = "TestHow2Dock-config.layout.xml";
 
     public MainWindow(): base (Gtk.WindowType.Toplevel)
     {
@@ -18,12 +18,12 @@ public partial class MainWindow: Gtk.Window
         Build ();
 
         // add elements programmatically
-        df = this.theDockFrame;
-        df.DefaultItemHeight = 100;
-        df.DefaultItemWidth = 100;
-        df.Homogeneous = false;
+        mDockFrame = this.theDockFrame;
+        mDockFrame.DefaultItemHeight = 100;
+        mDockFrame.DefaultItemWidth = 100;
+        mDockFrame.Homogeneous = false;
 
-        DockItem doc_item = df.AddItem ("Document");
+        DockItem doc_item = mDockFrame.AddItem ("Document");
         doc_item.Behavior = DockItemBehavior.Normal;
         doc_item.Expand = true;
         doc_item.DrawFrame = false;
@@ -43,30 +43,30 @@ public partial class MainWindow: Gtk.Window
 		AddSimpleDockItem("Test3", "This is a test", "right/Bottom");
 
         // Add widget created with designer
-        DockItem testWidget = df.AddItem("testWidget");
+        DockItem testWidget = mDockFrame.AddItem("testWidget");
         testWidget.Behavior = DockItemBehavior.Normal;
         testWidget.DefaultLocation = "right/Bottom";
         testWidget.DefaultVisible = true;
         testWidget.DrawFrame = true;
         testWidget.Label = "TestWidget";
-        testWidget.Content = new TestWidget(df);
+        testWidget.Content = new TestWidget(mDockFrame);
 		     
 
         // layout from file or new
-        if (File.Exists (config))
+        if (File.Exists (mConfig))
         {
-            df.LoadLayouts (config);
+            mDockFrame.LoadLayouts (mConfig);
         } 
         else
         {
-            df.CreateLayout ("test", true);
+            mDockFrame.CreateLayout ("test", true);
         }
-        df.CurrentLayout = "test";
+        mDockFrame.CurrentLayout = "test";
     }
     
     void AddSimpleDockItem (String label, String content, String location)
     {
-        DockItem item = df.AddItem (label);
+        DockItem item = mDockFrame.AddItem (label);
         item.Behavior = DockItemBehavior.Normal;
         item.DefaultLocation = location;
         item.DefaultVisible = true;
@@ -78,7 +78,7 @@ public partial class MainWindow: Gtk.Window
     
     protected void OnDeleteEvent (object sender, DeleteEventArgs a)
     {
-        df.SaveLayouts(config);
+        mDockFrame.SaveLayouts(mConfig);
         Application.Quit();
         a.RetVal = true;
     }
@@ -86,32 +86,31 @@ public partial class MainWindow: Gtk.Window
     protected void OnQuitActionActivated(object sender, EventArgs e)
     {
         // todo: close window which will call OnDeleteEvent() above. Don't know how to do at the moement 
-        df.SaveLayouts(config);
+        mDockFrame.SaveLayouts(mConfig);
         Application.Quit();
     }
 
     protected void OnUndoActionActivated(object sender, EventArgs e)
     {
-        foreach (DockItem item in df.GetItems()) 
+        foreach (DockItem item in mDockFrame.GetItems()) 
         {
             if (!item.Visible && item.Label.Length > 0)
                 item.Visible = true;
         }
     }
 
-	int counter = 0;
-	uint id = 0;
+	int mTextCounter = 0;
+	uint mUniqueId = 0;
 	protected void OnAddActionActivated (object sender, EventArgs e)
 	{
 		// push simple message with its 'unique' context id
-		String text = String.Format("Hello {0} at {1}", ++counter, DateTime.Now.ToLongTimeString());
-		this.statusbar1.Push(++id, text);
+		String text = String.Format("Hello {0} at {1}", ++mTextCounter, DateTime.Now.ToLongTimeString());
+		this.statusbar1.Push(++mUniqueId, text);
 	}
 
 	protected void OnRemoveActionActivated (object sender, EventArgs e)
 	{
-		if (id > 0)
-			this.statusbar1.Pop(id--);
+		if (mUniqueId > 0)
+			this.statusbar1.Pop(mUniqueId--);
 	}
-
 }
