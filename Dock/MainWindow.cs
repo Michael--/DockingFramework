@@ -38,9 +38,9 @@ public partial class MainWindow: Gtk.Window
         doc_item.Visible = true;
         
         // See enum DockPosition
-        AddSimpleDockItem("left", "This is a test", "Document/Left");
-        AddSimpleDockItem("right", "Content", "Document/Right");
-        AddSimpleDockItem("right_bottom", "Hello", "right/Bottom");
+        AddSimpleDockItem("Test1", "This is a test", "Document/Left");
+		AddSimpleDockItem("Test2", "This is a test", "Document/Right");
+		AddSimpleDockItem("Test3", "This is a test", "right/Bottom");
 
         // Add widget created with designer
         DockItem testWidget = df.AddItem("testWidget");
@@ -50,10 +50,7 @@ public partial class MainWindow: Gtk.Window
         testWidget.DrawFrame = true;
         testWidget.Label = "TestWidget";
         testWidget.Content = new TestWidget(df);
-
-        // push simple message with its 'unique' context id
-        this.statusbar1.Push(1, "Hello Statusbar");
-     
+		     
 
         // layout from file or new
         if (File.Exists (config))
@@ -102,5 +99,19 @@ public partial class MainWindow: Gtk.Window
         }
     }
 
+	int counter = 0;
+	uint id = 0;
+	protected void OnAddActionActivated (object sender, EventArgs e)
+	{
+		// push simple message with its 'unique' context id
+		String text = String.Format("Hello {0} at {1}", ++counter, DateTime.Now.ToLongTimeString());
+		this.statusbar1.Push(++id, text);
+	}
+
+	protected void OnRemoveActionActivated (object sender, EventArgs e)
+	{
+		if (id > 0)
+			this.statusbar1.Pop(id--);
+	}
 
 }

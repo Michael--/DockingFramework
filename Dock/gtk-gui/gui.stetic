@@ -9,7 +9,7 @@
     <widget-library name="../../Docking/bin/Debug/Docking.dll" />
     <widget-library name="../bin/Debug/Dock.exe" internal="true" />
   </import>
-  <widget class="Gtk.Window" id="MainWindow" design-size="400 300">
+  <widget class="Gtk.Window" id="MainWindow" design-size="408 300">
     <action-group name="Default">
       <action id="FileAction">
         <property name="Type">Action</property>
@@ -29,6 +29,22 @@
         <property name="Label" translatable="yes">Quit</property>
         <property name="ShortLabel" translatable="yes">Quit</property>
         <signal name="Activated" handler="OnQuitActionActivated" />
+      </action>
+      <action id="addAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">_Push</property>
+        <property name="ShortLabel" translatable="yes">_Push</property>
+        <property name="StockId">gtk-add</property>
+        <property name="Tooltip" translatable="yes">Push text to status bar</property>
+        <signal name="Activated" handler="OnAddActionActivated" />
+      </action>
+      <action id="removeAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">_Pop</property>
+        <property name="ShortLabel" translatable="yes">_Pop</property>
+        <property name="StockId">gtk-remove</property>
+        <property name="Tooltip" translatable="yes">Pop text from status bar</property>
+        <signal name="Activated" handler="OnRemoveActionActivated" />
       </action>
     </action-group>
     <property name="MemberName" />
@@ -65,6 +81,8 @@
             <property name="IconSize">SmallToolbar</property>
             <node name="toolbar1" type="Toolbar">
               <node type="Toolitem" action="undoAction" />
+              <node type="Toolitem" action="addAction" />
+              <node type="Toolitem" action="removeAction" />
             </node>
           </widget>
           <packing>
