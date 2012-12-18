@@ -4,7 +4,7 @@
     <Files>
       <File FileName="Dock/Main.cs" Line="1" Column="1" />
       <File FileName="Docking/Docking/DockFrame.cs" Line="40" Column="46" />
-      <File FileName="Dock/MainWindow.cs" Line="54" Column="60" />
+      <File FileName="Dock/MainWindow.cs" Line="24" Column="25" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
