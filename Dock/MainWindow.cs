@@ -31,7 +31,7 @@ public partial class MainWindow: Gtk.Window
         nb.ShowAll ();
         
         // See enum DockPosition
-		AddSimpleDockItem("Test1", new Label ("This is a test"), "Document/Left");
+		AddSimpleDockItem("Test1", new Label ("This test"), "Document/Left");
 		AddSimpleDockItem("Test2", new Label ("This is a test"), "Document/Right");
 		AddSimpleDockItem("Test3", new Label ("This is a test"), "right/Bottom");
 
