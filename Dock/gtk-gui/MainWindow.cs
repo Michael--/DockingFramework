@@ -7,8 +7,6 @@ public partial class MainWindow
 	private global::Gtk.Action FileAction;
 	private global::Gtk.Action undoAction;
 	private global::Gtk.Action QuitAction;
-	private global::Gtk.Action addAction;
-	private global::Gtk.Action removeAction;
 	private global::Gtk.VBox vbox1;
 	private global::Gtk.MenuBar menubar3;
 	private global::Gtk.Toolbar toolbar1;
@@ -29,12 +27,6 @@ public partial class MainWindow
 		this.QuitAction = new global::Gtk.Action ("QuitAction", global::Mono.Unix.Catalog.GetString ("Quit"), null, null);
 		this.QuitAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Quit");
 		w1.Add (this.QuitAction, "<Primary><Mod2>q");
-		this.addAction = new global::Gtk.Action ("addAction", global::Mono.Unix.Catalog.GetString ("_Push"), global::Mono.Unix.Catalog.GetString ("Push text to status bar"), "gtk-add");
-		this.addAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Push");
-		w1.Add (this.addAction, null);
-		this.removeAction = new global::Gtk.Action ("removeAction", global::Mono.Unix.Catalog.GetString ("_Pop"), global::Mono.Unix.Catalog.GetString ("Pop text from status bar"), "gtk-remove");
-		this.removeAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Pop");
-		w1.Add (this.removeAction, null);
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
@@ -48,7 +40,8 @@ public partial class MainWindow
 		this.vbox1.Name = "vbox1";
 		this.vbox1.Spacing = 6;
 		// Container child vbox1.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString ("<ui><menubar name='menubar3'><menu name='FileAction' action='FileAction'><menuitem name='QuitAction' action='QuitAction'/></menu></menubar></ui>");
+		this.UIManager.AddUiFromString ("<ui><menubar name=\'menubar3\'><menu name=\'FileAction\' action=\'FileAction\'><menuite" +
+			"m name=\'QuitAction\' action=\'QuitAction\'/></menu></menubar></ui>");
 		this.menubar3 = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/menubar3")));
 		this.menubar3.Name = "menubar3";
 		this.vbox1.Add (this.menubar3);
@@ -57,7 +50,8 @@ public partial class MainWindow
 		w2.Expand = false;
 		w2.Fill = false;
 		// Container child vbox1.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString ("<ui><toolbar name='toolbar1'><toolitem name='undoAction' action='undoAction'/><toolitem name='addAction' action='addAction'/><toolitem name='removeAction' action='removeAction'/></toolbar></ui>");
+		this.UIManager.AddUiFromString ("<ui><toolbar name=\'toolbar1\'><toolitem name=\'undoAction\' action=\'undoAction\'/></t" +
+			"oolbar></ui>");
 		this.toolbar1 = ((global::Gtk.Toolbar)(this.UIManager.GetWidget ("/toolbar1")));
 		this.toolbar1.Name = "toolbar1";
 		this.toolbar1.ShowArrow = false;
@@ -96,7 +90,5 @@ public partial class MainWindow
 		this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.OnDeleteEvent);
 		this.undoAction.Activated += new global::System.EventHandler (this.OnUndoActionActivated);
 		this.QuitAction.Activated += new global::System.EventHandler (this.OnQuitActionActivated);
-		this.addAction.Activated += new global::System.EventHandler (this.OnAddActionActivated);
-		this.removeAction.Activated += new global::System.EventHandler (this.OnRemoveActionActivated);
 	}
 }
