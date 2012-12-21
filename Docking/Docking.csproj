@@ -74,20 +74,18 @@
     <Compile Include="Docking\PlaceholderWindow.cs" />
     <Compile Include="Docking\ShadedContainer.cs" />
     <Compile Include="Docking\TabStrip.cs" />
-    <Compile Include="TextEditor\Gui\GtkWorkarounds.cs" />
-    <Compile Include="Components\HslColor.cs" />
-    <Compile Include="Helper\HelperMethods.cs" />
-    <Compile Include="TextEditor\Platform.cs" />
-    <Compile Include="TextEditor\Gui\PangoUtil.cs" />
     <Compile Include="gtk-gui\generated.cs" />
+    <Compile Include="DockingHelper\HelperMethods.cs" />
+    <Compile Include="DockingHelper\HslColor.cs" />
+    <Compile Include="DockingHelper\Platform.cs" />
+    <Compile Include="DockingHelper\GtkWorkarounds.cs" />
+    <Compile Include="DockingHelper\PangoUtil.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Docking\" />
-    <Folder Include="TextEditor\" />
-    <Folder Include="TextEditor\Gui\" />
-    <Folder Include="Components\" />
-    <Folder Include="Helper\" />
+    <Folder Include="Frame\" />
+    <Folder Include="DockingHelper\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Docking\stock-auto-hide.png">

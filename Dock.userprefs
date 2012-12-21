@@ -1,9 +1,9 @@
-<Properties GitUserInfo="UsingMD">
+﻿<Properties GitUserInfo="UsingMD">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="c:\Users\Michael\projects\Dock\MainWindow.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Dock/MainWindow.cs">
     <Files>
-      <File FileName="c:\Users\Michael\projects\Docking\Docking\DockFrameTopLevel.cs" Line="38" Column="8" />
-      <File FileName="c:\Users\Michael\projects\Dock\MainWindow.cs" Line="41" Column="67" />
+      <File FileName="Dock/MainWindow.cs" Line="18" Column="9" />
+      <File FileName="Dock/TestWidget.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
