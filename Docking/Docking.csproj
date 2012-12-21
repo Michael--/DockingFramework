@@ -80,6 +80,8 @@
     <Compile Include="DockingHelper\Platform.cs" />
     <Compile Include="DockingHelper\GtkWorkarounds.cs" />
     <Compile Include="DockingHelper\PangoUtil.cs" />
+    <Compile Include="Frame\IComponent.cs" />
+    <Compile Include="Frame\ComponentFinder.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

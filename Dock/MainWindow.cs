@@ -3,47 +3,60 @@ using Gtk;
 using MonoDevelop.Components.Docking;
 using System.IO;
 using Dock;
+using Docking;
 
 public partial class MainWindow: Gtk.Window
 {	
     DockFrame mDockFrame;
+	ComponentFinder mFinder;
     String mConfig = "TestHow2Dock-config.layout.xml";
 
-    public MainWindow(): base (Gtk.WindowType.Toplevel)
-    {
-        // todo: should re-load from persistence
-        SetSizeRequest (800, 600);
+    public MainWindow (): base (Gtk.WindowType.Toplevel)
+	{
+		mFinder = new ComponentFinder ();
+		mFinder.SearchForComponents (@".");
 
-        // Create designer elements
-        Build ();
+		// todo: should re-load from persistence
+		SetSizeRequest (800, 600);
 
-        // add elements programmatically
-        mDockFrame = this.theDockFrame;
-        mDockFrame.DefaultItemHeight = 100;
-        mDockFrame.DefaultItemWidth = 100;
-        mDockFrame.Homogeneous = false;
+		// Create designer elements
+		Build ();
+
+		// add elements programmatically
+		mDockFrame = this.theDockFrame;
+		mDockFrame.DefaultItemHeight = 100;
+		mDockFrame.DefaultItemWidth = 100;
+		mDockFrame.Homogeneous = false;
 
 		Gtk.Notebook nb = new Notebook ();
-		DockItem doc_item = AddSimpleDockItem("Document", nb, null);
-        doc_item.Expand = true;
- 		nb.AppendPage (new Label ("Other page"), new Label ("The label"));
-        nb.AppendPage (new TextView (), new Image ("gtk-new", IconSize.Menu));
-        nb.ShowAll ();
+		DockItem doc_item = AddSimpleDockItem ("Document", nb, null);
+		doc_item.Expand = true;
+		nb.AppendPage (new Label ("Other page"), new Label ("The label"));
+		nb.AppendPage (new TextView (), new Image ("gtk-new", IconSize.Menu));
+		nb.ShowAll ();
         
-        // See enum DockPosition
-		AddSimpleDockItem("Test1", new Label ("This test"), "Document/Left");
-		AddSimpleDockItem("Test2", new Label ("This is a test"), "Document/Right");
-		AddSimpleDockItem("Test3", new Label ("This is a test"), "right/Bottom");
+		// See enum DockPosition
+		AddSimpleDockItem ("Test1", new Label ("This test"), "Document/Left");
+		AddSimpleDockItem ("Test2", new Label ("This is a test"), "Document/Right");
+		AddSimpleDockItem ("Test3", new Label ("This is a test"), "right/Bottom");
 
-        // Add widget created with designer
-        DockItem testWidget = mDockFrame.AddItem("testWidget");
-        testWidget.Behavior = DockItemBehavior.Normal;
-        testWidget.DefaultLocation = "right/Bottom";
-        testWidget.DefaultVisible = true;
-        testWidget.DrawFrame = true;
-        testWidget.Label = "TestWidget";
-        testWidget.Content = new TestWidget(mDockFrame);
-		     
+		// Add widget created with designer
+		foreach (ComponentFinder.ComponentFactoryInformation cfi in mFinder.ComponentInfos)
+		{
+			Widget w = cfi.CreateInstance(mDockFrame);
+			if (w != null)
+			{
+				DockItem testWidget = mDockFrame.AddItem("testWidget");
+				testWidget.Behavior = DockItemBehavior.Normal;
+				testWidget.DefaultLocation = "right/Bottom";
+				testWidget.DefaultVisible = true;
+				testWidget.DrawFrame = true;
+				testWidget.Label = "TestWidget";
+				// testWidget.Content = new TestWidget(mDockFrame);
+				testWidget.Content = w;
+			}
+		}
+
 
         // layout from file or new
         if (File.Exists (mConfig))
