@@ -21,11 +21,10 @@ namespace Examples.HelloWorld
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
 			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("HelloWorld");
+			this.label2.Justify = ((global::Gtk.Justification)(3));
 			this.vbox3.Add (this.label2);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.label2]));
 			w1.Position = 1;
-			w1.Expand = false;
-			w1.Fill = false;
 			this.Add (this.vbox3);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
