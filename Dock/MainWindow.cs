@@ -2,19 +2,19 @@ using System;
 using Gtk;
 using Docking;
 using System.IO;
-using Dock;
+using DockingTest;
 using Docking.Components;
 
 public partial class MainWindow: Gtk.Window
 {	
-    DockFrame mDockFrame;
+    // DockFrame mDockFrame;
 	ComponentFinder mFinder;
     String mConfig = "TestHow2Dock-config.layout.xml";
 
     public MainWindow (): base (Gtk.WindowType.Toplevel)
 	{
 		mFinder = new ComponentFinder ();
-		mFinder.SearchForComponents (@".");
+		mFinder.SearchForComponents (new string[] { @"./*.exe", @"./*.dll" } );
 
 		// todo: should re-load from persistence
 		SetSizeRequest (800, 600);
@@ -22,11 +22,11 @@ public partial class MainWindow: Gtk.Window
 		// Create designer elements
 		Build ();
 
+#if false
 		// add elements programmatically
-		mDockFrame = this.theDockFrame;
-		mDockFrame.DefaultItemHeight = 100;
-		mDockFrame.DefaultItemWidth = 100;
-		mDockFrame.Homogeneous = false;
+		theDockFrame.DefaultItemHeight = 100;
+		theDockFrame.DefaultItemWidth = 100;
+		theDockFrame.Homogeneous = false;
 
 		Gtk.Notebook nb = new Notebook ();
 		DockItem doc_item = AddSimpleDockItem ("Document", nb, null);
@@ -40,39 +40,44 @@ public partial class MainWindow: Gtk.Window
 		AddSimpleDockItem ("Test2", new Label ("This is a test"), "Document/Right");
 		AddSimpleDockItem ("Test3", new Label ("This is a test"), "right/Bottom");
 
+#endif
+
+#if true
 		// Add widget created with designer
 		foreach (ComponentFinder.ComponentFactoryInformation cfi in mFinder.ComponentInfos)
 		{
-			Widget w = cfi.CreateInstance(mDockFrame);
+			Widget w = cfi.CreateInstance(theDockFrame);
 			if (w != null)
 			{
-				DockItem testWidget = mDockFrame.AddItem("testWidget");
+				DockItem testWidget = theDockFrame.AddItem(w.ToString());
 				testWidget.Behavior = DockItemBehavior.Normal;
-				testWidget.DefaultLocation = "right/Bottom";
+				testWidget.DefaultLocation = "Document/Left";
 				testWidget.DefaultVisible = true;
 				testWidget.DrawFrame = true;
-				testWidget.Label = "TestWidget";
-				// testWidget.Content = new TestWidget(mDockFrame);
+				testWidget.Label = w.ToString();
 				testWidget.Content = w;
+				testWidget.Visible = true;
+				//testWidget.Content.ShowAll();
 			}
 		}
+#endif
 
 
         // layout from file or new
         if (File.Exists (mConfig))
         {
-            mDockFrame.LoadLayouts (mConfig);
+            theDockFrame.LoadLayouts (mConfig);
         } 
         else
         {
-            mDockFrame.CreateLayout ("test", true);
-        }
-        mDockFrame.CurrentLayout = "test";
+            theDockFrame.CreateLayout ("test", true);
+		}
+        theDockFrame.CurrentLayout = "test";
     }
     
 	DockItem AddSimpleDockItem (String label, Widget content, String location)
     {
-        DockItem item = mDockFrame.AddItem (label);
+        DockItem item = theDockFrame.AddItem (label);
         item.Behavior = DockItemBehavior.Normal;
 		if (location != null)
         	item.DefaultLocation = location;
@@ -86,7 +91,7 @@ public partial class MainWindow: Gtk.Window
     
     protected void OnDeleteEvent (object sender, DeleteEventArgs a)
     {
-        mDockFrame.SaveLayouts(mConfig);
+        theDockFrame.SaveLayouts(mConfig);
         Application.Quit();
         a.RetVal = true;
     }
@@ -94,13 +99,13 @@ public partial class MainWindow: Gtk.Window
     protected void OnQuitActionActivated(object sender, EventArgs e)
     {
         // todo: close window which will call OnDeleteEvent() above. Don't know how to do at the moement 
-        mDockFrame.SaveLayouts(mConfig);
+        theDockFrame.SaveLayouts(mConfig);
         Application.Quit();
     }
 
     protected void OnUndoActionActivated(object sender, EventArgs e)
     {
-        foreach (DockItem item in mDockFrame.GetItems()) 
+        foreach (DockItem item in theDockFrame.GetItems()) 
         {
             if (!item.Visible && item.Label.Length > 0)
                 item.Visible = true;

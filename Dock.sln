@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dock", "Dock\Dock.csproj", "{8A5B069F-BE1F-41D3-8D58-BCA292646959}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockingTest", "Dock\DockingTest.csproj", "{8A5B069F-BE1F-41D3-8D58-BCA292646959}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docking", "Docking\Docking.csproj", "{8DDC0184-EBA8-4264-993D-E47173F12814}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "Examples\Examples.csproj", "{D3728416-6C94-4A4B-A121-E0B822FE3F26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,8 +22,14 @@ Global
 		{8DDC0184-EBA8-4264-993D-E47173F12814}.Debug|x86.Build.0 = Debug|Any CPU
 		{8DDC0184-EBA8-4264-993D-E47173F12814}.Release|x86.ActiveCfg = Release|Any CPU
 		{8DDC0184-EBA8-4264-993D-E47173F12814}.Release|x86.Build.0 = Release|Any CPU
+		{D3728416-6C94-4A4B-A121-E0B822FE3F26}.AppStore|x86.ActiveCfg = Debug|Any CPU
+		{D3728416-6C94-4A4B-A121-E0B822FE3F26}.AppStore|x86.Build.0 = Debug|Any CPU
+		{D3728416-6C94-4A4B-A121-E0B822FE3F26}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D3728416-6C94-4A4B-A121-E0B822FE3F26}.Debug|x86.Build.0 = Debug|Any CPU
+		{D3728416-6C94-4A4B-A121-E0B822FE3F26}.Release|x86.ActiveCfg = Release|Any CPU
+		{D3728416-6C94-4A4B-A121-E0B822FE3F26}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Dock\Dock.csproj
+		StartupItem = Dock\DockingTest.csproj
 	EndGlobalSection
 EndGlobal

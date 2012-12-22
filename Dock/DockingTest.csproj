@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8A5B069F-BE1F-41D3-8D58-BCA292646959}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Dock</RootNamespace>
+    <RootNamespace>DockingTest</RootNamespace>
     <AssemblyName>Dock</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -52,14 +52,16 @@
     <Compile Include="gtk-gui\MainWindow.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="TestWidget.cs" />
-    <Compile Include="gtk-gui\Dock.TestWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Docking\Docking.csproj">
       <Project>{8DDC0184-EBA8-4264-993D-E47173F12814}</Project>
       <Name>Docking</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Examples\Examples.csproj">
+      <Project>{D3728416-6C94-4A4B-A121-E0B822FE3F26}</Project>
+      <Name>Examples</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

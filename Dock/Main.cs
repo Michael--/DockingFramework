@@ -1,7 +1,7 @@
 using System;
 using Gtk;
 
-namespace Dock
+namespace DockingTest
 {
     class MainClass
     {

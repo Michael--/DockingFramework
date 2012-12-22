@@ -1,13 +1,17 @@
 ﻿<Properties GitUserInfo="UsingMD">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench ActiveDocument="Docking/Components/ComponentFinder.cs">
+    <Files>
+      <File FileName="Examples/HelloWorldWidget.cs" Line="19" Column="31" />
+      <File FileName="Dock/TestWidget.cs" Line="12" Column="36" />
+      <File FileName="Dock/MainWindow.cs" Line="49" Column="46" />
+      <File FileName="Docking/Components/ComponentFinder.cs" Line="300" Column="1" />
+      <File FileName="Docking/Docking/DockFrame.cs" Line="199" Column="1" />
+    </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
-          <Node name="Dock" expanded="True">
-            <Node name="MainWindow.cs" selected="True" />
-          </Node>
-          <Node name="Docking" expanded="True" />
+          <Node name="DockingTest" expanded="True" selected="True" />
         </State>
       </Pad>
       <Pad Id="ClassPad">

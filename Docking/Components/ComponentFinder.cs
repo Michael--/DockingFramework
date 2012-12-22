@@ -289,13 +289,24 @@ namespace Docking.Components
 			{
 			}
 		}
-		
-		public void SearchForComponents(String folder)
-		{
-			//string[] pluginFiles = Directory.GetFiles(folder, "*.dll");
-			string[] pluginFiles = Directory.GetFiles(folder, "*.exe");
 
-			foreach (String s in pluginFiles)
+		public void SearchForComponents(String search)
+		{
+			SearchForComponents(new String[] { search });
+		}
+		
+		public void SearchForComponents (String[]search)
+		{
+			List<String> componentFiles = new List<string> ();
+			foreach (String s in search)
+			{
+				String folder = Path.GetDirectoryName (s);
+				String name = Path.GetFileName (s);
+
+				string[] files = Directory.GetFiles (folder, name);
+				componentFiles.AddRange (files);
+			}
+			foreach (String s in componentFiles)
 				AddComponent(Path.GetFullPath(s));
 		}
 		

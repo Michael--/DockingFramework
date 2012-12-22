@@ -75,18 +75,18 @@
     <Compile Include="Docking\ShadedContainer.cs" />
     <Compile Include="Docking\TabStrip.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="Frame\IComponent.cs" />
-    <Compile Include="Frame\ComponentFinder.cs" />
     <Compile Include="Docking\DockingHelper\HelperMethods.cs" />
     <Compile Include="Docking\DockingHelper\HslColor.cs" />
     <Compile Include="Docking\DockingHelper\Platform.cs" />
     <Compile Include="Docking\DockingHelper\GtkWorkarounds.cs" />
     <Compile Include="Docking\DockingHelper\PangoUtil.cs" />
+    <Compile Include="Components\IComponent.cs" />
+    <Compile Include="Components\ComponentFinder.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Docking\" />
-    <Folder Include="Frame\" />
+    <Folder Include="Components\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Docking\stock-auto-hide.png">
