@@ -1,24 +1,32 @@
 ﻿<Properties GitUserInfo="UsingMD">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Docking/Components/ComponentFinder.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Docking/Components/ComponentListWidget.cs">
     <Files>
-      <File FileName="Examples/HelloWorldWidget.cs" Line="19" Column="31" />
-      <File FileName="Dock/TestWidget.cs" Line="12" Column="36" />
-      <File FileName="Dock/MainWindow.cs" Line="49" Column="46" />
-      <File FileName="Docking/Components/ComponentFinder.cs" Line="300" Column="1" />
-      <File FileName="Docking/Docking/DockFrame.cs" Line="199" Column="1" />
+      <File FileName="Dock/Main.cs" Line="12" Column="1" />
+      <File FileName="Dock/MainWindow.cs" Line="60" Column="1" />
+      <File FileName="Docking/Components/ComponentListWidget.cs" Line="8" Column="44" />
+      <File FileName="Examples/HelloWorldWidget.cs" Line="27" Column="1" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State expanded="True">
-          <Node name="DockingTest" expanded="True" selected="True" />
+          <Node name="Docking" expanded="True">
+            <Node name="Components" expanded="True">
+              <Node name="ComponentListWidget.cs" selected="True" />
+            </Node>
+            <Node name="Docking" expanded="True" />
+          </Node>
+          <Node name="DockingTest" expanded="True" />
+          <Node name="Examples" expanded="True" />
         </State>
       </Pad>
       <Pad Id="ClassPad">
         <State expanded="True" selected="True" />
       </Pad>
       <Pad Id="MonoDevelop.Debugger.WatchPad">
-        <State />
+        <State>
+          <Value>testWidget</Value>
+        </State>
       </Pad>
     </Pads>
   </MonoDevelop.Ide.Workbench>

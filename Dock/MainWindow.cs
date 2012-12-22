@@ -22,11 +22,12 @@ public partial class MainWindow: Gtk.Window
 		// Create designer elements
 		Build ();
 
-#if false
-		// add elements programmatically
 		theDockFrame.DefaultItemHeight = 100;
 		theDockFrame.DefaultItemWidth = 100;
 		theDockFrame.Homogeneous = false;
+
+#if false
+		// add elements programmatically
 
 		Gtk.Notebook nb = new Notebook ();
 		DockItem doc_item = AddSimpleDockItem ("Document", nb, null);
@@ -49,19 +50,16 @@ public partial class MainWindow: Gtk.Window
 			Widget w = cfi.CreateInstance(theDockFrame);
 			if (w != null)
 			{
-				DockItem testWidget = theDockFrame.AddItem(w.ToString());
-				testWidget.Behavior = DockItemBehavior.Normal;
-				testWidget.DefaultLocation = "Document/Left";
-				testWidget.DefaultVisible = true;
-				testWidget.DrawFrame = true;
-				testWidget.Label = w.ToString();
-				testWidget.Content = w;
-				testWidget.Visible = true;
-				//testWidget.Content.ShowAll();
+				DockItem item = theDockFrame.AddItem(w.ToString());
+				item.Content = w;
+				item.Behavior = DockItemBehavior.Normal;
+				// item.DefaultLocation = "Document";
+				item.DefaultVisible = true;
+				item.DrawFrame = true;
+				item.Label = w.ToString();
 			}
 		}
 #endif
-
 
         // layout from file or new
         if (File.Exists (mConfig))
@@ -73,7 +71,7 @@ public partial class MainWindow: Gtk.Window
             theDockFrame.CreateLayout ("test", true);
 		}
         theDockFrame.CurrentLayout = "test";
-    }
+	}
     
 	DockItem AddSimpleDockItem (String label, Widget content, String location)
     {

@@ -14,7 +14,7 @@ namespace Examples.HelloWorld
 	}
 
 
-	#region Starter / Entry Point
+#region Starter / Entry Point
 	
 	public class HelloWorldWidgetFactory : ComponentFactory
 	{

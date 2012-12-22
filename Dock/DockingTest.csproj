@@ -8,7 +8,7 @@
     <ProjectGuid>{8A5B069F-BE1F-41D3-8D58-BCA292646959}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>DockingTest</RootNamespace>
-    <AssemblyName>Dock</AssemblyName>
+    <AssemblyName>DockingTest</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>True</DebugSymbols>
