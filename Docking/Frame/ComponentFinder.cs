@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using MonoDevelop.Components.Docking;
+using Docking;
 
-namespace Docking
+namespace Docking.Components
 {
 	public class ComponentFinder
 	{

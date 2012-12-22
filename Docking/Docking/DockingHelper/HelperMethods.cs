@@ -1,6 +1,6 @@
 using System;
 
-namespace MonoDevelop.Components.Docking
+namespace Docking.Helper
 {
     public static class HelperMethods
     {
@@ -13,7 +13,7 @@ namespace MonoDevelop.Components.Docking
 }
 
 
-namespace MonoDevelop.Components
+namespace Docking.Helper
 {
     public static class GtkUtil
     {

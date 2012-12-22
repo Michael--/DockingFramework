@@ -93,7 +93,7 @@
           </packing>
         </child>
         <child>
-          <widget class="MonoDevelop.Components.Docking.DockFrame" id="theDockFrame">
+          <widget class="Docking.DockFrame" id="theDockFrame">
             <property name="MemberName" />
             <property name="CompactGuiLevel">0</property>
             <property name="HandleSize">0</property>

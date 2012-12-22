@@ -32,7 +32,7 @@ using System;
 using Gdk;
 using Gtk;
 
-namespace MonoDevelop.Components.Docking
+namespace Docking
 {
 	internal class PlaceholderWindow: Gtk.Window
 	{

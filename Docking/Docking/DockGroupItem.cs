@@ -32,7 +32,7 @@ using System;
 using System.Xml;
 using Gtk;
 
-namespace MonoDevelop.Components.Docking
+namespace Docking
 {
 	internal class DockGroupItem: DockObject
 	{

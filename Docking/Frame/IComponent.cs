@@ -1,6 +1,6 @@
 using System;
 
-namespace Docking
+namespace Docking.Components
 {
 	/// <summary>
 	/// This 'empty' interface the is search root for any Nice-AddIn.

@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Gdk;
 
-namespace Mono.TextEditor
+namespace Docking.Helper
 {
 	static class Platform
 	{

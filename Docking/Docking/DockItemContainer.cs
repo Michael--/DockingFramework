@@ -31,9 +31,9 @@
 using System;
 using Gtk;
 using Mono.Unix;
-using Mono.TextEditor;
+using Docking.Helper;
 
-namespace MonoDevelop.Components.Docking
+namespace Docking
 {
 	class DockItemContainer: VBox
 	{

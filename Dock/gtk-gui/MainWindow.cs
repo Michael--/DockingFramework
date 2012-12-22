@@ -12,7 +12,7 @@ public partial class MainWindow
 	private global::Gtk.VBox vbox1;
 	private global::Gtk.MenuBar menubar3;
 	private global::Gtk.Toolbar toolbar1;
-	private global::MonoDevelop.Components.Docking.DockFrame theDockFrame;
+	private global::Docking.DockFrame theDockFrame;
 	private global::Gtk.Statusbar statusbar1;
 	
 	protected virtual void Build ()
@@ -68,7 +68,7 @@ public partial class MainWindow
 		w3.Expand = false;
 		w3.Fill = false;
 		// Container child vbox1.Gtk.Box+BoxChild
-		this.theDockFrame = new global::MonoDevelop.Components.Docking.DockFrame ();
+		this.theDockFrame = new global::Docking.DockFrame ();
 		this.theDockFrame.Name = "theDockFrame";
 		this.theDockFrame.CompactGuiLevel = 0;
 		this.theDockFrame.HandleSize = 0;

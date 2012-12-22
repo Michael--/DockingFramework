@@ -1,6 +1,6 @@
 using System;
-using MonoDevelop.Components.Docking;
 using Docking;
+using Docking.Components;
 
 namespace Dock
 {

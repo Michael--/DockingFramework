@@ -27,7 +27,7 @@
 using System;
 using Gdk;
 
-namespace MonoDevelop.Components
+namespace Docking.Helper
 {
 	public struct HslColor
 	{

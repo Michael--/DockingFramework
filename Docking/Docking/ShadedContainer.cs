@@ -27,9 +27,9 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
-using MonoDevelop.Components;
+using Docking.Helper;
 
-namespace MonoDevelop.Components.Docking
+namespace Docking
 {
 	public class ShadedContainer
 	{

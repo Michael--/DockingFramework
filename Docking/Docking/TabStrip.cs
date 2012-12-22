@@ -32,7 +32,7 @@ using Gtk;
 
 using System;
 
-namespace MonoDevelop.Components.Docking
+namespace Docking
 {
 	class TabStrip: Notebook
 	{

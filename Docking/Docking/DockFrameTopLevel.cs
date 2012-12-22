@@ -33,7 +33,7 @@
 using System;
 using Gtk;
 
-namespace MonoDevelop.Components.Docking
+namespace Docking
 {
 	class DockFrameTopLevel: EventBox
 	{

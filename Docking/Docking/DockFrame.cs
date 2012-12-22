@@ -1,5 +1,5 @@
 //
-// MonoDevelop.Components.Docking.cs
+// Docking.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -34,8 +34,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Gtk;
 using Gdk;
+using Docking.Helper;
 
-namespace MonoDevelop.Components.Docking
+namespace Docking
 {
     [System.ComponentModel.ToolboxItem(true)]
 	public class DockFrame: HBox
@@ -65,7 +66,7 @@ namespace MonoDevelop.Components.Docking
 		
 		public DockFrame ()
 		{
-			Mono.TextEditor.GtkWorkarounds.FixContainerLeak (this);
+			Docking.Helper.GtkWorkarounds.FixContainerLeak (this);
 			
 			shadedContainer = new ShadedContainer ();
 			

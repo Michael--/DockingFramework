@@ -31,7 +31,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 
-namespace Mono.TextEditor
+namespace Docking.Helper
 {
 	public static class GtkWorkarounds
 	{
@@ -864,7 +864,7 @@ namespace Mono.TextEditor
 
 		public static void SetLinkHandler (this Gtk.Label label, Action<string> urlHandler)
 		{
-			if (Mono.TextEditor.GtkWorkarounds.GtkMinorVersion >= 18)
+			if (Docking.Helper.GtkWorkarounds.GtkMinorVersion >= 18)
 				new UrlHandlerClosure (urlHandler).ConnectTo (label);
 		}
 

@@ -31,9 +31,9 @@
 
 using System;
 using Gtk;
-using Mono.TextEditor;
+using Docking.Helper;
 
-namespace MonoDevelop.Components.Docking
+namespace Docking
 {
 	class DockBarItem: EventBox
 	{
@@ -139,7 +139,7 @@ namespace MonoDevelop.Components.Docking
 			SetNormalColor ();
 		}
 		
-		public MonoDevelop.Components.Docking.DockItem DockItem {
+		public Docking.DockItem DockItem {
 			get {
 				return it;
 			}

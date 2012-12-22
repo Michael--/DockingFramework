@@ -1,9 +1,9 @@
 using System;
 using Gtk;
-using MonoDevelop.Components.Docking;
+using Docking;
 using System.IO;
 using Dock;
-using Docking;
+using Docking.Components;
 
 public partial class MainWindow: Gtk.Window
 {	

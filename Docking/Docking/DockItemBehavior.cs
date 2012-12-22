@@ -30,7 +30,7 @@
 
 using System;
 
-namespace MonoDevelop.Components.Docking
+namespace Docking
 {
 	[Flags]
 	public enum DockItemBehavior

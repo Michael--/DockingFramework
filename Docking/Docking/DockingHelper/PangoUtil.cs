@@ -28,7 +28,7 @@ using System;
 using Gtk;
 using System.Runtime.InteropServices;
 
-namespace Mono.TextEditor
+namespace Docking.Helper
 {
 	public static class PangoUtil
 	{

@@ -1,5 +1,5 @@
 //
-// MonoDevelop.Components.Docking.cs
+// Docking.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -34,7 +34,7 @@ using System;
 using System.Xml;
 using System.Collections.Generic;
 
-namespace MonoDevelop.Components.Docking
+namespace Docking
 {
 	class DockLayout: DockGroup
 	{

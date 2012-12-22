@@ -1,5 +1,5 @@
 //
-// MonoDevelop.Components.Docking.cs
+// Docking.cs
 //
 // Author:
 //   Lluis Sanchez Gual
@@ -33,7 +33,7 @@ using System.Xml;
 using System.Collections.Generic;
 using Gtk;
 
-namespace MonoDevelop.Components.Docking
+namespace Docking
 {
 	class DockGroup: DockObject
 	{
@@ -217,7 +217,7 @@ namespace MonoDevelop.Components.Docking
 		DockGroup Copy ()
 		{
 			DockGroup grp = new DockGroup (Frame, type);
-			grp.dockObjects = new List<MonoDevelop.Components.Docking.DockObject> (dockObjects);
+			grp.dockObjects = new List<Docking.DockObject> (dockObjects);
 			foreach (DockObject obj in grp.dockObjects)
 				obj.ParentGroup = grp;
 			

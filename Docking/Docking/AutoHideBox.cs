@@ -32,9 +32,9 @@
 using System;
 using Gtk;
 using Gdk;
-using Mono.TextEditor;
+using Docking.Helper;
 
-namespace MonoDevelop.Components.Docking
+namespace Docking
 {
 	class AutoHideBox: DockFrameTopLevel
 	{
