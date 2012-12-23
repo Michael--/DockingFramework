@@ -5,7 +5,7 @@ using System.IO;
 using DockingTest;
 using Docking.Components;
 
-public partial class MainWindow: Gtk.Window
+public partial class MainWindow: Gtk.Window, IMainWindow
 {	
     // DockFrame mDockFrame;
 	ComponentFinder mFinder;
@@ -47,7 +47,7 @@ public partial class MainWindow: Gtk.Window
 		// Add widget created with designer
 		foreach (ComponentFinder.ComponentFactoryInformation cfi in mFinder.ComponentInfos)
 		{
-			Widget w = cfi.CreateInstance(theDockFrame);
+			Widget w = cfi.CreateInstance(this);
 			if (w != null)
 			{
 				DockItem item = theDockFrame.AddItem(w.ToString());

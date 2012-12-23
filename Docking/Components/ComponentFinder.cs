@@ -19,12 +19,12 @@ namespace Docking.Components
                 Active = active;
             }
             
-            public Widget CreateInstance(DockFrame frame)
+            public Widget CreateInstance(IMainWindow main)
             {
                 Widget widget;
                 try
                 {
-                    widget = (Widget)Activator.CreateInstance (ComponentType, new System.Object[] {frame});
+                    widget = (Widget)Activator.CreateInstance (ComponentType, new System.Object[] {main});
                 }
                 catch (Exception e)
                 {
@@ -61,9 +61,9 @@ namespace Docking.Components
         
         public ComponentFactoryInformation[] ComponentInfos{ get { return mComponents.ToArray (); } }
 
-        Widget CreateInstance(ComponentFactoryInformation info, DockFrame frame)
+        Widget CreateInstance(ComponentFactoryInformation info, IMainWindow main)
         {
-            Widget widget = info.CreateInstance (frame);
+            Widget widget = info.CreateInstance (main);
             return widget;
         }
         
@@ -87,7 +87,7 @@ namespace Docking.Components
             return null;
         }
 
-        public Widget CreateInstance(Type type, DockFrame frame)
+        public Widget CreateInstance(Type type, IMainWindow main)
         {
             foreach (ComponentFactoryInformation info in mComponents)
             {
@@ -96,13 +96,13 @@ namespace Docking.Components
                 {
                     if (t == type)
                     {
-                        info.DockWidget = CreateInstance (info, frame);
+                        info.DockWidget = CreateInstance (info, main);
                         return info.DockWidget;
                     }
                     Type[] myInterfaces = t.FindInterfaces (mTypeFilter, type);
                     if (myInterfaces.Length > 0)
                     {
-                        info.DockWidget = CreateInstance (info, frame);
+                        info.DockWidget = CreateInstance (info, main);
                         return info.DockWidget;
                     }
                 }
@@ -218,13 +218,13 @@ namespace Docking.Components
             }
         }
         
-        public void OpenMustExists(DockFrame frame)
+        public void OpenMustExists(IMainWindow main)
         {
             foreach (ComponentFactoryInformation info in mComponents)
             {
                 if (info.InstanceMustExist && info.DockWidget == null)
                 {
-                    info.DockWidget = info.CreateInstance (frame);
+                    info.DockWidget = info.CreateInstance (main);
                     info.DockWidget.Show ();
                     
                     if (info.HideOnCreate)

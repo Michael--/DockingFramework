@@ -5,7 +5,7 @@ namespace Docking.Components
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class ComponentListWidget : Gtk.Bin
 	{
-		public ComponentListWidget (DockFrame df)
+        public ComponentListWidget (IMainWindow main)
 		{
 			this.Build ();
 
