@@ -7,6 +7,7 @@ namespace Docking.Components
 	{
         public ComponentListWidget (IMainWindow main)
 		{
+            mainWindow = main;
 			this.Build ();
 
 			Gtk.TreeViewColumn componentColumn = new Gtk.TreeViewColumn ();
@@ -26,9 +27,11 @@ namespace Docking.Components
 			// Assign the model to the TreeView
 			treeview1.Model = listStore;
 		}
+
+        IMainWindow mainWindow { get; set; }
 	}
 	
-#region Starter / Entry Point
+    #region Starter / Entry Point
 
 	public class ComponentListWidgetFactory : ComponentFactory
 	{
@@ -37,7 +40,6 @@ namespace Docking.Components
 		public override String Comment { get { return "Display a list of all found widgets"; } }
 	}
 	
-#endregion
-
+    #endregion
 }
 

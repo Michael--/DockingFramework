@@ -7,7 +7,10 @@ using Docking.Components;
 
 public partial class MainWindow: Gtk.Window, IMainWindow
 {	
-    // DockFrame mDockFrame;
+    #region implement IMainWindow
+    DockFrame IMainWindow.DockFrame { get { return theDockFrame; } }
+    #endregion
+
 	ComponentFinder mFinder;
     String mConfig = "TestHow2Dock-config.layout.xml";
 

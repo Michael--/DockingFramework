@@ -1,9 +1,10 @@
 using System;
 
-namespace Docking
+namespace Docking.Components
 {
     public interface IMainWindow
     {
+        DockFrame DockFrame  { get; }
     }
 }
 
