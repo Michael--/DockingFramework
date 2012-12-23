@@ -1,19 +1,18 @@
 ﻿<Properties GitUserInfo="UsingMD">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Docking/Components/ComponentListWidget.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Docking/Components/ComponentFinder.cs">
     <Files>
-      <File FileName="Dock/Main.cs" Line="12" Column="1" />
-      <File FileName="Dock/MainWindow.cs" Line="60" Column="1" />
-      <File FileName="Docking/Components/ComponentListWidget.cs" Line="8" Column="44" />
+      <File FileName="Dock/MainWindow.cs" Line="50" Column="27" />
+      <File FileName="Docking/Components/ComponentListWidget.cs" Line="6" Column="50" />
       <File FileName="Examples/HelloWorldWidget.cs" Line="27" Column="1" />
+      <File FileName="Docking/Docking/DockItem.cs" Line="173" Column="16" />
+      <File FileName="Docking/Components/ComponentFinder.cs" Line="207" Column="2" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
-        <State expanded="True">
+        <State expanded="True" selected="True">
           <Node name="Docking" expanded="True">
-            <Node name="Components" expanded="True">
-              <Node name="ComponentListWidget.cs" selected="True" />
-            </Node>
+            <Node name="Components" expanded="True" />
             <Node name="Docking" expanded="True" />
           </Node>
           <Node name="DockingTest" expanded="True" />
