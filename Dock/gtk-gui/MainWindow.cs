@@ -9,6 +9,9 @@ public partial class MainWindow
 	private global::Gtk.Action QuitAction;
 	private global::Gtk.Action addAction;
 	private global::Gtk.Action removeAction;
+	private global::Gtk.Action ComponentsAction;
+	private global::Gtk.Action DummyAction;
+	private global::Gtk.Action TestAction;
 	private global::Gtk.VBox vbox1;
 	private global::Gtk.MenuBar menubar3;
 	private global::Gtk.Toolbar toolbar1;
@@ -35,6 +38,15 @@ public partial class MainWindow
 		this.removeAction = new global::Gtk.Action ("removeAction", global::Mono.Unix.Catalog.GetString ("_Pop"), global::Mono.Unix.Catalog.GetString ("Pop text from status bar"), "gtk-remove");
 		this.removeAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("_Pop");
 		w1.Add (this.removeAction, null);
+		this.ComponentsAction = new global::Gtk.Action ("ComponentsAction", global::Mono.Unix.Catalog.GetString ("Components"), null, null);
+		this.ComponentsAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Components");
+		w1.Add (this.ComponentsAction, null);
+		this.DummyAction = new global::Gtk.Action ("DummyAction", global::Mono.Unix.Catalog.GetString ("Dummy"), null, null);
+		this.DummyAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Dummy");
+		w1.Add (this.DummyAction, null);
+		this.TestAction = new global::Gtk.Action ("TestAction", global::Mono.Unix.Catalog.GetString ("Test"), null, null);
+		this.TestAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Test");
+		w1.Add (this.TestAction, null);
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "MainWindow";

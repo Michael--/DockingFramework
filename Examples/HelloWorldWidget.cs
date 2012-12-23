@@ -19,7 +19,7 @@ namespace Examples.HelloWorld
 	public class HelloWorldWidgetFactory : ComponentFactory
 	{
 		public override Type TypeOfInstance { get { return typeof(HelloWorldWidget); } }
-		public override String MenuPath { get { return @"Examples\HelloWorldWidget"; } }
+        public override String MenuPath { get { return @"Components\Examples\HelloWorldWidget"; } }
 		public override String Comment { get { return "Example minimal dockable view like 'Hello World'"; } }
 	}
 	

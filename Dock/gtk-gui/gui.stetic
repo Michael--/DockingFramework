@@ -10,7 +10,7 @@
     <widget-library name="../../Examples/bin/Debug/Examples.dll" />
     <widget-library name="../bin/Debug/DockingTest.exe" internal="true" />
   </import>
-  <widget class="Gtk.Window" id="MainWindow" design-size="408 300">
+  <widget class="Gtk.Window" id="MainWindow" design-size="454 300">
     <action-group name="Default">
       <action id="FileAction">
         <property name="Type">Action</property>
@@ -46,6 +46,21 @@
         <property name="StockId">gtk-remove</property>
         <property name="Tooltip" translatable="yes">Pop text from status bar</property>
         <signal name="Activated" handler="OnRemoveActionActivated" />
+      </action>
+      <action id="ComponentsAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Components</property>
+        <property name="ShortLabel" translatable="yes">Components</property>
+      </action>
+      <action id="DummyAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Dummy</property>
+        <property name="ShortLabel" translatable="yes">Dummy</property>
+      </action>
+      <action id="TestAction">
+        <property name="Type">Action</property>
+        <property name="Label" translatable="yes">Test</property>
+        <property name="ShortLabel" translatable="yes">Test</property>
       </action>
     </action-group>
     <property name="MemberName" />

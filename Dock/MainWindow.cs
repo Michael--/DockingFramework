@@ -4,6 +4,7 @@ using Docking;
 using System.IO;
 using DockingTest;
 using Docking.Components;
+using System.Diagnostics;
 
 public partial class MainWindow: Gtk.Window, IMainWindow
 {	
@@ -46,6 +47,8 @@ public partial class MainWindow: Gtk.Window, IMainWindow
             }
         }
 
+        CreateComponentMenue();
+
         foreach (DockItem item  in theDockFrame.GetItems())
         {
             if (item.Content is IComponent)
@@ -63,6 +66,59 @@ public partial class MainWindow: Gtk.Window, IMainWindow
 		}
         theDockFrame.CurrentLayout = "test";
 	}
+
+    void CreateComponentMenue()
+    {
+        foreach (ComponentFactoryInformation cfi in mFinder.ComponentInfos)
+        {
+            String [] m = cfi.MenuPath.Split(new char[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
+            Debug.Assert(m.Length >= 2);
+
+            System.Object baseMenu = menubar3;
+            Menu componentMenu = null;
+            System.Collections.IEnumerable children = menubar3.Children;
+            for (int i = 0; i < m.Length - 1;i++)
+            {
+                componentMenu = SearchOrCreateMenu(m[i], baseMenu, children);
+                children = componentMenu.AllChildren;
+                baseMenu = componentMenu;
+            }
+            ImageMenuItem item = new ImageMenuItem(m[m.Length - 1]);
+            componentMenu.Add(item);
+        }
+        menubar3.ShowAll();
+    }
+
+    Menu SearchOrCreateMenu(String name, System.Object baseMenu, System.Collections.IEnumerable children)
+    {
+        Menu menu = null;
+        
+        // search menue to insert new element
+        foreach(MenuItem mi in children)
+        {
+            Label label = (Label)mi.Child;
+            if (label.Text == name)
+            {
+                menu = mi.Submenu as Menu;
+                break;
+            }
+        }
+        
+        if (menu == null)
+        {
+            menu = new Menu ( );
+            MenuItem menuItem = new MenuItem(name);
+            menuItem.Child = new Label(name);
+            menuItem.Submenu = menu;
+
+            if (baseMenu is MenuBar)
+                (baseMenu as MenuBar).Append (menuItem);
+            else 
+                (baseMenu as Menu).Append(menuItem);
+        }
+
+        return menu;
+    }
 
     protected void OnDeleteEvent (object sender, DeleteEventArgs a)
     {

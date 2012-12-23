@@ -58,7 +58,7 @@ namespace Docking.Components
 	public class ComponentListWidgetFactory : ComponentFactory
 	{
 		public override Type TypeOfInstance { get { return typeof(ComponentListWidget); } }
-		public override String MenuPath { get { return @"Components\ComponentListWidget"; } }
+        public override String MenuPath { get { return @"Components\ComponentListWidget"; } }
 		public override String Comment { get { return "Display a list of all found widgets"; } }
 	}
 	
