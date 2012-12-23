@@ -9,25 +9,26 @@ public partial class MainWindow: Gtk.Window, IMainWindow
 {	
     #region implement IMainWindow
     DockFrame IMainWindow.DockFrame { get { return theDockFrame; } }
+    ComponentFactoryInformation[] IMainWindow.ComponentInfos { get { return mFinder.ComponentInfos; } }
     #endregion
 
 	ComponentFinder mFinder;
     String mConfig = "TestHow2Dock-config.layout.xml";
 
     public MainWindow (): base (Gtk.WindowType.Toplevel)
-	{
-		mFinder = new ComponentFinder ();
-		mFinder.SearchForComponents (new string[] { @"./*.exe", @"./*.dll" } );
+    {
+        mFinder = new ComponentFinder ();
+        mFinder.SearchForComponents (new string[] { @"./*.exe", @"./*.dll" });
 
-		// todo: should re-load from persistence
-		SetSizeRequest (800, 600);
+        // todo: should re-load from persistence
+        SetSizeRequest (800, 600);
 
-		// Create designer elements
-		Build ();
+        // Create designer elements
+        Build ();
 
-		theDockFrame.DefaultItemHeight = 100;
-		theDockFrame.DefaultItemWidth = 100;
-		theDockFrame.Homogeneous = false;
+        theDockFrame.DefaultItemHeight = 100;
+        theDockFrame.DefaultItemWidth = 100;
+        theDockFrame.Homogeneous = false;
 
 #if false
 		// add elements programmatically
@@ -47,22 +48,28 @@ public partial class MainWindow: Gtk.Window, IMainWindow
 #endif
 
 #if true
-		// Add widget created with designer
-		foreach (ComponentFinder.ComponentFactoryInformation cfi in mFinder.ComponentInfos)
-		{
-			Widget w = cfi.CreateInstance(this);
-			if (w != null)
-			{
-				DockItem item = theDockFrame.AddItem(w.ToString());
-				item.Content = w;
-				item.Behavior = DockItemBehavior.Normal;
-				// item.DefaultLocation = "Document";
-				item.DefaultVisible = true;
-				item.DrawFrame = true;
-				item.Label = w.ToString();
-			}
-		}
+        // Add widget created with designer
+        foreach (ComponentFactoryInformation cfi in mFinder.ComponentInfos)
+        {
+            Widget w = cfi.CreateInstance (this);
+            if (w != null)
+            {
+                DockItem item = theDockFrame.AddItem (w.ToString ());
+                item.Content = w;
+                item.Behavior = DockItemBehavior.Normal;
+                // item.DefaultLocation = "Document";
+                item.DefaultVisible = true;
+                item.DrawFrame = true;
+                item.Label = w.ToString ();
+            }
+        }
 #endif
+
+        foreach (DockItem item  in theDockFrame.GetItems())
+        {
+            if (item.Content is IComponent)
+                (item.Content as IComponent).ComponentsRegistered();
+        }
 
         // layout from file or new
         if (File.Exists (mConfig))

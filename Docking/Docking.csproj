@@ -85,6 +85,7 @@
     <Compile Include="gtk-gui\Docking.Components.ComponentListWidget.cs" />
     <Compile Include="Components\IMainWindow.cs" />
     <Compile Include="Components\IComponentFactory.cs" />
+    <Compile Include="Components\IComponent.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -26,6 +26,7 @@ namespace Docking.Components
 			this.treeview1 = new global::Gtk.TreeView ();
 			this.treeview1.CanFocus = true;
 			this.treeview1.Name = "treeview1";
+			this.treeview1.Reorderable = true;
 			this.GtkScrolledWindow.Add (this.treeview1);
 			this.vbox1.Add (this.GtkScrolledWindow);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.GtkScrolledWindow]));

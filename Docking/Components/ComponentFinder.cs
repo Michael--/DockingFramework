@@ -10,51 +10,6 @@ namespace Docking.Components
 {
     public class ComponentFinder
     {
-        public class ComponentFactoryInformation
-        {
-            public ComponentFactoryInformation (ComponentFactory factory, bool active)
-            {
-                Debug.Assert (factory != null);
-                ComponentFactory = factory;
-                Active = active;
-            }
-            
-            public Widget CreateInstance(IMainWindow main)
-            {
-                Widget widget;
-                try
-                {
-                    widget = (Widget)Activator.CreateInstance (ComponentType, new System.Object[] {main});
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine (e.ToString ());
-                    return null;
-                }
-                return widget;
-            }
-            
-            public Type FactoryType { get { return ComponentFactory.GetType (); } }
-
-            public Type ComponentType{ get { return ComponentFactory.TypeOfInstance; } }
-
-            public String Comment{ get { return ComponentFactory.Comment; } }
-
-            public String MenuPath{ get { return ComponentFactory.MenuPath; } }
-
-            public bool IsSingleInstance{ get { return (ComponentFactory.Options & ComponentFactory.Mode.MultipleInstance) != ComponentFactory.Mode.MultipleInstance; } }
-
-            public bool InstanceMustExist{ get { return (ComponentFactory.Options & ComponentFactory.Mode.AutoCreate) == ComponentFactory.Mode.AutoCreate; } }
-
-            public bool HideOnCreate { get { return (ComponentFactory.Options & ComponentFactory.Mode.Hidden) == ComponentFactory.Mode.Hidden; } }
-
-            ComponentFactory ComponentFactory { get; set; }
-
-            public bool Active { get; set; }
-
-            public Widget DockWidget { get; set; }
-        }
-
         private List<Type> mTypes = new List<Type>();
 
         private List<ComponentFactoryInformation> mComponents = new List<ComponentFactoryInformation> ();
@@ -232,6 +187,53 @@ namespace Docking.Components
                 }
             }
         }
+    }
+
+    public class ComponentFactoryInformation
+    {
+        public ComponentFactoryInformation (ComponentFactory factory, bool active)
+        {
+            Debug.Assert (factory != null);
+            ComponentFactory = factory;
+            Active = active;
+        }
+        
+        public Widget CreateInstance(IMainWindow main)
+        {
+            Widget widget;
+            try
+            {
+                widget = (Widget)Activator.CreateInstance (ComponentType);
+                if (widget is IComponent)
+                    (widget as IComponent).MainWindow = main;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine (e.ToString ());
+                return null;
+            }
+            return widget;
+        }
+        
+        public Type FactoryType { get { return ComponentFactory.GetType (); } }
+        
+        public Type ComponentType{ get { return ComponentFactory.TypeOfInstance; } }
+        
+        public String Comment{ get { return ComponentFactory.Comment; } }
+        
+        public String MenuPath{ get { return ComponentFactory.MenuPath; } }
+        
+        public bool IsSingleInstance{ get { return (ComponentFactory.Options & ComponentFactory.Mode.MultipleInstance) != ComponentFactory.Mode.MultipleInstance; } }
+        
+        public bool InstanceMustExist{ get { return (ComponentFactory.Options & ComponentFactory.Mode.AutoCreate) == ComponentFactory.Mode.AutoCreate; } }
+        
+        public bool HideOnCreate { get { return (ComponentFactory.Options & ComponentFactory.Mode.Hidden) == ComponentFactory.Mode.Hidden; } }
+        
+        ComponentFactory ComponentFactory { get; set; }
+        
+        public bool Active { get; set; }
+        
+        public Widget DockWidget { get; set; }
     }
 }
 

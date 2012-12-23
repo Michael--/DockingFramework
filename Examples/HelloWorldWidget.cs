@@ -7,7 +7,7 @@ namespace Examples.HelloWorld
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class HelloWorldWidget : Gtk.Bin
 	{
-        public HelloWorldWidget (IMainWindow main)
+        public HelloWorldWidget ()
 		{
 			this.Build ();
 		}

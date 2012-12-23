@@ -26,6 +26,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="ShowScrollbars">True</property>
+                <property name="Reorderable">True</property>
               </widget>
             </child>
           </widget>
