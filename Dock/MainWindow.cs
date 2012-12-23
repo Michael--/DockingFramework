@@ -30,24 +30,6 @@ public partial class MainWindow: Gtk.Window, IMainWindow
         theDockFrame.DefaultItemWidth = 100;
         theDockFrame.Homogeneous = false;
 
-#if false
-		// add elements programmatically
-
-		Gtk.Notebook nb = new Notebook ();
-		DockItem doc_item = AddSimpleDockItem ("Document", nb, null);
-		doc_item.Expand = true;
-		nb.AppendPage (new Label ("Other page"), new Label ("The label"));
-		nb.AppendPage (new TextView (), new Image ("gtk-new", IconSize.Menu));
-		nb.ShowAll ();
-        
-		// See enum DockPosition
-		AddSimpleDockItem ("Test1", new Label ("This test"), "Document/Left");
-		AddSimpleDockItem ("Test2", new Label ("This is a test"), "Document/Right");
-		AddSimpleDockItem ("Test3", new Label ("This is a test"), "right/Bottom");
-
-#endif
-
-#if true
         // Add widget created with designer
         foreach (ComponentFactoryInformation cfi in mFinder.ComponentInfos)
         {
@@ -63,7 +45,6 @@ public partial class MainWindow: Gtk.Window, IMainWindow
                 item.Label = w.ToString ();
             }
         }
-#endif
 
         foreach (DockItem item  in theDockFrame.GetItems())
         {
@@ -82,21 +63,7 @@ public partial class MainWindow: Gtk.Window, IMainWindow
 		}
         theDockFrame.CurrentLayout = "test";
 	}
-    
-	DockItem AddSimpleDockItem (String label, Widget content, String location)
-    {
-        DockItem item = theDockFrame.AddItem (label);
-        item.Behavior = DockItemBehavior.Normal;
-		if (location != null)
-        	item.DefaultLocation = location;
-        item.DefaultVisible = true;
-        item.Visible = true;
-        item.Label = label;
-        item.DrawFrame = true;
-        item.Content = content;
-		return item;
-	}
-    
+
     protected void OnDeleteEvent (object sender, DeleteEventArgs a)
     {
         theDockFrame.SaveLayouts(mConfig);
