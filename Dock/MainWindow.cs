@@ -31,6 +31,7 @@ public partial class MainWindow: Gtk.Window, IMainWindow
         theDockFrame.DefaultItemWidth = 100;
         theDockFrame.Homogeneous = false;
 
+#if false
         // Add widget created with designer
         foreach (ComponentFactoryInformation cfi in mFinder.ComponentInfos)
         {
@@ -46,9 +47,12 @@ public partial class MainWindow: Gtk.Window, IMainWindow
                 item.Label = w.ToString ();
             }
         }
+#endif
 
+        // add all default menu for any component
         CreateComponentMenue();
 
+        // tell all components about end of component registering
         foreach (DockItem item  in theDockFrame.GetItems())
         {
             if (item.Content is IComponent)
@@ -71,51 +75,85 @@ public partial class MainWindow: Gtk.Window, IMainWindow
     {
         foreach (ComponentFactoryInformation cfi in mFinder.ComponentInfos)
         {
+            // the last name is the menu name, all other are menu/sub-menue names
             String [] m = cfi.MenuPath.Split(new char[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
+
+            // as a minimum submenu-name & menu-name must exist
             Debug.Assert(m.Length >= 2);
 
-            System.Object baseMenu = menubar3;
-            Menu componentMenu = null;
+            MenuShell menuShell = menubar3;
+            Menu componentMenu;
             System.Collections.IEnumerable children = menubar3.Children;
             for (int i = 0; i < m.Length - 1;i++)
             {
-                componentMenu = SearchOrCreateMenu(m[i], baseMenu, children);
+                componentMenu = SearchOrCreateMenu(m[i], menuShell, children);
                 children = componentMenu.AllChildren;
-                baseMenu = componentMenu;
+                menuShell = componentMenu;
             }
-            ImageMenuItem item = new ImageMenuItem(m[m.Length - 1]);
+            TaggedImageMenuItem item = new TaggedImageMenuItem(m[m.Length - 1]);
+            item.Tag = cfi;
+            item.Activated += ComponentHandleActivated;
             componentMenu.Add(item);
         }
         menubar3.ShowAll();
     }
 
-    Menu SearchOrCreateMenu(String name, System.Object baseMenu, System.Collections.IEnumerable children)
+    void ComponentHandleActivated(object sender, EventArgs e)
     {
-        Menu menu = null;
-        
-        // search menue to insert new element
+        TaggedImageMenuItem menueitem = sender as TaggedImageMenuItem;
+        ComponentFactoryInformation cfi = menueitem.Tag as ComponentFactoryInformation;
+
+        // todo: consider multiple instance components
+
+        String name = cfi.ComponentType.ToString ();
+
+        // show/hide existing components instance (single instance)
+        DockItem item = theDockFrame.GetItem (name);
+        if (item != null)
+        {
+            item.Visible = !item.Visible;
+        }
+
+        // add new instance of desired component
+        else
+        {
+            Widget w = cfi.CreateInstance (this);
+            if (w != null)
+            {
+                item = theDockFrame.AddItem (name);
+                item.Content = w;
+                item.Behavior = DockItemBehavior.Normal;
+                // item.DefaultLocation = "Document";
+                item.DefaultVisible = true;
+                item.DrawFrame = true;
+                item.Label = w.ToString ();
+                item.Visible = true;
+
+                // todo: think about on off
+                if (item.Content is IComponent)
+                    (item.Content as IComponent).ComponentsRegistered();
+               
+            }
+        }
+    }
+
+    Menu SearchOrCreateMenu(String name, MenuShell menuShell, System.Collections.IEnumerable children)
+    {
+        // 1st search menue & return if existing
         foreach(MenuItem mi in children)
         {
             Label label = (Label)mi.Child;
             if (label.Text == name)
-            {
-                menu = mi.Submenu as Menu;
-                break;
-            }
+                return mi.Submenu as Menu;
         }
-        
-        if (menu == null)
-        {
-            menu = new Menu ( );
-            MenuItem menuItem = new MenuItem(name);
-            menuItem.Child = new Label(name);
-            menuItem.Submenu = menu;
 
-            if (baseMenu is MenuBar)
-                (baseMenu as MenuBar).Append (menuItem);
-            else 
-                (baseMenu as Menu).Append(menuItem);
-        }
+        // 2nd append new menu 
+        // todo: currently append at the end, may a dedicated position desired
+        Menu menu = new Menu ( );
+        MenuItem menuItem = new MenuItem(name);
+        menuItem.Child = new Label(name);
+        menuItem.Submenu = menu;
+        menuShell.Append(menuItem);
 
         return menu;
     }
@@ -157,4 +195,11 @@ public partial class MainWindow: Gtk.Window, IMainWindow
 		if (mUniqueId > 0)
 			this.statusbar1.Pop(mUniqueId--);
 	}
+
+
+    class TaggedImageMenuItem :ImageMenuItem
+    {
+        public TaggedImageMenuItem(String name) : base(name) {}
+        public System.Object Tag { get; set; }
+    }
 }
