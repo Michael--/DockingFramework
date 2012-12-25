@@ -4,8 +4,7 @@ namespace Docking.Components
 {
     public interface IMainWindow
     {
-        DockFrame DockFrame { get; }
-        ComponentFactoryInformation[] ComponentInfos { get; }
+        ComponentManager ComponentManager { get; }
     }
 }
 

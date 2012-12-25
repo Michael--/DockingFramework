@@ -86,6 +86,7 @@
     <Compile Include="Components\IMainWindow.cs" />
     <Compile Include="Components\IComponentFactory.cs" />
     <Compile Include="Components\IComponent.cs" />
+    <Compile Include="Components\ComponentManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

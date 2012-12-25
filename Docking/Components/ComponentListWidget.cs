@@ -7,12 +7,12 @@ namespace Docking.Components
 	public partial class ComponentListWidget : Gtk.Bin, IComponent
 	{
         #region implement IComponent
-        public IMainWindow MainWindow { get; set; }
+        public ComponentManager ComponentManager { get; set; }
 
         void IComponent.ComponentsRegistered(DockItem item)
         {
             item.Label = "Component List";
-            foreach (ComponentFactoryInformation cfi in MainWindow.ComponentInfos)
+            foreach (ComponentFactoryInformation cfi in ComponentManager.ComponentFinder.ComponentInfos)
             {
                 List<String> row = new List<string>();
                 row.Add(cfi.ComponentType.ToString());

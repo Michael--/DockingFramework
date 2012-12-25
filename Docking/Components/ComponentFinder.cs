@@ -6,7 +6,7 @@ using Docking;
 using Gtk;
 using System.Diagnostics;
 
-namespace Docking.Components
+namespace Docking.Components    
 {
     public class ComponentFinder
     {
@@ -16,9 +16,9 @@ namespace Docking.Components
         
         public ComponentFactoryInformation[] ComponentInfos{ get { return mComponents.ToArray (); } }
 
-        Widget CreateInstance(ComponentFactoryInformation info, IMainWindow main)
+        Widget CreateInstance(ComponentFactoryInformation info, ComponentManager cm)
         {
-            Widget widget = info.CreateInstance (main);
+            Widget widget = info.CreateInstance (cm);
             return widget;
         }
         
@@ -42,7 +42,7 @@ namespace Docking.Components
             return null;
         }
 
-        public Widget CreateInstance(Type type, IMainWindow main)
+        public Widget CreateInstance(Type type, ComponentManager cm)
         {
             foreach (ComponentFactoryInformation info in mComponents)
             {
@@ -51,13 +51,13 @@ namespace Docking.Components
                 {
                     if (t == type)
                     {
-                        info.DockWidget = CreateInstance (info, main);
+                        info.DockWidget = CreateInstance (info, cm);
                         return info.DockWidget;
                     }
                     Type[] myInterfaces = t.FindInterfaces (mTypeFilter, type);
                     if (myInterfaces.Length > 0)
                     {
-                        info.DockWidget = CreateInstance (info, main);
+                        info.DockWidget = CreateInstance (info, cm);
                         return info.DockWidget;
                     }
                 }
@@ -173,13 +173,13 @@ namespace Docking.Components
             }
         }
         
-        public void OpenMustExists(IMainWindow main)
+        public void OpenMustExists(ComponentManager cm)
         {
             foreach (ComponentFactoryInformation info in mComponents)
             {
                 if (info.InstanceMustExist && info.DockWidget == null)
                 {
-                    info.DockWidget = info.CreateInstance (main);
+                    info.DockWidget = info.CreateInstance (cm);
                     info.DockWidget.Show ();
                     
                     if (info.HideOnCreate)
@@ -198,14 +198,14 @@ namespace Docking.Components
             Active = active;
         }
         
-        public Widget CreateInstance(IMainWindow main)
+        public Widget CreateInstance(ComponentManager cm)
         {
             Widget widget;
             try
             {
                 widget = (Widget)Activator.CreateInstance (ComponentType);
                 if (widget is IComponent)
-                    (widget as IComponent).MainWindow = main;
+                    (widget as IComponent).ComponentManager = cm;
             }
             catch (Exception e)
             {
