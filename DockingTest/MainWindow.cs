@@ -6,25 +6,17 @@ using DockingTest;
 using Docking.Components;
 using System.Diagnostics;
 
-public partial class MainWindow: Gtk.Window, IMainWindow
+public partial class MainWindow: Gtk.Window
 {	
-    #region implement IMainWindow
-    ComponentManager IMainWindow.ComponentManager { get { return mManager; } }
-    #endregion
-
     ComponentManager mManager;
     String mConfig = "TestHow2Dock-config.layout.xml";
 
     public MainWindow (): base (Gtk.WindowType.Toplevel)
     {
-
         // Create designer elements
         Build ();
-        theDockFrame.DefaultItemHeight = 100;
-        theDockFrame.DefaultItemWidth = 100;
-        theDockFrame.Homogeneous = false;
 
-        mManager = new ComponentManager(this, theDockFrame);
+        mManager = new ComponentManager(theDockFrame);
 
         // search for all interrested components
         mManager.ComponentFinder.SearchForComponents (new string[] { @"./*.exe", @"./*.dll" });

@@ -83,7 +83,6 @@
     <Compile Include="Components\ComponentFinder.cs" />
     <Compile Include="Components\ComponentListWidget.cs" />
     <Compile Include="gtk-gui\Docking.Components.ComponentListWidget.cs" />
-    <Compile Include="Components\IMainWindow.cs" />
     <Compile Include="Components\IComponentFactory.cs" />
     <Compile Include="Components\IComponent.cs" />
     <Compile Include="Components\ComponentManager.cs" />

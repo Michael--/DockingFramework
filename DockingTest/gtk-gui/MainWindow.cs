@@ -85,8 +85,8 @@ public partial class MainWindow
 		this.theDockFrame.CompactGuiLevel = 0;
 		this.theDockFrame.HandleSize = 0;
 		this.theDockFrame.HandlePadding = 0;
-		this.theDockFrame.DefaultItemWidth = 0;
-		this.theDockFrame.DefaultItemHeight = 0;
+		this.theDockFrame.DefaultItemWidth = 100;
+		this.theDockFrame.DefaultItemHeight = 100;
 		this.theDockFrame.AutoShowDelay = ((uint)(250));
 		this.theDockFrame.AutoHideDelay = ((uint)(250));
 		this.vbox1.Add (this.theDockFrame);

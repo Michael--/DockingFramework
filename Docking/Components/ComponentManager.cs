@@ -6,14 +6,12 @@ namespace Docking.Components
 {
     public class ComponentManager
     {
-        public ComponentManager (IMainWindow mainWindow, DockFrame df)
+        public ComponentManager (DockFrame df)
         {
-            MainWindow = mainWindow;
             DockFrame = df;
             ComponentFinder = new Docking.Components.ComponentFinder();
         }
 
-        public IMainWindow MainWindow { get; private set; }
         public DockFrame DockFrame { get; private set; }
 
         public ComponentFinder ComponentFinder { get; private set; }
