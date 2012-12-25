@@ -21,7 +21,8 @@ namespace Examples.HelloWorld
 		public override Type TypeOfInstance { get { return typeof(HelloWorldWidget); } }
         public override String MenuPath { get { return @"Components\Examples\HelloWorldWidget"; } }
 		public override String Comment { get { return "Example minimal dockable view like 'Hello World'"; } }
-	}
+        public override Mode Options { get { return Mode.MultipleInstance; } }
+    }
 	
 #endregion
 	

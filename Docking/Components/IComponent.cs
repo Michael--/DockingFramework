@@ -5,8 +5,7 @@ namespace Docking.Components
     public interface IComponent
     {
         IMainWindow MainWindow { get; set; }
-
-        void ComponentsRegistered();
+        void ComponentsRegistered(DockItem item);
     }
 }
 

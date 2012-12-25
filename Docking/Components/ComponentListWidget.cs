@@ -9,8 +9,9 @@ namespace Docking.Components
         #region implement IComponent
         public IMainWindow MainWindow { get; set; }
 
-        void IComponent.ComponentsRegistered()
+        void IComponent.ComponentsRegistered(DockItem item)
         {
+            item.Label = "Component List";
             foreach (ComponentFactoryInformation cfi in MainWindow.ComponentInfos)
             {
                 List<String> row = new List<string>();

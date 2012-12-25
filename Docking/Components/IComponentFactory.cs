@@ -36,7 +36,7 @@ namespace Docking.Components
 		///     }
 		/// </summary>
 		public abstract Type TypeOfInstance { get; }
-		
+        		
 		/// <summary>
 		/// Get the default open mode.
 		/// A single instance window created only on demand.

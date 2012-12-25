@@ -31,24 +31,6 @@ public partial class MainWindow: Gtk.Window, IMainWindow
         theDockFrame.DefaultItemWidth = 100;
         theDockFrame.Homogeneous = false;
 
-#if false
-        // Add widget created with designer
-        foreach (ComponentFactoryInformation cfi in mFinder.ComponentInfos)
-        {
-            Widget w = cfi.CreateInstance (this);
-            if (w != null)
-            {
-                DockItem item = theDockFrame.AddItem (w.ToString ());
-                item.Content = w;
-                item.Behavior = DockItemBehavior.Normal;
-                // item.DefaultLocation = "Document";
-                item.DefaultVisible = true;
-                item.DrawFrame = true;
-                item.Label = w.ToString ();
-            }
-        }
-#endif
-
         // add all default menu for any component
         CreateComponentMenue();
 
@@ -56,10 +38,11 @@ public partial class MainWindow: Gtk.Window, IMainWindow
         foreach (DockItem item  in theDockFrame.GetItems())
         {
             if (item.Content is IComponent)
-                (item.Content as IComponent).ComponentsRegistered();
+                (item.Content as IComponent).ComponentsRegistered(item);
         }
 
         // layout from file or new
+        // todo: init instances from config
         if (File.Exists (mConfig))
         {
             theDockFrame.LoadLayouts (mConfig);
@@ -103,37 +86,47 @@ public partial class MainWindow: Gtk.Window, IMainWindow
         TaggedImageMenuItem menueitem = sender as TaggedImageMenuItem;
         ComponentFactoryInformation cfi = menueitem.Tag as ComponentFactoryInformation;
 
-        // todo: consider multiple instance components
+        String name;
 
-        String name = cfi.ComponentType.ToString ();
-
-        // show/hide existing components instance (single instance)
-        DockItem item = theDockFrame.GetItem (name);
-        if (item != null)
+        if (cfi.IsSingleInstance)
         {
-            item.Visible = !item.Visible;
+            // show/hide existing components instance
+            name = cfi.ComponentType.ToString();
+            DockItem item = theDockFrame.GetItem (name);
+            if (item != null)
+            {
+                item.Visible = !item.Visible;
+                return;
+            }
+        }
+        else
+        {
+            int instance = 1;
+            do
+            {
+                name = cfi.ComponentType.ToString() + instance.ToString();
+                instance++;
+            }
+            while(theDockFrame.GetItem(name) != null);
         }
 
         // add new instance of desired component
-        else
+        Widget w = cfi.CreateInstance (this);
+        if (w != null)
         {
-            Widget w = cfi.CreateInstance (this);
-            if (w != null)
-            {
-                item = theDockFrame.AddItem (name);
-                item.Content = w;
-                item.Behavior = DockItemBehavior.Normal;
-                // item.DefaultLocation = "Document";
-                item.DefaultVisible = true;
-                item.DrawFrame = true;
-                item.Label = w.ToString ();
-                item.Visible = true;
+            DockItem item = theDockFrame.AddItem (name);
+            item.Content = w;
+            item.Behavior = DockItemBehavior.Normal;
+            // item.DefaultLocation = "Document";
+            item.DefaultVisible = true;
+            item.DrawFrame = true;
+            item.Label = name;
+            item.Visible = true;
 
-                // todo: think about on off
-                if (item.Content is IComponent)
-                    (item.Content as IComponent).ComponentsRegistered();
-               
-            }
+            // todo: think about on off
+            if (item.Content is IComponent)
+                (item.Content as IComponent).ComponentsRegistered(item);
+           
         }
     }
 

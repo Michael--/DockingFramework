@@ -229,7 +229,7 @@ namespace Docking.Components
         
         public bool HideOnCreate { get { return (ComponentFactory.Options & ComponentFactory.Mode.Hidden) == ComponentFactory.Mode.Hidden; } }
         
-        ComponentFactory ComponentFactory { get; set; }
+        public ComponentFactory ComponentFactory { get; set; }
         
         public bool Active { get; set; }
         
