@@ -1,11 +1,11 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockingTest", "Dock\DockingTest.csproj", "{8A5B069F-BE1F-41D3-8D58-BCA292646959}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockingTest", "DockingTest\DockingTest.csproj", "{8A5B069F-BE1F-41D3-8D58-BCA292646959}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Docking", "Docking\Docking.csproj", "{8DDC0184-EBA8-4264-993D-E47173F12814}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Examples", "Examples\Examples.csproj", "{D3728416-6C94-4A4B-A121-E0B822FE3F26}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockingExamples", "DockingExamples\DockingExamples.csproj", "{D3728416-6C94-4A4B-A121-E0B822FE3F26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,7 +30,7 @@ Global
 		{D3728416-6C94-4A4B-A121-E0B822FE3F26}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Dock\DockingTest.csproj
+		StartupItem = DockingTest\DockingTest.csproj
 		Policies = $0
 		$0.TextStylePolicy = $1
 		$1.FileWidth = 120

@@ -59,9 +59,9 @@
       <Project>{8DDC0184-EBA8-4264-993D-E47173F12814}</Project>
       <Name>Docking</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Examples\Examples.csproj">
+    <ProjectReference Include="..\Examples\DockingExamples.csproj">
       <Project>{D3728416-6C94-4A4B-A121-E0B822FE3F26}</Project>
-      <Name>Examples</Name>
+      <Name>DockingExamples</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
