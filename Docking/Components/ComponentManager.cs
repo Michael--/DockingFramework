@@ -10,12 +10,13 @@ namespace Docking.Components
         {
             DockFrame = df;
             ComponentFinder = new Docking.Components.ComponentFinder();
+            DockFrame.CreateItem = this.CreateItem;
         }
 
         public DockFrame DockFrame { get; private set; }
 
         public ComponentFinder ComponentFinder { get; private set; }
- 
+         
         public void CreateComponentMenue(MenuBar menuBar)
         {
             foreach (ComponentFactoryInformation cfi in ComponentFinder.ComponentInfos)
@@ -54,10 +55,10 @@ namespace Docking.Components
             {
                 // show/hide existing components instance
                 name = cfi.ComponentType.ToString();
-                DockItem item = DockFrame.GetItem (name);
-                if (item != null)
+                DockItem di = DockFrame.GetItem (name);
+                if (di != null)
                 {
-                    item.Visible = !item.Visible;
+                    di.Visible = !di.Visible;
                     return;
                 }
             }
@@ -66,32 +67,52 @@ namespace Docking.Components
                 int instance = 1;
                 do
                 {
-                    name = cfi.ComponentType.ToString() + instance.ToString();
+                    name = cfi.ComponentType.ToString() + "-" + instance.ToString();
                     instance++;
                 }
                 while(DockFrame.GetItem(name) != null);
             }
-            
+
+            // add new instance of desired component
+            DockItem item = CreateItem (cfi, name);
+            item.Behavior = DockItemBehavior.Normal;
+            // item.DefaultLocation = "Document";
+            item.DefaultVisible = true;
+            item.DrawFrame = true;
+            item.Visible = true;
+        }
+
+        private DockItem CreateItem(ComponentFactoryInformation cfi, String name)
+        {
             // add new instance of desired component
             Widget w = cfi.CreateInstance (this);
-            if (w != null)
-            {
-                DockItem item = DockFrame.AddItem (name);
-                item.Content = w;
-                item.Behavior = DockItemBehavior.Normal;
-                // item.DefaultLocation = "Document";
-                item.DefaultVisible = true;
-                item.DrawFrame = true;
-                item.Label = name;
-                item.Visible = true;
-                
-                // todo: think about on off
-                if (item.Content is IComponent)
-                    (item.Content as IComponent).ComponentsRegistered(item);
-                
-            }
+            if (w == null)
+                return null;
+            DockItem item = DockFrame.AddItem (name);
+            item.Content = w;
+            item.Label = name;
+
+            // todo: think about on off
+            if (item.Content is IComponent)
+                (item.Content as IComponent).ComponentsRegistered(item);
+
+            return item;
         }
-        
+
+        public DockItem CreateItem(string id)
+        {
+            String []m = id.Split(new char[] {'-'}, StringSplitOptions.RemoveEmptyEntries);
+            if (m.Length == 0)
+                return null;
+            String typename = m[0];
+
+            ComponentFactoryInformation cfi = ComponentFinder.FindComponent(typename);
+            if (cfi == null)
+                return null;
+
+            return CreateItem (cfi, id);
+        }
+
         Menu SearchOrCreateMenu(String name, MenuShell menuShell, System.Collections.IEnumerable children)
         {
             // 1st search menue & return if existing

@@ -213,7 +213,11 @@ namespace Docking
 				grp.RemoveItemRec (it);
 			container.Items.Remove (it);
 		}
-		
+
+       
+        public delegate DockItem CreateItemDelegate(string id);
+        public CreateItemDelegate CreateItem { get; set; }
+                		
 		public DockItem GetItem (string id)
 		{
 			foreach (DockItem it in container.Items) {

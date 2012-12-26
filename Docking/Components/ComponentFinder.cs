@@ -32,7 +32,7 @@ namespace Docking.Components
             return null;
         }
         
-        private ComponentFactoryInformation FindComponent(String typename)
+        public ComponentFactoryInformation FindComponent(String typename)
         {
             foreach (ComponentFactoryInformation info in mComponents)
             {

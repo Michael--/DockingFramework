@@ -1080,7 +1080,9 @@ namespace Docking
 				if (reader.NodeType == XmlNodeType.Element) {
 					if (reader.LocalName == "item") {
 						string id = reader.GetAttribute ("id");
-						DockItem it = Frame.GetItem (id);
+                        DockItem it = null;
+                        if (Frame.CreateItem != null)
+                            it = Frame.CreateItem(id);
 						if (it == null) {
 							it = Frame.AddItem (id);
 							it.IsPositionMarker = true;
