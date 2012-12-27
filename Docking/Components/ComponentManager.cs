@@ -76,6 +76,8 @@ namespace Docking.Components
             // add new instance of desired component
             DockItem item = CreateItem (cfi, name);
             item.Behavior = DockItemBehavior.Normal;
+            if (!cfi.IsSingleInstance)
+                item.Behavior |= DockItemBehavior.CloseOnHide;
             // item.DefaultLocation = "Document";
             item.DefaultVisible = true;
             item.DrawFrame = true;
@@ -91,6 +93,9 @@ namespace Docking.Components
             DockItem item = DockFrame.AddItem (name);
             item.Content = w;
             item.Label = name;
+
+            if (!cfi.IsSingleInstance)
+                item.Behavior |= DockItemBehavior.CloseOnHide;
 
             // todo: think about on off
             if (item.Content is IComponent)

@@ -95,6 +95,8 @@ namespace Docking
 			btnClose.WidthRequest = btnClose.HeightRequest = 17;
 			btnClose.Clicked += delegate {
 				item.Visible = false;
+                if ((item.Behavior & DockItemBehavior.CloseOnHide) != 0)
+                    this.frame.RemoveItem(item);
 			};
 			
 			HBox box = new HBox (false, 0);

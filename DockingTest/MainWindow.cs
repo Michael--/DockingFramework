@@ -5,6 +5,7 @@ using System.IO;
 using DockingTest;
 using Docking.Components;
 using System.Diagnostics;
+using System.Xml;
 
 public partial class MainWindow: Gtk.Window
 {	
@@ -31,13 +32,18 @@ public partial class MainWindow: Gtk.Window
         // todo: init instances from config, update onoff concept soon
         if (File.Exists (mConfig))
         {
+            //XmlDocument doc = new XmlDocument();;
+            //doc.Load(mConfig);
+            //XmlNode node = doc.SelectSingleNode("layouts");
+            //XmlNodeList nodeList = node.SelectNodes("layout");
+
             theDockFrame.LoadLayouts (mConfig);
         } 
         else
         {
-            theDockFrame.CreateLayout ("test", true);
+            theDockFrame.CreateLayout ("Default", true);
 		}
-        theDockFrame.CurrentLayout = "test";
+        theDockFrame.CurrentLayout = "Default";
 	}
 
     protected void OnDeleteEvent (object sender, DeleteEventArgs a)
