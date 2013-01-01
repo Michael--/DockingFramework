@@ -11,6 +11,11 @@ namespace Docking.Components
         /// component could load its persistence data
         /// </summary>
         void ComponentLoaded(DockItem item);
+
+        /// <summary>
+        /// Called to prepare persistence, mainly before quit application
+        /// </summary>
+        void ComponentSave();
     }
 }
 

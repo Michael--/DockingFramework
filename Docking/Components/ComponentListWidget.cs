@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Docking.Components
 {
@@ -19,6 +20,21 @@ namespace Docking.Components
                 row.Add(cfi.Comment);
                 listStore.AppendValues(row.ToArray());
             }
+
+            TestPersistence p = (TestPersistence)ComponentManager.LoadObject("ComponentListWidget", typeof(TestPersistence));
+            if (p != null)
+                Debug.WriteLine(p.test);
+        }
+
+        void IComponent.ComponentSave()
+        {
+            TestPersistence p =  new TestPersistence() { test = "TestTestTest" };
+            ComponentManager.SaveObject("ComponentListWidget", p);
+        }
+
+        public class TestPersistence 
+        {
+            public String test { get; set; }
         }
 
         #endregion

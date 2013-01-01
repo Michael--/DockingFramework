@@ -4,6 +4,7 @@ using Gtk;
 using System.Xml;
 using System.IO;
 using System.Xml.Serialization;
+using System.Text;
 
 namespace Docking.Components
 {
@@ -62,7 +63,9 @@ namespace Docking.Components
             xmlWriter.Flush();
             
             XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
-            
+
+            String test = Encoding.GetEncoding(1252).GetString(ms.ToArray());
+
             // re-load as XmlDocument
             XmlDocument doc = new XmlDocument();
             doc.Load(xmlReader);
@@ -215,6 +218,15 @@ namespace Docking.Components
             {
                 if (item.Content is IComponent)
                     (item.Content as IComponent).ComponentLoaded (item);
+            }
+        }
+
+        public void ComponentSave()
+        {
+            foreach (DockItem item in DockFrame.GetItems())
+            {
+                if (item.Content is IComponent)
+                    (item.Content as IComponent).ComponentSave();
             }
         }
     }

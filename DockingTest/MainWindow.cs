@@ -119,6 +119,7 @@ public partial class MainWindow: Gtk.Window
 
         // update own persistence before save
         SavePersistence();
+        mManager.ComponentSave();
 
         // at least save complete persistence to file
         mManager.SaveConfiguration(mConfig);
