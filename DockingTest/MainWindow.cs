@@ -10,7 +10,7 @@ using System.Xml;
 public partial class MainWindow: Gtk.Window
 {	
     ComponentManager mManager;
-    String mConfig = "TestHow2Dock-config.layout.xml";
+    String mConfig = "config.xml";
 
     public MainWindow (): base (Gtk.WindowType.Toplevel)
     {
@@ -25,32 +25,10 @@ public partial class MainWindow: Gtk.Window
         // add all default menu for any component
         mManager.CreateComponentMenue(menubar3);
 
-        // layout from file or new
-        // todo: init instances from config, update onoff concept soon
-        if (File.Exists (mConfig))
-        {
-            // load XML node "layouts" in a memory file
-#if true    
-            mManager.XmlDocument.Load(mConfig);
-            XmlNode layouts = mManager.XmlDocument.SelectSingleNode("layouts");
+        // load old configuration or init new one if not existing
+        LoadConfiguration();
 
-            MemoryStream ms = new MemoryStream();
-            XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
-
-            layouts.WriteTo(xmlWriter);
-            xmlWriter.Flush();
-            XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
-
-            theDockFrame.LoadLayouts (xmlReader);
-#else
-            // the old way, the whole XML file contains only the layout
-            theDockFrame.LoadLayouts (mConfig);
-#endif
-        } 
-        else
-        {
-            theDockFrame.CreateLayout ("Default", true);
-		}
+        // select current layout, multiple layout are allowed
         theDockFrame.CurrentLayout = "Default";
 
         // after layout has been set, call component initialization
@@ -58,9 +36,62 @@ public partial class MainWindow: Gtk.Window
         mManager.ComponentLoaded();
     }
 
+    private void LoadConfiguration()
+    {
+        // layout from file or new
+        if (File.Exists (mConfig))
+        {
+            // the manager hold the persistence in memory all the time
+            mManager.XmlDocument.Load(mConfig);
+
+            // load XML node "layouts" in a memory file
+            // we should let the implementation of the Mono Develop Docking as it is
+            // to make it easier to update with newest version
+
+            XmlNode layouts = mManager.XmlDocument.SelectSingleNode("layouts");
+            
+            MemoryStream ms = new MemoryStream();
+            XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
+            
+            layouts.WriteTo(xmlWriter);
+            xmlWriter.Flush();
+            XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
+            
+            theDockFrame.LoadLayouts (xmlReader);
+        } 
+        else
+        {
+            theDockFrame.CreateLayout ("Default", true);
+        }
+    }
+
+    private void SaveConfiguration()
+    {
+        // save first DockFrame persistence in own (memory) file
+        MemoryStream ms = new MemoryStream();
+        XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
+        theDockFrame.SaveLayouts (xmlWriter);
+        xmlWriter.Flush();
+        XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
+
+        // re-load as XmlDocument
+        XmlDocument doc = new XmlDocument();
+        doc.Load(xmlReader);
+
+        // select layouts and replace in managed persistence
+        // note that a node from other document must imported before use for add/replace
+        XmlNode layouts = doc.SelectSingleNode("layouts");
+        XmlNode newLayouts = mManager.XmlDocument.ImportNode(layouts, true);
+        XmlNode oldLayouts = mManager.XmlDocument.SelectSingleNode("layouts");
+        mManager.XmlDocument.ReplaceChild(newLayouts, oldLayouts);
+
+        // at least save complete persistence to file
+        mManager.XmlDocument.Save(mConfig);
+    }
+
     protected void OnDeleteEvent (object sender, DeleteEventArgs a)
     {
-        theDockFrame.SaveLayouts(mConfig);
+        SaveConfiguration();
         Application.Quit();
         a.RetVal = true;
     }
@@ -68,7 +99,7 @@ public partial class MainWindow: Gtk.Window
     protected void OnQuitActionActivated(object sender, EventArgs e)
     {
         // todo: close window which will call OnDeleteEvent() above. Don't know how to do at the moement 
-        theDockFrame.SaveLayouts(mConfig);
+        SaveConfiguration();
         Application.Quit();
     }
 
