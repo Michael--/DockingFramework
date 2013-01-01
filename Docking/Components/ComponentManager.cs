@@ -23,13 +23,73 @@ namespace Docking.Components
         public XmlDocument XmlDocument { get; private set; }
         public XmlNode XmlConfiguration { get; private set; }
 
-        public void LoadConfiguration(String filename)
+        public void LoadConfigurationFile(String filename)
+        {
+            // layout from file or new
+            if (File.Exists (filename))
+            {
+                // the manager hold the persistence in memory all the time
+                LoadConfiguration(filename);
+                
+                // load XML node "layouts" in a memory file
+                // we should let the implementation of the Mono Develop Docking as it is
+                // to make it easier to update with newest version
+                
+                XmlNode layouts = XmlConfiguration.SelectSingleNode("layouts");
+                
+                MemoryStream ms = new MemoryStream();
+                XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
+                
+                layouts.WriteTo(xmlWriter);
+                xmlWriter.Flush();
+                XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
+                
+                DockFrame.LoadLayouts (xmlReader);
+            } 
+            else
+            {
+                DockFrame.CreateLayout ("Default", true);
+            }
+        }
+
+        public void SaveConfigurationFile(String filename)
+        {
+            // save first DockFrame persistence in own (memory) file
+            MemoryStream ms = new MemoryStream();
+            XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
+            DockFrame.SaveLayouts (xmlWriter);
+            xmlWriter.Flush();
+            XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
+            
+            // re-load as XmlDocument
+            XmlDocument doc = new XmlDocument();
+            doc.Load(xmlReader);
+            
+            // select layouts and replace in managed persistence
+            // note that a node from other document must imported before use for add/replace
+            XmlNode layouts = doc.SelectSingleNode("layouts");
+            XmlNode newLayouts = XmlDocument.ImportNode(layouts, true);
+            XmlNode oldLayouts = XmlConfiguration.SelectSingleNode("layouts");
+            if (oldLayouts != null)
+                XmlConfiguration.ReplaceChild(newLayouts, oldLayouts);
+            else 
+                XmlConfiguration.AppendChild(newLayouts);
+
+            // save all components data
+            ComponentSave();
+            
+            // at least save complete persistence to file
+            SaveConfiguration(filename);
+        }
+
+
+        private void LoadConfiguration(String filename)
         {
             XmlDocument.Load(filename);
             XmlConfiguration = XmlDocument.SelectSingleNode("DockingConfiguration");
         }
 
-        public void SaveConfiguration(String filename)
+        private void SaveConfiguration(String filename)
         {
             XmlDocument.Save(filename);
         }
@@ -64,7 +124,7 @@ namespace Docking.Components
             
             XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
 
-            String test = Encoding.GetEncoding(1252).GetString(ms.ToArray());
+            // String test = Encoding.GetEncoding(1252).GetString(ms.ToArray());
 
             // re-load as XmlDocument
             XmlDocument doc = new XmlDocument();

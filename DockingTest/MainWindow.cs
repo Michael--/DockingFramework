@@ -27,7 +27,10 @@ public partial class MainWindow: Gtk.Window
         mManager.CreateComponentMenue(menubar3);
 
         // load old configuration or init new one if not existing
-        LoadConfigurationFile();
+        mManager.LoadConfigurationFile(mConfig);
+
+        // update with own persistence
+        LoadPersistence();
 
         // select current layout, multiple layout are allowed
         theDockFrame.CurrentLayout = "Default";
@@ -62,81 +65,24 @@ public partial class MainWindow: Gtk.Window
         mManager.SaveObject("MainWindow", p);
     }
 
-    private void LoadConfigurationFile()
+    private void PrepareExit()
     {
-        // layout from file or new
-        if (File.Exists (mConfig))
-        {
-            // the manager hold the persistence in memory all the time
-            mManager.LoadConfiguration(mConfig);
-
-            // load XML node "layouts" in a memory file
-            // we should let the implementation of the Mono Develop Docking as it is
-            // to make it easier to update with newest version
-
-            XmlNode layouts = mManager.XmlConfiguration.SelectSingleNode("layouts");
-            
-            MemoryStream ms = new MemoryStream();
-            XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
-            
-            layouts.WriteTo(xmlWriter);
-            xmlWriter.Flush();
-            XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
-            
-            theDockFrame.LoadLayouts (xmlReader);
-        } 
-        else
-        {
-            theDockFrame.CreateLayout ("Default", true);
-        }
-
-        // update with own persistence
-        LoadPersistence();
-    }
-
-    private void SaveConfigurationFile()
-    {
-        // save first DockFrame persistence in own (memory) file
-        MemoryStream ms = new MemoryStream();
-        XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
-        theDockFrame.SaveLayouts (xmlWriter);
-        xmlWriter.Flush();
-        XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
-
-        // re-load as XmlDocument
-        XmlDocument doc = new XmlDocument();
-        doc.Load(xmlReader);
-
-        // select layouts and replace in managed persistence
-        // note that a node from other document must imported before use for add/replace
-        XmlNode layouts = doc.SelectSingleNode("layouts");
-        XmlNode newLayouts = mManager.XmlDocument.ImportNode(layouts, true);
-        XmlNode oldLayouts = mManager.XmlConfiguration.SelectSingleNode("layouts");
-        if (oldLayouts != null)
-            mManager.XmlConfiguration.ReplaceChild(newLayouts, oldLayouts);
-        else 
-            mManager.XmlConfiguration.AppendChild(newLayouts);
-
-        // update own persistence before save
+        // update own persistence before save configuration
         SavePersistence();
-        mManager.ComponentSave();
-
-        // at least save complete persistence to file
-        mManager.SaveConfiguration(mConfig);
+        mManager.SaveConfigurationFile(mConfig);
+        Application.Quit();
     }
 
+ 
     protected void OnDeleteEvent (object sender, DeleteEventArgs a)
     {
-        SaveConfigurationFile();
-        Application.Quit();
+        PrepareExit();
         a.RetVal = true;
     }
 
     protected void OnQuitActionActivated(object sender, EventArgs e)
     {
-        // todo: close window which will call OnDeleteEvent() above. Don't know how to do at the moement 
-        SaveConfigurationFile();
-        Application.Quit();
+        PrepareExit();
     }
 
     protected void OnUndoActionActivated(object sender, EventArgs e)
