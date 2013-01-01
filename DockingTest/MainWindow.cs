@@ -6,6 +6,7 @@ using DockingTest;
 using Docking.Components;
 using System.Diagnostics;
 using System.Xml;
+using System.Xml.Serialization;
 
 public partial class MainWindow: Gtk.Window
 {	
@@ -26,7 +27,7 @@ public partial class MainWindow: Gtk.Window
         mManager.CreateComponentMenue(menubar3);
 
         // load old configuration or init new one if not existing
-        LoadConfiguration();
+        LoadConfigurationFile();
 
         // select current layout, multiple layout are allowed
         theDockFrame.CurrentLayout = "Default";
@@ -36,19 +37,61 @@ public partial class MainWindow: Gtk.Window
         mManager.ComponentLoaded();
     }
 
-    private void LoadConfiguration()
+    private void LoadPersistence()
+    {
+    }
+
+    private void SavePersistence()
+    {
+        int wx, wy, width, height;
+        this.GetPosition(out wx, out wy);
+        this.GetSize(out width, out height);
+
+        Persistence p = new Persistence();
+        p.WindowX = wx;
+
+        MemoryStream ms = new MemoryStream();
+        XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
+        XmlSerializer serializer = new XmlSerializer(typeof(Persistence));
+        serializer.Serialize(xmlWriter, p);
+        xmlWriter.Flush();
+
+        XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
+
+        // re-load as XmlDocument
+        XmlDocument doc = new XmlDocument();
+        doc.Load(xmlReader);
+
+        // replace in managed persistence
+        XmlNode node = doc.SelectSingleNode("Persistence");
+        XmlNode importNode = mManager.XmlDocument.ImportNode(node, true);
+        XmlNode newNode = mManager.XmlDocument.CreateElement("MainWindow");
+        newNode.AppendChild(importNode);
+        XmlNode oldNode = mManager.XmlConfiguration.SelectSingleNode("MainWindow");
+        if (oldNode != null)
+            mManager.XmlConfiguration.ReplaceChild(newNode, oldNode);
+        else
+            mManager.XmlConfiguration.AppendChild(newNode);
+    }
+
+    public class Persistence
+    {
+        public int WindowX { get; set; }
+    }
+
+    private void LoadConfigurationFile()
     {
         // layout from file or new
         if (File.Exists (mConfig))
         {
             // the manager hold the persistence in memory all the time
-            mManager.XmlDocument.Load(mConfig);
+            mManager.LoadConfiguration(mConfig);
 
             // load XML node "layouts" in a memory file
             // we should let the implementation of the Mono Develop Docking as it is
             // to make it easier to update with newest version
 
-            XmlNode layouts = mManager.XmlDocument.SelectSingleNode("layouts");
+            XmlNode layouts = mManager.XmlConfiguration.SelectSingleNode("layouts");
             
             MemoryStream ms = new MemoryStream();
             XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
@@ -63,9 +106,12 @@ public partial class MainWindow: Gtk.Window
         {
             theDockFrame.CreateLayout ("Default", true);
         }
+
+        // update with own persistence
+        LoadPersistence();
     }
 
-    private void SaveConfiguration()
+    private void SaveConfigurationFile()
     {
         // save first DockFrame persistence in own (memory) file
         MemoryStream ms = new MemoryStream();
@@ -82,16 +128,22 @@ public partial class MainWindow: Gtk.Window
         // note that a node from other document must imported before use for add/replace
         XmlNode layouts = doc.SelectSingleNode("layouts");
         XmlNode newLayouts = mManager.XmlDocument.ImportNode(layouts, true);
-        XmlNode oldLayouts = mManager.XmlDocument.SelectSingleNode("layouts");
-        mManager.XmlDocument.ReplaceChild(newLayouts, oldLayouts);
+        XmlNode oldLayouts = mManager.XmlConfiguration.SelectSingleNode("layouts");
+        if (oldLayouts != null)
+            mManager.XmlConfiguration.ReplaceChild(newLayouts, oldLayouts);
+        else 
+            mManager.XmlConfiguration.AppendChild(newLayouts);
+
+        // update own persistence before save
+        SavePersistence();
 
         // at least save complete persistence to file
-        mManager.XmlDocument.Save(mConfig);
+        mManager.SaveConfiguration(mConfig);
     }
 
     protected void OnDeleteEvent (object sender, DeleteEventArgs a)
     {
-        SaveConfiguration();
+        SaveConfigurationFile();
         Application.Quit();
         a.RetVal = true;
     }
@@ -99,7 +151,7 @@ public partial class MainWindow: Gtk.Window
     protected void OnQuitActionActivated(object sender, EventArgs e)
     {
         // todo: close window which will call OnDeleteEvent() above. Don't know how to do at the moement 
-        SaveConfiguration();
+        SaveConfigurationFile();
         Application.Quit();
     }
 

@@ -18,7 +18,20 @@ namespace Docking.Components
         public DockFrame DockFrame { get; private set; }
         public ComponentFinder ComponentFinder { get; private set; }
         public XmlDocument XmlDocument { get; private set; }
-         
+        public XmlNode XmlConfiguration { get; private set; }
+
+        public void LoadConfiguration(String filename)
+        {
+            XmlDocument.Load(filename);
+            XmlConfiguration = XmlDocument.SelectSingleNode("DockingConfiguration");
+        }
+
+        public void SaveConfiguration(String filename)
+        {
+            XmlDocument.Save(filename);
+        }
+
+
         public void CreateComponentMenue(MenuBar menuBar)
         {
             foreach (ComponentFactoryInformation cfi in ComponentFinder.ComponentInfos)
