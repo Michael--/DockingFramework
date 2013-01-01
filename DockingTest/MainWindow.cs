@@ -39,6 +39,12 @@ public partial class MainWindow: Gtk.Window
 
     private void LoadPersistence()
     {
+        MainWindowPersistence p = (MainWindowPersistence)mManager.LoadObject ("MainWindow", typeof(MainWindowPersistence));
+        if (p != null)
+        {
+            this.Resize(p.Width, p.Height);
+            this.Move (p.WindowX, p.WindowY);
+        }
     }
 
     private void SavePersistence()

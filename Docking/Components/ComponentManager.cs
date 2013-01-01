@@ -35,7 +35,22 @@ namespace Docking.Components
 
         public object LoadObject(String elementName, Type t)
         {
-            return null;
+            XmlNode element = XmlConfiguration.SelectSingleNode(elementName);
+            if (element == null)
+                return null;
+            XmlNode node = element.SelectSingleNode(t.Name);
+            if (node == null)
+                return null;
+
+            MemoryStream ms = new MemoryStream();
+            XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
+            
+            node.WriteTo(xmlWriter);
+            xmlWriter.Flush();
+            XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
+
+            XmlSerializer serializer = new XmlSerializer(t);
+            return serializer.Deserialize(xmlReader);
         }
 
         public void SaveObject(String elementName, object obj)
