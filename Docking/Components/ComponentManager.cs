@@ -2,6 +2,8 @@ using System;
 using System.Diagnostics;
 using Gtk;
 using System.Xml;
+using System.IO;
+using System.Xml.Serialization;
 
 namespace Docking.Components
 {
@@ -31,6 +33,36 @@ namespace Docking.Components
             XmlDocument.Save(filename);
         }
 
+        public object LoadObject(String elementName, Type t)
+        {
+            return null;
+        }
+
+        public void SaveObject(String elementName, object obj)
+        {
+            MemoryStream ms = new MemoryStream();
+            XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
+            XmlSerializer serializer = new XmlSerializer(obj.GetType());
+            serializer.Serialize(xmlWriter, obj);
+            xmlWriter.Flush();
+            
+            XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
+            
+            // re-load as XmlDocument
+            XmlDocument doc = new XmlDocument();
+            doc.Load(xmlReader);
+            
+            // replace in managed persistence
+            XmlNode node = doc.SelectSingleNode(obj.GetType().Name);
+            XmlNode importNode = XmlDocument.ImportNode(node, true);
+            XmlNode newNode = XmlDocument.CreateElement(elementName);
+            newNode.AppendChild(importNode);
+            XmlNode oldNode = XmlConfiguration.SelectSingleNode(elementName);
+            if (oldNode != null)
+                XmlConfiguration.ReplaceChild(newNode, oldNode);
+            else
+                XmlConfiguration.AppendChild(newNode);
+        }
 
         public void CreateComponentMenue(MenuBar menuBar)
         {

@@ -47,36 +47,13 @@ public partial class MainWindow: Gtk.Window
         this.GetPosition(out wx, out wy);
         this.GetSize(out width, out height);
 
-        Persistence p = new Persistence();
+        MainWindowPersistence p = new MainWindowPersistence();
         p.WindowX = wx;
+        p.WindowY = wy;
+        p.Width = width;
+        p.Height = height;
 
-        MemoryStream ms = new MemoryStream();
-        XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
-        XmlSerializer serializer = new XmlSerializer(typeof(Persistence));
-        serializer.Serialize(xmlWriter, p);
-        xmlWriter.Flush();
-
-        XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
-
-        // re-load as XmlDocument
-        XmlDocument doc = new XmlDocument();
-        doc.Load(xmlReader);
-
-        // replace in managed persistence
-        XmlNode node = doc.SelectSingleNode("Persistence");
-        XmlNode importNode = mManager.XmlDocument.ImportNode(node, true);
-        XmlNode newNode = mManager.XmlDocument.CreateElement("MainWindow");
-        newNode.AppendChild(importNode);
-        XmlNode oldNode = mManager.XmlConfiguration.SelectSingleNode("MainWindow");
-        if (oldNode != null)
-            mManager.XmlConfiguration.ReplaceChild(newNode, oldNode);
-        else
-            mManager.XmlConfiguration.AppendChild(newNode);
-    }
-
-    public class Persistence
-    {
-        public int WindowX { get; set; }
+        mManager.SaveObject("MainWindow", p);
     }
 
     private void LoadConfigurationFile()
@@ -179,3 +156,12 @@ public partial class MainWindow: Gtk.Window
 			this.statusbar1.Pop(mUniqueId--);
 	}
 }
+
+public class MainWindowPersistence
+{
+    public int WindowX { get; set; }
+    public int WindowY { get; set; }
+    public int Width { get; set; }
+    public int Height { get; set; }
+}
+
