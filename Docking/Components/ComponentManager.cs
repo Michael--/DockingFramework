@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using Gtk;
+using System.Xml;
 
 namespace Docking.Components
 {
@@ -11,11 +12,12 @@ namespace Docking.Components
             DockFrame = df;
             ComponentFinder = new Docking.Components.ComponentFinder();
             DockFrame.CreateItem = this.CreateItem;
+            XmlDocument = new XmlDocument();
         }
 
         public DockFrame DockFrame { get; private set; }
-
         public ComponentFinder ComponentFinder { get; private set; }
+        public XmlDocument XmlDocument { get; private set; }
          
         public void CreateComponentMenue(MenuBar menuBar)
         {
@@ -82,8 +84,15 @@ namespace Docking.Components
             item.DefaultVisible = true;
             item.DrawFrame = true;
             item.Visible = true;
+
+            // call initialization of new created component
+            if (item.Content is IComponent)
+                (item.Content as IComponent).ComponentLoaded(item);
         }
 
+        /// <summary>
+        /// Create new item, called from menu choice or persistence
+        /// </summary>
         private DockItem CreateItem(ComponentFactoryInformation cfi, String name)
         {
             // add new instance of desired component
@@ -97,13 +106,12 @@ namespace Docking.Components
             if (!cfi.IsSingleInstance)
                 item.Behavior |= DockItemBehavior.CloseOnHide;
 
-            // todo: think about on off
-            if (item.Content is IComponent)
-                (item.Content as IComponent).ComponentsRegistered(item);
-
             return item;
         }
 
+        /// <summary>
+        /// Create new item, called from persistence 
+        /// </summary>
         public DockItem CreateItem(string id)
         {
             String []m = id.Split(new char[] {'-'}, StringSplitOptions.RemoveEmptyEntries);
@@ -139,18 +147,16 @@ namespace Docking.Components
             return menu;
         }
 
-
-        // todo: should be a part of power up/down concept to be defined detailed
-        public void ComponentsRegeistered()
+        public void ComponentLoaded()
         {
-            // tell all components about end of component registering
+            // tell all components about load state
+            // time for late initialization and/or load persistence
             foreach (DockItem item in DockFrame.GetItems())
             {
                 if (item.Content is IComponent)
-                    (item.Content as IComponent).ComponentsRegistered (item);
+                    (item.Content as IComponent).ComponentLoaded (item);
             }
         }
-
     }
 
     class TaggedImageMenuItem :ImageMenuItem

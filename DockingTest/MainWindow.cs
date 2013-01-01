@@ -25,18 +25,14 @@ public partial class MainWindow: Gtk.Window
         // add all default menu for any component
         mManager.CreateComponentMenue(menubar3);
 
-        // tell all components about end of component registering
-        mManager.ComponentsRegeistered();
-
         // layout from file or new
         // todo: init instances from config, update onoff concept soon
         if (File.Exists (mConfig))
         {
             // load XML node "layouts" in a memory file
 #if true    
-            XmlDocument doc = new XmlDocument();;
-            doc.Load(mConfig);
-            XmlNode layouts = doc.SelectSingleNode("layouts");
+            mManager.XmlDocument.Load(mConfig);
+            XmlNode layouts = mManager.XmlDocument.SelectSingleNode("layouts");
 
             MemoryStream ms = new MemoryStream();
             XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
@@ -56,7 +52,11 @@ public partial class MainWindow: Gtk.Window
             theDockFrame.CreateLayout ("Default", true);
 		}
         theDockFrame.CurrentLayout = "Default";
-	}
+
+        // after layout has been set, call component initialization
+        // any component could load its persistence data now
+        mManager.ComponentLoaded();
+    }
 
     protected void OnDeleteEvent (object sender, DeleteEventArgs a)
     {

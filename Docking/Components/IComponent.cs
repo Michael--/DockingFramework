@@ -5,7 +5,12 @@ namespace Docking.Components
     public interface IComponent
     {
         ComponentManager ComponentManager { get; set; }
-        void ComponentsRegistered(DockItem item);
+
+        /// <summary>
+        /// After component created and registered at least each
+        /// component could load its persistence data
+        /// </summary>
+        void ComponentLoaded(DockItem item);
     }
 }
 

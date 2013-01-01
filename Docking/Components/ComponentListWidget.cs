@@ -9,7 +9,7 @@ namespace Docking.Components
         #region implement IComponent
         public ComponentManager ComponentManager { get; set; }
 
-        void IComponent.ComponentsRegistered(DockItem item)
+        void IComponent.ComponentLoaded(DockItem item)
         {
             item.Label = "Component List";
             foreach (ComponentFactoryInformation cfi in ComponentManager.ComponentFinder.ComponentInfos)
