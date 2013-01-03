@@ -8,18 +8,34 @@ using System.Text;
 
 namespace Docking.Components
 {
-    public class ComponentManager
+    public class ComponentManager: Gtk.Window
     {
-        public ComponentManager (DockFrame df)
+        public ComponentManager (WindowType wt) : base(wt)
         {
-            DockFrame = df;
-            DockFrame.DockItemRemoved += HandleDockItemRemoved;
             ComponentFinder = new Docking.Components.ComponentFinder();
-            DockFrame.CreateItem = this.CreateItem;
             XmlDocument = new XmlDocument();
         }
 
+        public void SetDockFrame(DockFrame df)
+        {
+            DockFrame = df;
+            DockFrame.DockItemRemoved += HandleDockItemRemoved;
+            DockFrame.CreateItem = this.CreateItem;
+        }
+
+        public void SetStatusBar(Statusbar sb)
+        {
+            StatusBar = sb;
+        }
+
+        public void SetToolBar(Toolbar tb)
+        {
+            ToolBar = tb;
+        }
+
         public DockFrame DockFrame { get; private set; }
+        public Statusbar StatusBar { get; private set; }
+        public Toolbar ToolBar { get; private set; }
         public ComponentFinder ComponentFinder { get; private set; }
         public XmlDocument XmlDocument { get; private set; }
         public XmlNode XmlConfiguration { get; private set; }

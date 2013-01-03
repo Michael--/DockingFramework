@@ -91,11 +91,11 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Toolbar" id="toolbar1">
+          <widget class="Gtk.Toolbar" id="theToolBar">
             <property name="MemberName" />
             <property name="ShowArrow">False</property>
             <property name="IconSize">SmallToolbar</property>
-            <node name="toolbar1" type="Toolbar">
+            <node name="theToolBar" type="Toolbar">
               <node type="Toolitem" action="undoAction" />
               <node type="Toolitem" action="addAction" />
               <node type="Toolitem" action="removeAction" />
@@ -125,7 +125,7 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Statusbar" id="statusbar1">
+          <widget class="Gtk.Statusbar" id="theStatusBar">
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>

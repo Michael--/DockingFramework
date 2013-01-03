@@ -8,9 +8,8 @@ using System.Diagnostics;
 using System.Xml;
 using System.Xml.Serialization;
 
-public partial class MainWindow: Gtk.Window
+public partial class MainWindow : ComponentManager
 {	
-    ComponentManager mManager;
     String mConfig = "config.xml";
 
     public MainWindow (): base (Gtk.WindowType.Toplevel)
@@ -18,16 +17,19 @@ public partial class MainWindow: Gtk.Window
         // Create designer elements
         Build ();
 
-        mManager = new ComponentManager(theDockFrame);
+        // tell the component manager about all widgets to manage 
+        SetDockFrame(theDockFrame);
+        SetStatusBar(theStatusBar);
+        SetToolBar(theToolBar);
 
         // search for all interrested components
-        mManager.ComponentFinder.SearchForComponents (new string[] { @"./*.exe", @"./*.dll" });
+        ComponentFinder.SearchForComponents (new string[] { @"./*.exe", @"./*.dll" });
 
         // add all default menu for any component
-        mManager.CreateComponentMenue(menubar3);
+        CreateComponentMenue(menubar3);
 
         // load old configuration or init new one if not existing
-        mManager.LoadConfigurationFile(mConfig);
+        LoadConfigurationFile(mConfig);
 
         // update with own persistence
         LoadPersistence();
@@ -37,12 +39,12 @@ public partial class MainWindow: Gtk.Window
 
         // after layout has been set, call component initialization
         // any component could load its persistence data now
-        mManager.ComponentsLoaded();
+        ComponentsLoaded();
     }
 
     private void LoadPersistence()
     {
-        MainWindowPersistence p = (MainWindowPersistence)mManager.LoadObject ("MainWindow", typeof(MainWindowPersistence));
+        MainWindowPersistence p = (MainWindowPersistence)LoadObject ("MainWindow", typeof(MainWindowPersistence));
         if (p != null)
         {
             this.Resize(p.Width, p.Height);
@@ -62,14 +64,14 @@ public partial class MainWindow: Gtk.Window
         p.Width = width;
         p.Height = height;
 
-        mManager.SaveObject("MainWindow", p);
+        SaveObject("MainWindow", p);
     }
 
     private void PrepareExit()
     {
         // update own persistence before save configuration
         SavePersistence();
-        mManager.SaveConfigurationFile(mConfig);
+        SaveConfigurationFile(mConfig);
         Application.Quit();
     }
 
@@ -100,13 +102,13 @@ public partial class MainWindow: Gtk.Window
 	{
 		// push simple message with its 'unique' context id
 		String text = String.Format("Hello {0} at {1}", ++mTextCounter, DateTime.Now.ToLongTimeString());
-		this.statusbar1.Push(++mUniqueId, text);
+		this.theStatusBar.Push(++mUniqueId, text);
 	}
 
 	protected void OnRemoveActionActivated (object sender, EventArgs e)
 	{
 		if (mUniqueId > 0)
-			this.statusbar1.Pop(mUniqueId--);
+			this.theStatusBar.Pop(mUniqueId--);
 	}
 }
 

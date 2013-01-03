@@ -14,9 +14,9 @@ public partial class MainWindow
 	private global::Gtk.Action TestAction;
 	private global::Gtk.VBox vbox1;
 	private global::Gtk.MenuBar menubar3;
-	private global::Gtk.Toolbar toolbar1;
+	private global::Gtk.Toolbar theToolBar;
 	private global::Docking.DockFrame theDockFrame;
-	private global::Gtk.Statusbar statusbar1;
+	private global::Gtk.Statusbar theStatusBar;
 	
 	protected virtual void Build ()
 	{
@@ -69,13 +69,13 @@ public partial class MainWindow
 		w2.Expand = false;
 		w2.Fill = false;
 		// Container child vbox1.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString ("<ui><toolbar name='toolbar1'><toolitem name='undoAction' action='undoAction'/><toolitem name='addAction' action='addAction'/><toolitem name='removeAction' action='removeAction'/></toolbar></ui>");
-		this.toolbar1 = ((global::Gtk.Toolbar)(this.UIManager.GetWidget ("/toolbar1")));
-		this.toolbar1.Name = "toolbar1";
-		this.toolbar1.ShowArrow = false;
-		this.toolbar1.IconSize = ((global::Gtk.IconSize)(2));
-		this.vbox1.Add (this.toolbar1);
-		global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.toolbar1]));
+		this.UIManager.AddUiFromString ("<ui><toolbar name='theToolBar'><toolitem name='undoAction' action='undoAction'/><toolitem name='addAction' action='addAction'/><toolitem name='removeAction' action='removeAction'/></toolbar></ui>");
+		this.theToolBar = ((global::Gtk.Toolbar)(this.UIManager.GetWidget ("/theToolBar")));
+		this.theToolBar.Name = "theToolBar";
+		this.theToolBar.ShowArrow = false;
+		this.theToolBar.IconSize = ((global::Gtk.IconSize)(2));
+		this.vbox1.Add (this.theToolBar);
+		global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.theToolBar]));
 		w3.Position = 1;
 		w3.Expand = false;
 		w3.Fill = false;
@@ -93,11 +93,11 @@ public partial class MainWindow
 		global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.theDockFrame]));
 		w4.Position = 2;
 		// Container child vbox1.Gtk.Box+BoxChild
-		this.statusbar1 = new global::Gtk.Statusbar ();
-		this.statusbar1.Name = "statusbar1";
-		this.statusbar1.Spacing = 6;
-		this.vbox1.Add (this.statusbar1);
-		global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.statusbar1]));
+		this.theStatusBar = new global::Gtk.Statusbar ();
+		this.theStatusBar.Name = "theStatusBar";
+		this.theStatusBar.Spacing = 6;
+		this.vbox1.Add (this.theStatusBar);
+		global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.theStatusBar]));
 		w5.Position = 3;
 		w5.Expand = false;
 		this.Add (this.vbox1);
