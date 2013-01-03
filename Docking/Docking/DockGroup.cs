@@ -261,7 +261,8 @@ namespace Docking
 			if (VisibleObjects.Count > 0) {
 				CalcNewSizes ();
 				MarkForRelayout ();
-			} else
+			} 
+            else if (ParentGroup != null)
 				ParentGroup.UpdateVisible (this);
 		}
 		

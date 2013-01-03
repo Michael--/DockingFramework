@@ -204,6 +204,9 @@ namespace Docking
 			container.Items.Add (it);
 			return it;
 		}
+
+        public delegate void DockItemRemovedEvent (DockItem it);
+        public event DockItemRemovedEvent DockItemRemoved;
 		
 		public void RemoveItem (DockItem it)
 		{
@@ -212,6 +215,9 @@ namespace Docking
 			foreach (DockGroup grp in layouts.Values)
 				grp.RemoveItemRec (it);
 			container.Items.Remove (it);
+                       
+            if (DockItemRemoved != null)
+                DockItemRemoved(it);
 		}
 
        

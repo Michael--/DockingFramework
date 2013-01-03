@@ -13,6 +13,7 @@ namespace Docking.Components
         public ComponentManager (DockFrame df)
         {
             DockFrame = df;
+            DockFrame.DockItemRemoved += HandleDockItemRemoved;
             ComponentFinder = new Docking.Components.ComponentFinder();
             DockFrame.CreateItem = this.CreateItem;
             XmlDocument = new XmlDocument();
@@ -76,7 +77,7 @@ namespace Docking.Components
                 XmlConfiguration.AppendChild(newLayouts);
 
             // save all components data
-            ComponentSave();
+            ComponentsSave();
             
             // at least save complete persistence to file
             SaveConfiguration(filename);
@@ -210,8 +211,35 @@ namespace Docking.Components
 
             // call initialization of new created component
             if (item.Content is IComponent)
-                (item.Content as IComponent).ComponentLoaded(item);
+                (item.Content as IComponent).Loaded(item);
+
+            // tell all other about new component
+            foreach(DockItem other in DockFrame.GetItems())
+            {
+                if (other != item && other is IComponentInteract)
+                    (other.Content as IComponentInteract).Added (item);
+            }
+
+            // tell new component about all other components
+            if (item is IComponentInteract)
+                foreach(DockItem other in DockFrame.GetItems())
+                    (item.Content as IComponentInteract).Added (other);
         }
+
+        void HandleDockItemRemoved (DockItem item)
+        {
+            // tell all other about removed component
+            foreach(DockItem other in DockFrame.GetItems())
+            {
+                if (other != item && other is IComponentInteract)
+                    (other.Content as IComponentInteract).Removed (item);
+            }
+
+            // tell component about it instance itself has been removed from dock container
+            if (item is IComponentInteract)
+                (item as IComponentInteract).Removed(item);
+        }
+
 
         /// <summary>
         /// Create new item, called from menu choice or persistence
@@ -270,28 +298,50 @@ namespace Docking.Components
             return menu;
         }
 
-        public void ComponentLoaded()
+        public void ComponentsLoaded()
         {
             // tell all components about load state
             // time for late initialization and/or load persistence
             foreach (DockItem item in DockFrame.GetItems())
             {
                 if (item.Content is IComponent)
-                    (item.Content as IComponent).ComponentLoaded (item);
+                    (item.Content as IComponent).Loaded (item);
+            }
+
+            // tell any component about all other component
+            foreach (DockItem item in DockFrame.GetItems())
+            {
+                if (item is IComponentInteract)
+                {
+                    foreach(DockItem other in DockFrame.GetItems())
+                        if (item != other)
+                            (item.Content as IComponentInteract).Added (other);
+                }
             }
         }
 
-        public void ComponentSave()
+        public void ComponentsSave()
         {
             foreach (DockItem item in DockFrame.GetItems())
             {
                 if (item.Content is IComponent)
-                    (item.Content as IComponent).ComponentSave();
+                    (item.Content as IComponent).Save();
+            }
+
+            // tell any component about all other component
+            foreach (DockItem item in DockFrame.GetItems())
+            {
+                if (item is IComponentInteract)
+                {
+                    foreach(DockItem other in DockFrame.GetItems())
+                        if (item != other)
+                            (item.Content as IComponentInteract).Removed (other);
+                }
             }
         }
     }
 
-    class TaggedImageMenuItem :ImageMenuItem
+    class TaggedImageMenuItem : ImageMenuItem
     {
         public TaggedImageMenuItem(String name) : base(name) {}
         public System.Object Tag { get; set; }

@@ -10,7 +10,7 @@ namespace Docking.Components
         #region implement IComponent
         public ComponentManager ComponentManager { get; set; }
 
-        void IComponent.ComponentLoaded(DockItem item)
+        void IComponent.Loaded(DockItem item)
         {
             item.Label = "Component List";
             foreach (ComponentFactoryInformation cfi in ComponentManager.ComponentFinder.ComponentInfos)
@@ -26,7 +26,7 @@ namespace Docking.Components
                 Debug.WriteLine(p.test);
         }
 
-        void IComponent.ComponentSave()
+        void IComponent.Save()
         {
             TestPersistence p =  new TestPersistence() { test = "TestTestTest" };
             ComponentManager.SaveObject("ComponentListWidget", p);

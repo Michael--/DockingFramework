@@ -37,7 +37,7 @@ public partial class MainWindow: Gtk.Window
 
         // after layout has been set, call component initialization
         // any component could load its persistence data now
-        mManager.ComponentLoaded();
+        mManager.ComponentsLoaded();
     }
 
     private void LoadPersistence()
