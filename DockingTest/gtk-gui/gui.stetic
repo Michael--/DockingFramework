@@ -112,7 +112,7 @@
           <widget class="Docking.DockFrame" id="theDockFrame">
             <property name="MemberName" />
             <property name="CompactGuiLevel">0</property>
-            <property name="HandleSize">0</property>
+            <property name="HandleSize">4</property>
             <property name="HandlePadding">0</property>
             <property name="DefaultItemWidth">100</property>
             <property name="DefaultItemHeight">100</property>

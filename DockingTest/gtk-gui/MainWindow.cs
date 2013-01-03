@@ -83,7 +83,7 @@ public partial class MainWindow
 		this.theDockFrame = new global::Docking.DockFrame ();
 		this.theDockFrame.Name = "theDockFrame";
 		this.theDockFrame.CompactGuiLevel = 0;
-		this.theDockFrame.HandleSize = 0;
+		this.theDockFrame.HandleSize = 4;
 		this.theDockFrame.HandlePadding = 0;
 		this.theDockFrame.DefaultItemWidth = 100;
 		this.theDockFrame.DefaultItemHeight = 100;
