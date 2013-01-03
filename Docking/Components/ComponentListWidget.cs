@@ -45,14 +45,17 @@ namespace Docking.Components
 
 			Gtk.TreeViewColumn componentColumn = new Gtk.TreeViewColumn ();
 			componentColumn.Title = "Component";
+            componentColumn.Resizable = true;
 			
 			// Create a column for the song title
 			Gtk.TreeViewColumn descriptionColumn = new Gtk.TreeViewColumn ();
 			descriptionColumn.Title = "Description";
+            descriptionColumn.Resizable = true;
 			
 			// Add the columns to the TreeView
 			treeview1.AppendColumn (componentColumn);
 			treeview1.AppendColumn (descriptionColumn);
+         
 
             // Create the text cells that will display the content
             Gtk.CellRendererText componentsCell = new Gtk.CellRendererText ();
