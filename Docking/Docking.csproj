@@ -87,6 +87,9 @@
     <Compile Include="Components\IComponent.cs" />
     <Compile Include="Components\ComponentManager.cs" />
     <Compile Include="Components\IComponentInteract.cs" />
+    <Compile Include="Components\IMessage.cs" />
+    <Compile Include="Components\ComponentMessageWidget.cs" />
+    <Compile Include="gtk-gui\Docking.Components.ComponentMessageWidget.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

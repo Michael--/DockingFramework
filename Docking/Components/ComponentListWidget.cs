@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace Docking.Components
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class ComponentListWidget : Gtk.Bin, IComponent
+	public partial class ComponentListWidget : Gtk.Bin, IComponent, IComponentInteract
 	{
         #region implement IComponent
         public ComponentManager ComponentManager { get; set; }
@@ -39,6 +39,29 @@ namespace Docking.Components
 
         #endregion
 
+        #region implement IComponentInteract
+        void IComponentInteract.Added(object item)
+        {
+            if (item is IMessage)
+            {
+                message = item as IMessage;
+                message.WriteLine("ComponentListWidget connected to IMessage");
+            }
+        }
+
+        void IComponentInteract.Removed(object item)
+        {
+            if (item == message)
+                message = null;
+        }
+
+        void IComponentInteract.Activated(object item)
+        {
+        }
+
+        IMessage message;
+        #endregion
+
         public ComponentListWidget ()
 		{
 			this.Build ();
@@ -68,7 +91,27 @@ namespace Docking.Components
 			// Create a model that will hold two strings, Assign the model to the TreeView
             listStore = new Gtk.ListStore (typeof (string), typeof (string));
             treeview1.Model = listStore;
+
+            treeview1.CursorChanged += HandleCursorChanged;
 		}
+
+        void HandleCursorChanged (object sender, EventArgs e)
+        {
+            Gtk.TreeSelection selection = (sender as Gtk.TreeView).Selection;
+           
+            Gtk.TreeModel model;
+            Gtk.TreeIter iter;
+
+            // THE ITER WILL POINT TO THE SELECTED ROW
+            if(selection.GetSelected(out model, out iter))
+            {
+                String msg = String.Format ("Selected Value: {0} {1}", model.GetValue (iter, 0).ToString(), model.GetValue (iter, 1).ToString());
+                Console.WriteLine(msg);
+
+                if (message != null)
+                    message.WriteLine(msg);
+            }
+        }
 
         Gtk.ListStore listStore;
 	}

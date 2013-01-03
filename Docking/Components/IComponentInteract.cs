@@ -13,18 +13,18 @@ namespace Docking.Components
         /// Another component has been added to the framework
         /// Time to inspect its interfaces
         /// </summary>
-        void Added(DockItem item);
+        void Added(object item);
         
         /// <summary>
         /// Another component or own component has been removed from the framework
         /// Time to release connected interfaces
         /// </summary>
-        void Removed(DockItem item);
+        void Removed(object item);
         
         /// <summary>
         /// A component got the focus, will be called also for our own
         /// </summary>
-        void Activated(DockItem item);
+        void Activated(object item);
     }
 }
 

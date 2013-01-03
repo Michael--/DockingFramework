@@ -216,14 +216,14 @@ namespace Docking.Components
             // tell all other about new component
             foreach(DockItem other in DockFrame.GetItems())
             {
-                if (other != item && other is IComponentInteract)
-                    (other.Content as IComponentInteract).Added (item);
+                if (other != item && other.Content is IComponentInteract)
+                    (other.Content as IComponentInteract).Added (item.Content);
             }
 
             // tell new component about all other components
-            if (item is IComponentInteract)
+            if (item.Content is IComponentInteract)
                 foreach(DockItem other in DockFrame.GetItems())
-                    (item.Content as IComponentInteract).Added (other);
+                    (item.Content as IComponentInteract).Added (other.Content);
         }
 
         void HandleDockItemRemoved (DockItem item)
@@ -231,13 +231,13 @@ namespace Docking.Components
             // tell all other about removed component
             foreach(DockItem other in DockFrame.GetItems())
             {
-                if (other != item && other is IComponentInteract)
-                    (other.Content as IComponentInteract).Removed (item);
+                if (other != item && other.Content is IComponentInteract)
+                    (other.Content as IComponentInteract).Removed (item.Content);
             }
 
             // tell component about it instance itself has been removed from dock container
-            if (item is IComponentInteract)
-                (item as IComponentInteract).Removed(item);
+            if (item.Content is IComponentInteract)
+                (item.Content as IComponentInteract).Removed(item.Content);
         }
 
 
@@ -311,11 +311,11 @@ namespace Docking.Components
             // tell any component about all other component
             foreach (DockItem item in DockFrame.GetItems())
             {
-                if (item is IComponentInteract)
+                if (item.Content is IComponentInteract)
                 {
                     foreach(DockItem other in DockFrame.GetItems())
                         if (item != other)
-                            (item.Content as IComponentInteract).Added (other);
+                            (item.Content as IComponentInteract).Added (other.Content);
                 }
             }
         }
