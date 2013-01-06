@@ -19,27 +19,36 @@ namespace Examples.TestToolAndStatusBar
 
         void IComponent.Loaded(DockItem item)
         {
-            push = new ToolButton("Push");
-            push.Label = "Push";
-            push.Clicked += (sender, e) => 
+            mPush = new ToolButton("Push");
+            mPush.Label = "Push";
+            mPush.Clicked += (sender, e) => 
             {
                 String text = String.Format("Hello {0} at {1}", ++mTextCounter, DateTime.Now.ToLongTimeString());
                 uint id = ComponentManager.PushStatusbar(text);
                 mStack.Push(id);
+                UpdateMessageText();
             };
 
-            pop = new ToolButton("Pop");
-            pop.Label = "Pop";
-            pop.Clicked += (sender, e) => 
+            mPop = new ToolButton("Pop");
+            mPop.Label = "Pop";
+            mPop.Clicked += (sender, e) => 
             {
                 if (mStack.Count > 0)
                     ComponentManager.PopStatusbar(mStack.Pop ());
+                UpdateMessageText();
             };
         }
 
         void IComponent.Save()
         {
         }
+
+
+        void UpdateMessageText()
+        {
+            label3.Text = String.Format ("Messages pushed to status bar: {0}", mStack.Count);
+        }
+
         #endregion
 
         #region implement IComponentInteract
@@ -53,27 +62,29 @@ namespace Examples.TestToolAndStatusBar
         
         void IComponentInteract.Visible(object item, bool visible)
         {
-            if (push == null || pop == null)
+            if (mPush == null || mPop == null)
                 return;
 
             if (visible)
             {
-                ComponentManager.AddToolItem (push);
-                ComponentManager.AddToolItem (pop);
+                ComponentManager.AddToolItem (mPush);
+                ComponentManager.AddToolItem (mPop);
             }
             else
             {
-                ComponentManager.RemoveToolItem (push);
-                ComponentManager.RemoveToolItem (pop);
+                ComponentManager.RemoveToolItem (mPush);
+                ComponentManager.RemoveToolItem (mPop);
                 while (mStack.Count > 0)
                     ComponentManager.PopStatusbar(mStack.Pop ());
             }
+            UpdateMessageText();
         }
         
         #endregion
 
         #region varibables, properties
-        ToolButton push, pop;
+        ToolButton mPush;
+        ToolButton mPop;
         int mTextCounter = 0;
         Stack<uint> mStack = new Stack<uint>();
         #endregion

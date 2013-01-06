@@ -7,6 +7,7 @@ namespace Examples.TestToolAndStatusBar
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.Label label1;
 		private global::Gtk.Label label2;
+		private global::Gtk.Label label3;
 		
 		protected virtual void Build ()
 		{
@@ -36,6 +37,15 @@ namespace Examples.TestToolAndStatusBar
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.label3 = new global::Gtk.Label ();
+			this.label3.Name = "label3";
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("message text");
+			this.vbox1.Add (this.label3);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.label3]));
+			w3.Position = 2;
+			w3.Expand = false;
+			w3.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
