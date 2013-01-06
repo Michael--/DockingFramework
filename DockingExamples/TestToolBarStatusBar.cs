@@ -65,17 +65,19 @@ namespace Examples.TestToolAndStatusBar
             if (mPush == null || mPop == null)
                 return;
 
-            if (visible)
+            if (visible && !mAdded)
             {
                 ComponentManager.AddToolItem (mPush);
                 ComponentManager.AddToolItem (mPop);
+                mAdded = true;
             }
-            else
+            else if (mAdded)
             {
                 ComponentManager.RemoveToolItem (mPush);
                 ComponentManager.RemoveToolItem (mPop);
                 while (mStack.Count > 0)
                     ComponentManager.PopStatusbar(mStack.Pop ());
+                mAdded = false;
             }
             UpdateMessageText();
         }
@@ -85,6 +87,7 @@ namespace Examples.TestToolAndStatusBar
         #region varibables, properties
         ToolButton mPush;
         ToolButton mPop;
+        bool mAdded = false;
         int mTextCounter = 0;
         Stack<uint> mStack = new Stack<uint>();
         #endregion

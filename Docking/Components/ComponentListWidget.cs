@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace Docking.Components
 {
 	[System.ComponentModel.ToolboxItem(true)]
-	public partial class ComponentListWidget : Gtk.Bin, IComponent, IComponentInteract
+	public partial class ComponentListWidget : Gtk.Bin, IComponent
 	{
         #region implement IComponent
         public ComponentManager ComponentManager { get; set; }
@@ -37,29 +37,6 @@ namespace Docking.Components
             public String test { get; set; }
         }
 
-        #endregion
-
-        #region implement IComponentInteract
-        void IComponentInteract.Added(object item)
-        {
-            if (item is IMessage)
-            {
-                message = item as IMessage;
-                message.WriteLine("ComponentListWidget connected to IMessage");
-            }
-        }
-
-        void IComponentInteract.Removed(object item)
-        {
-            if (item == message)
-                message = null;
-        }
-
-        void IComponentInteract.Visible(object item, bool visible)
-        {
-        }
-
-        IMessage message;
         #endregion
 
         public ComponentListWidget ()
@@ -107,9 +84,7 @@ namespace Docking.Components
             {
                 String msg = String.Format ("Selected Value: {0} {1}", model.GetValue (iter, 0).ToString(), model.GetValue (iter, 1).ToString());
                 Console.WriteLine(msg);
-
-                if (message != null)
-                    message.WriteLine(msg);
+                ComponentManager.MessageWriteLine(msg);
             }
         }
 

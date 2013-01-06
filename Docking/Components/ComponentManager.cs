@@ -5,6 +5,7 @@ using System.Xml;
 using System.IO;
 using System.Xml.Serialization;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Docking.Components
 {
@@ -331,6 +332,10 @@ namespace Docking.Components
                     (other.Content as IComponentInteract).Removed (item.Content);
             }
 
+            // remove from message dictionary
+            if (item.Content is IMessage)
+                mMessage.Remove(item.Id);
+
             // tell component about it instance itself has been removed from dock container
             if (item.Content is IComponentInteract)
                 (item.Content as IComponentInteract).Removed (item.Content);
@@ -359,6 +364,9 @@ namespace Docking.Components
 
             if (!cfi.IsSingleInstance)
                 item.Behavior |= DockItemBehavior.CloseOnHide;
+
+            if (item.Content is IMessage)
+                mMessage.Add(item.Id, item.Content as IMessage);
 
             return item;
         }
@@ -420,6 +428,15 @@ namespace Docking.Components
             ToolBar.Remove(item);
         }
 
+        #endregion
+
+        #region Message
+        public void MessageWriteLine(String message)
+        {
+            foreach(KeyValuePair<string, IMessage> kvp in mMessage)
+                kvp.Value.WriteLine(message);
+        }
+        Dictionary<string, IMessage> mMessage = new Dictionary<string, IMessage>(); 
         #endregion
     }
 
