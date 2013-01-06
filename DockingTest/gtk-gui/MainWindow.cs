@@ -69,7 +69,7 @@ public partial class MainWindow
 		w2.Expand = false;
 		w2.Fill = false;
 		// Container child vbox1.Gtk.Box+BoxChild
-		this.UIManager.AddUiFromString ("<ui><toolbar name='theToolBar'><toolitem name='undoAction' action='undoAction'/><toolitem name='addAction' action='addAction'/><toolitem name='removeAction' action='removeAction'/></toolbar></ui>");
+		this.UIManager.AddUiFromString ("<ui><toolbar name='theToolBar'/></ui>");
 		this.theToolBar = ((global::Gtk.Toolbar)(this.UIManager.GetWidget ("/theToolBar")));
 		this.theToolBar.Name = "theToolBar";
 		this.theToolBar.ShowArrow = false;
@@ -106,9 +106,6 @@ public partial class MainWindow
 		}
 		this.Show ();
 		this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.OnDeleteEvent);
-		this.undoAction.Activated += new global::System.EventHandler (this.OnUndoActionActivated);
 		this.QuitAction.Activated += new global::System.EventHandler (this.OnQuitActionActivated);
-		this.addAction.Activated += new global::System.EventHandler (this.OnAddActionActivated);
-		this.removeAction.Activated += new global::System.EventHandler (this.OnRemoveActionActivated);
 	}
 }

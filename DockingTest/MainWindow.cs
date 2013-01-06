@@ -7,6 +7,7 @@ using Docking.Components;
 using System.Diagnostics;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Collections.Generic;
 
 public partial class MainWindow : ComponentManager
 {	
@@ -26,7 +27,7 @@ public partial class MainWindow : ComponentManager
         ComponentFinder.SearchForComponents (new string[] { @"./*.exe", @"./*.dll" });
 
         // add all default menu for any component
-        CreateComponentMenue(menubar3);
+        SetMenuBar(menubar3);
 
         // load old configuration or init new one if not existing
         LoadConfigurationFile(mConfig);
@@ -87,29 +88,6 @@ public partial class MainWindow : ComponentManager
         PrepareExit();
     }
 
-    protected void OnUndoActionActivated(object sender, EventArgs e)
-    {
-        foreach (DockItem item in theDockFrame.GetItems()) 
-        {
-            if (!item.Visible && item.Label.Length > 0)
-                item.Visible = true;
-        }
-    }
-
-	int mTextCounter = 0;
-	uint mUniqueId = 0;
-	protected void OnAddActionActivated (object sender, EventArgs e)
-	{
-		// push simple message with its 'unique' context id
-		String text = String.Format("Hello {0} at {1}", ++mTextCounter, DateTime.Now.ToLongTimeString());
-		this.theStatusBar.Push(++mUniqueId, text);
-	}
-
-	protected void OnRemoveActionActivated (object sender, EventArgs e)
-	{
-		if (mUniqueId > 0)
-			this.theStatusBar.Pop(mUniqueId--);
-	}
 }
 
 public class MainWindowPersistence

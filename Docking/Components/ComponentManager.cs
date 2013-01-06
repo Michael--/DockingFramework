@@ -10,6 +10,7 @@ namespace Docking.Components
 {
     public class ComponentManager: Gtk.Window
     {
+        #region Initialization
         public ComponentManager (WindowType wt) : base(wt)
         {
             ComponentFinder = new Docking.Components.ComponentFinder();
@@ -33,14 +34,71 @@ namespace Docking.Components
             ToolBar = tb;
         }
 
-        public DockFrame DockFrame { get; private set; }
-        public Statusbar StatusBar { get; private set; }
-        public Toolbar ToolBar { get; private set; }
-        public ComponentFinder ComponentFinder { get; private set; }
-        public XmlDocument XmlDocument { get; private set; }
-        public XmlNode XmlConfiguration { get; private set; }
+        protected void SetMenuBar(MenuBar menuBar)
+        {
+            foreach (ComponentFactoryInformation cfi in ComponentFinder.ComponentInfos)
+            {
+                // the last name is the menu name, all other are menu/sub-menue names
+                String [] m = cfi.MenuPath.Split(new char[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
+                
+                // as a minimum submenu-name & menu-name must exist
+                Debug.Assert(m.Length >= 2);
+                
+                MenuShell menuShell = menuBar;
+                Menu componentMenu;
+                System.Collections.IEnumerable children = menuBar.Children;
+                for (int i = 0; i < m.Length - 1;i++)
+                {
+                    componentMenu = SearchOrCreateMenu(m[i], menuShell, children);
+                    children = componentMenu.AllChildren;
+                    menuShell = componentMenu;
+                }
+                TaggedImageMenuItem item = new TaggedImageMenuItem(m[m.Length - 1]);
+                item.Tag = cfi;
+                item.Activated += ComponentHandleActivated;
+                componentMenu.Add(item);
+            }
+            menuBar.ShowAll();
+        }
 
-        public void LoadConfigurationFile(String filename)
+        private Menu SearchOrCreateMenu(String name, MenuShell menuShell, System.Collections.IEnumerable children)
+        {
+            // 1st search menue & return if existing
+            foreach(MenuItem mi in children)
+            {
+                Label label = (Label)mi.Child;
+                if (label.Text == name)
+                    return mi.Submenu as Menu;
+            }
+            
+            // 2nd append new menu 
+            // todo: currently append at the end, may a dedicated position desired
+            Menu menu = new Menu ( );
+            MenuItem menuItem = new MenuItem(name);
+            menuItem.Child = new Label(name);
+            menuItem.Submenu = menu;
+            menuShell.Append(menuItem);
+            
+            return menu;
+        }
+
+        #endregion
+
+        #region Private properties
+        private Statusbar StatusBar { get;  set; }
+        private Toolbar ToolBar { get;  set; }
+        private XmlDocument XmlDocument { get;  set; }
+        private XmlNode XmlConfiguration { get;  set; }
+        #endregion
+
+        #region Public properties
+        public DockFrame DockFrame { get; private set; }
+        public ComponentFinder ComponentFinder { get; private set; }
+        #endregion
+
+        #region Configuration
+
+        protected void LoadConfigurationFile(String filename)
         {
             // layout from file or new
             if (File.Exists (filename))
@@ -69,7 +127,7 @@ namespace Docking.Components
             }
         }
 
-        public void SaveConfigurationFile(String filename)
+        protected void SaveConfigurationFile(String filename)
         {
             // save first DockFrame persistence in own (memory) file
             MemoryStream ms = new MemoryStream();
@@ -99,7 +157,6 @@ namespace Docking.Components
             SaveConfiguration(filename);
         }
 
-
         private void LoadConfiguration(String filename)
         {
             XmlDocument.Load(filename);
@@ -110,6 +167,53 @@ namespace Docking.Components
         {
             XmlDocument.Save(filename);
         }
+
+        protected void ComponentsLoaded()
+        {
+            // tell all components about load state
+            // time for late initialization and/or load persistence
+            foreach (DockItem item in DockFrame.GetItems())
+            {
+                if (item.Content is IComponent)
+                    (item.Content as IComponent).Loaded (item);
+            }
+            
+            // tell any component about all other component
+            foreach (DockItem item in DockFrame.GetItems())
+            {
+                if (item.Content is IComponentInteract)
+                {
+                    foreach(DockItem other in DockFrame.GetItems())
+                        if (item != other)
+                            (item.Content as IComponentInteract).Added (other.Content);
+                }
+            }
+        }
+        
+        private void ComponentsSave()
+        {
+            foreach (DockItem item in DockFrame.GetItems())
+            {
+                if (item.Content is IComponent)
+                    (item.Content as IComponent).Save();
+            }
+            
+            // tell any component about all other component
+            foreach (DockItem item in DockFrame.GetItems())
+            {
+                if (item is IComponentInteract)
+                {
+                    foreach(DockItem other in DockFrame.GetItems())
+                        if (item != other)
+                            (item.Content as IComponentInteract).Removed (other);
+                }
+            }
+        }
+
+
+        #endregion
+
+        #region Persistence
 
         public object LoadObject(String elementName, Type t)
         {
@@ -141,8 +245,6 @@ namespace Docking.Components
             
             XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
 
-            // String test = Encoding.GetEncoding(1252).GetString(ms.ToArray());
-
             // re-load as XmlDocument
             XmlDocument doc = new XmlDocument();
             doc.Load(xmlReader);
@@ -158,35 +260,10 @@ namespace Docking.Components
             else
                 XmlConfiguration.AppendChild(newNode);
         }
+        #endregion
 
-        public void CreateComponentMenue(MenuBar menuBar)
-        {
-            foreach (ComponentFactoryInformation cfi in ComponentFinder.ComponentInfos)
-            {
-                // the last name is the menu name, all other are menu/sub-menue names
-                String [] m = cfi.MenuPath.Split(new char[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
-                
-                // as a minimum submenu-name & menu-name must exist
-                Debug.Assert(m.Length >= 2);
-                
-                MenuShell menuShell = menuBar;
-                Menu componentMenu;
-                System.Collections.IEnumerable children = menuBar.Children;
-                for (int i = 0; i < m.Length - 1;i++)
-                {
-                    componentMenu = SearchOrCreateMenu(m[i], menuShell, children);
-                    children = componentMenu.AllChildren;
-                    menuShell = componentMenu;
-                }
-                TaggedImageMenuItem item = new TaggedImageMenuItem(m[m.Length - 1]);
-                item.Tag = cfi;
-                item.Activated += ComponentHandleActivated;
-                componentMenu.Add(item);
-            }
-            menuBar.ShowAll();
-        }
-        
-        void ComponentHandleActivated(object sender, EventArgs e)
+        #region Docking 
+        private void ComponentHandleActivated(object sender, EventArgs e)
         {
             TaggedImageMenuItem menueitem = sender as TaggedImageMenuItem;
             ComponentFactoryInformation cfi = menueitem.Tag as ComponentFactoryInformation;
@@ -242,7 +319,7 @@ namespace Docking.Components
                     (item.Content as IComponentInteract).Added (other.Content);
         }
 
-        void HandleDockItemRemoved (DockItem item)
+        private void HandleDockItemRemoved (DockItem item)
         {
             // tell all other about removed component
             foreach(DockItem other in DockFrame.GetItems())
@@ -292,69 +369,47 @@ namespace Docking.Components
 
             return CreateItem (cfi, id);
         }
+        #endregion
 
-        Menu SearchOrCreateMenu(String name, MenuShell menuShell, System.Collections.IEnumerable children)
+        #region Status Bar
+
+        uint mStatusBarUniqueId = 0; // helper to generate unique IDs
+
+        /// <summary>
+        /// Push message to the statusbar, return unique ID used to pop message
+        /// </summary>
+        public uint PushStatusbar(String txt)
         {
-            // 1st search menue & return if existing
-            foreach(MenuItem mi in children)
-            {
-                Label label = (Label)mi.Child;
-                if (label.Text == name)
-                    return mi.Submenu as Menu;
-            }
-            
-            // 2nd append new menu 
-            // todo: currently append at the end, may a dedicated position desired
-            Menu menu = new Menu ( );
-            MenuItem menuItem = new MenuItem(name);
-            menuItem.Child = new Label(name);
-            menuItem.Submenu = menu;
-            menuShell.Append(menuItem);
-            
-            return menu;
+            Debug.Assert (StatusBar != null);
+            uint id = mStatusBarUniqueId++;
+            StatusBar.Push(id, txt);
+            return id;
         }
 
-        public void ComponentsLoaded()
+        /// <summary>
+        /// Pop a message from the statusbar.
+        /// </summary>
+        public void PopStatusbar(uint id)
         {
-            // tell all components about load state
-            // time for late initialization and/or load persistence
-            foreach (DockItem item in DockFrame.GetItems())
-            {
-                if (item.Content is IComponent)
-                    (item.Content as IComponent).Loaded (item);
-            }
-
-            // tell any component about all other component
-            foreach (DockItem item in DockFrame.GetItems())
-            {
-                if (item.Content is IComponentInteract)
-                {
-                    foreach(DockItem other in DockFrame.GetItems())
-                        if (item != other)
-                            (item.Content as IComponentInteract).Added (other.Content);
-                }
-            }
+            StatusBar.Pop (id);
         }
 
-        public void ComponentsSave()
-        {
-            foreach (DockItem item in DockFrame.GetItems())
-            {
-                if (item.Content is IComponent)
-                    (item.Content as IComponent).Save();
-            }
+        #endregion
+   
+        #region Toolbar
 
-            // tell any component about all other component
-            foreach (DockItem item in DockFrame.GetItems())
-            {
-                if (item is IComponentInteract)
-                {
-                    foreach(DockItem other in DockFrame.GetItems())
-                        if (item != other)
-                            (item.Content as IComponentInteract).Removed (other);
-                }
-            }
+        public void AddToolItem(ToolItem item)
+        {
+            item.Show();
+            ToolBar.Insert(item, -1);
         }
+
+        public void RemoveToolItem(ToolItem item)
+        {
+            ToolBar.Remove(item);
+        }
+
+        #endregion
     }
 
     class TaggedImageMenuItem : ImageMenuItem

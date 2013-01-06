@@ -39,6 +39,8 @@
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="HelloWorldWidget.cs" />
     <Compile Include="gtk-gui\Examples.HelloWorld.HelloWorldWidget.cs" />
+    <Compile Include="TestToolBarStatusBar.cs" />
+    <Compile Include="gtk-gui\Examples.TestToolAndStatusBar.TestToolBarStatusBar.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

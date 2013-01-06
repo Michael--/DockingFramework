@@ -95,11 +95,7 @@
             <property name="MemberName" />
             <property name="ShowArrow">False</property>
             <property name="IconSize">SmallToolbar</property>
-            <node name="theToolBar" type="Toolbar">
-              <node type="Toolitem" action="undoAction" />
-              <node type="Toolitem" action="addAction" />
-              <node type="Toolitem" action="removeAction" />
-            </node>
+            <node name="theToolBar" type="Toolbar" />
           </widget>
           <packing>
             <property name="Position">1</property>
