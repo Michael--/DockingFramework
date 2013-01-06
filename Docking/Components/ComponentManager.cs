@@ -176,6 +176,9 @@ namespace Docking.Components
             {
                 if (item.Content is IComponent)
                     (item.Content as IComponent).Loaded (item);
+
+                if (item.Content is IComponentInteract)
+                    (item.Content as IComponentInteract).Visible(item.Content, item.Visible);
             }
             
             // tell any component about all other component
@@ -319,10 +322,10 @@ namespace Docking.Components
                     (item.Content as IComponentInteract).Added (other.Content);
         }
 
-        private void HandleDockItemRemoved (DockItem item)
+        private void HandleDockItemRemoved(DockItem item)
         {
             // tell all other about removed component
-            foreach(DockItem other in DockFrame.GetItems())
+            foreach (DockItem other in DockFrame.GetItems())
             {
                 if (other != item && other.Content is IComponentInteract)
                     (other.Content as IComponentInteract).Removed (item.Content);
@@ -330,9 +333,15 @@ namespace Docking.Components
 
             // tell component about it instance itself has been removed from dock container
             if (item.Content is IComponentInteract)
-                (item.Content as IComponentInteract).Removed(item.Content);
+                (item.Content as IComponentInteract).Removed (item.Content);
         }
 
+        void HandleVisibleChanged (object sender, EventArgs e)
+        {   
+            DockItem item = sender as DockItem;
+            if (item.Content is IComponentInteract)
+                (item.Content as IComponentInteract).Visible(item, item.Visible);
+        }
 
         /// <summary>
         /// Create new item, called from menu choice or persistence
@@ -346,6 +355,7 @@ namespace Docking.Components
             DockItem item = DockFrame.AddItem (name);
             item.Content = w;
             item.Label = name;
+            item.VisibleChanged += HandleVisibleChanged;
 
             if (!cfi.IsSingleInstance)
                 item.Behavior |= DockItemBehavior.CloseOnHide;
@@ -353,10 +363,11 @@ namespace Docking.Components
             return item;
         }
 
+
         /// <summary>
         /// Create new item, called from persistence 
         /// </summary>
-        public DockItem CreateItem(string id)
+        private DockItem CreateItem(string id)
         {
             String []m = id.Split(new char[] {'-'}, StringSplitOptions.RemoveEmptyEntries);
             if (m.Length == 0)

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Examples.TestToolAndStatusBar
 {
     [System.ComponentModel.ToolboxItem(true)]
-    public partial class TestToolBarStatusBar : Gtk.Bin, IComponent
+    public partial class TestToolBarStatusBar : Gtk.Bin, IComponent, IComponentInteract
     {
         public TestToolBarStatusBar ()
         {
@@ -19,7 +19,7 @@ namespace Examples.TestToolAndStatusBar
 
         void IComponent.Loaded(DockItem item)
         {
-            ToolButton push = new ToolButton("Push");
+            push = new ToolButton("Push");
             push.Label = "Push";
             push.Clicked += (sender, e) => 
             {
@@ -28,27 +28,55 @@ namespace Examples.TestToolAndStatusBar
                 mStack.Push(id);
             };
 
-            ToolButton pop = new ToolButton("Pop");
+            pop = new ToolButton("Pop");
             pop.Label = "Pop";
             pop.Clicked += (sender, e) => 
             {
                 if (mStack.Count > 0)
                     ComponentManager.PopStatusbar(mStack.Pop ());
             };
-
-            ComponentManager.AddToolItem(push);
-            ComponentManager.AddToolItem(pop);
         }
 
-        int mTextCounter = 0;
-        Stack<uint> mStack = new Stack<uint>();
-
-        
         void IComponent.Save()
         {
         }
         #endregion
 
+        #region implement IComponentInteract
+        void IComponentInteract.Added(object item)
+        {
+        }
+        
+        void IComponentInteract.Removed(object item)
+        {
+        }
+        
+        void IComponentInteract.Visible(object item, bool visible)
+        {
+            if (push == null || pop == null)
+                return;
+
+            if (visible)
+            {
+                ComponentManager.AddToolItem (push);
+                ComponentManager.AddToolItem (pop);
+            }
+            else
+            {
+                ComponentManager.RemoveToolItem (push);
+                ComponentManager.RemoveToolItem (pop);
+                while (mStack.Count > 0)
+                    ComponentManager.PopStatusbar(mStack.Pop ());
+            }
+        }
+        
+        #endregion
+
+        #region varibables, properties
+        ToolButton push, pop;
+        int mTextCounter = 0;
+        Stack<uint> mStack = new Stack<uint>();
+        #endregion
     }
 
     #region Starter / Entry Point

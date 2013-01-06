@@ -22,9 +22,9 @@ namespace Docking.Components
         void Removed(object item);
         
         /// <summary>
-        /// A component got the focus, will be called also for our own
+        /// Component status changed from visible to hidden or vice versa
         /// </summary>
-        void Activated(object item);
+        void Visible(object item, bool visible);
     }
 }
 

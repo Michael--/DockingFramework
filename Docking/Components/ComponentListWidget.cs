@@ -55,7 +55,7 @@ namespace Docking.Components
                 message = null;
         }
 
-        void IComponentInteract.Activated(object item)
+        void IComponentInteract.Visible(object item, bool visible)
         {
         }
 
