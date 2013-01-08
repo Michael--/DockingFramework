@@ -46,9 +46,9 @@ namespace Docking.Components
                 Debug.Assert(m.Length >= 2);
                 
                 MenuShell menuShell = menuBar;
-                Menu componentMenu;
+                Menu componentMenu = null;
                 System.Collections.IEnumerable children = menuBar.Children;
-                for (int i = 0; i < m.Length - 1;i++)
+                for (int i = 0; i < m.Length-1; i++)
                 {
                     componentMenu = SearchOrCreateMenu(m[i], menuShell, children);
                     children = componentMenu.AllChildren;
@@ -221,6 +221,8 @@ namespace Docking.Components
 
         public object LoadObject(String elementName, Type t)
         {
+            if(XmlConfiguration == null || elementName == null)
+                return null;
             XmlNode element = XmlConfiguration.SelectSingleNode(elementName);
             if (element == null)
                 return null;
