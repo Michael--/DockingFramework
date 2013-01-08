@@ -23,7 +23,7 @@ namespace Docking.Components
 
             TestPersistence p = (TestPersistence)ComponentManager.LoadObject("ComponentListWidget", typeof(TestPersistence));
             if (p != null)
-                Debug.WriteLine(p.test);
+                ComponentManager.MessageWriteLine(String.Format("Test Persistence loaded: {0}", p.test));
         }
 
         void IComponent.Save()

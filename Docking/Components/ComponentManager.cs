@@ -376,7 +376,13 @@ namespace Docking.Components
                 item.Behavior |= DockItemBehavior.CloseOnHide;
 
             if (item.Content is IMessage)
+            {
                 mMessage.Add(item.Id, item.Content as IMessage);
+
+                // push all queued messages 
+                foreach(String m in mMessageQueue)
+                    (item.Content as IMessage).WriteLine(m);
+            }
 
             return item;
         }
@@ -443,9 +449,14 @@ namespace Docking.Components
         #region Message
         public void MessageWriteLine(String message)
         {
-            foreach(KeyValuePair<string, IMessage> kvp in mMessage)
-                kvp.Value.WriteLine(message);
+            foreach (KeyValuePair<string, IMessage> kvp in mMessage)
+                kvp.Value.WriteLine (message);
+
+            // queue all messages for new not yet existing receiver
+            // todo: may should store only some messages to avoid memory leak ?
+            mMessageQueue.Add(message);
         }
+        List<String> mMessageQueue = new List<string>();
         Dictionary<string, IMessage> mMessage = new Dictionary<string, IMessage>(); 
         #endregion
     }
