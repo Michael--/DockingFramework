@@ -112,15 +112,17 @@ namespace Docking.Components
                 // to make it easier to update with newest version
                 
                 XmlNode layouts = XmlConfiguration.SelectSingleNode("layouts");
-                
-                MemoryStream ms = new MemoryStream();
-                XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
-                
-                layouts.WriteTo(xmlWriter);
-                xmlWriter.Flush();
-                XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
-                
-                DockFrame.LoadLayouts (xmlReader);
+                if (layouts != null)
+                {
+                    MemoryStream ms = new MemoryStream();
+                    XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
+                    
+                    layouts.WriteTo(xmlWriter);
+                    xmlWriter.Flush();
+                    XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
+                    
+                    DockFrame.LoadLayouts (xmlReader);
+                }
             } 
             else
             {
@@ -243,23 +245,29 @@ namespace Docking.Components
 
         public void SaveObject(String elementName, object obj)
         {
-            MemoryStream ms = new MemoryStream();
-            XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
-            XmlSerializer serializer = new XmlSerializer(obj.GetType());
-            serializer.Serialize(xmlWriter, obj);
-            xmlWriter.Flush();
+            MemoryStream ms = new MemoryStream ();
+            XmlTextWriter xmlWriter = new XmlTextWriter (ms, System.Text.Encoding.UTF8);
+            XmlSerializer serializer = new XmlSerializer (obj.GetType ());
+            serializer.Serialize (xmlWriter, obj);
+            xmlWriter.Flush ();
             
-            XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
+            XmlReader xmlReader = new XmlTextReader (new MemoryStream (ms.ToArray ()));
 
             // re-load as XmlDocument
-            XmlDocument doc = new XmlDocument();
-            doc.Load(xmlReader);
+            XmlDocument doc = new XmlDocument ();
+            doc.Load (xmlReader);
             
             // replace in managed persistence
-            XmlNode node = doc.SelectSingleNode(obj.GetType().Name);
-            XmlNode importNode = XmlDocument.ImportNode(node, true);
-            XmlNode newNode = XmlDocument.CreateElement(elementName);
-            newNode.AppendChild(importNode);
+            XmlNode node = doc.SelectSingleNode (obj.GetType ().Name);
+            XmlNode importNode = XmlDocument.ImportNode (node, true);
+            XmlNode newNode = XmlDocument.CreateElement (elementName);
+            newNode.AppendChild (importNode);
+            // need new base node if started without old config
+            if (XmlConfiguration == null) 
+            {
+                XmlConfiguration = XmlDocument.CreateElement ("DockingConfiguration");
+                XmlDocument.AppendChild(XmlConfiguration);
+            }
             XmlNode oldNode = XmlConfiguration.SelectSingleNode(elementName);
             if (oldNode != null)
                 XmlConfiguration.ReplaceChild(newNode, oldNode);
