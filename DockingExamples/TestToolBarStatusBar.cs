@@ -21,6 +21,8 @@ namespace Examples.TestToolAndStatusBar
         {
             mPush = new ToolButton("Push");
             mPush.Label = "Push";
+            mPush.StockId = Stock.Add;
+            mPush.TooltipText = "Push a new message to status bar";
             mPush.Clicked += (sender, e) => 
             {
                 String text = String.Format("Hello {0} at {1}", ++mTextCounter, DateTime.Now.ToLongTimeString());
@@ -31,6 +33,8 @@ namespace Examples.TestToolAndStatusBar
 
             mPop = new ToolButton("Pop");
             mPop.Label = "Pop";
+            mPop.StockId = Stock.Remove;
+            mPop.TooltipText = "Pop newest message from status bar";
             mPop.Clicked += (sender, e) => 
             {
                 if (mStack.Count > 0)

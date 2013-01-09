@@ -12,55 +12,12 @@
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="454 300">
     <action-group name="Default">
-      <action id="FileAction">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes">File</property>
-        <property name="ShortLabel" translatable="yes">File</property>
-      </action>
-      <action id="undoAction">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes" />
-        <property name="StockId">gtk-undo</property>
-        <property name="Tooltip" translatable="yes">Make all hidden widgets visible again</property>
-        <signal name="Activated" handler="OnUndoActionActivated" />
-      </action>
       <action id="QuitAction">
         <property name="Type">Action</property>
         <property name="Accelerator">&lt;Primary&gt;&lt;Mod2&gt;q</property>
         <property name="Label" translatable="yes">Quit</property>
         <property name="ShortLabel" translatable="yes">Quit</property>
         <signal name="Activated" handler="OnQuitActionActivated" />
-      </action>
-      <action id="addAction">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes">_Push</property>
-        <property name="ShortLabel" translatable="yes">_Push</property>
-        <property name="StockId">gtk-add</property>
-        <property name="Tooltip" translatable="yes">Push text to status bar</property>
-        <signal name="Activated" handler="OnAddActionActivated" />
-      </action>
-      <action id="removeAction">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes">_Pop</property>
-        <property name="ShortLabel" translatable="yes">_Pop</property>
-        <property name="StockId">gtk-remove</property>
-        <property name="Tooltip" translatable="yes">Pop text from status bar</property>
-        <signal name="Activated" handler="OnRemoveActionActivated" />
-      </action>
-      <action id="ComponentsAction">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes">Components</property>
-        <property name="ShortLabel" translatable="yes">Components</property>
-      </action>
-      <action id="DummyAction">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes">Dummy</property>
-        <property name="ShortLabel" translatable="yes">Dummy</property>
-      </action>
-      <action id="TestAction">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes">Test</property>
-        <property name="ShortLabel" translatable="yes">Test</property>
       </action>
     </action-group>
     <property name="MemberName" />
@@ -94,6 +51,7 @@
           <widget class="Gtk.Toolbar" id="theToolBar">
             <property name="MemberName" />
             <property name="ShowArrow">False</property>
+            <property name="ButtonStyle">Both</property>
             <property name="IconSize">SmallToolbar</property>
             <node name="theToolBar" type="Toolbar" />
           </widget>

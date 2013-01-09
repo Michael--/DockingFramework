@@ -12,6 +12,7 @@ public partial class MainWindow
 	private global::Gtk.Action ComponentsAction;
 	private global::Gtk.Action DummyAction;
 	private global::Gtk.Action TestAction;
+	private global::Gtk.Action removeAction1;
 	private global::Gtk.VBox vbox1;
 	private global::Gtk.MenuBar menubar3;
 	private global::Gtk.Toolbar theToolBar;
@@ -47,6 +48,8 @@ public partial class MainWindow
 		this.TestAction = new global::Gtk.Action ("TestAction", global::Mono.Unix.Catalog.GetString ("Test"), null, null);
 		this.TestAction.ShortLabel = global::Mono.Unix.Catalog.GetString ("Test");
 		w1.Add (this.TestAction, null);
+		this.removeAction1 = new global::Gtk.Action ("removeAction1", null, null, "gtk-remove");
+		w1.Add (this.removeAction1, null);
 		this.UIManager.InsertActionGroup (w1, 0);
 		this.AddAccelGroup (this.UIManager.AccelGroup);
 		this.Name = "MainWindow";
@@ -73,6 +76,7 @@ public partial class MainWindow
 		this.theToolBar = ((global::Gtk.Toolbar)(this.UIManager.GetWidget ("/theToolBar")));
 		this.theToolBar.Name = "theToolBar";
 		this.theToolBar.ShowArrow = false;
+		this.theToolBar.ToolbarStyle = ((global::Gtk.ToolbarStyle)(2));
 		this.theToolBar.IconSize = ((global::Gtk.IconSize)(2));
 		this.vbox1.Add (this.theToolBar);
 		global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.theToolBar]));
