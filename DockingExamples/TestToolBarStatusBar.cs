@@ -90,7 +90,7 @@ namespace Examples.TestToolAndStatusBar
         
         #endregion
 
-        #region varibables, properties
+        #region variables, properties
         ToolButton mPush;
         ToolButton mPop;
         bool mAdded = false;
@@ -106,6 +106,7 @@ namespace Examples.TestToolAndStatusBar
         public override Type TypeOfInstance { get { return typeof(TestToolBarStatusBar); } }
         public override String MenuPath { get { return @"Components\Examples\Test Tool- and Status bar"; } }
         public override String Comment { get { return "Example using tool bat and status bar"; } }
+        public override Mode Options { get { return Mode.CloseOnHide; } }
     }
     
     #endregion

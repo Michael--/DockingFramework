@@ -228,7 +228,16 @@ namespace Docking.Components
         public bool InstanceMustExist{ get { return (ComponentFactory.Options & ComponentFactory.Mode.AutoCreate) == ComponentFactory.Mode.AutoCreate; } }
         
         public bool HideOnCreate { get { return (ComponentFactory.Options & ComponentFactory.Mode.Hidden) == ComponentFactory.Mode.Hidden; } }
-        
+
+        public bool CloseOnHide
+        {
+            get 
+            {
+                return (ComponentFactory.Options & ComponentFactory.Mode.CloseOnHide) == ComponentFactory.Mode.CloseOnHide
+                    || !IsSingleInstance;
+            }
+        }
+
         public ComponentFactory ComponentFactory { get; set; }
         
         public bool Active { get; set; }

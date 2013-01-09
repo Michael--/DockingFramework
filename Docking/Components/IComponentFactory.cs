@@ -63,7 +63,17 @@ namespace Docking.Components
 			/// <summary>
 			/// Each window is normally visible. Together with AutoCreate you can create hidden windows as a background worker.
 			/// </summary>
-			Hidden = 0x04
+			Hidden = 0x04,
+
+            /// <summary>
+            /// Close on hide option.
+            /// Components with MultipleInstance option are automatically
+            /// closed on hide, SingleInstance components only optionally
+            /// with this option.
+            /// Closed windows are removed from memory.
+            /// Hidden windows are only hidden, content existing and persistent.
+            /// </summary> 
+            CloseOnHide = 0x08
 		}
 	}
 }

@@ -372,7 +372,7 @@ namespace Docking.Components
             item.Label = name;
             item.VisibleChanged += HandleVisibleChanged;
 
-            if (!cfi.IsSingleInstance)
+            if (cfi.CloseOnHide)
                 item.Behavior |= DockItemBehavior.CloseOnHide;
 
             if (item.Content is IMessage)
