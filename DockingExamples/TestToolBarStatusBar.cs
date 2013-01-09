@@ -12,12 +12,10 @@ namespace Examples.TestToolAndStatusBar
         public TestToolBarStatusBar ()
         {
             this.Build ();
+            InitToolbarButtons();
         }
 
-        #region implement IComponent
-        public ComponentManager ComponentManager { get; set; }
-
-        void IComponent.Loaded(DockItem item)
+        void InitToolbarButtons()
         {
             mPush = new ToolButton("Push");
             mPush.Label = "Push";
@@ -30,7 +28,7 @@ namespace Examples.TestToolAndStatusBar
                 mStack.Push(id);
                 UpdateMessageText();
             };
-
+            
             mPop = new ToolButton("Pop");
             mPop.Label = "Pop";
             mPop.StockId = Stock.Remove;
@@ -43,14 +41,21 @@ namespace Examples.TestToolAndStatusBar
             };
         }
 
-        void IComponent.Save()
-        {
-        }
-
-
         void UpdateMessageText()
         {
             label3.Text = String.Format ("Messages pushed to status bar: {0}", mStack.Count);
+        }
+
+
+        #region implement IComponent
+        public ComponentManager ComponentManager { get; set; }
+
+        void IComponent.Loaded(DockItem item)
+        {
+        }
+
+        void IComponent.Save()
+        {
         }
 
         #endregion
@@ -63,12 +68,9 @@ namespace Examples.TestToolAndStatusBar
         void IComponentInteract.Removed(object item)
         {
         }
-        
+
         void IComponentInteract.Visible(object item, bool visible)
         {
-            if (mPush == null || mPop == null)
-                return;
-
             if (visible && !mAdded)
             {
                 ComponentManager.AddToolItem (mPush);
