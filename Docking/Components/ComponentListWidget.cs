@@ -4,6 +4,10 @@ using System.Diagnostics;
 
 namespace Docking.Components
 {
+    // todo: currently only available components are simply displayed
+    //       - Display more details of each ComponentFactory
+    //       - Display also information about existing instances
+    //       - Add actions, like create/hide/show/erase
 	[System.ComponentModel.ToolboxItem(true)]
 	public partial class ComponentListWidget : Gtk.Bin, IComponent
 	{
@@ -21,20 +25,38 @@ namespace Docking.Components
                 listStore.AppendValues(row.ToArray());
             }
 
-            TestPersistence p = (TestPersistence)ComponentManager.LoadObject("ComponentListWidget", typeof(TestPersistence));
+            Persistence p = (Persistence)ComponentManager.LoadObject("ComponentListWidget", typeof(Persistence));
             if (p != null)
-                ComponentManager.MessageWriteLine(String.Format("Test Persistence loaded: {0}", p.test));
+                p.LoadColumnWidth(treeview1.Columns);
         }
 
         void IComponent.Save()
         {
-            TestPersistence p =  new TestPersistence() { test = "TestTestTest" };
+            Persistence p = new Persistence();
+            p.SaveColumnWidth(treeview1.Columns);
             ComponentManager.SaveObject("ComponentListWidget", p);
         }
 
-        public class TestPersistence 
+        public class Persistence 
         {
-            public String test { get; set; }
+            public void SaveColumnWidth(Gtk.TreeViewColumn []columns)
+            {
+                foreach (Gtk.TreeViewColumn c in columns)
+                    m_Width.Add(c.Width);
+            }
+
+            public void LoadColumnWidth(Gtk.TreeViewColumn []columns)
+            {
+                if (columns.Length == m_Width.Count)
+                {
+                    for (int i = 0; i < columns.Length; i++)
+                        columns[i].FixedWidth = m_Width[i];
+                }
+            }
+        
+            // to have a simple persistence make the member public
+            // otherwise you have to implement IXmlSerializable
+            public List<int> m_Width = new List<int>(); 
         }
 
         #endregion
@@ -46,16 +68,17 @@ namespace Docking.Components
 			Gtk.TreeViewColumn componentColumn = new Gtk.TreeViewColumn ();
 			componentColumn.Title = "Component";
             componentColumn.Resizable = true;
+            componentColumn.Sizing = Gtk.TreeViewColumnSizing.Fixed;
 			
 			// Create a column for the song title
 			Gtk.TreeViewColumn descriptionColumn = new Gtk.TreeViewColumn ();
 			descriptionColumn.Title = "Description";
             descriptionColumn.Resizable = true;
+            descriptionColumn.Sizing = Gtk.TreeViewColumnSizing.Fixed;
 			
 			// Add the columns to the TreeView
 			treeview1.AppendColumn (componentColumn);
 			treeview1.AppendColumn (descriptionColumn);
-         
 
             // Create the text cells that will display the content
             Gtk.CellRendererText componentsCell = new Gtk.CellRendererText ();
