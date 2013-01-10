@@ -76,7 +76,6 @@ namespace Docking.Components
             // todo: currently append at the end, may a dedicated position desired
             Menu menu = new Menu ( );
             MenuItem menuItem = new MenuItem(name);
-            menuItem.Child = new Label(name);
             menuItem.Submenu = menu;
             menuShell.Append(menuItem);
             
