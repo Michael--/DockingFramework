@@ -173,6 +173,8 @@ namespace Docking.Components
 
         protected void ComponentsLoaded()
         {
+            m_LockHandleVisibleChanged = false; // unlock visible change notices
+
             // tell all components about load state
             // time for late initialization and/or load persistence
             foreach (DockItem item in DockFrame.GetItems())
@@ -351,11 +353,15 @@ namespace Docking.Components
                 (item.Content as IComponentInteract).Removed (item.Content);
         }
 
-        void HandleVisibleChanged (object sender, EventArgs e)
+        bool m_LockHandleVisibleChanged = true; // startup lock
+        void HandleVisibleChanged(object sender, EventArgs e)
         {   
-            DockItem item = sender as DockItem;
-            if (item.Content is IComponentInteract)
-                (item.Content as IComponentInteract).Visible(item, item.Visible);
+            if (!m_LockHandleVisibleChanged)
+            {
+                DockItem item = sender as DockItem;
+                if (item.Content is IComponentInteract)
+                    (item.Content as IComponentInteract).Visible (item, item.Visible);
+            }
         }
 
         /// <summary>
