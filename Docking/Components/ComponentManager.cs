@@ -57,7 +57,10 @@ namespace Docking.Components
                 TaggedImageMenuItem item = new TaggedImageMenuItem(m[m.Length - 1]);
                 item.Tag = cfi;
                 item.Activated += ComponentHandleActivated;
-                componentMenu.Add(item);
+
+                // todo: menu insert position should be overworked
+                //       position is dependent of content
+                componentMenu.Insert(item, 0);
             }
             menuBar.ShowAll();
         }
@@ -68,7 +71,7 @@ namespace Docking.Components
             foreach(MenuItem mi in children)
             {
                 Label label = (Label)mi.Child;
-                if (label.Text == name)
+                if (label != null && label.Text == name)
                     return mi.Submenu as Menu;
             }
             
@@ -77,7 +80,15 @@ namespace Docking.Components
             Menu menu = new Menu ( );
             MenuItem menuItem = new MenuItem(name);
             menuItem.Submenu = menu;
-            menuShell.Append(menuItem);
+
+            // todo: menu insert position should be overworked
+            //       position is dependent of content
+
+            // current solution is only a quick hack
+            if (name == "New")
+                menuShell.Insert(menuItem, 0);
+            else
+                menuShell.Add(menuItem);
             
             return menu;
         }
