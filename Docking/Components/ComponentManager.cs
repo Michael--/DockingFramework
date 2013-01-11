@@ -64,11 +64,30 @@ namespace Docking.Components
             MenuBar = menuBar;
         }
 
+        private void InstallQuitMenu()
+        {
+            // todo: probably this group could be used for further accelerator
+            AccelGroup grp = new AccelGroup();
+            AddAccelGroup(grp);
+
+            ImageMenuItem item = new ImageMenuItem("Quit");
+            item.AddAccelerator("activate", grp, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.MetaMask, AccelFlags.Visible));
+            item.Activated +=  OnQuitActionActivated;
+            InsertMenu("File", item);
+        }
+
+        protected void OnQuitActionActivated(object sender, EventArgs e)
+        {
+            PrepareExit();
+        }
+
         /// <summary>
         /// Add all component start/create menue entries
         /// </summary> 
         protected void AddComponentMenues()
         {
+            InstallQuitMenu();
+
             foreach (ComponentFactoryInformation cfi in ComponentFinder.ComponentInfos)
             {
                 // the last name is the menu name, all other are menu/sub-menue names
@@ -137,12 +156,15 @@ namespace Docking.Components
         public DockFrame DockFrame { get; private set; }
         public ComponentFinder ComponentFinder { get; private set; }
         public bool PowerDown { get; set; }
+        public String ConfigurationFile  { get; set; }
         #endregion
 
         #region Configuration
 
         protected void LoadConfigurationFile(String filename)
         {
+            ConfigurationFile = filename;
+
             // layout from file or new
             if (File.Exists (filename))
             {
@@ -258,6 +280,47 @@ namespace Docking.Components
                             (item.Content as IComponentInteract).Removed (other);
                 }
             }
+        }
+
+
+        protected void LoadPersistence()
+        {
+            MainWindowPersistence p = (MainWindowPersistence)LoadObject ("MainWindow", typeof(MainWindowPersistence));
+            if (p != null)
+            {
+                this.Resize(p.Width, p.Height);
+                this.Move (p.WindowX, p.WindowY);
+            }
+        }
+        
+        private void SavePersistence()
+        {
+            int wx, wy, width, height;
+            this.GetPosition(out wx, out wy);
+            this.GetSize(out width, out height);
+            
+            MainWindowPersistence p = new MainWindowPersistence();
+            p.WindowX = wx;
+            p.WindowY = wy;
+            p.Width = width;
+            p.Height = height;
+            
+            SaveObject("MainWindow", p);
+        }
+        
+        protected void PrepareExit()
+        {
+            PowerDown = true;
+            // update own persistence before save configuration
+            SavePersistence();
+            SaveConfigurationFile(ConfigurationFile);
+            Application.Quit();
+        }
+
+        protected void OnDeleteEvent (object sender, DeleteEventArgs a)
+        {
+            PrepareExit();
+            a.RetVal = true;
         }
 
 
@@ -517,5 +580,14 @@ namespace Docking.Components
         public TaggedImageMenuItem(String name) : base(name) {}
         public System.Object Tag { get; set; }
     }
+
+    public class MainWindowPersistence
+    {
+        public int WindowX { get; set; }
+        public int WindowY { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+    }
+
 }
 

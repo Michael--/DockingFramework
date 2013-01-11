@@ -27,12 +27,6 @@ public partial class MainWindow : ComponentManager
         // search for all interrested components
         ComponentFinder.SearchForComponents (new string[] { @"./*.exe", @"./*.dll" });
 
-        // use last entry as menu name and create first before component menues
-        ImageMenuItem item = new ImageMenuItem("Quit");
-        // item.AddAccelerator("activate", null, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.HyperMask, AccelFlags.Visible));
-        item.Activated +=  OnQuitActionActivated;
-        InsertMenu("File", item);
-
         // install all known component menue 
         AddComponentMenues();
 
@@ -49,60 +43,4 @@ public partial class MainWindow : ComponentManager
         // any component could load its persistence data now
         ComponentsLoaded();
     }
-
-    private void LoadPersistence()
-    {
-        MainWindowPersistence p = (MainWindowPersistence)LoadObject ("MainWindow", typeof(MainWindowPersistence));
-        if (p != null)
-        {
-            this.Resize(p.Width, p.Height);
-            this.Move (p.WindowX, p.WindowY);
-        }
-    }
-
-    private void SavePersistence()
-    {
-        int wx, wy, width, height;
-        this.GetPosition(out wx, out wy);
-        this.GetSize(out width, out height);
-
-        MainWindowPersistence p = new MainWindowPersistence();
-        p.WindowX = wx;
-        p.WindowY = wy;
-        p.Width = width;
-        p.Height = height;
-
-        SaveObject("MainWindow", p);
-    }
-
-    private void PrepareExit()
-    {
-        PowerDown = true;
-        // update own persistence before save configuration
-        SavePersistence();
-        SaveConfigurationFile(mConfig);
-        Application.Quit();
-    }
-
- 
-    protected void OnDeleteEvent (object sender, DeleteEventArgs a)
-    {
-        PrepareExit();
-        a.RetVal = true;
-    }
-
-    protected void OnQuitActionActivated(object sender, EventArgs e)
-    {
-        PrepareExit();
-    }
-
 }
-
-public class MainWindowPersistence
-{
-    public int WindowX { get; set; }
-    public int WindowY { get; set; }
-    public int Width { get; set; }
-    public int Height { get; set; }
-}
-
