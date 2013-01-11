@@ -36,7 +36,38 @@ namespace Docking.Components
             ToolBar = tb;
         }
 
+        protected void InsertMenu(String path, MenuItem item)
+        {
+            // the last name is the menu name, all other are menu/sub-menue names
+            String [] m = path.Split(new char[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
+            
+            // as a minimum submenu-name exist
+            Debug.Assert(m.Length >= 1);
+            
+            MenuShell menuShell = MenuBar;
+            Menu componentMenu = null;
+            System.Collections.IEnumerable children = MenuBar.Children;
+            for (int i = 0; i < m.Length; i++)
+            {
+                componentMenu = SearchOrCreateMenu(m[i], menuShell, children);
+                children = componentMenu.AllChildren;
+                menuShell = componentMenu;
+            }
+
+            // todo: menu insert position should be overworked
+            //       position is dependent of content
+            componentMenu.Insert(item, 0);
+        }
+
         protected void SetMenuBar(MenuBar menuBar)
+        {
+            MenuBar = menuBar;
+        }
+
+        /// <summary>
+        /// Add all component start/create menue entries
+        /// </summary> 
+        protected void AddComponentMenues()
         {
             foreach (ComponentFactoryInformation cfi in ComponentFinder.ComponentInfos)
             {
@@ -45,25 +76,23 @@ namespace Docking.Components
                 
                 // as a minimum submenu-name & menu-name must exist
                 Debug.Assert(m.Length >= 2);
-                
-                MenuShell menuShell = menuBar;
-                Menu componentMenu = null;
-                System.Collections.IEnumerable children = menuBar.Children;
+
+                // build path again
+                StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < m.Length-1; i++)
                 {
-                    componentMenu = SearchOrCreateMenu(m[i], menuShell, children);
-                    children = componentMenu.AllChildren;
-                    menuShell = componentMenu;
+                    if (i > 0)
+                        builder.Append("\\");
+                    builder.Append(m[i]);
                 }
+
+                // use last entry as menu name and create
                 TaggedImageMenuItem item = new TaggedImageMenuItem(m[m.Length - 1]);
                 item.Tag = cfi;
                 item.Activated += ComponentHandleActivated;
-
-                // todo: menu insert position should be overworked
-                //       position is dependent of content
-                componentMenu.Insert(item, 0);
+                InsertMenu(builder.ToString(), item);
             }
-            menuBar.ShowAll();
+            MenuBar.ShowAll();
         }
 
         private Menu SearchOrCreateMenu(String name, MenuShell menuShell, System.Collections.IEnumerable children)
@@ -99,6 +128,7 @@ namespace Docking.Components
         #region Private properties
         private Statusbar StatusBar { get;  set; }
         private Toolbar ToolBar { get;  set; }
+        private MenuBar MenuBar { get; set; }
         private XmlDocument XmlDocument { get;  set; }
         private XmlNode XmlConfiguration { get;  set; }
         #endregion

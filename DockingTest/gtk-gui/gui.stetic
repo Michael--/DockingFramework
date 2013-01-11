@@ -35,7 +35,7 @@
           <widget class="Gtk.MenuBar" id="menubar3">
             <property name="MemberName" />
             <node name="menubar3" type="Menubar">
-              <node type="Menu" action="FileAction">
+              <node type="Menu">
                 <node type="Menuitem" action="QuitAction" />
               </node>
             </node>

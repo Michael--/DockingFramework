@@ -22,12 +22,19 @@ public partial class MainWindow : ComponentManager
         SetDockFrame(theDockFrame);
         SetStatusBar(theStatusBar);
         SetToolBar(theToolBar);
+        SetMenuBar(menubar3);
 
         // search for all interrested components
         ComponentFinder.SearchForComponents (new string[] { @"./*.exe", @"./*.dll" });
 
-        // add all default menu for any component
-        SetMenuBar(menubar3);
+        // use last entry as menu name and create first before component menues
+        ImageMenuItem item = new ImageMenuItem("Quit");
+        // item.AddAccelerator("activate", null, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.HyperMask, AccelFlags.Visible));
+        item.Activated +=  OnQuitActionActivated;
+        InsertMenu("File", item);
+
+        // install all known component menue 
+        AddComponentMenues();
 
         // load old configuration or init new one if not existing
         LoadConfigurationFile(mConfig);
