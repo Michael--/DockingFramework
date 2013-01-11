@@ -4,6 +4,7 @@ using Docking;
 using Docking.Tools;
 using System.ComponentModel;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Examples.Threading
 {
@@ -19,6 +20,7 @@ namespace Examples.Threading
             progressbar1.Adjustment.Upper = 100;
         }
 
+        private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();    
         private ThreadWorker theWorker = null;
         String myThreadHeader;
         static int instances = 0;
@@ -29,6 +31,8 @@ namespace Examples.Threading
         {
             if (ComponentManager.PowerDown)
                 return;
+
+            // start a new thread
             myThreadId++;
             Message(String.Format("Thread {0}:{1} started", myThreadHeader, myThreadId));
             theWorker = new ThreadWorker();
@@ -38,12 +42,29 @@ namespace Examples.Threading
             theWorker.ProgressChanged += new ProgressChangedEventHandler(ProgressChanged);
             theWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(RunCompleted);
             theWorker.RunWorkerAsync(ThreadPriority.BelowNormal);
+
+            // start a new task
+            // because this is a very common method to start a task
+            // we need probably an overwritten Factory
+            // for the plan to iterate over all running task/threads
+            // at any time at any place
+            Task.Factory.StartNew(() =>
+            {
+                for(int i = 0; i < 50; i++)
+                {
+                    Thread.Sleep(100);
+                    if (cancelTokenSource.IsCancellationRequested)
+                        break;
+                }
+                Message(String.Format("Task {0}:{1} finished", myThreadHeader, myThreadId));
+            }, cancelTokenSource.Token);
         }
 
         public void RequestStop()
         {
             if(theWorker != null)
                 theWorker.CancelAsync();
+            cancelTokenSource.Cancel();
         }
         
         // complete message
@@ -127,6 +148,5 @@ namespace Examples.Threading
     }
     
     #endregion
-
 }
 
