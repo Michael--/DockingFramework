@@ -70,6 +70,7 @@ public partial class MainWindow : ComponentManager
 
     private void PrepareExit()
     {
+        PowerDown = true;
         // update own persistence before save configuration
         SavePersistence();
         SaveConfigurationFile(mConfig);

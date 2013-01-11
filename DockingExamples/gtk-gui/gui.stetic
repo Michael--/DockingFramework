@@ -21,7 +21,7 @@
         <child>
           <widget class="Gtk.Label" id="label2">
             <property name="MemberName" />
-            <property name="LabelProp" translatable="yes">HelloWorld</property>
+            <property name="LabelProp" translatable="yes">Thread Worker</property>
             <property name="Justify">Fill</property>
           </widget>
           <packing>
@@ -77,6 +77,43 @@
             <property name="Expand">False</property>
             <property name="Fill">False</property>
           </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="Examples.Threading.ThreadWorkerWidget" design-size="300 300">
+    <property name="MemberName" />
+    <property name="Visible">False</property>
+    <child>
+      <widget class="Gtk.VBox" id="vbox1">
+        <property name="MemberName" />
+        <property name="Spacing">6</property>
+        <child>
+          <widget class="Gtk.Label" id="label1">
+            <property name="MemberName" />
+            <property name="LabelProp" translatable="yes">ThreadWorker</property>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.ProgressBar" id="progressbar1">
+            <property name="MemberName" />
+            <property name="Ellipsize">End</property>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder />
         </child>
       </widget>
     </child>

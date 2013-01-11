@@ -90,11 +90,13 @@
     <Compile Include="Components\IMessage.cs" />
     <Compile Include="Components\ComponentMessageWidget.cs" />
     <Compile Include="gtk-gui\Docking.Components.ComponentMessageWidget.cs" />
+    <Compile Include="Tools\ThreadWorker.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Docking\" />
     <Folder Include="Components\" />
+    <Folder Include="Tools\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Docking\stock-auto-hide.png">

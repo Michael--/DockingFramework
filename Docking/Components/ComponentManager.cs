@@ -16,6 +16,7 @@ namespace Docking.Components
         {
             ComponentFinder = new Docking.Components.ComponentFinder();
             XmlDocument = new XmlDocument();
+            PowerDown = false;
         }
 
         public void SetDockFrame(DockFrame df)
@@ -105,6 +106,7 @@ namespace Docking.Components
         #region Public properties
         public DockFrame DockFrame { get; private set; }
         public ComponentFinder ComponentFinder { get; private set; }
+        public bool PowerDown { get; set; }
         #endregion
 
         #region Configuration
@@ -465,6 +467,9 @@ namespace Docking.Components
         #region Message
         public void MessageWriteLine(String message)
         {
+            if (PowerDown)
+                return;
+
             foreach (KeyValuePair<string, IMessage> kvp in mMessage)
                 kvp.Value.WriteLine (message);
 
