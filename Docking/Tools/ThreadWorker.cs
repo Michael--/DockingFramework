@@ -79,8 +79,7 @@ namespace Docking.Tools
             State = WorkState.NotStarted;
             mThread = new Thread(ThreadHull);
 
-            m_JobInformation = new ThreadWorkerInformation(this, name, description);
-            JobInformation.AddJob(m_JobInformation);
+            m_JobInformation = ThreadWorkerInformation.Create(this, name, description);
         }
             
         /// <summary>
@@ -107,7 +106,7 @@ namespace Docking.Tools
                 
             if (RunWorkerCompleted != null)
                 RunWorkerCompleted(this, new RunWorkerCompletedEventArgs(theArgs.Result, null, theArgs.Cancel));
-            JobInformation.RemoveJob(m_JobInformation);
+            m_JobInformation.Destroy();
         }
             
         public void RunWorkerAsync(ThreadPriority priority, object args)
@@ -194,6 +193,11 @@ namespace Docking.Tools
             Id = LastId++;
         }
 
+        public void Destroy()
+        {
+            JobInformation.RemoveJob(this);
+        }
+
         public String Name { get; private set; }
         public String Description { get; private set; }
         public DateTime StartTime { get; private set; }
@@ -217,7 +221,7 @@ namespace Docking.Tools
 
         public virtual void Cancel() {}
 
-        public static void AddJob(JobInformation job)
+        protected static void AddJob(JobInformation job)
         {
             lock(m_Jobs)
                 m_Jobs.Add(job);
@@ -225,7 +229,7 @@ namespace Docking.Tools
                 Added(null, new JobInformationEventArgs(job));
         }
 
-        public static void RemoveJob(JobInformation job)
+        private static void RemoveJob(JobInformation job)
         {
             lock(m_Jobs)
                 m_Jobs.Remove(job);
@@ -253,10 +257,17 @@ namespace Docking.Tools
 
     public class ThreadWorkerInformation : JobInformation
     {
-        public ThreadWorkerInformation (ThreadWorker worker, String name, String description)
+        private ThreadWorkerInformation (String name, String description)
             : base(name, description)
         {
-            m_Worker = worker;
+        }
+
+        public static ThreadWorkerInformation Create(ThreadWorker worker, String name, String description)
+        {
+            ThreadWorkerInformation job = new ThreadWorkerInformation(name, description);
+            job.m_Worker = worker;
+            JobInformation.AddJob(job);
+            return job;
         }
 
         ThreadWorker m_Worker;
@@ -271,5 +282,31 @@ namespace Docking.Tools
             m_Worker.CancelAsync();
         }
     }
+
+    public class TaskInformation : JobInformation
+    {
+        private TaskInformation (String name, String description)
+            : base(name, description)
+        {
+        }
+
+        public static TaskInformation Create(String name, String description)
+        {
+            TaskInformation job = new TaskInformation(name, description);
+            JobInformation.AddJob(job);
+            return job;
+        }
+
+        public override bool CancelationSupported
+        {
+            get { return false; }
+        }
+        
+        public override void Cancel()
+        {
+            // m_Worker.CancelAsync();
+        }
+    }
+
 }
 

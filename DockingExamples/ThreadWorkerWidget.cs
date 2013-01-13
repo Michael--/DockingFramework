@@ -25,6 +25,7 @@ namespace Examples.Threading
         String myThreadHeader;
         static int instances = 0;
         int myThreadId = 0;
+        int myTaskId = 0;
         static Random rnd = new Random();
 
         void StartNewThread()
@@ -44,23 +45,6 @@ namespace Examples.Threading
             theWorker.ProgressChanged += new ProgressChangedEventHandler(ProgressChanged);
             theWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(RunCompleted);
             theWorker.RunWorkerAsync(ThreadPriority.BelowNormal);
-#if false
-            // start a new task
-            // because this is a very common method to start a task
-            // we need probably an overwritten Factory
-            // for the plan to iterate over all running task/threads
-            // at any time at any place
-            Task.Factory.StartNew(() =>
-            {
-                for(int i = 0; i < 50; i++)
-                {
-                    Thread.Sleep(100);
-                    if (cancelTokenSource.IsCancellationRequested)
-                        break;
-                }
-                Message(String.Format("Task {0}:{1} finished", myThreadHeader, myThreadId));
-            }, cancelTokenSource.Token);
-#endif
         }
 
         public void RequestStop()
@@ -139,6 +123,36 @@ namespace Examples.Threading
         }
         
         #endregion
+
+        protected void OnButton1Clicked(object sender, EventArgs e)
+        {
+            // start a new task with Task.Factory
+            // this is a very common method to work on something in the background
+            Task.Factory.StartNew(() =>
+            {
+                myTaskId++;
+                String name = String.Format("{0}:{1}", myThreadHeader, myTaskId);
+                String description = "Example how to use a Task";
+                Message(String.Format("Task {0} started", name));
+
+                TaskInformation ti = TaskInformation.Create(name, description);
+
+                int duration = rnd.Next() % 5000 + 5000;
+                int steps = 100;
+                int onesleep = duration / steps;
+                int proceeded = 0;
+                while(proceeded < duration)
+                {
+                    proceeded += onesleep;
+                    Thread.Sleep(onesleep);
+                    ti.Progress = proceeded * 100 / duration;  
+                    if (cancelTokenSource.IsCancellationRequested)
+                        break;
+                }
+                Message(String.Format("Task {0} finished", name));
+                ti.Destroy();
+            }, cancelTokenSource.Token);
+        }
 
     }
 

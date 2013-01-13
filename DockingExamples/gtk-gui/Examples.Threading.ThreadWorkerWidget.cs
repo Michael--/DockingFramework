@@ -7,6 +7,7 @@ namespace Examples.Threading
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.Label label1;
 		private global::Gtk.ProgressBar progressbar1;
+		private global::Gtk.Button button1;
 		
 		protected virtual void Build ()
 		{
@@ -36,11 +37,23 @@ namespace Examples.Threading
 			w2.Position = 1;
 			w2.Expand = false;
 			w2.Fill = false;
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.button1 = new global::Gtk.Button ();
+			this.button1.CanFocus = true;
+			this.button1.Name = "button1";
+			this.button1.UseUnderline = true;
+			this.button1.Label = global::Mono.Unix.Catalog.GetString ("Start a Task");
+			this.vbox1.Add (this.button1);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.button1]));
+			w3.Position = 2;
+			w3.Expand = false;
+			w3.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
+			this.button1.Clicked += new global::System.EventHandler (this.OnButton1Clicked);
 		}
 	}
 }
