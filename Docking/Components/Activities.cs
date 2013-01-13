@@ -44,15 +44,19 @@ namespace Docking.Components
             desciptionColumn.PackStart (descriptionCell, true);
             statusColumn.PackStart (statusCell, true);
 
-            activityColumn.AddAttribute (componentsCell, "text", 0);
-            desciptionColumn.AddAttribute (descriptionCell, "text", 1);
-            statusColumn.AddAttribute (statusCell, "value", 2);
+            activityColumn.AddAttribute (componentsCell, "text", activityIndex);
+            desciptionColumn.AddAttribute (descriptionCell, "text", descriptionIndex);
+            statusColumn.AddAttribute (statusCell, "value", statusIndex);
 
             // Create a model that will hold the content, assign the model to the TreeView
-            listStore = new Gtk.ListStore (typeof (string), typeof (string), typeof (int));
+            listStore = new Gtk.ListStore (typeof(JobInformation), typeof (string), typeof (string), typeof (int));
             treeview1.Model = listStore;
         }
         Gtk.ListStore listStore;
+        const int jobInformationIndex = 0;
+        const int activityIndex = 1;
+        const int descriptionIndex = 2;
+        const int statusIndex = 3;
 
         #region implement IComponent
         public ComponentManager ComponentManager { get; set; }
@@ -75,6 +79,26 @@ namespace Docking.Components
             JobInformation[] jobs = JobInformation.GetJobs();
             foreach(JobInformation job in jobs)
                 AddJob(job);
+
+            treeview1.CursorChanged += HandleCursorChanged;
+        }
+
+        void HandleCursorChanged(object sender, EventArgs e)
+        {
+            Gtk.TreeSelection selection = (sender as Gtk.TreeView).Selection;
+            
+            Gtk.TreeModel model;
+            Gtk.TreeIter iter;
+            if (selection.GetSelected(out model, out iter))
+            {
+                lock (TreeIterHelper)
+                {
+                    JobInformation job = (JobInformation) listStore.GetValue(iter, jobInformationIndex);
+                    buttonCancel.Sensitive = job.CancelationSupported;
+                }
+            }
+            else
+                buttonCancel.Sensitive = false;
         }
         
         void HandleAdded (object sender, JobInformationEventArgs e)
@@ -92,32 +116,37 @@ namespace Docking.Components
         /// don't know how.
         /// I will refacture when I found the solution I looking for.
         /// </summary>
-        Dictionary<JobInformation, Gtk.TreeIter> tagHelper = new Dictionary<JobInformation, Gtk.TreeIter>();
+        Dictionary<JobInformation, Gtk.TreeIter> TreeIterHelper = new Dictionary<JobInformation, Gtk.TreeIter>();
 
         void AddJob(JobInformation job)
         {
             List<String> row = new List<string>();
+            row.Add(null);
             row.Add(job.Name);
             row.Add(job.Description);
             row.Add(job.Progress.ToString());
-            Gtk.TreeIter it = listStore.AppendValues(row.ToArray());
-            lock (tagHelper)
-                tagHelper.Add(job, it);
-
+            Gtk.TreeIter iter = listStore.AppendValues(row.ToArray());
+            listStore.SetValue(iter, jobInformationIndex, job);
+           
+            lock (TreeIterHelper)
+            {
+                TreeIterHelper.Add(job, iter);
+            }
             job.ProgressChanged += HandleProgressChanged;
         }
 
         void RemoveJob(JobInformation job)
         {
-            lock (tagHelper)
+            lock (TreeIterHelper)
             {
-                Gtk.TreeIter it;
-                if (tagHelper.TryGetValue(job, out it))
+                Gtk.TreeIter iter;
+                if (TreeIterHelper.TryGetValue(job, out iter))
                 {
-                    listStore.Remove(ref it);
-                    tagHelper.Remove(job);
+                    TreeIterHelper.Remove(job);
+                    listStore.Remove(ref iter);
                 }
             }
+            HandleCursorChanged(treeview1, null);
         }
 
         void HandleProgressChanged (object sender, JobInformationEventArgs e)
@@ -125,15 +154,30 @@ namespace Docking.Components
             Gtk.Application.Invoke(delegate 
             {
                 int progress = e.JobInformation.Progress;
-                lock(tagHelper)
+                lock(TreeIterHelper)
                 {
                     Gtk.TreeIter iter;
-                    if (tagHelper.TryGetValue(e.JobInformation, out iter))
+                    if (TreeIterHelper.TryGetValue(e.JobInformation, out iter))
                     {
-                        listStore.SetValue(iter, 2, progress);
+                        listStore.SetValue(iter, statusIndex, progress);
                     }
                 }
             });
+        }
+
+        protected void OnButtonCancelClicked(object sender, EventArgs e)
+        {
+            Gtk.TreeSelection selection = treeview1.Selection;
+            Gtk.TreeModel model;
+            Gtk.TreeIter iter;
+            if (selection.GetSelected(out model, out iter))
+            {
+                lock (TreeIterHelper)
+                {
+                    JobInformation job = (JobInformation) listStore.GetValue(iter, jobInformationIndex);
+                    job.Cancel();
+                }
+            }
         }
     }
     

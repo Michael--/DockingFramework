@@ -7,6 +7,8 @@ namespace Docking.Components
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView treeview1;
+		private global::Gtk.HBox hbox4;
+		private global::Gtk.Button buttonCancel;
 		
 		protected virtual void Build ()
 		{
@@ -30,11 +32,33 @@ namespace Docking.Components
 			this.vbox1.Add (this.GtkScrolledWindow);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.GtkScrolledWindow]));
 			w2.Position = 0;
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.hbox4 = new global::Gtk.HBox ();
+			this.hbox4.Name = "hbox4";
+			this.hbox4.Spacing = 6;
+			// Container child hbox4.Gtk.Box+BoxChild
+			this.buttonCancel = new global::Gtk.Button ();
+			this.buttonCancel.Sensitive = false;
+			this.buttonCancel.CanFocus = true;
+			this.buttonCancel.Name = "buttonCancel";
+			this.buttonCancel.UseUnderline = true;
+			this.buttonCancel.Label = global::Mono.Unix.Catalog.GetString ("Cancel Activity");
+			this.hbox4.Add (this.buttonCancel);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox4 [this.buttonCancel]));
+			w3.Position = 0;
+			w3.Expand = false;
+			w3.Fill = false;
+			this.vbox1.Add (this.hbox4);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox4]));
+			w4.Position = 1;
+			w4.Expand = false;
+			w4.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
+			this.buttonCancel.Clicked += new global::System.EventHandler (this.OnButtonCancelClicked);
 		}
 	}
 }

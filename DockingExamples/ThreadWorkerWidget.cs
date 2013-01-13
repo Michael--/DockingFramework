@@ -58,9 +58,9 @@ namespace Examples.Threading
         // complete message
         private void RunCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            Message(String.Format("Thread {0}:{1} completed{2}",
+            Message(String.Format("Thread {0}:{1} {2}",
                                   myThreadHeader, myThreadId,
-                                  e.Cancelled ? "(Canceled)" : ""));
+                                  e.Cancelled ? "Canceled" : "completed"));
             theWorker = null;
 
             if (checkbutton1.Active)
