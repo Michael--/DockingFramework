@@ -74,12 +74,12 @@ namespace Docking.Tools
                 ProgressChanged(percent, new ProgressChangedEventArgs(percent, this));
         }
             
-        public ThreadWorker (String name)
+        public ThreadWorker (String name, String description)
         {
             State = WorkState.NotStarted;
             mThread = new Thread(ThreadHull);
 
-            m_JobInformation = new ThreadWorkerInformation(this, name);
+            m_JobInformation = new ThreadWorkerInformation(this, name, description);
             JobInformation.AddJob(m_JobInformation);
         }
             
@@ -186,14 +186,16 @@ namespace Docking.Tools
     /// </summary>
     public abstract class JobInformation
     {
-        public JobInformation (String name)
+        public JobInformation (String name, String desciption)
         {
             Name = name;
+            Description = desciption;
             StartTime = DateTime.Now;
             Id = LastId++;
         }
 
         public String Name { get; private set; }
+        public String Description { get; private set; }
         public DateTime StartTime { get; private set; }
         public int Id { get; private set; }
         private static int LastId = 0;
@@ -251,8 +253,8 @@ namespace Docking.Tools
 
     public class ThreadWorkerInformation : JobInformation
     {
-        public ThreadWorkerInformation (ThreadWorker worker, String name)
-            : base(name)
+        public ThreadWorkerInformation (ThreadWorker worker, String name, String description)
+            : base(name, description)
         {
             m_Worker = worker;
         }

@@ -98,7 +98,7 @@ namespace Docking.Components
         {
             List<String> row = new List<string>();
             row.Add(job.Name);
-            row.Add("todo: add description here");
+            row.Add(job.Description);
             row.Add(job.Progress.ToString());
             Gtk.TreeIter it = listStore.AppendValues(row.ToArray());
             lock (tagHelper)
@@ -135,7 +135,6 @@ namespace Docking.Components
                 }
             });
         }
-       
     }
     
     public class Factory : ComponentFactory

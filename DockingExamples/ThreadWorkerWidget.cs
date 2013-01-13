@@ -14,7 +14,7 @@ namespace Examples.Threading
         public ThreadWorkerWidget ()
         {
             this.Build();
-            myThreadHeader = "T" + instances++.ToString(); 
+            myThreadHeader = "Test" + instances++.ToString(); 
             progressbar1.Adjustment = new Gtk.Adjustment(0, 0, 100, 1, 1, 10);
             progressbar1.Adjustment.Lower = 0;
             progressbar1.Adjustment.Upper = 100;
@@ -34,8 +34,10 @@ namespace Examples.Threading
 
             // start a new thread
             myThreadId++;
-            Message(String.Format("Thread {0}:{1} started", myThreadHeader, myThreadId));
-            theWorker = new ThreadWorker("ThreadWorkerWidget-Test");
+            String name = String.Format("{0}:{1}", myThreadHeader, myThreadId);
+            String description = "Example how to use ThreadWorker";
+            Message(String.Format("Thread {0}", name));
+            theWorker = new ThreadWorker(name, description);
             theWorker.WorkerSupportsCancellation = true;
             theWorker.WorkerReportsProgress = true;
             theWorker.DoWork += new DoWorkEventHandler(Worker);
