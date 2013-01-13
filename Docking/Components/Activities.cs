@@ -38,7 +38,7 @@ namespace Docking.Components
             // Create the text cells that will display the content
             Gtk.CellRendererText componentsCell = new Gtk.CellRendererText ();
             Gtk.CellRendererText descriptionCell = new Gtk.CellRendererText ();
-            Gtk.CellRendererText statusCell = new Gtk.CellRendererText ();
+            Gtk.CellRendererProgress statusCell = new Gtk.CellRendererProgress ();
 
             activityColumn.PackStart (componentsCell, true);
             desciptionColumn.PackStart (descriptionCell, true);
@@ -46,13 +46,11 @@ namespace Docking.Components
 
             activityColumn.AddAttribute (componentsCell, "text", 0);
             desciptionColumn.AddAttribute (descriptionCell, "text", 1);
-            statusColumn.AddAttribute (statusCell, "text", 2);
+            statusColumn.AddAttribute (statusCell, "value", 2);
 
-            // Create a model that will hold two strings, Assign the model to the TreeView
-            listStore = new Gtk.ListStore (typeof (string), typeof (string), typeof (string));
+            // Create a model that will hold the content, assign the model to the TreeView
+            listStore = new Gtk.ListStore (typeof (string), typeof (string), typeof (int));
             treeview1.Model = listStore;
-
-            // todo: status column should be a progress bar
         }
         Gtk.ListStore listStore;
 
@@ -132,7 +130,7 @@ namespace Docking.Components
                     Gtk.TreeIter iter;
                     if (tagHelper.TryGetValue(e.JobInformation, out iter))
                     {
-                        listStore.SetValue(iter, 2, progress.ToString());
+                        listStore.SetValue(iter, 2, progress);
                     }
                 }
             });
