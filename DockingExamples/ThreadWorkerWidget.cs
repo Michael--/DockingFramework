@@ -39,7 +39,7 @@ namespace Examples.Threading
             myThreadId++;
             String name = String.Format("{0}:{1}", myThreadHeader, myThreadId);
             String description = "Example how to use ThreadWorker";
-            Message(String.Format("Thread {0}", name));
+            Message(String.Format("Thread {0} started", name));
             theWorker = new ThreadWorker(name, description);
             theWorker.WorkerSupportsCancellation = true;
             theWorker.WorkerReportsProgress = true;
