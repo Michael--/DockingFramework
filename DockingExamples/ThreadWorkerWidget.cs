@@ -26,6 +26,7 @@ namespace Examples.Threading
         static int instances = 0;
         int myThreadId = 0;
         int myTaskId = 0;
+        int countTasks = 0;
         static Random rnd = new Random();
 
         void StartNewThread()
@@ -61,7 +62,9 @@ namespace Examples.Threading
                                   myThreadHeader, myThreadId,
                                   e.Cancelled ? "(Canceled)" : ""));
             theWorker = null;
-            StartNewThread();
+
+            if (checkbutton1.Active)
+                StartNewThread();
         }
         
         // progress message
@@ -114,7 +117,8 @@ namespace Examples.Threading
         
         void Docking.Components.IComponent.Loaded(DockItem item)
         {
-            StartNewThread();
+            if (checkbutton1.Active)
+                StartNewThread();
         }
         
         void Docking.Components.IComponent.Save()
@@ -128,6 +132,7 @@ namespace Examples.Threading
         {
             // start a new task with Task.Factory
             // this is a very common method to work on something in the background
+            // use TaskInformation to observe this new task 
             Task.Factory.StartNew(() =>
             {
                 myTaskId++;
@@ -135,6 +140,9 @@ namespace Examples.Threading
                 String description = "Example how to use a Task";
                 Message(String.Format("Task {0} started", name));
 
+                Gtk.Application.Invoke(delegate {
+                    labelTaskCount.Text = String.Format("Running count: {0}", ++countTasks);
+                });
                 TaskInformation ti = TaskInformation.Create(name, description);
 
                 int duration = rnd.Next() % 5000 + 5000;
@@ -151,9 +159,18 @@ namespace Examples.Threading
                 }
                 Message(String.Format("Task {0} finished", name));
                 ti.Destroy();
+                Gtk.Application.Invoke(delegate {
+                    labelTaskCount.Text = String.Format("Running count: {0}", --countTasks);
+                });
+
             }, cancelTokenSource.Token);
         }
 
+        protected void OnCheckbutton1Toggled(object sender, EventArgs e)
+        {
+            if (checkbutton1.Active && theWorker == null)
+                StartNewThread();
+        }
     }
 
     #region Starter / Entry Point
