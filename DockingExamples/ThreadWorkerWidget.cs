@@ -5,6 +5,7 @@ using Docking.Tools;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Examples.Threading
 {
@@ -20,7 +21,7 @@ namespace Examples.Threading
             progressbar1.Adjustment.Upper = 100;
         }
 
-        private CancellationTokenSource cancelTokenSource = new CancellationTokenSource();    
+        private List<CancellationTokenSource> cancelTokenList = new List<CancellationTokenSource>();
         private ThreadWorker theWorker = null;
         String myThreadHeader;
         static int instances = 0;
@@ -52,7 +53,8 @@ namespace Examples.Threading
         {
             if(theWorker != null)
                 theWorker.CancelAsync();
-            cancelTokenSource.Cancel();
+            foreach(CancellationTokenSource t in cancelTokenList)
+                t.Cancel();
         }
         
         // complete message
@@ -133,6 +135,11 @@ namespace Examples.Threading
             // start a new task with Task.Factory
             // this is a very common method to work on something in the background
             // use TaskInformation to observe this new task 
+
+            CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
+            lock (cancelTokenList)
+                cancelTokenList.Add(cancelTokenSource);
+
             Task.Factory.StartNew(() =>
             {
                 myTaskId++;
@@ -143,7 +150,7 @@ namespace Examples.Threading
                 Gtk.Application.Invoke(delegate {
                     labelTaskCount.Text = String.Format("Running count: {0}", ++countTasks);
                 });
-                TaskInformation ti = TaskInformation.Create(name, description);
+                TaskInformation ti = TaskInformation.Create(cancelTokenSource, name, description);
 
                 int duration = rnd.Next() % 5000 + 5000;
                 int steps = 100;
@@ -157,12 +164,14 @@ namespace Examples.Threading
                     if (cancelTokenSource.IsCancellationRequested)
                         break;
                 }
-                Message(String.Format("Task {0} finished", name));
+                Message(String.Format("Task {0} {1}", name, 
+                        cancelTokenSource.IsCancellationRequested ? "cancelled" : "finished"));
                 ti.Destroy();
                 Gtk.Application.Invoke(delegate {
                     labelTaskCount.Text = String.Format("Running count: {0}", --countTasks);
                 });
-
+                lock (cancelTokenList)
+                    cancelTokenList.Remove(cancelTokenSource);
             }, cancelTokenSource.Token);
         }
 

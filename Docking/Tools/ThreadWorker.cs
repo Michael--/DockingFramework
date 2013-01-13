@@ -285,26 +285,30 @@ namespace Docking.Tools
 
     public class TaskInformation : JobInformation
     {
-        private TaskInformation (String name, String description)
+        private TaskInformation (CancellationTokenSource token, String name, String description)
             : base(name, description)
         {
+            m_TokenSource = token;
         }
 
-        public static TaskInformation Create(String name, String description)
+        CancellationTokenSource m_TokenSource;
+
+        public static TaskInformation Create(CancellationTokenSource token, String name, String description)
         {
-            TaskInformation job = new TaskInformation(name, description);
+            TaskInformation job = new TaskInformation(token, name, description);
             JobInformation.AddJob(job);
             return job;
         }
 
         public override bool CancelationSupported
         {
-            get { return false; }
+            get { return m_TokenSource != null; }
         }
         
         public override void Cancel()
         {
-            // m_Worker.CancelAsync();
+            if (m_TokenSource != null)
+                m_TokenSource.Cancel();
         }
     }
 
