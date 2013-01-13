@@ -120,14 +120,12 @@ namespace Docking.Components
 
         void AddJob(JobInformation job)
         {
-            List<String> row = new List<string>();
-            row.Add(null);
-            row.Add(job.Name);
-            row.Add(job.Description);
-            row.Add(job.Progress.ToString());
-            Gtk.TreeIter iter = listStore.AppendValues(row.ToArray());
+            Gtk.TreeIter iter = listStore.Append();
             listStore.SetValue(iter, jobInformationIndex, job);
-           
+            listStore.SetValue(iter, activityIndex, job.Name);
+            listStore.SetValue(iter, descriptionIndex, job.Description);
+            listStore.SetValue(iter, statusIndex, 0);
+
             lock (TreeIterHelper)
             {
                 TreeIterHelper.Add(job, iter);
