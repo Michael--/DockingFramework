@@ -35,14 +35,14 @@ namespace Examples.Threading
             // start a new thread
             myThreadId++;
             Message(String.Format("Thread {0}:{1} started", myThreadHeader, myThreadId));
-            theWorker = new ThreadWorker();
+            theWorker = new ThreadWorker("ThreadWorkerWidget-Test");
             theWorker.WorkerSupportsCancellation = true;
             theWorker.WorkerReportsProgress = true;
             theWorker.DoWork += new DoWorkEventHandler(Worker);
             theWorker.ProgressChanged += new ProgressChangedEventHandler(ProgressChanged);
             theWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(RunCompleted);
             theWorker.RunWorkerAsync(ThreadPriority.BelowNormal);
-
+#if false
             // start a new task
             // because this is a very common method to start a task
             // we need probably an overwritten Factory
@@ -58,6 +58,7 @@ namespace Examples.Threading
                 }
                 Message(String.Format("Task {0}:{1} finished", myThreadHeader, myThreadId));
             }, cancelTokenSource.Token);
+#endif
         }
 
         public void RequestStop()
@@ -70,7 +71,9 @@ namespace Examples.Threading
         // complete message
         private void RunCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            Message(String.Format("Thread {0}:{1} completed", myThreadHeader, myThreadId));
+            Message(String.Format("Thread {0}:{1} completed{2}",
+                                  myThreadHeader, myThreadId,
+                                  e.Cancelled ? "(Canceled)" : ""));
             theWorker = null;
             StartNewThread();
         }

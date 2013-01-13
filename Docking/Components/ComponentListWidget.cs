@@ -70,7 +70,6 @@ namespace Docking.Components
             componentColumn.Resizable = true;
             componentColumn.Sizing = Gtk.TreeViewColumnSizing.Fixed;
 			
-			// Create a column for the song title
 			Gtk.TreeViewColumn descriptionColumn = new Gtk.TreeViewColumn ();
 			descriptionColumn.Title = "Description";
             descriptionColumn.Resizable = true;

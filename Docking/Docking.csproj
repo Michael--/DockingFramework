@@ -91,6 +91,8 @@
     <Compile Include="Components\ComponentMessageWidget.cs" />
     <Compile Include="gtk-gui\Docking.Components.ComponentMessageWidget.cs" />
     <Compile Include="Tools\ThreadWorker.cs" />
+    <Compile Include="Components\Activities.cs" />
+    <Compile Include="gtk-gui\Docking.Components.Activities.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
