@@ -80,25 +80,28 @@
     <Compile Include="Docking\DockingHelper\Platform.cs" />
     <Compile Include="Docking\DockingHelper\GtkWorkarounds.cs" />
     <Compile Include="Docking\DockingHelper\PangoUtil.cs" />
-    <Compile Include="Components\ComponentFinder.cs" />
-    <Compile Include="Components\ComponentListWidget.cs" />
     <Compile Include="gtk-gui\Docking.Components.ComponentListWidget.cs" />
-    <Compile Include="Components\IComponentFactory.cs" />
-    <Compile Include="Components\IComponent.cs" />
-    <Compile Include="Components\ComponentManager.cs" />
-    <Compile Include="Components\IComponentInteract.cs" />
-    <Compile Include="Components\IMessage.cs" />
-    <Compile Include="Components\ComponentMessageWidget.cs" />
     <Compile Include="gtk-gui\Docking.Components.ComponentMessageWidget.cs" />
     <Compile Include="Tools\ThreadWorker.cs" />
-    <Compile Include="Components\Activities.cs" />
     <Compile Include="gtk-gui\Docking.Components.Activities.cs" />
+    <Compile Include="Framework\Components\Activities.cs" />
+    <Compile Include="Framework\Components\ComponentListWidget.cs" />
+    <Compile Include="Framework\Components\ComponentMessageWidget.cs" />
+    <Compile Include="Framework\Manager\ComponentFinder.cs" />
+    <Compile Include="Framework\Manager\ComponentManager.cs" />
+    <Compile Include="Framework\Interfaces\IComponent.cs" />
+    <Compile Include="Framework\Interfaces\IComponentFactory.cs" />
+    <Compile Include="Framework\Interfaces\IComponentInteract.cs" />
+    <Compile Include="Framework\Interfaces\IMessage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Docking\" />
-    <Folder Include="Components\" />
     <Folder Include="Tools\" />
+    <Folder Include="Framework\" />
+    <Folder Include="Framework\Manager\" />
+    <Folder Include="Framework\Components\" />
+    <Folder Include="Framework\Interfaces\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Docking\stock-auto-hide.png">
