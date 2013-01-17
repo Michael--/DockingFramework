@@ -82,7 +82,6 @@
     <Compile Include="Docking\DockingHelper\PangoUtil.cs" />
     <Compile Include="gtk-gui\Docking.Components.ComponentListWidget.cs" />
     <Compile Include="gtk-gui\Docking.Components.ComponentMessageWidget.cs" />
-    <Compile Include="Tools\ThreadWorker.cs" />
     <Compile Include="gtk-gui\Docking.Components.Activities.cs" />
     <Compile Include="Framework\Components\Activities.cs" />
     <Compile Include="Framework\Components\ComponentListWidget.cs" />
@@ -93,6 +92,10 @@
     <Compile Include="Framework\Interfaces\IComponentFactory.cs" />
     <Compile Include="Framework\Interfaces\IComponentInteract.cs" />
     <Compile Include="Framework\Interfaces\IMessage.cs" />
+    <Compile Include="Tools\Threading\JobInformation.cs" />
+    <Compile Include="Tools\Threading\TaskInformation.cs" />
+    <Compile Include="Tools\Threading\ThreadWorker.cs" />
+    <Compile Include="Tools\Threading\ThreadWorkerInformation.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -102,6 +105,7 @@
     <Folder Include="Framework\Manager\" />
     <Folder Include="Framework\Components\" />
     <Folder Include="Framework\Interfaces\" />
+    <Folder Include="Tools\Threading\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Docking\stock-auto-hide.png">
