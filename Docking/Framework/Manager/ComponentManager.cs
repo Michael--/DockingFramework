@@ -456,6 +456,8 @@ namespace Docking.Components
             // tell component about it instance itself has been removed from dock container
             if (item.Content is IComponentInteract)
                 (item.Content as IComponentInteract).Removed (item.Content);
+
+            item.Widget.Destroy();
         }
 
         bool m_LockHandleVisibleChanged = true; // startup lock

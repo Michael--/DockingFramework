@@ -21,6 +21,14 @@ namespace Examples.Threading
             progressbar1.Adjustment.Upper = 100;
         }
 
+        bool m_Destroyed = false; // todo: should be replaced by an widget property, but which ?
+        protected override void OnDestroyed()
+        {
+            m_Destroyed = true;
+            base.OnDestroyed();
+            RequestStop();
+        }
+
         private List<CancellationTokenSource> cancelTokenList = new List<CancellationTokenSource>();
         private ThreadWorker theWorker = null;
         String myThreadHeader;
@@ -32,7 +40,7 @@ namespace Examples.Threading
 
         void StartNewThread()
         {
-            if (ComponentManager.PowerDown)
+            if (ComponentManager.PowerDown || m_Destroyed)
                 return;
 
             // start a new thread
@@ -72,7 +80,7 @@ namespace Examples.Threading
         // progress message
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            if (ComponentManager.PowerDown)
+            if (ComponentManager.PowerDown || m_Destroyed)
                 return;
 
             Gtk.Application.Invoke(delegate {
