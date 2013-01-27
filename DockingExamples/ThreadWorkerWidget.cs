@@ -80,11 +80,10 @@ namespace Examples.Threading
         // progress message
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            if (ComponentManager.PowerDown || m_Destroyed)
-                return;
-
-            Gtk.Application.Invoke(delegate {
-                progressbar1.Adjustment.Value = e.ProgressPercentage;
+            Gtk.Application.Invoke(delegate 
+            {
+                if (!ComponentManager.PowerDown && !m_Destroyed)
+                    progressbar1.Adjustment.Value = e.ProgressPercentage;
             });
         }
 
