@@ -418,7 +418,7 @@ namespace Docking.Components
             item.Behavior = DockItemBehavior.Normal;
             if (!cfi.IsSingleInstance)
                 item.Behavior |= DockItemBehavior.CloseOnHide;
-            // item.DefaultLocation = "Document";
+
             item.DefaultVisible = true;
             item.DrawFrame = true;
             item.Visible = true;
@@ -482,7 +482,7 @@ namespace Docking.Components
                 return null;
             DockItem item = DockFrame.AddItem (name);
             item.Content = w;
-            item.Label = name;
+            item.Label = w.Name;
             item.VisibleChanged += HandleVisibleChanged;
 
             if (cfi.CloseOnHide)
