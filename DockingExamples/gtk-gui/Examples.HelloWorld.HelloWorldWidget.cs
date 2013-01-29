@@ -20,7 +20,7 @@ namespace Examples.HelloWorld
 			// Container child vbox3.Gtk.Box+BoxChild
 			this.label2 = new global::Gtk.Label ();
 			this.label2.Name = "label2";
-			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Thread Worker");
+			this.label2.LabelProp = global::Mono.Unix.Catalog.GetString ("Hello World");
 			this.label2.Justify = ((global::Gtk.Justification)(3));
 			this.vbox3.Add (this.label2);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.vbox3 [this.label2]));

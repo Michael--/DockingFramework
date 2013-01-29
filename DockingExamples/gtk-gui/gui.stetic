@@ -21,7 +21,7 @@
         <child>
           <widget class="Gtk.Label" id="label2">
             <property name="MemberName" />
-            <property name="LabelProp" translatable="yes">Thread Worker</property>
+            <property name="LabelProp" translatable="yes">Hello World</property>
             <property name="Justify">Fill</property>
           </widget>
           <packing>

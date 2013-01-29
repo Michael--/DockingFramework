@@ -10,6 +10,7 @@ namespace Examples.HelloWorld
         public HelloWorldWidget ()
 		{
 			this.Build ();
+            this.Name = "Hello World";
 		}
 	}
 

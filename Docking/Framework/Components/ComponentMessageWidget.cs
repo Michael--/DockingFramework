@@ -32,6 +32,7 @@ namespace Docking.Components
         public ComponentMessageWidget ()
         {
             this.Build ();
+            this.Name = "Messages";
             m_Scroll2EndMark = textview1.Buffer.CreateMark("Scroll2End", textview1.Buffer.EndIter, true);
         }
     }

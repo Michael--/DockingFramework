@@ -64,6 +64,7 @@ namespace Docking.Components
         public ComponentListWidget ()
 		{
 			this.Build ();
+            this.Name = "Component List";
 
 			Gtk.TreeViewColumn componentColumn = new Gtk.TreeViewColumn ();
 			componentColumn.Title = "Component";

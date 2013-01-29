@@ -15,6 +15,7 @@ namespace Examples.Threading
         public ThreadWorkerWidget ()
         {
             this.Build();
+            this.Name = "Threading";
             myThreadHeader = "Test" + instances++.ToString(); 
             progressbar1.Adjustment = new Gtk.Adjustment(0, 0, 100, 1, 1, 10);
             progressbar1.Adjustment.Lower = 0;

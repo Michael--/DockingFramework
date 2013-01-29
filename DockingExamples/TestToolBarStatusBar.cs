@@ -12,6 +12,7 @@ namespace Examples.TestToolAndStatusBar
         public TestToolBarStatusBar ()
         {
             this.Build ();
+            this.Name = "Tool-/Status-Bar";
             InitToolbarButtons();
         }
 

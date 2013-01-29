@@ -11,6 +11,7 @@ namespace Docking.Components
         public Activities ()
         {
             this.Build();
+            this.Name = "Activities";
 
             Gtk.TreeViewColumn activityColumn = new Gtk.TreeViewColumn ();
             activityColumn.Title = "Activity";
