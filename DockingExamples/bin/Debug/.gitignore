@@ -1,3 +1,5 @@
 /*.pdb
 /*.dll
 /*.exe
+/Docking.dll.mdb
+/Examples.dll.mdb
