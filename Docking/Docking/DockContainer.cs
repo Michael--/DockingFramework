@@ -189,9 +189,8 @@ namespace Docking
 
 		protected override void OnRemoved (Widget widget)
 		{
-			System.Diagnostics.Debug.Assert (
-				widget.Parent != this,
-				"Widget is not parented on this widget");
+            if (widget.Parent != this)
+                System.Diagnostics.Debug.Assert (widget.Parent != this, "Widget is not parented on this widget");
 			System.Diagnostics.Debug.Assert (
 				System.Linq.Enumerable.Any (items, item => item.Widget == widget),
 				"Can only remove widgets from the container that are in the parent DockFrame's DockItem collection");
