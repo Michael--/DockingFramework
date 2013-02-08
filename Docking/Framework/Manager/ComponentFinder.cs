@@ -172,6 +172,36 @@ namespace Docking.Components
             {
             }
         }
+
+        public void AddTypes(ref List<Type> theList, Type search)
+        {
+            foreach (Type type in mTypes)
+            {
+                if (!type.IsAbstract && type.IsClass)
+                {
+                    Type t = type;
+                    while (t != null)
+                    {
+                        if (t.BaseType != null && t.BaseType.Name == search.Name)
+                        {
+                            bool found = false;
+                            // todo: binary search could be faster: do not add doubles
+                            foreach (Type check in theList)
+                                if (check.Name == type.Name)
+                                {
+                                    found = true;
+                                    break;
+                                }
+                            if (!found)
+                                theList.Add(type);
+                            break;
+                        }
+                        t = t.BaseType;
+                    }
+                }
+            }
+        }
+
         
         public void OpenMustExists(ComponentManager cm)
         {

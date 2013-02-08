@@ -384,6 +384,12 @@ namespace Docking.Components
         #endregion
 
         #region Docking 
+
+        public void AddTypes(ref List<Type> theList, Type search)
+        {
+            ComponentFinder.AddTypes(ref theList, search);
+        }
+
         private void ComponentHandleActivated(object sender, EventArgs e)
         {
             TaggedImageMenuItem menueitem = sender as TaggedImageMenuItem;
@@ -560,6 +566,17 @@ namespace Docking.Components
         #endregion
 
         #region Message
+
+        public void MessageWriteLineInvoke(String message)
+        {
+            if (PowerDown)
+                return;
+
+            Gtk.Application.Invoke(delegate {
+                MessageWriteLine(message);
+            });
+        }
+
         public void MessageWriteLine(String message)
         {
             if (PowerDown)
