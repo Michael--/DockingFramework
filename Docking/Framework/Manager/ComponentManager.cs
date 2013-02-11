@@ -385,9 +385,12 @@ namespace Docking.Components
 
         #region Docking 
 
-        public void AddTypes(ref List<Type> theList, Type search)
+        /// <summary>
+        /// Searchs for requested type in all available components DLL
+        /// </summary>
+        public Type[] SearchForTypes(Type search)
         {
-            ComponentFinder.AddTypes(ref theList, search);
+            return ComponentFinder.SearchForTypes(search);
         }
 
         private void ComponentHandleActivated(object sender, EventArgs e)

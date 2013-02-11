@@ -173,8 +173,12 @@ namespace Docking.Components
             }
         }
 
-        public void AddTypes(ref List<Type> theList, Type search)
+        /// <summary>
+        /// Searchs for requested type in all available components DLL
+        /// </summary>
+        public Type[] SearchForTypes(Type search)
         {
+            List<Type> theList = new List<Type>();
             foreach (Type type in mTypes)
             {
                 if (!type.IsAbstract && type.IsClass)
@@ -200,6 +204,7 @@ namespace Docking.Components
                     }
                 }
             }
+            return theList.ToArray();
         }
 
         
