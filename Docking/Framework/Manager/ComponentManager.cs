@@ -14,6 +14,8 @@ namespace Docking.Components
         #region Initialization
         public ComponentManager (WindowType wt) : base(wt)
         {
+            AccelGroup = new AccelGroup();
+            AddAccelGroup(AccelGroup);
             ComponentFinder = new Docking.Components.ComponentFinder();
             XmlDocument = new XmlDocument();
             PowerDown = false;
@@ -64,14 +66,12 @@ namespace Docking.Components
             MenuBar = menuBar;
         }
 
+        public AccelGroup AccelGroup  { get; private set; }
+
         private void InstallQuitMenu()
         {
-            // todo: probably this group could be used for further accelerator
-            AccelGroup grp = new AccelGroup();
-            AddAccelGroup(grp);
-
             ImageMenuItem item = new ImageMenuItem("Quit");
-            item.AddAccelerator("activate", grp, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.MetaMask, AccelFlags.Visible));
+            item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.MetaMask, AccelFlags.Visible));
             item.Activated +=  OnQuitActionActivated;
             InsertMenu("File", item);
         }

@@ -11,45 +11,51 @@
     <AssemblyName>Docking</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>True</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Package>gtk-sharp-2.0</Package>
+    </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Private>False</Private>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Drawing" />
     <Reference Include="Mono.Posix" />
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Private>False</Private>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Private>False</Private>
+      <Package>glib-sharp-2.0</Package>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <Private>False</Private>
+      <Package>gtk-sharp-2.0</Package>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +102,7 @@
     <Compile Include="Tools\Threading\TaskInformation.cs" />
     <Compile Include="Tools\Threading\ThreadWorker.cs" />
     <Compile Include="Tools\Threading\ThreadWorkerInformation.cs" />
+    <Compile Include="Framework\Interfaces\IFileOpen.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
