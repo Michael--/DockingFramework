@@ -25,6 +25,8 @@ namespace Examples.VirtualList
             hpanedPosition.Add(hpaned1.Position);
             hpanedPosition.Add(hpaned2.Position);
             hpanedPosition.Add(hpaned3.Position);
+
+            // todo: MoveHandle event will not called, don't know why
             hpaned1.MoveHandle += HandleMoveHandle;
             hpaned2.MoveHandle += HandleMoveHandle;
             hpaned3.MoveHandle += HandleMoveHandle;
@@ -39,7 +41,6 @@ namespace Examples.VirtualList
         {
             // due to can't find out why HPaned.MoveHandle don't fire
             // its events, use as a workaround a timer polling 
-
             for (int i = 0; i < hpaned.Count; i++)
             {
                 if (hpaned[i].Position != hpanedPosition[i])
@@ -47,7 +48,6 @@ namespace Examples.VirtualList
                     hpanedPosition[i] = hpaned[i].Position;
                     Gtk.Application.Invoke(delegate 
                     {
-                        // HandleMoveHandle(null, new MoveHandleArgs());
                         drawingarea.QueueDraw();
                     });
                     return;
@@ -55,8 +55,10 @@ namespace Examples.VirtualList
             }
         }
 
+        // workaround for HandleMoveHandle
         System.Timers.Timer moveHandleTimer;
 
+        // ubfortunately this event will not called
         void HandleMoveHandle (object o, MoveHandleArgs args)
         {
             Console.WriteLine("HandleMoveHandle args={0}", args.ToString());
@@ -169,6 +171,15 @@ namespace Examples.VirtualList
                 vscrollbar1.Adjustment.PageSize = pageSize;
                 vscrollbar1.Adjustment.PageIncrement = pageSize;
             }
+        }
+
+        protected override bool OnScrollEvent(Gdk.EventScroll evnt)
+        {
+            if (evnt.Direction == Gdk.ScrollDirection.Down)
+                vscrollbar1.Value = vscrollbar1.Value + 1;
+            else if (evnt.Direction == Gdk.ScrollDirection.Up)
+                vscrollbar1.Value = vscrollbar1.Value - 1;
+            return base.OnScrollEvent(evnt);
         }
 
         protected override bool OnButtonPressEvent(Gdk.EventButton evnt)
