@@ -8,6 +8,20 @@ namespace Examples.VirtualList
     [System.ComponentModel.ToolboxItem(true)]
     public partial class VirtualListView : Gtk.Bin
     {
+        private class Column
+        {
+            public Column(String name, int width, bool visible)
+            {
+                Name = name;
+                Width = width;
+                Visible = visible;
+            }
+
+            public String Name { get; private set; }
+            public int Width { get; set; }
+            public bool Visible { get; set; }
+        }
+
         public VirtualListView ()
         {
             this.Build();
@@ -20,19 +34,14 @@ namespace Examples.VirtualList
             SelectedRow = 0;
             SelectionMode = false;
             vscrollbar1.SetRange(0, RowCount);
-       
-            hpaned.Add(hpaned1);
-            hpaned.Add(hpaned2);
-            hpaned.Add(hpaned3);
-            hpanedPosition.Add(hpaned1.Position);
-            hpanedPosition.Add(hpaned2.Position);
-            hpanedPosition.Add(hpaned3.Position);
 
-            // todo: MoveHandle event will not called, don't know why
-            hpaned1.MoveHandle += HandleMoveHandle;
-            hpaned2.MoveHandle += HandleMoveHandle;
-            hpaned3.MoveHandle += HandleMoveHandle;
+            AddColumn("Column1", 50, true);
+            AddColumn("Column2", 150, true);
+            AddColumn("Column3", 50, true);
+            AddColumn("Column4", 50, true);
 
+            UpdateColumns();
+           
             moveHandleTimer = new System.Timers.Timer();
             moveHandleTimer.Elapsed += HandleElapsed;
             moveHandleTimer.Interval = 50;
@@ -41,18 +50,23 @@ namespace Examples.VirtualList
 
         void HandleElapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            // due to can't find out why HPaned.MoveHandle don't fire
-            // its events, use as a workaround a timer polling 
-            for (int i = 0; i < hpaned.Count; i++)
+            lock (hpanedPosition)
             {
-                if (hpaned[i].Position != hpanedPosition[i])
-                {
-                    hpanedPosition[i] = hpaned[i].Position;
-                    Gtk.Application.Invoke(delegate 
-                    {
-                        drawingarea.QueueDraw();
-                    });
+                if (!createdWorkaround)
                     return;
+                // due to can't find out why HPaned.MoveHandle don't fire
+                // its events, use as a workaround a timer polling 
+                for (int i = 0; i < hpaned.Count; i++)
+                {
+                    if (hpaned[i].Position != hpanedPosition[i])
+                    {
+                        hpanedPosition[i] = hpaned[i].Position;
+                        Gtk.Application.Invoke(delegate
+                        {
+                            drawingarea.QueueDraw();
+                        });
+                        return;
+                    }
                 }
             }
         }
@@ -91,9 +105,9 @@ namespace Examples.VirtualList
             return 9999;
         }
 
-        private String GetContent(int line, int row)
+        private String GetContent(int row, int column)
         {
-            return String.Format("Line:{0} Row:{1}", line, row);
+            return String.Format("Row:{0} Column:{1}", row, column);
         }
 
         private bool isRowSelected(int row)
@@ -103,6 +117,82 @@ namespace Examples.VirtualList
             return row >= bottom && row <= top;
         }
 
+        public void AddColumn(String name, int width, bool visible)
+        {
+            columns.Add(new Column(name, width, visible));
+        }
+
+        private void SetColumnVisibility(String name, bool visible)
+        {
+        }
+
+        public void UpdateColumns()
+        {
+            lock (hpanedPosition)
+            {
+                hpaned.Clear();
+                hpanedPosition.Clear();
+                int countVisible = 0;
+                foreach (Column c in columns)
+                {
+                    if (c.Visible)
+                        countVisible++;
+                }
+
+                if (countVisible == 0)
+                    return;
+
+                HPaned hp = new HPaned();
+                vbox1.Remove(hbox1);
+                vbox1.Remove(hscrollbar1);
+                vbox1.PackStart(hp, false, true, 0);
+                vbox1.PackStart(hbox1, true, true, 0);
+                vbox1.PackStart(hscrollbar1, false, true, 0);
+                bool add = true;
+                foreach (Column c in columns)
+                {
+                    if (!c.Visible)
+                        continue;
+
+                    if (add)
+                        AddNewHPaned(hp, c.Width);
+                    add = false;
+
+                    HBox hbox = new HBox();
+                    Label label = new Label(c.Name);
+                    hbox.PackStart(label, false, true, 0);
+
+                    if (hp.Child1 == null)
+                    {
+                        hp.Add1(hbox);
+                    }
+                    else if (countVisible == 1)
+                    {
+                        hp.Add2(hbox);
+                    }
+                    else
+                    {
+                        HPaned hp2 = new HPaned();
+                        AddNewHPaned(hp2, c.Width);
+                        hp.Add2(hp2);
+                        hp = hp2;
+                        hp.Add1(hbox);
+                    }
+                    countVisible--;
+                }
+                createdWorkaround = false;
+            }
+        }
+
+        private void AddNewHPaned(HPaned hp, int width)
+        {
+            hp.MoveHandle += HandleMoveHandle;
+            hp.Position = width;
+            hpaned.Add(hp);
+            hpanedPosition.Add(width);
+        }
+
+        List<Column> columns = new List<Column>();
         List<HPaned> hpaned = new List<HPaned>();
         List<int> hpanedPosition = new List<int>();
 
@@ -125,9 +215,10 @@ namespace Examples.VirtualList
             if (!createdWorkaround)
             {
                 createdWorkaround = true;
-                hpaned1.Position = 50;
-                hpaned2.Position = 100;
-                hpaned3.Position = 200;
+                for (int i = 0; i < hpaned.Count; i++)
+                {
+                    hpaned[i].Position = hpanedPosition[i];
+                }
             }
             Gdk.EventExpose expose = args.Args[0] as Gdk.EventExpose;
             Gdk.Window win = expose.Window;
@@ -326,7 +417,6 @@ namespace Examples.VirtualList
                 GrabFocus();
             drawingarea.QueueDraw();
         }
-
     }
 }
 
