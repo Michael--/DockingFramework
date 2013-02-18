@@ -17,6 +17,8 @@ namespace Examples.VirtualList
             LineLayout.GetPixelSize(out width, out height);
             ConstantHeight = height;
             CurrentRow = 0;
+            SelectedRow = 0;
+            SelectionMode = false;
             vscrollbar1.SetRange(0, RowCount);
        
             hpaned.Add(hpaned1);
@@ -68,6 +70,8 @@ namespace Examples.VirtualList
         private Pango.Layout LineLayout { get; set; }
         private int ConstantHeight { get; set; }
         private int CurrentRow { get; set; }
+        private int SelectedRow { get; set; }
+        private bool SelectionMode { get; set; }
         private int TopVisibleRow { get; set; }
         private int BottomVisibleRow { get; set; }
         private int RowCount { get { return 42000; } }
@@ -90,6 +94,13 @@ namespace Examples.VirtualList
         private String GetContent(int line, int row)
         {
             return String.Format("Line:{0} Row:{1}", line, row);
+        }
+
+        private bool isRowSelected(int row)
+        {
+            int bottom = Math.Min(CurrentRow, SelectedRow);
+            int top = Math.Max(CurrentRow, SelectedRow);
+            return row >= bottom && row <= top;
         }
 
         List<HPaned> hpaned = new List<HPaned>();
@@ -133,7 +144,7 @@ namespace Examples.VirtualList
                 int dx = -(int)hscrollbar1.Value;
                 Gdk.Rectangle rect = new Gdk.Rectangle(dx, dy, 0, ConstantHeight);
                 StateType st;
-                if (row == CurrentRow)
+                if (isRowSelected(row))
                     st = StateType.Selected;
                 else if (HasFocus)
                     st = StateType.Prelight;
@@ -206,6 +217,7 @@ namespace Examples.VirtualList
         protected override bool OnFocusOutEvent(Gdk.EventFocus evnt)
         {
             Console.WriteLine("OnFocusOutEvent IN={0}", evnt.In);
+            SelectionMode = false;
             drawingarea.QueueDraw();
             return base.OnFocusOutEvent(evnt);
         }
@@ -234,12 +246,38 @@ namespace Examples.VirtualList
 
             if (redraw)
                 drawingarea.QueueDraw();
+
+            if (!SelectionMode)
+                SelectedRow = CurrentRow;
+        }
+
+        protected override bool OnKeyReleaseEvent(Gdk.EventKey evnt)
+        {
+            switch (evnt.Key)
+            {
+                case Gdk.Key.Shift_L:
+                    SelectionMode = false;
+                    return true;
+                    
+                case Gdk.Key.Shift_R:
+                    SelectionMode = false;
+                    return true;
+            }
+            return base.OnKeyReleaseEvent(evnt);
         }
 
         protected override bool OnKeyPressEvent(Gdk.EventKey evnt)
         {
             switch (evnt.Key)
             {
+                case Gdk.Key.Shift_L:
+                    SelectionMode = true;
+                    return true;
+                    
+                case Gdk.Key.Shift_R:
+                    SelectionMode = true;
+                    return true;
+                    
                 case Gdk.Key.Up:
                     MoveCursor(-1);
                     return true;
