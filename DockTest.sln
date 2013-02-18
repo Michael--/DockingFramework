@@ -8,34 +8,32 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockingExamples", "DockingExamples\DockingExamples.csproj", "{D3728416-6C94-4A4B-A121-E0B822FE3F26}"
 EndProject
 Global
-	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x86 = Debug|x86
-		Release|x86 = Release|x86
-		AppStore|x86 = AppStore|x86
-	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8A5B069F-BE1F-41D3-8D58-BCA292646959}.Debug|x86.ActiveCfg = Debug|x86
-		{8A5B069F-BE1F-41D3-8D58-BCA292646959}.Debug|x86.Build.0 = Debug|x86
-		{8A5B069F-BE1F-41D3-8D58-BCA292646959}.Release|x86.ActiveCfg = Release|x86
-		{8A5B069F-BE1F-41D3-8D58-BCA292646959}.Release|x86.Build.0 = Release|x86
-		{8DDC0184-EBA8-4264-993D-E47173F12814}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8DDC0184-EBA8-4264-993D-E47173F12814}.Debug|x86.Build.0 = Debug|Any CPU
-		{8DDC0184-EBA8-4264-993D-E47173F12814}.Release|x86.ActiveCfg = Release|Any CPU
-		{8DDC0184-EBA8-4264-993D-E47173F12814}.Release|x86.Build.0 = Release|Any CPU
-		{D3728416-6C94-4A4B-A121-E0B822FE3F26}.AppStore|x86.ActiveCfg = Debug|Any CPU
-		{D3728416-6C94-4A4B-A121-E0B822FE3F26}.AppStore|x86.Build.0 = Debug|Any CPU
-		{D3728416-6C94-4A4B-A121-E0B822FE3F26}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D3728416-6C94-4A4B-A121-E0B822FE3F26}.Debug|x86.Build.0 = Debug|Any CPU
-		{D3728416-6C94-4A4B-A121-E0B822FE3F26}.Release|x86.ActiveCfg = Release|Any CPU
-		{D3728416-6C94-4A4B-A121-E0B822FE3F26}.Release|x86.Build.0 = Release|Any CPU
-	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = DockingTest\DockingTest.csproj
-		Policies = $0
-		$0.TextStylePolicy = $1
-		$1.FileWidth = 120
-		$1.inheritsSet = VisualStudio
-		$1.inheritsScope = text/plain
-		$1.scope = text/plain
-	EndGlobalSection
+ GlobalSection(SolutionConfigurationPlatforms) = preSolution
+  Debug|x86 = Debug|x86
+  Release|x86 = Release|x86
+  AppStore|x86 = AppStore|x86
+ EndGlobalSection
+ GlobalSection(ProjectConfigurationPlatforms) = postSolution
+  {8A5B069F-BE1F-41D3-8D58-BCA292646959}.Debug|x86.ActiveCfg = Debug|x86
+  {8A5B069F-BE1F-41D3-8D58-BCA292646959}.Debug|x86.Build.0 = Debug|x86
+  {8A5B069F-BE1F-41D3-8D58-BCA292646959}.Release|x86.ActiveCfg = Release|x86
+  {8A5B069F-BE1F-41D3-8D58-BCA292646959}.Release|x86.Build.0 = Release|x86
+  {8DDC0184-EBA8-4264-993D-E47173F12814}.Debug|x86.ActiveCfg = Debug|x86
+  {8DDC0184-EBA8-4264-993D-E47173F12814}.Debug|x86.Build.0 = Debug|x86
+  {8DDC0184-EBA8-4264-993D-E47173F12814}.Release|x86.ActiveCfg = Release|x86
+  {8DDC0184-EBA8-4264-993D-E47173F12814}.Release|x86.Build.0 = Release|x86
+  {D3728416-6C94-4A4B-A121-E0B822FE3F26}.Debug|x86.ActiveCfg = Debug|x86
+  {D3728416-6C94-4A4B-A121-E0B822FE3F26}.Debug|x86.Build.0 = Debug|x86
+  {D3728416-6C94-4A4B-A121-E0B822FE3F26}.Release|x86.ActiveCfg = Release|x86
+  {D3728416-6C94-4A4B-A121-E0B822FE3F26}.Release|x86.Build.0 = Release|x86
+ EndGlobalSection
+ GlobalSection(MonoDevelopProperties) = preSolution
+  StartupItem = DockingTest\DockingTest.csproj
+  Policies = $0
+  $0.TextStylePolicy = $1
+  $1.FileWidth = 120
+  $1.inheritsSet = VisualStudio
+  $1.inheritsScope = text/plain
+  $1.scope = text/plain
+ EndGlobalSection
 EndGlobal
