@@ -273,6 +273,7 @@
         <property name="MemberName" />
         <property name="Events">ButtonPressMask</property>
         <property name="ExtensionEvents">All</property>
+        <property name="RowCount">0</property>
       </widget>
     </child>
   </widget>

@@ -17,6 +17,7 @@ namespace Examples.VirtualList
 			this.virtuallistview1.Events = ((global::Gdk.EventMask)(256));
 			this.virtuallistview1.ExtensionEvents = ((global::Gdk.ExtensionMode)(1));
 			this.virtuallistview1.Name = "virtuallistview1";
+			this.virtuallistview1.RowCount = 0;
 			this.Add (this.virtuallistview1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

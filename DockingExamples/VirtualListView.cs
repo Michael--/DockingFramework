@@ -33,15 +33,7 @@ namespace Examples.VirtualList
             CurrentRow = 0;
             SelectedRow = 0;
             SelectionMode = false;
-            vscrollbar1.SetRange(0, RowCount);
-
-            AddColumn("Column1", 50, true);
-            AddColumn("Column2", 150, true);
-            AddColumn("Column3", 50, true);
-            AddColumn("Column4", 50, true);
-
-            UpdateColumns();
-           
+                       
             moveHandleTimer = new System.Timers.Timer();
             moveHandleTimer.Elapsed += HandleElapsed;
             moveHandleTimer.Interval = 50;
@@ -75,20 +67,60 @@ namespace Examples.VirtualList
         System.Timers.Timer moveHandleTimer;
 
         // ubfortunately this event will not called
-        void HandleMoveHandle (object o, MoveHandleArgs args)
+        private void HandleMoveHandle (object o, MoveHandleArgs args)
         {
             Console.WriteLine("HandleMoveHandle args={0}", args.ToString());
             drawingarea.QueueDraw();
         }
 
+        /// <summary>
+        /// Sets the get content delegate. Will be called for any content request.
+        /// </summary>
+        public ContentDelegate GetContentDelegate { private get; set; } 
+        public delegate String ContentDelegate(int row, int column);
+
+        /// <summary>
+        /// Gets the current row index
+        /// </summary>
+        public int CurrentRow { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the row count, the possible size of the list
+        /// </summary>
+        public  int RowCount
+        {
+            get
+            {
+                return mRow;
+            }
+            set
+            {
+                mRow = value;
+                CurrentRow = Math.Max(CurrentRow, mRow - 1);
+                SelectedRow = Math.Max(CurrentRow, mRow - 1);
+                vscrollbar1.SetRange(0, Math.Max(0, mRow - 1));
+                drawingarea.QueueDraw();
+            }
+        }
+        private int mRow;
+
+
+        /// <summary>
+        /// Get selection. Return the range of selected lines.
+        /// At least the current line is always selected
+        /// </summary>
+        public void GetSelection(out int bottom, out int top)
+        {
+            bottom = Math.Min(CurrentRow, SelectedRow);
+            top = Math.Max(CurrentRow, SelectedRow);
+        }
+
         private Pango.Layout LineLayout { get; set; }
         private int ConstantHeight { get; set; }
-        private int CurrentRow { get; set; }
         private int SelectedRow { get; set; }
         private bool SelectionMode { get; set; }
         private int TopVisibleRow { get; set; }
         private int BottomVisibleRow { get; set; }
-        private int RowCount { get { return 42000; } }
         private int ColumnCount { get { return hpaned.Count + 1; } }
         private int GetColumWidth(int column)
         {
@@ -105,11 +137,6 @@ namespace Examples.VirtualList
             return 9999;
         }
 
-        private String GetContent(int row, int column)
-        {
-            return String.Format("Row:{0} Column:{1}", row, column);
-        }
-
         private bool isRowSelected(int row)
         {
             int bottom = Math.Min(CurrentRow, SelectedRow);
@@ -117,15 +144,79 @@ namespace Examples.VirtualList
             return row >= bottom && row <= top;
         }
 
+        /// <summary>
+        /// Adds a new column.
+        /// After the last column has been added, you must confirm
+        /// with UpdateColumns()
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <param name="width">Width.</param>
+        /// <param name="visible">If set to <c>true</c> visible.</param>
         public void AddColumn(String name, int width, bool visible)
         {
-            columns.Add(new Column(name, width, visible));
+            columns.Add(name, new Column(name, width, visible));
         }
 
-        private void SetColumnVisibility(String name, bool visible)
+        /// <summary>
+        /// Removes a column. Make visible with UpdateColumns().
+        /// </summary>
+        /// <param name="name">Name.</param>
+        public void RemoveColumn(String name)
         {
+            columns.Remove(name);
         }
 
+        /// <summary>
+        /// Clears the column definitions. Make visible with UpdateColumns(). 
+        /// </summary>
+        public void ClearColumns()
+        {
+            columns.Clear();
+        }
+
+        /// <summary>
+        /// Sets the column visibility. 
+        /// Make visible with UpdateColumns(). 
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <param name="visible">If set to <c>true</c> visible.</param>
+        public void SetColumnVisibility(String name, bool visible)
+        {
+            Column c;
+            if (columns.TryGetValue(name, out c))
+                c.Visible = visible;
+        }
+
+        /// <summary>
+        /// Sets the width of the column.
+        /// Make visible with UpdateColumns(). 
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <param name="width">Width.</param>
+        public void SetColumnWidth(String name, int width)
+        {
+            Column c;
+            if (columns.TryGetValue(name, out c))
+                c.Width = width;
+        }
+
+        /// <summary>
+        /// Gets the width of the column.
+        /// Make visible with UpdateColumns(). 
+        /// </summary>
+        /// <returns>The column width.</returns>
+        /// <param name="name">Name.</param>
+        public int GetColumnWidth(String name)
+        {
+            Column c;
+            if (columns.TryGetValue(name, out c))
+                return c.Width;
+            return 0;
+        }
+
+        /// <summary>
+        /// Updates the columns view and make all changes visible
+        /// </summary>
         public void UpdateColumns()
         {
             lock (hpanedPosition)
@@ -133,9 +224,9 @@ namespace Examples.VirtualList
                 hpaned.Clear();
                 hpanedPosition.Clear();
                 int countVisible = 0;
-                foreach (Column c in columns)
+                foreach (KeyValuePair<String, Column> kvp in columns)
                 {
-                    if (c.Visible)
+                    if (kvp.Value.Visible)
                         countVisible++;
                 }
 
@@ -149,17 +240,18 @@ namespace Examples.VirtualList
                 vbox1.PackStart(hbox1, true, true, 0);
                 vbox1.PackStart(hscrollbar1, false, true, 0);
                 bool add = true;
-                foreach (Column c in columns)
+                foreach (KeyValuePair<String, Column> kvp  in columns)
                 {
-                    if (!c.Visible)
+                    if (!kvp.Value.Visible)
                         continue;
 
                     if (add)
-                        AddNewHPaned(hp, c.Width);
+                        AddNewHPaned(hp, kvp.Value.Width);
                     add = false;
 
                     HBox hbox = new HBox();
-                    Label label = new Label(c.Name);
+                    Label label = new Label(kvp.Value.Name);
+                    label.SetPadding(2, 2);
                     hbox.PackStart(label, false, true, 0);
 
                     if (hp.Child1 == null)
@@ -173,13 +265,14 @@ namespace Examples.VirtualList
                     else
                     {
                         HPaned hp2 = new HPaned();
-                        AddNewHPaned(hp2, c.Width);
+                        AddNewHPaned(hp2, kvp.Value.Width);
                         hp.Add2(hp2);
                         hp = hp2;
                         hp.Add1(hbox);
                     }
                     countVisible--;
                 }
+                vbox1.ShowAll();
                 createdWorkaround = false;
             }
         }
@@ -192,7 +285,7 @@ namespace Examples.VirtualList
             hpanedPosition.Add(width);
         }
 
-        List<Column> columns = new List<Column>();
+        Dictionary<String, Column> columns = new Dictionary<string, Column>();
         List<HPaned> hpaned = new List<HPaned>();
         List<int> hpanedPosition = new List<int>();
 
@@ -225,6 +318,8 @@ namespace Examples.VirtualList
             Gdk.Rectangle clientRect = expose.Area;
 
             win.DrawRectangle(Style.LightGC(StateType.Normal), true, clientRect);
+            if (GetContentDelegate == null)
+                return; // todo: an error message could be displayed
           
             int offset = (int)vscrollbar1.Value;
             TopVisibleRow = offset;
@@ -249,7 +344,7 @@ namespace Examples.VirtualList
                     rect = new Gdk.Rectangle(rect.Left, rect.Top, xwidth, ConstantHeight);
                     if (dx > clientRect.Right)
                         break;
-                    String content = GetContent(row, column);
+                    String content = GetContentDelegate(row, column);
                     LineLayout.SetMarkup(content);
                     win.DrawRectangle(gc, true, rect);
                     dx += 2;
