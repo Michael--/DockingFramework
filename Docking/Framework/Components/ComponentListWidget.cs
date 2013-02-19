@@ -37,6 +37,7 @@ namespace Docking.Components
             ComponentManager.SaveObject("ComponentListWidget", p);
         }
 
+        [Serializable()]
         public class Persistence 
         {
             public void SaveColumnWidth(Gtk.TreeViewColumn []columns)
