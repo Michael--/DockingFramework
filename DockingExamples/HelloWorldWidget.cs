@@ -4,7 +4,7 @@ using Docking.Components;
 
 namespace Examples.HelloWorld
 {
-	[System.ComponentModel.ToolboxItem(true)]
+	[System.ComponentModel.ToolboxItem(false)]
 	public partial class HelloWorldWidget : Gtk.Bin
 	{
         public HelloWorldWidget ()

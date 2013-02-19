@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Docking.Components
 {
-    [System.ComponentModel.ToolboxItem(true)]
+    [System.ComponentModel.ToolboxItem(false)]
     public partial class Activities : Gtk.Bin, IComponent
     {
         public Activities ()

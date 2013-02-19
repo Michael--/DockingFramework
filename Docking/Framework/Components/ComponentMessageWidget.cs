@@ -2,7 +2,7 @@ using System;
 
 namespace Docking.Components
 {
-    [System.ComponentModel.ToolboxItem(true)]
+    [System.ComponentModel.ToolboxItem(false)]
     public partial class ComponentMessageWidget : Gtk.Bin, IMessage
     {
         #region Implement IMessage

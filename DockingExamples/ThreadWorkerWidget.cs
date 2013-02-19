@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Examples.Threading
 {
-    [System.ComponentModel.ToolboxItem(true)]
+    [System.ComponentModel.ToolboxItem(false)]
     public partial class ThreadWorkerWidget : Gtk.Bin, Docking.Components.IComponent
     {
         public ThreadWorkerWidget ()

@@ -8,7 +8,7 @@ namespace Docking.Components
     //       - Display more details of each ComponentFactory
     //       - Display also information about existing instances
     //       - Add actions, like create/hide/show/erase
-	[System.ComponentModel.ToolboxItem(true)]
+	[System.ComponentModel.ToolboxItem(false)]
 	public partial class ComponentListWidget : Gtk.Bin, IComponent
 	{
         #region implement IComponent

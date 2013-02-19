@@ -3,7 +3,7 @@ using Docking.Components;
 
 namespace Examples.VirtualList
 {
-    [System.ComponentModel.ToolboxItem(true)]
+    [System.ComponentModel.ToolboxItem(false)]
     public partial class VirtualListTest : Gtk.Bin
     {
         public VirtualListTest ()
