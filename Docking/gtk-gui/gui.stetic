@@ -5,7 +5,7 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../bin/Debug/Docking.dll" internal="true" />
+    <widget-library name="../bin/x86/Debug/Docking.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="Docking.Components.ComponentListWidget" design-size="300 300">
     <property name="MemberName" />
@@ -60,6 +60,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="ShowScrollbars">True</property>
+                <property name="Editable">False</property>
                 <property name="Text" translatable="yes" />
               </widget>
             </child>

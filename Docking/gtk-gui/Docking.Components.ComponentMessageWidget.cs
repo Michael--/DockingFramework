@@ -26,6 +26,7 @@ namespace Docking.Components
 			this.textview1 = new global::Gtk.TextView ();
 			this.textview1.CanFocus = true;
 			this.textview1.Name = "textview1";
+			this.textview1.Editable = false;
 			this.GtkScrolledWindow.Add (this.textview1);
 			this.vbox2.Add (this.GtkScrolledWindow);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.GtkScrolledWindow]));
