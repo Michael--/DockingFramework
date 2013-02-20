@@ -5,8 +5,8 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
-    <widget-library name="../../Docking/bin/Debug/Docking.dll" />
-    <widget-library name="../bin/Debug/Examples.dll" internal="true" />
+    <widget-library name="../../Docking/bin/x86/Debug/Docking.dll" />
+    <widget-library name="../bin/x86/Debug/Examples.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="Examples.HelloWorld.HelloWorldWidget" design-size="300 300">
     <property name="MemberName">HelloWorld</property>

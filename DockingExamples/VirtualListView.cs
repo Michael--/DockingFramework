@@ -10,14 +10,16 @@ namespace Examples.VirtualList
     {
         private class Column
         {
-            public Column(String name, int width, bool visible)
+            public Column(String name, Widget widget, int width, bool visible)
             {
                 Name = name;
+                Widget = widget;
                 Width = width;
                 Visible = visible;
             }
 
             public String Name { get; private set; }
+            public Widget Widget { get; set; }
             public int Width { get; set; }
             public bool Visible { get; set; }
         }
@@ -145,7 +147,7 @@ namespace Examples.VirtualList
         }
 
         /// <summary>
-        /// Adds a new column.
+        /// Adds a new column, whereby the column is represented as a GTK label  
         /// After the last column has been added, you must confirm
         /// with UpdateColumns()
         /// </summary>
@@ -154,7 +156,22 @@ namespace Examples.VirtualList
         /// <param name="visible">If set to <c>true</c> visible.</param>
         public void AddColumn(String name, int width, bool visible)
         {
-            columns.Add(name, new Column(name, width, visible));
+            Label label = new Label(name);
+            label.SetPadding(2, 2);
+            columns.Add(name, new Column(name, label, width, visible));
+        }
+
+        /// <summary>
+        /// Adds a new column with an explicit given widget.
+        /// Make visible with UpdateColumns() at least.
+        /// </summary>
+        /// <param name="name">Name.</param>
+        /// <param name="widget">Widget.</param>
+        /// <param name="width">Width.</param>
+        /// <param name="visible">If set to <c>true</c> visible.</param>
+        public void AddColumn(String name, Widget widget, int width, bool visible)
+        {
+            columns.Add(name, new Column(name, widget, width, visible));
         }
 
         /// <summary>
@@ -249,18 +266,15 @@ namespace Examples.VirtualList
                         AddNewHPaned(hp, kvp.Value.Width);
                     add = false;
 
-                    HBox hbox = new HBox();
-                    Label label = new Label(kvp.Value.Name);
-                    label.SetPadding(2, 2);
-                    hbox.PackStart(label, false, true, 0);
+                    Widget widget = kvp.Value.Widget;
 
                     if (hp.Child1 == null)
                     {
-                        hp.Add1(hbox);
+                        hp.Add1(widget);
                     }
                     else if (countVisible == 1)
                     {
-                        hp.Add2(hbox);
+                        hp.Add2(widget);
                     }
                     else
                     {
@@ -268,7 +282,7 @@ namespace Examples.VirtualList
                         AddNewHPaned(hp2, kvp.Value.Width);
                         hp.Add2(hp2);
                         hp = hp2;
-                        hp.Add1(hbox);
+                        hp.Add1(widget);
                     }
                     countVisible--;
                 }
