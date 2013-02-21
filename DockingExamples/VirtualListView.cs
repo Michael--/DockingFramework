@@ -100,7 +100,7 @@ namespace Examples.VirtualList
                 mRow = value;
                 CurrentRow = Math.Max(CurrentRow, mRow - 1);
                 SelectedRow = Math.Max(CurrentRow, mRow - 1);
-                vscrollbar1.SetRange(0, Math.Max(0, mRow - 1));
+                vscrollbar1.SetRange(0, Math.Max(1, mRow - 1));
                 drawingarea.QueueDraw();
             }
         }

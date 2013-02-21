@@ -2,7 +2,6 @@ using System;
 using Gtk;
 using Docking;
 using System.IO;
-using DockingTest;
 using Docking.Components;
 using System.Diagnostics;
 using System.Xml;

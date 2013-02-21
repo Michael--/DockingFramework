@@ -20,6 +20,7 @@ namespace Examples.VirtualList
 			this.Name = "Examples.VirtualList.VirtualListView";
 			// Container child Examples.VirtualList.VirtualListView.Gtk.Container+ContainerChild
 			this.vbox1 = new global::Gtk.VBox ();
+			this.vbox1.Name = "vbox1";
 			this.vbox1.Spacing = 1;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.hbox1 = new global::Gtk.HBox ();

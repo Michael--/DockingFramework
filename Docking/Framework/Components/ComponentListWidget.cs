@@ -51,7 +51,7 @@ namespace Docking.Components
                 if (columns.Length == m_Width.Count)
                 {
                     for (int i = 0; i < columns.Length; i++)
-                        columns[i].FixedWidth = m_Width[i];
+                        columns[i].FixedWidth = Math.Max(1, m_Width[i]);
                 }
             }
         
