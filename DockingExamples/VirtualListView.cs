@@ -22,6 +22,7 @@ namespace Examples.VirtualList
             public Widget Widget { get; set; }
             public int Width { get; set; }
             public bool Visible { get; set; }
+            public HPaned HPanned { get; set; }
         }
 
         public VirtualListView ()
@@ -232,6 +233,41 @@ namespace Examples.VirtualList
         }
 
         /// <summary>
+        /// Gets the persistence data as int array
+        /// </summary>
+        /// <returns>The persistence.</returns>
+        public int[] GetPersistence()
+        {
+            List<int> data = new List<int>();
+            foreach (KeyValuePair<String, Column> kvp in columns)
+            {
+                if (kvp.Value.HPanned != null)
+                    data.Add(kvp.Value.HPanned.Position);
+                else
+                    data.Add(kvp.Value.Width);
+                data.Add(kvp.Value.Visible ? 1 : 0);
+            }
+
+            return data.ToArray();
+        }
+
+        /// <summary>
+        /// Sets the persistence previously got with GetPersistence
+        /// </summary>
+        /// <param name="data">Data.</param>
+        public void SetPersistence(int[]data)
+        {
+            if (data.Length != columns.Count * 2)
+                return;
+            int i = 0;
+            foreach (KeyValuePair<String, Column> kvp in columns)
+            {
+                kvp.Value.Width = data[i++];
+                kvp.Value.Visible = data[i++] != 0;
+            }
+        }
+
+        /// <summary>
         /// Updates the columns view and make all changes visible
         /// </summary>
         public void UpdateColumns()
@@ -245,6 +281,7 @@ namespace Examples.VirtualList
                 {
                     if (kvp.Value.Visible)
                         countVisible++;
+                    kvp.Value.HPanned = null;
                 }
 
                 if (countVisible == 0)
@@ -270,6 +307,7 @@ namespace Examples.VirtualList
 
                     if (hp.Child1 == null)
                     {
+                        kvp.Value.HPanned = hp;
                         hp.Add1(widget);
                     }
                     else if (countVisible == 1)
@@ -282,6 +320,7 @@ namespace Examples.VirtualList
                         AddNewHPaned(hp2, kvp.Value.Width);
                         hp.Add2(hp2);
                         hp = hp2;
+                        kvp.Value.HPanned = hp;
                         hp.Add1(widget);
                     }
                     countVisible--;

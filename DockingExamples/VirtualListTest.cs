@@ -1,11 +1,13 @@
 using System;
 using Docking.Components;
 using Gtk;
+using System.Collections.Generic;
+using Docking;
 
 namespace Examples.VirtualList
 {
     [System.ComponentModel.ToolboxItem(false)]
-    public partial class VirtualListTest : Gtk.Bin
+    public partial class VirtualListTest : Gtk.Bin, IComponent
     {
         public VirtualListTest ()
         {
@@ -14,19 +16,18 @@ namespace Examples.VirtualList
 
             // callback requesting data to display
             virtuallistview1.GetContentDelegate = GetContent;
-
+            
             // add simple label columns
             virtuallistview1.AddColumn("Index", 75, true);
             virtuallistview1.AddColumn("Context", 75, true);
-
+            
             // add a more complex custom made Column
             VBox box = new VBox();
             box.PackStart(new Label("Message"), false, false, 0);
             box.PackStart(new Entry(""), false, false, 0);
             virtuallistview1.AddColumn("Message", box, 150, true);
-
-            // show changes
-            virtuallistview1.UpdateColumns();
+            
+            // set content size
             virtuallistview1.RowCount = 42000;
         }
 
@@ -43,6 +44,48 @@ namespace Examples.VirtualList
             }
             return "?";
         }
+
+
+        #region implement IComponent
+        public ComponentManager ComponentManager { get; set; }
+        
+        void IComponent.Loaded(DockItem item)
+        {
+            Persistence p = (Persistence)ComponentManager.LoadObject("VirtualListTest", typeof(Persistence));
+            if (p != null)
+                p.Load(virtuallistview1);
+
+            // show changes
+            virtuallistview1.UpdateColumns();
+        }
+
+        void IComponent.Save()
+        {
+            Persistence p = Persistence.Save(virtuallistview1);
+            ComponentManager.SaveObject("VirtualListTest", p);
+        }
+        
+        [Serializable()]
+        public class Persistence 
+        {
+            static public Persistence Save(VirtualListView v)
+            {
+                Persistence p = new Persistence();
+                p.m_Data = v.GetPersistence();
+                return p;
+            }
+
+            public void Load(VirtualListView v)
+            {
+                if (m_Data != null)
+                    v.SetPersistence(m_Data);
+            }
+
+            // to have a simple persistence make the member public
+            // otherwise you have to implement IXmlSerializable
+            public int[] m_Data; 
+        }        
+        #endregion
     }
 
 #region Starter / Entry Point
