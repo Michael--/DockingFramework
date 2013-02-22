@@ -2,12 +2,16 @@ using System;
 using Gtk;
 using GLib;
 using System.Collections.Generic;
+using Docking.Components;
+using Docking;
 
 namespace Examples.VirtualList
 {
     [System.ComponentModel.ToolboxItem(true)]
     public partial class VirtualListView : Gtk.Bin
     {
+        public ComponentManager ComponentManager { get; set; }
+
         private class Column
         {
             public Column(String name, Widget widget, int width, bool visible)
@@ -368,16 +372,24 @@ namespace Examples.VirtualList
             }
             Gdk.EventExpose expose = args.Args[0] as Gdk.EventExpose;
             Gdk.Window win = expose.Window;
-            Gdk.Rectangle clientRect = expose.Area;
+            int width, height;
+            win.GetSize(out width, out height);
+            Gdk.Rectangle exposeRect = expose.Area;
+            bool fulldraw = width == exposeRect.Width && height == exposeRect.Height;
 
-            win.DrawRectangle(Style.LightGC(StateType.Normal), true, clientRect);
+            win.DrawRectangle(Style.LightGC(StateType.Normal), true, exposeRect);
             if (GetContentDelegate == null)
                 return; // todo: an error message could be displayed
           
             int offset = (int)vscrollbar1.Value;
-            TopVisibleRow = offset;
-            BottomVisibleRow = offset;
-            int dy = 0;
+            if (fulldraw)
+            {
+                TopVisibleRow = offset;
+                BottomVisibleRow = offset;
+            }
+            int dy = exposeRect.Top;
+            offset += dy / ConstantHeight;
+            dy -= dy % ConstantHeight;
             for (int row = offset; row < RowCount; row++)
             {
                 int dx = -(int)hscrollbar1.Value;
@@ -395,7 +407,7 @@ namespace Examples.VirtualList
                 {
                     int xwidth = GetColumWidth(column);
                     rect = new Gdk.Rectangle(rect.Left, rect.Top, xwidth, ConstantHeight);
-                    if (dx > clientRect.Right)
+                    if (dx > exposeRect.Right)
                         break;
                     String content = GetContentDelegate(row, column);
                     LineLayout.SetMarkup(content);
@@ -405,22 +417,35 @@ namespace Examples.VirtualList
                     dx += xwidth;
                     rect.Offset(xwidth, 0);
                 }
-                rect.Width = clientRect.Right - rect.Left + 1;
+                rect.Width = exposeRect.Right - rect.Left + 1;
                 win.DrawRectangle(Style.BackgroundGC(StateType.Normal), true, rect);
 
                 dy += ConstantHeight;
-                if (dy > clientRect.Height)
+                if (dy > exposeRect.Bottom)
                     break;
-                if (clientRect.Height - dy >= ConstantHeight)
+                if (fulldraw && exposeRect.Height - dy >= ConstantHeight)
                     BottomVisibleRow++;
             }
 
-            int pageSize = BottomVisibleRow - TopVisibleRow;
-            if (vscrollbar1.Adjustment.PageSize != pageSize)
+            if (fulldraw)
             {
-                vscrollbar1.Adjustment.PageSize = pageSize;
-                vscrollbar1.Adjustment.PageIncrement = pageSize;
+                int pageSize = BottomVisibleRow - TopVisibleRow;
+                if (vscrollbar1.Adjustment.PageSize != pageSize)
+                {
+                    vscrollbar1.Adjustment.PageSize = pageSize;
+                    vscrollbar1.Adjustment.PageIncrement = pageSize;
+                }
             }
+
+#if DEBUG2
+            if (ComponentManager != null)
+            {
+                String t1 = String.Format("Expose.Area={0}, size={1}.{2}",
+                              expose.Area.ToString(), width, height);
+                String t2 = String.Format("{0} T={1} B={2}", fulldraw ? "FULL" : "PART", TopVisibleRow, BottomVisibleRow);
+                ComponentManager.MessageWriteLineInvoke(String.Format("{0} {1}", t1, t2));
+            }
+#endif
         }
 
         protected override bool OnScrollEvent(Gdk.EventScroll evnt)

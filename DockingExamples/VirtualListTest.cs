@@ -51,6 +51,7 @@ namespace Examples.VirtualList
         
         void IComponent.Loaded(DockItem item)
         {
+            virtuallistview1.ComponentManager = this.ComponentManager;
             Persistence p = (Persistence)ComponentManager.LoadObject("VirtualListTest", typeof(Persistence));
             if (p != null)
                 p.Load(virtuallistview1);
