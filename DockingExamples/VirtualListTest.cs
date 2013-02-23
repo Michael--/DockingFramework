@@ -3,6 +3,7 @@ using Docking.Components;
 using Gtk;
 using System.Collections.Generic;
 using Docking;
+using System.Xml.Serialization;
 
 namespace Examples.VirtualList
 {
@@ -67,7 +68,7 @@ namespace Examples.VirtualList
         }
         
         [Serializable()]
-        public class Persistence 
+        public class Persistence : XmlSerializer
         {
             static public Persistence Save(VirtualListView v)
             {
