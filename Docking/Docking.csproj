@@ -129,6 +129,35 @@
     <Compile Include="Tools\Threading\ThreadWorker.cs" />
     <Compile Include="Tools\Threading\ThreadWorkerInformation.cs" />
     <Compile Include="Framework\Interfaces\IFileOpen.cs" />
+    <Compile Include="Framework\PropertyGrid\DefaultPropertyTab.cs" />
+    <Compile Include="Framework\PropertyGrid\EditorManager.cs" />
+    <Compile Include="Framework\PropertyGrid\EventPropertyTab.cs" />
+    <Compile Include="Framework\PropertyGrid\PropertyEditorCell.cs" />
+    <Compile Include="Framework\PropertyGrid\PropertyEditorTypeAttribute.cs" />
+    <Compile Include="Framework\PropertyGrid\PropertyGrid.cs" />
+    <Compile Include="Framework\PropertyGrid\PropertyGridTree.cs" />
+    <Compile Include="Framework\PropertyGrid\PropertyValueChangedEventArgs.cs" />
+    <Compile Include="Framework\PropertyGrid\PropertyValueChangedEventHandler.cs" />
+    <Compile Include="Framework\PropertyGrid\SurrogateUITypeEditorAttribute.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\BooleanEditorCell.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\CharPropertyEditor.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\CollectionEditor.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\ColorEditorCell.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\DateTimeEditor.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\DefaultEditor.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\EnumerationEditorCell.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\EventEditor.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\ExpandableObjectEditor.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\FilePathEditor.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\FlagsEditorCell.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\FlagsSelectorDialog.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\FloatRange.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\IntRange.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\TextEditor.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\TextEditorDialog.cs" />
+    <Compile Include="Framework\PropertyGrid\Editors\TimeSpanEditor.cs" />
+    <Compile Include="Framework\Monodevelop.Components\CompactScrolledWindow.cs" />
+    <Compile Include="Framework\Monodevelop.Components\MessageService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
@@ -151,5 +180,10 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Framework\PropertyGrid\" />
+    <Folder Include="Framework\PropertyGrid\Editors\" />
+    <Folder Include="Framework\Monodevelop.Components\" />
   </ItemGroup>
 </Project>
