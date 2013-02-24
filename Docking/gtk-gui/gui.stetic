@@ -148,7 +148,7 @@
       <widget class="MonoDevelop.Components.PropertyGrid.PropertyGrid" id="propertygrid1">
         <property name="MemberName" />
         <property name="ShowToolbar">True</property>
-        <property name="ShowHelp">False</property>
+        <property name="ShowHelp">True</property>
       </widget>
     </child>
   </widget>

@@ -92,9 +92,9 @@ namespace MonoDevelop.Components.PropertyGrid
 			catButton.Relief = ReliefStyle.None;
 			Gdk.Pixbuf pixbuf = null;
 			try {
-                pixbuf = new Gdk.Pixbuf (typeof (PropertyGrid).Assembly, "Docking.Framework.Monodevelop.Components.MonoDevelop.Components.PropertyGrid.SortByCat.png");
+                pixbuf = new Gdk.Pixbuf (typeof (PropertyGrid).Assembly, "Docking.Monodevelop.Components.MonoDevelop.Components.PropertyGrid.SortByCat.png");
 			} catch (Exception e) {
-                Console.WriteLine("Can't create pixbuf from resource: Docking.Framework.Monodevelop.Components.MonoDevelop.Components.PropertyGrid.SortByCat.png", e);
+                Console.WriteLine("Can't create pixbuf from resource: Docking.Monodevelop.Components.MonoDevelop.Components.PropertyGrid.SortByCat.png", e);
 			}
 			if (pixbuf != null) {
 				catButton.Image = new Gtk.Image (pixbuf);
@@ -120,10 +120,10 @@ namespace MonoDevelop.Components.PropertyGrid
 			helpButton.Relief = ReliefStyle.None;
 			helpButton.Image = new Gtk.Image (Gtk.Stock.Help, IconSize.Menu);
 			helpButton.TooltipText = "Show help panel";
-			//helpButton.Clicked += delegate {
-			//	ShowHelp = helpButton.Active;
+			helpButton.Clicked += delegate {
+				ShowHelp = helpButton.Active;
 			//	MonoDevelop.Core.PropertyService.Set (PROP_HELP_KEY, helpButton.Active);
-			//};
+			};
 			toolbar.Insert (helpButton, 3);
 			
 			#endregion
@@ -336,9 +336,10 @@ namespace MonoDevelop.Components.PropertyGrid
 			set { tree.ShadowType = value; }
 		}
 		
-		#region Hel Pane
+		#region Help Pane
 		
-		public bool ShowHelp
+        [DescriptionAttribute("Show the help bar at the bottom of the grid")]
+        public bool ShowHelp
 		{
 			get { return descFrame != null; }
 			set {

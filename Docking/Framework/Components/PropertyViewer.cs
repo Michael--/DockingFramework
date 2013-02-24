@@ -10,7 +10,7 @@ namespace Docking.Components
             this.Build();
             this.Name = "Properties";
 
-            this.propertygrid1.CurrentObject = this;
+            this.propertygrid1.CurrentObject = this.propertygrid1;
         }
     }
 
