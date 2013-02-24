@@ -165,8 +165,9 @@ namespace Docking.Components
             catch (ReflectionTypeLoadException)
             {
             }
-            catch (FileLoadException)
+            catch (FileLoadException e)
             {
+                Console.WriteLine(e.ToString());
             }
             catch (MissingMethodException)
             {

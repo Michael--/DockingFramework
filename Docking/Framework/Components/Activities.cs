@@ -179,6 +179,9 @@ namespace Docking.Components
             }
         }
     }
+
+    #region Starter / Entry Point
+
     
     public class Factory : ComponentFactory
     {
@@ -187,5 +190,6 @@ namespace Docking.Components
         public override String Comment { get { return "Show a list of all activities"; } }
         public override Mode Options { get { return Mode.CloseOnHide; } }
     }
+    #endregion
 }
 

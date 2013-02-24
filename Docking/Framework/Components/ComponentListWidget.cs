@@ -36,30 +36,6 @@ namespace Docking.Components
             p.SaveColumnWidth(treeview1.Columns);
             ComponentManager.SaveObject("ComponentListWidget", p);
         }
-
-        [Serializable()]
-        public class Persistence 
-        {
-            public void SaveColumnWidth(Gtk.TreeViewColumn []columns)
-            {
-                foreach (Gtk.TreeViewColumn c in columns)
-                    m_Width.Add(c.Width);
-            }
-
-            public void LoadColumnWidth(Gtk.TreeViewColumn []columns)
-            {
-                if (columns.Length == m_Width.Count)
-                {
-                    for (int i = 0; i < columns.Length; i++)
-                        columns[i].FixedWidth = Math.Max(1, m_Width[i]);
-                }
-            }
-        
-            // to have a simple persistence make the member public
-            // otherwise you have to implement IXmlSerializable
-            public List<int> m_Width = new List<int>(); 
-        }
-
         #endregion
 
         public ComponentListWidget ()
@@ -114,6 +90,31 @@ namespace Docking.Components
 
         Gtk.ListStore listStore;
 	}
+
+
+    [Serializable()]
+    public class Persistence 
+    {
+        public void SaveColumnWidth(Gtk.TreeViewColumn []columns)
+        {
+            foreach (Gtk.TreeViewColumn c in columns)
+                m_Width.Add(c.Width);
+        }
+        
+        public void LoadColumnWidth(Gtk.TreeViewColumn []columns)
+        {
+            if (columns.Length == m_Width.Count)
+            {
+                for (int i = 0; i < columns.Length; i++)
+                    columns[i].FixedWidth = Math.Max(1, m_Width[i]);
+            }
+        }
+        
+        // to have a simple persistence make the member public
+        // otherwise you have to implement IXmlSerializable
+        public List<int> m_Width = new List<int>(); 
+    }
+
 	
     #region Starter / Entry Point
 
