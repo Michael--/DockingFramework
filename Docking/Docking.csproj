@@ -86,32 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Docking\AutoHideBox.cs" />
-    <Compile Include="Docking\DockBar.cs" />
-    <Compile Include="Docking\DockBarItem.cs" />
-    <Compile Include="Docking\DockContainer.cs" />
-    <Compile Include="Docking\DockFrame.cs" />
-    <Compile Include="Docking\DockFrameTopLevel.cs" />
-    <Compile Include="Docking\DockGroup.cs" />
-    <Compile Include="Docking\DockGroupItem.cs" />
-    <Compile Include="Docking\DockGroupType.cs" />
-    <Compile Include="Docking\DockItem.cs" />
-    <Compile Include="Docking\DockItemBehavior.cs" />
-    <Compile Include="Docking\DockItemContainer.cs" />
-    <Compile Include="Docking\DockItemStatus.cs" />
-    <Compile Include="Docking\DockItemToolbar.cs" />
-    <Compile Include="Docking\DockLayout.cs" />
-    <Compile Include="Docking\DockObject.cs" />
-    <Compile Include="Docking\DockPosition.cs" />
-    <Compile Include="Docking\PlaceholderWindow.cs" />
-    <Compile Include="Docking\ShadedContainer.cs" />
-    <Compile Include="Docking\TabStrip.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="Docking\DockingHelper\HelperMethods.cs" />
-    <Compile Include="Docking\DockingHelper\HslColor.cs" />
-    <Compile Include="Docking\DockingHelper\Platform.cs" />
-    <Compile Include="Docking\DockingHelper\GtkWorkarounds.cs" />
-    <Compile Include="Docking\DockingHelper\PangoUtil.cs" />
     <Compile Include="gtk-gui\Docking.Components.ComponentListWidget.cs" />
     <Compile Include="gtk-gui\Docking.Components.ComponentMessageWidget.cs" />
     <Compile Include="gtk-gui\Docking.Components.Activities.cs" />
@@ -129,67 +104,87 @@
     <Compile Include="Tools\Threading\ThreadWorker.cs" />
     <Compile Include="Tools\Threading\ThreadWorkerInformation.cs" />
     <Compile Include="Framework\Interfaces\IFileOpen.cs" />
-    <Compile Include="Framework\PropertyGrid\DefaultPropertyTab.cs" />
-    <Compile Include="Framework\PropertyGrid\EditorManager.cs" />
-    <Compile Include="Framework\PropertyGrid\EventPropertyTab.cs" />
-    <Compile Include="Framework\PropertyGrid\PropertyEditorCell.cs" />
-    <Compile Include="Framework\PropertyGrid\PropertyEditorTypeAttribute.cs" />
-    <Compile Include="Framework\PropertyGrid\PropertyGrid.cs" />
-    <Compile Include="Framework\PropertyGrid\PropertyGridTree.cs" />
-    <Compile Include="Framework\PropertyGrid\PropertyValueChangedEventArgs.cs" />
-    <Compile Include="Framework\PropertyGrid\PropertyValueChangedEventHandler.cs" />
-    <Compile Include="Framework\PropertyGrid\SurrogateUITypeEditorAttribute.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\BooleanEditorCell.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\CharPropertyEditor.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\CollectionEditor.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\ColorEditorCell.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\DateTimeEditor.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\DefaultEditor.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\EnumerationEditorCell.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\EventEditor.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\ExpandableObjectEditor.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\FilePathEditor.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\FlagsEditorCell.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\FlagsSelectorDialog.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\FloatRange.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\IntRange.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\TextEditor.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\TextEditorDialog.cs" />
-    <Compile Include="Framework\PropertyGrid\Editors\TimeSpanEditor.cs" />
-    <Compile Include="Framework\Monodevelop.Components\CompactScrolledWindow.cs" />
-    <Compile Include="Framework\Monodevelop.Components\MessageService.cs" />
     <Compile Include="Framework\Components\PropertyViewer.cs" />
     <Compile Include="gtk-gui\Docking.Components.PropertyViewer.cs" />
+    <Compile Include="Monodevelop.Docking\AutoHideBox.cs" />
+    <Compile Include="Monodevelop.Docking\DockBar.cs" />
+    <Compile Include="Monodevelop.Docking\DockBarItem.cs" />
+    <Compile Include="Monodevelop.Docking\DockContainer.cs" />
+    <Compile Include="Monodevelop.Docking\DockFrame.cs" />
+    <Compile Include="Monodevelop.Docking\DockFrameTopLevel.cs" />
+    <Compile Include="Monodevelop.Docking\DockGroup.cs" />
+    <Compile Include="Monodevelop.Docking\DockGroupItem.cs" />
+    <Compile Include="Monodevelop.Docking\DockGroupType.cs" />
+    <Compile Include="Monodevelop.Docking\DockItem.cs" />
+    <Compile Include="Monodevelop.Docking\DockItemBehavior.cs" />
+    <Compile Include="Monodevelop.Docking\DockItemContainer.cs" />
+    <Compile Include="Monodevelop.Docking\DockItemStatus.cs" />
+    <Compile Include="Monodevelop.Docking\DockItemToolbar.cs" />
+    <Compile Include="Monodevelop.Docking\DockLayout.cs" />
+    <Compile Include="Monodevelop.Docking\DockObject.cs" />
+    <Compile Include="Monodevelop.Docking\DockPosition.cs" />
+    <Compile Include="Monodevelop.Docking\PlaceholderWindow.cs" />
+    <Compile Include="Monodevelop.Docking\ShadedContainer.cs" />
+    <Compile Include="Monodevelop.Docking\TabStrip.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\HelperMethods.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\HslColor.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\Platform.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\GtkWorkarounds.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\PangoUtil.cs" />
+    <Compile Include="Monodevelop.Components\CompactScrolledWindow.cs" />
+    <Compile Include="Monodevelop.Components\MessageService.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\DefaultPropertyTab.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\EditorManager.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\EventPropertyTab.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\PropertyEditorCell.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\PropertyEditorTypeAttribute.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\PropertyGrid.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\PropertyGridTree.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\PropertyValueChangedEventArgs.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\PropertyValueChangedEventHandler.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\SurrogateUITypeEditorAttribute.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\BooleanEditorCell.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\CharPropertyEditor.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\CollectionEditor.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\ColorEditorCell.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\DateTimeEditor.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\DefaultEditor.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\EnumerationEditorCell.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\EventEditor.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\ExpandableObjectEditor.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\FilePathEditor.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\FlagsEditorCell.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\FlagsSelectorDialog.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\FloatRange.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\IntRange.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\TextEditor.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\TextEditorDialog.cs" />
+    <Compile Include="Monodevelop.PropertyGrid\Editors\TimeSpanEditor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
   <ItemGroup>
-    <EmbeddedResource Include="Docking\stock-auto-hide.png">
-      <LogicalName>stock-auto-hide.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Docking\stock-close-12.png">
-      <LogicalName>stock-close-12.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Docking\stock-dock.png">
-      <LogicalName>stock-dock.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Docking\stock-menu-left-12.png">
-      <LogicalName>stock-menu-left-12.png</LogicalName>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Docking\stock-menu-right-12.png">
-      <LogicalName>stock-menu-right-12.png</LogicalName>
-    </EmbeddedResource>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <EmbeddedResource Include="Framework\Monodevelop.Components\MonoDevelop.Close.png" />
-    <EmbeddedResource Include="Framework\Monodevelop.Components\MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp" />
-    <EmbeddedResource Include="Framework\Monodevelop.Components\MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp" />
-    <EmbeddedResource Include="Framework\Monodevelop.Components\MonoDevelop.Components.PropertyGrid.SortByCat.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Framework\PropertyGrid\" />
-    <Folder Include="Framework\PropertyGrid\Editors\" />
-    <Folder Include="Framework\Monodevelop.Components\" />
+    <EmbeddedResource Include="Monodevelop.Docking\stock-auto-hide.png">
+      <LogicalName>stock-auto-hide.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Monodevelop.Docking\stock-close-12.png">
+      <LogicalName>stock-close-12.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Monodevelop.Docking\stock-dock.png">
+      <LogicalName>stock-dock.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Monodevelop.Docking\stock-menu-left-12.png">
+      <LogicalName>stock-menu-left-12.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Monodevelop.Docking\stock-menu-right-12.png">
+      <LogicalName>stock-menu-right-12.png</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Monodevelop.Components\MonoDevelop.Close.png" />
+    <EmbeddedResource Include="Monodevelop.Components\MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp" />
+    <EmbeddedResource Include="Monodevelop.Components\MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp" />
+    <EmbeddedResource Include="Monodevelop.Components\MonoDevelop.Components.PropertyGrid.SortByCat.png" />
   </ItemGroup>
 </Project>
