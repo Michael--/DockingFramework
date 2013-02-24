@@ -67,28 +67,30 @@ namespace Examples.VirtualList
             ComponentManager.SaveObject("VirtualListTest", p);
         }
         
-        [Serializable()]
-        public class Persistence : XmlSerializer
-        {
-            static public Persistence Save(VirtualListView v)
-            {
-                Persistence p = new Persistence();
-                p.m_Data = v.GetPersistence();
-                return p;
-            }
-
-            public void Load(VirtualListView v)
-            {
-                if (m_Data != null)
-                    v.SetPersistence(m_Data);
-            }
-
-            // to have a simple persistence make the member public
-            // otherwise you have to implement IXmlSerializable
-            public int[] m_Data; 
-        }        
         #endregion
     }
+
+    [Serializable()]
+    public class Persistence
+    {
+        static public Persistence Save(VirtualListView v)
+        {
+            Persistence p = new Persistence();
+            p.m_Data = v.GetPersistence();
+            return p;
+        }
+        
+        public void Load(VirtualListView v)
+        {
+            if (m_Data != null)
+                v.SetPersistence(m_Data);
+        }
+        
+        // to have a simple persistence make the member public
+        // otherwise you have to implement IXmlSerializable
+        public int[] m_Data; 
+    }        
+
 
 #region Starter / Entry Point
 

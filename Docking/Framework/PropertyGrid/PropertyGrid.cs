@@ -92,9 +92,9 @@ namespace MonoDevelop.Components.PropertyGrid
 			catButton.Relief = ReliefStyle.None;
 			Gdk.Pixbuf pixbuf = null;
 			try {
-				pixbuf = new Gdk.Pixbuf (typeof (PropertyGrid).Assembly, "MonoDevelop.Components.PropertyGrid.SortByCat.png");
+                pixbuf = new Gdk.Pixbuf (typeof (PropertyGrid).Assembly, "Docking.Framework.Monodevelop.Components.MonoDevelop.Components.PropertyGrid.SortByCat.png");
 			} catch (Exception e) {
-				Console.WriteLine("Can't create pixbuf from resource: MonoDevelop.Components.PropertyGrid.SortByCat.png", e);
+                Console.WriteLine("Can't create pixbuf from resource: Docking.Framework.Monodevelop.Components.MonoDevelop.Components.PropertyGrid.SortByCat.png", e);
 			}
 			if (pixbuf != null) {
 				catButton.Image = new Gtk.Image (pixbuf);

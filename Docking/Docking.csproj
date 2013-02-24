@@ -158,6 +158,8 @@
     <Compile Include="Framework\PropertyGrid\Editors\TimeSpanEditor.cs" />
     <Compile Include="Framework\Monodevelop.Components\CompactScrolledWindow.cs" />
     <Compile Include="Framework\Monodevelop.Components\MessageService.cs" />
+    <Compile Include="Framework\Components\PropertyViewer.cs" />
+    <Compile Include="gtk-gui\Docking.Components.PropertyViewer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
@@ -180,6 +182,10 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Monodevelop.Components\MonoDevelop.Close.png" />
+    <EmbeddedResource Include="Framework\Monodevelop.Components\MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp" />
+    <EmbeddedResource Include="Framework\Monodevelop.Components\MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp" />
+    <EmbeddedResource Include="Framework\Monodevelop.Components\MonoDevelop.Components.PropertyGrid.SortByCat.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Framework\PropertyGrid\" />

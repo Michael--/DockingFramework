@@ -141,36 +141,14 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="Docking.Components.Properties" design-size="300 300">
+  <widget class="Gtk.Bin" id="Docking.Components.PropertyViewer" design-size="300 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
-      <widget class="Gtk.VBox" id="vbox1">
+      <widget class="MonoDevelop.Components.PropertyGrid.PropertyGrid" id="propertygrid1">
         <property name="MemberName" />
-        <property name="Spacing">6</property>
-        <child>
-          <placeholder />
-        </child>
-        <child>
-          <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
-            <property name="MemberName" />
-            <property name="ShadowType">In</property>
-            <child>
-              <widget class="Gtk.TreeView" id="treeview1">
-                <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="ShowScrollbars">True</property>
-              </widget>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">1</property>
-            <property name="AutoSize">True</property>
-          </packing>
-        </child>
-        <child>
-          <placeholder />
-        </child>
+        <property name="ShowToolbar">True</property>
+        <property name="ShowHelp">False</property>
       </widget>
     </child>
   </widget>
