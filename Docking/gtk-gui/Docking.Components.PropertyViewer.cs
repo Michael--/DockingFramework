@@ -16,7 +16,7 @@ namespace Docking.Components
 			this.propertygrid1 = new global::MonoDevelop.Components.PropertyGrid.PropertyGrid ();
 			this.propertygrid1.Name = "propertygrid1";
 			this.propertygrid1.ShowToolbar = true;
-			this.propertygrid1.ShowHelp = false;
+			this.propertygrid1.ShowHelp = true;
 			this.Add (this.propertygrid1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

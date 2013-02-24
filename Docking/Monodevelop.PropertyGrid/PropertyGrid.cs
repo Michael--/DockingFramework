@@ -120,10 +120,10 @@ namespace MonoDevelop.Components.PropertyGrid
 			helpButton.Relief = ReliefStyle.None;
 			helpButton.Image = new Gtk.Image (Gtk.Stock.Help, IconSize.Menu);
 			helpButton.TooltipText = "Show help panel";
-			//helpButton.Clicked += delegate {
-			//	ShowHelp = helpButton.Active;
+			helpButton.Clicked += delegate {
+				ShowHelp = helpButton.Active;
 			//	MonoDevelop.Core.PropertyService.Set (PROP_HELP_KEY, helpButton.Active);
-			//};
+			};
 			toolbar.Insert (helpButton, 3);
 			
 			#endregion
@@ -336,9 +336,10 @@ namespace MonoDevelop.Components.PropertyGrid
 			set { tree.ShadowType = value; }
 		}
 		
-		#region Hel Pane
+		#region Help Pane
 		
-		public bool ShowHelp
+        [DescriptionAttribute("Show the help bar at the bottom of the grid")]
+        public bool ShowHelp
 		{
 			get { return descFrame != null; }
 			set {
