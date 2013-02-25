@@ -37,10 +37,10 @@ namespace Examples.VirtualList
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.vscrollbar1 = new global::Gtk.VScrollbar (null);
 			this.vscrollbar1.Name = "vscrollbar1";
-			this.vscrollbar1.Adjustment.Upper = 100;
-			this.vscrollbar1.Adjustment.PageIncrement = 10;
-			this.vscrollbar1.Adjustment.PageSize = 10;
-			this.vscrollbar1.Adjustment.StepIncrement = 1;
+			this.vscrollbar1.Adjustment.Upper = 100D;
+			this.vscrollbar1.Adjustment.PageIncrement = 10D;
+			this.vscrollbar1.Adjustment.PageSize = 10D;
+			this.vscrollbar1.Adjustment.StepIncrement = 1D;
 			this.hbox1.Add (this.vscrollbar1);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vscrollbar1]));
 			w2.Position = 1;
@@ -52,10 +52,10 @@ namespace Examples.VirtualList
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.hscrollbar1 = new global::Gtk.HScrollbar (null);
 			this.hscrollbar1.Name = "hscrollbar1";
-			this.hscrollbar1.Adjustment.Upper = 100;
-			this.hscrollbar1.Adjustment.PageIncrement = 10;
-			this.hscrollbar1.Adjustment.PageSize = 10;
-			this.hscrollbar1.Adjustment.StepIncrement = 1;
+			this.hscrollbar1.Adjustment.Upper = 100D;
+			this.hscrollbar1.Adjustment.PageIncrement = 10D;
+			this.hscrollbar1.Adjustment.PageSize = 10D;
+			this.hscrollbar1.Adjustment.StepIncrement = 1D;
 			this.vbox1.Add (this.hscrollbar1);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hscrollbar1]));
 			w4.Position = 2;
