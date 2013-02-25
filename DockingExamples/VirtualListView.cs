@@ -76,7 +76,6 @@ namespace Examples.VirtualList
         // ubfortunately this event will not called
         private void HandleMoveHandle (object o, MoveHandleArgs args)
         {
-            Console.WriteLine("HandleMoveHandle args={0}", args.ToString());
             drawingarea.QueueDraw();
         }
 
@@ -459,7 +458,6 @@ namespace Examples.VirtualList
 
         protected override bool OnButtonPressEvent(Gdk.EventButton evnt)
         {
-            Console.WriteLine("OnButtonPressEvent Button={0} Type={1}",
                 evnt.Button.ToString(), evnt.Type.ToString());
             if (evnt.Button == 1 && evnt.Type == Gdk.EventType.ButtonPress)
             {
@@ -473,14 +471,12 @@ namespace Examples.VirtualList
 
         protected override bool OnFocusInEvent(Gdk.EventFocus evnt)
         {
-            Console.WriteLine("OnFocusInEvent IN={0}", evnt.In);
             drawingarea.QueueDraw();
             return base.OnFocusInEvent(evnt);
         }
 
         protected override bool OnFocusOutEvent(Gdk.EventFocus evnt)
         {
-            Console.WriteLine("OnFocusOutEvent IN={0}", evnt.In);
             SelectionMode = false;
             drawingarea.QueueDraw();
             return base.OnFocusOutEvent(evnt);
@@ -573,7 +569,6 @@ namespace Examples.VirtualList
                     return true;
             }
 
-            Console.WriteLine("OnKeyPressEvent key={0}, {1}", evnt.Key, evnt.KeyValue);
             return base.OnKeyPressEvent(evnt);
         }
 
