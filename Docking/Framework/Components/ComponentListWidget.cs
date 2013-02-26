@@ -47,12 +47,12 @@ namespace Docking.Components
 			componentColumn.Title = "Component";
             componentColumn.Resizable = true;
             componentColumn.Sizing = Gtk.TreeViewColumnSizing.Fixed;
-			
+
 			Gtk.TreeViewColumn descriptionColumn = new Gtk.TreeViewColumn ();
 			descriptionColumn.Title = "Description";
             descriptionColumn.Resizable = true;
             descriptionColumn.Sizing = Gtk.TreeViewColumnSizing.Fixed;
-			
+
 			// Add the columns to the TreeView
 			treeview1.AppendColumn (componentColumn);
 			treeview1.AppendColumn (descriptionColumn);
@@ -64,7 +64,7 @@ namespace Docking.Components
             descriptionColumn.PackStart (descriptionCell, true);
             componentColumn.AddAttribute (componentsCell, "text", 0);
             descriptionColumn.AddAttribute (descriptionCell, "text", 1);
-			
+
 			// Create a model that will hold two strings, Assign the model to the TreeView
             listStore = new Gtk.ListStore (typeof (string), typeof (string));
             treeview1.Model = listStore;
@@ -75,7 +75,7 @@ namespace Docking.Components
         void HandleCursorChanged (object sender, EventArgs e)
         {
             Gtk.TreeSelection selection = (sender as Gtk.TreeView).Selection;
-           
+
             Gtk.TreeModel model;
             Gtk.TreeIter iter;
 
@@ -93,14 +93,14 @@ namespace Docking.Components
 
 
     [Serializable()]
-    public class Persistence 
+    public class Persistence
     {
         public void SaveColumnWidth(Gtk.TreeViewColumn []columns)
         {
             foreach (Gtk.TreeViewColumn c in columns)
                 m_Width.Add(c.Width);
         }
-        
+
         public void LoadColumnWidth(Gtk.TreeViewColumn []columns)
         {
             if (columns.Length == m_Width.Count)
@@ -109,22 +109,22 @@ namespace Docking.Components
                     columns[i].FixedWidth = Math.Max(1, m_Width[i]);
             }
         }
-        
+
         // to have a simple persistence make the member public
         // otherwise you have to implement IXmlSerializable
-        public List<int> m_Width = new List<int>(); 
+        public List<int> m_Width = new List<int>();
     }
 
-	
+
     #region Starter / Entry Point
 
 	public class ComponentListWidgetFactory : ComponentFactory
 	{
 		public override Type TypeOfInstance { get { return typeof(ComponentListWidget); } }
-        public override String MenuPath { get { return @"Components\ComponentListWidget"; } }
-		public override String Comment { get { return "Display a list of all found widgets"; } }
+        public override String MenuPath { get { return @"View\Infrastructure\Component List"; } }
+		public override String Comment { get { return "Display a list of all recognized components"; } }
 	}
-	
+
     #endregion
 }
 

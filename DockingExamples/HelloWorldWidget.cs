@@ -16,17 +16,17 @@ namespace Examples.HelloWorld
 
 
 #region Starter / Entry Point
-	
+
 	public class HelloWorldWidgetFactory : ComponentFactory
 	{
 		public override Type TypeOfInstance { get { return typeof(HelloWorldWidget); } }
-        public override String MenuPath { get { return @"File\New\Examples\HelloWorldWidget"; } }
+        public override String MenuPath { get { return @"View\Examples\Hello World"; } }
 		public override String Comment { get { return "Example minimal dockable view like 'Hello World'"; } }
         public override Mode Options { get { return Mode.MultipleInstance; } }
     }
-	
+
 #endregion
-	
+
 
 }
 

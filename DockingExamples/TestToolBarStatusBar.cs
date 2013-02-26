@@ -22,19 +22,19 @@ namespace Examples.TestToolAndStatusBar
             mPush.Label = "Push";
             mPush.StockId = Stock.Add;
             mPush.TooltipText = "Push a new message to status bar";
-            mPush.Clicked += (sender, e) => 
+            mPush.Clicked += (sender, e) =>
             {
                 String text = String.Format("Hello {0} at {1}", ++mTextCounter, DateTime.Now.ToLongTimeString());
                 uint id = ComponentManager.PushStatusbar(text);
                 mStack.Push(id);
                 UpdateMessageText();
             };
-            
+
             mPop = new ToolButton("Pop");
             mPop.Label = "Pop";
             mPop.StockId = Stock.Remove;
             mPop.TooltipText = "Pop newest message from status bar";
-            mPop.Clicked += (sender, e) => 
+            mPop.Clicked += (sender, e) =>
             {
                 if (mStack.Count > 0)
                     ComponentManager.PopStatusbar(mStack.Pop ());
@@ -65,7 +65,7 @@ namespace Examples.TestToolAndStatusBar
         void IComponentInteract.Added(object item)
         {
         }
-        
+
         void IComponentInteract.Removed(object item)
         {
         }
@@ -88,7 +88,7 @@ namespace Examples.TestToolAndStatusBar
             }
             UpdateMessageText();
         }
-        
+
         #endregion
 
         #region variables, properties
@@ -101,15 +101,15 @@ namespace Examples.TestToolAndStatusBar
     }
 
     #region Starter / Entry Point
-    
+
     public class Factory : ComponentFactory
     {
         public override Type TypeOfInstance { get { return typeof(TestToolBarStatusBar); } }
-        public override String MenuPath { get { return @"Components\Examples\Test Tool- and Status bar"; } }
-        public override String Comment { get { return "Example using tool bat and status bar"; } }
+        public override String MenuPath { get { return @"View\Examples\Test Toolbar and Statusbar"; } }
+        public override String Comment { get { return "Example using toolbar and status bar"; } }
         public override Mode Options { get { return Mode.CloseOnHide; } }
     }
-    
+
     #endregion
 
 }

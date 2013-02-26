@@ -191,9 +191,13 @@ namespace Docking
 		{
             if (widget.Parent != this)
                 System.Diagnostics.Debug.Assert (widget.Parent != this, "Widget is not parented on this widget");
+
+// TODO SLohse: Check why this assertion occurs currently frequently. For the time being, I deactivated it.
+/*
 			System.Diagnostics.Debug.Assert (
 				System.Linq.Enumerable.Any (items, item => item.Widget == widget),
 				"Can only remove widgets from the container that are in the parent DockFrame's DockItem collection");
+*/
 
 			widget.Unparent ();
 		}

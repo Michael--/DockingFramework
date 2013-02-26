@@ -17,17 +17,17 @@ namespace Examples.VirtualList
 
             // callback requesting data to display
             virtuallistview1.GetContentDelegate = GetContent;
-            
+
             // add simple label columns
             virtuallistview1.AddColumn("Index", 75, true);
             virtuallistview1.AddColumn("Context", 75, true);
-            
+
             // add a more complex custom made Column
             VBox box = new VBox();
             box.PackStart(new Label("Message"), false, false, 0);
             box.PackStart(new Entry(""), false, false, 0);
             virtuallistview1.AddColumn("Message", box, 150, true);
-            
+
             // set content size
             virtuallistview1.RowCount = 42000;
         }
@@ -49,7 +49,7 @@ namespace Examples.VirtualList
 
         #region implement IComponent
         public ComponentManager ComponentManager { get; set; }
-        
+
         void IComponent.Loaded(DockItem item)
         {
             virtuallistview1.ComponentManager = this.ComponentManager;
@@ -66,7 +66,7 @@ namespace Examples.VirtualList
             Persistence p = Persistence.Save(virtuallistview1);
             ComponentManager.SaveObject("VirtualListTest", p);
         }
-        
+
         #endregion
     }
 
@@ -79,17 +79,17 @@ namespace Examples.VirtualList
             p.m_Data = v.GetPersistence();
             return p;
         }
-        
+
         public void Load(VirtualListView v)
         {
             if (m_Data != null)
                 v.SetPersistence(m_Data);
         }
-        
+
         // to have a simple persistence make the member public
         // otherwise you have to implement IXmlSerializable
-        public int[] m_Data; 
-    }        
+        public int[] m_Data;
+    }
 
 
 #region Starter / Entry Point
@@ -97,7 +97,7 @@ namespace Examples.VirtualList
 public class Factory : ComponentFactory
 {
     public override Type TypeOfInstance { get { return typeof(VirtualListTest); } }
-    public override String MenuPath { get { return @"File\New\Examples\VirtualListTest"; } }
+    public override String MenuPath { get { return @"View\Examples\Virtual List Test"; } }
     public override String Comment { get { return "Test widget for testing virtual list view"; } }
     public override Mode Options { get { return Mode.MultipleInstance; } }
 }

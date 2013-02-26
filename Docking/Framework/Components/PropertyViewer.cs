@@ -19,7 +19,7 @@ namespace Docking.Components
         {
             this.propertygrid1.CurrentObject = obj;
         }
-        
+
         /// <summary>
         /// Get an event on any property changes
         /// </summary>
@@ -64,11 +64,11 @@ namespace Docking.Components
     #endregion
 
     #region Starter / Entry Point
-    
+
     public class PropertyViewerFactory : ComponentFactory
     {
         public override Type TypeOfInstance { get { return typeof(PropertyViewer); } }
-        public override String MenuPath { get { return @"Components\Properties"; } }
+        public override String MenuPath { get { return @"View\Infrastructure\Properties"; } }
         public override String Comment { get { return "Show selected Properties"; } }
         public override Mode Options { get { return Mode.CloseOnHide; } }
     }

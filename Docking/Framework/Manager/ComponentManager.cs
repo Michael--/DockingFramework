@@ -43,7 +43,7 @@ namespace Docking.Components
             // the last name is the menu name, all other are menu/sub-menue names
             String [] m = path.Split(new char[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
             
-            // as a minimum submenu-name exist
+            // as a minimum 1 submenu name must exist where to append the new entry
             Debug.Assert(m.Length >= 1);
             
             MenuShell menuShell = MenuBar;
@@ -55,10 +55,10 @@ namespace Docking.Components
                 children = componentMenu.AllChildren;
                 menuShell = componentMenu;
             }
-
-            // todo: menu insert position should be overworked
-            //       position is dependent of content
-            componentMenu.Insert(item, 0);
+			// todo: menu insert position should be overworked
+			//       position is dependent of content
+			if(componentMenu!=null)
+               componentMenu.Insert(item, 0);
         }
 
         protected void SetMenuBar(MenuBar menuBar)

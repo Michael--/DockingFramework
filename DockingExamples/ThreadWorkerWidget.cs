@@ -16,7 +16,7 @@ namespace Examples.Threading
         {
             this.Build();
             this.Name = "Threading";
-            myThreadHeader = "Test" + instances++.ToString(); 
+            myThreadHeader = "Test" + instances++.ToString();
             progressbar1.Adjustment = new Gtk.Adjustment(0, 0, 100, 1, 1, 10);
             progressbar1.Adjustment.Lower = 0;
             progressbar1.Adjustment.Upper = 100;
@@ -65,7 +65,7 @@ namespace Examples.Threading
             foreach(CancellationTokenSource t in cancelTokenList)
                 t.Cancel();
         }
-        
+
         // complete message
         private void RunCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
@@ -77,11 +77,11 @@ namespace Examples.Threading
             if (checkbutton1.Active)
                 StartNewThread();
         }
-        
+
         // progress message
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            Gtk.Application.Invoke(delegate 
+            Gtk.Application.Invoke(delegate
             {
                 if (!ComponentManager.PowerDown && !m_Destroyed)
                     progressbar1.Adjustment.Value = e.ProgressPercentage;
@@ -97,7 +97,7 @@ namespace Examples.Threading
                 ComponentManager.MessageWriteLine(message);
             });
         }
-        
+
         private void Worker(object sender, DoWorkEventArgs e)
         {
             ThreadWorker worker = sender as ThreadWorker;
@@ -111,7 +111,7 @@ namespace Examples.Threading
                 proceeded += onesleep;
                 Thread.Sleep(onesleep);
 
-                worker.ReportProgress(proceeded * 100 / duration);  
+                worker.ReportProgress(proceeded * 100 / duration);
 
                 if(worker.CancellationPending)
                 {
@@ -124,25 +124,25 @@ namespace Examples.Threading
         #region implement IComponent
 
         public ComponentManager ComponentManager { get; set; }
-        
+
         void Docking.Components.IComponent.Loaded(DockItem item)
         {
             if (checkbutton1.Active)
                 StartNewThread();
         }
-        
+
         void Docking.Components.IComponent.Save()
         {
             RequestStop();
         }
-        
+
         #endregion
 
         protected void OnButton1Clicked(object sender, EventArgs e)
         {
             // start a new task with Task.Factory
             // this is a very common method to work on something in the background
-            // use TaskInformation to observe this new task 
+            // use TaskInformation to observe this new task
 
             CancellationTokenSource cancelTokenSource = new CancellationTokenSource();
             lock (cancelTokenList)
@@ -168,11 +168,11 @@ namespace Examples.Threading
                 {
                     proceeded += onesleep;
                     Thread.Sleep(onesleep);
-                    ti.Progress = proceeded * 100 / duration;  
+                    ti.Progress = proceeded * 100 / duration;
                     if (cancelTokenSource.IsCancellationRequested)
                         break;
                 }
-                Message(String.Format("Task {0} {1}", name, 
+                Message(String.Format("Task {0} {1}", name,
                         cancelTokenSource.IsCancellationRequested ? "cancelled" : "finished"));
                 ti.Destroy();
                 Gtk.Application.Invoke(delegate {
@@ -191,15 +191,15 @@ namespace Examples.Threading
     }
 
     #region Starter / Entry Point
-    
+
     public class ThreadWorkerWidgetFactory : ComponentFactory
     {
         public override Type TypeOfInstance { get { return typeof(ThreadWorkerWidget); } }
-        public override String MenuPath { get { return @"File\New\Examples\ThreadWorkerWidget"; } }
+        public override String MenuPath { get { return @"View\Examples\Thread Worker"; } }
         public override String Comment { get { return "Example thread worker widget, start some worker thread"; } }
         public override Mode Options { get { return Mode.MultipleInstance; } }
     }
-    
+
     #endregion
 }
 

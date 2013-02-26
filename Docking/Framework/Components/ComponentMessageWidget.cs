@@ -21,7 +21,7 @@ namespace Docking.Components
                 textview1.ScrollToMark(m_Scroll2EndMark, 0.0, false, 0, 0);
             }
 
-            // note: ScrollToIter don't work properly due to delayed line size calculation 
+            // note: ScrollToIter don't work properly due to delayed line size calculation
             // textview1.ScrollToIter(textview1.Buffer.EndIter, 0.0, false, 0, 0);
         }
 
@@ -38,14 +38,14 @@ namespace Docking.Components
     }
 
     #region Starter / Entry Point
-    
+
     public class ComponentMessageWidgetFactory : ComponentFactory
     {
         public override Type TypeOfInstance { get { return typeof(ComponentMessageWidget); } }
-        public override String MenuPath { get { return @"Components\ComponentMessageWidget"; } }
+        public override String MenuPath { get { return @"View\Infrastructure\Messages"; } }
         public override String Comment { get { return "Message and logging widget"; } }
     }
-    
+
     #endregion
 
 }

@@ -30,7 +30,7 @@ namespace Docking.Components
             statusColumn.Resizable = true;
             statusColumn.Sizing = Gtk.TreeViewColumnSizing.Fixed;
             statusColumn.FixedWidth = 100;
-            
+
             // Add the columns to the TreeView
             treeview1.AppendColumn (activityColumn);
             treeview1.AppendColumn (desciptionColumn);
@@ -61,7 +61,7 @@ namespace Docking.Components
 
         #region implement IComponent
         public ComponentManager ComponentManager { get; set; }
-        
+
         void IComponent.Loaded(DockItem item)
         {
             // note: job events could be happen while initializing
@@ -69,12 +69,12 @@ namespace Docking.Components
             JobInformation.Removed += HandleRemoved;
             Initialize();
         }
-        
+
         void IComponent.Save()
         {
         }
         #endregion
-        
+
         void Initialize()
         {
             JobInformation[] jobs = JobInformation.GetJobs();
@@ -87,7 +87,7 @@ namespace Docking.Components
         void HandleCursorChanged(object sender, EventArgs e)
         {
             Gtk.TreeSelection selection = (sender as Gtk.TreeView).Selection;
-            
+
             Gtk.TreeModel model;
             Gtk.TreeIter iter;
             if (selection.GetSelected(out model, out iter))
@@ -101,12 +101,12 @@ namespace Docking.Components
             else
                 buttonCancel.Sensitive = false;
         }
-        
+
         void HandleAdded (object sender, JobInformationEventArgs e)
         {
             Gtk.Application.Invoke(delegate { AddJob(e.JobInformation); });
         }
-        
+
         void HandleRemoved (object sender, JobInformationEventArgs e)
         {
             Gtk.Application.Invoke(delegate { RemoveJob(e.JobInformation); });
@@ -150,7 +150,7 @@ namespace Docking.Components
 
         void HandleProgressChanged (object sender, JobInformationEventArgs e)
         {
-            Gtk.Application.Invoke(delegate 
+            Gtk.Application.Invoke(delegate
             {
                 int progress = e.JobInformation.Progress;
                 lock(TreeIterHelper)
@@ -182,11 +182,11 @@ namespace Docking.Components
 
     #region Starter / Entry Point
 
-    
+
     public class Factory : ComponentFactory
     {
         public override Type TypeOfInstance { get { return typeof(Activities); } }
-        public override String MenuPath { get { return @"Components\Activities"; } }
+        public override String MenuPath { get { return @"View\Infrastructure\Activities"; } }
         public override String Comment { get { return "Show a list of all activities"; } }
         public override Mode Options { get { return Mode.CloseOnHide; } }
     }
