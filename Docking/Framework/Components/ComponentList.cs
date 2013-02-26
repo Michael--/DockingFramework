@@ -9,7 +9,7 @@ namespace Docking.Components
     //       - Display also information about existing instances
     //       - Add actions, like create/hide/show/erase
 	[System.ComponentModel.ToolboxItem(false)]
-	public partial class ComponentListWidget : Gtk.Bin, IComponent
+	public partial class ComponentList : Gtk.Bin, IComponent
 	{
         #region implement IComponent
         public ComponentManager ComponentManager { get; set; }
@@ -25,7 +25,7 @@ namespace Docking.Components
                 listStore.AppendValues(row.ToArray());
             }
 
-            Persistence p = (Persistence)ComponentManager.LoadObject("ComponentListWidget", typeof(Persistence));
+            Persistence p = (Persistence)ComponentManager.LoadObject("ComponentList", typeof(Persistence));
             if (p != null)
                 p.LoadColumnWidth(treeview1.Columns);
         }
@@ -34,11 +34,11 @@ namespace Docking.Components
         {
             Persistence p = new Persistence();
             p.SaveColumnWidth(treeview1.Columns);
-            ComponentManager.SaveObject("ComponentListWidget", p);
+            ComponentManager.SaveObject("ComponentList", p);
         }
         #endregion
 
-        public ComponentListWidget ()
+        public ComponentList ()
 		{
 			this.Build ();
             this.Name = "Component List";
@@ -118,11 +118,11 @@ namespace Docking.Components
 
     #region Starter / Entry Point
 
-	public class ComponentListWidgetFactory : ComponentFactory
+	public class ComponentListFactory : ComponentFactory
 	{
-		public override Type TypeOfInstance { get { return typeof(ComponentListWidget); } }
+		public override Type TypeOfInstance { get { return typeof(ComponentList); } }
         public override String MenuPath { get { return @"View\Infrastructure\Component List"; } }
-		public override String Comment { get { return "Display a list of all recognized components"; } }
+		public override String Comment { get { return "displays a list of all components"; } }
 	}
 
     #endregion

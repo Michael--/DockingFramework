@@ -7,12 +7,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace Examples.Threading
+namespace Examples
 {
     [System.ComponentModel.ToolboxItem(false)]
-    public partial class ThreadWorkerWidget : Gtk.Bin, Docking.Components.IComponent
+    public partial class ExampleThreadWorker : Gtk.Bin, Docking.Components.IComponent
     {
-        public ThreadWorkerWidget ()
+        public ExampleThreadWorker ()
         {
             this.Build();
             this.Name = "Threading";
@@ -192,11 +192,11 @@ namespace Examples.Threading
 
     #region Starter / Entry Point
 
-    public class ThreadWorkerWidgetFactory : ComponentFactory
+	public class ExampleThreadWorkertFactory : ComponentFactory
     {
-        public override Type TypeOfInstance { get { return typeof(ThreadWorkerWidget); } }
+        public override Type TypeOfInstance { get { return typeof(ExampleThreadWorker); } }
         public override String MenuPath { get { return @"View\Examples\Thread Worker"; } }
-        public override String Comment { get { return "Example thread worker widget, start some worker thread"; } }
+        public override String Comment { get { return "Example thread worker widget, starts some worker thread(s)"; } }
         public override Mode Options { get { return Mode.MultipleInstance; } }
     }
 

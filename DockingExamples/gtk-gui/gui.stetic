@@ -8,7 +8,7 @@
     <widget-library name="../../Docking/bin/x86/Debug/Docking.dll" />
     <widget-library name="../bin/x86/Debug/Examples.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="Examples.HelloWorld.HelloWorldWidget" design-size="300 300">
+  <widget class="Gtk.Bin" id="Examples.ExampleHelloWorld" design-size="300 300">
     <property name="MemberName">HelloWorld</property>
     <property name="Visible">False</property>
     <child>
@@ -81,7 +81,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="Examples.Threading.ThreadWorkerWidget" design-size="467 300">
+  <widget class="Gtk.Bin" id="Examples.ExampleThreadWorker" design-size="467 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -108,7 +108,7 @@
               <widget class="Gtk.CheckButton" id="checkbutton1">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Label" translatable="yes">Continious starting</property>
+                <property name="Label" translatable="yes">Continuous starting</property>
                 <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>

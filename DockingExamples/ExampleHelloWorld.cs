@@ -2,12 +2,12 @@ using System;
 using Docking;
 using Docking.Components;
 
-namespace Examples.HelloWorld
+namespace Examples
 {
 	[System.ComponentModel.ToolboxItem(false)]
-	public partial class HelloWorldWidget : Gtk.Bin
+	public partial class ExampleHelloWorld : Gtk.Bin
 	{
-        public HelloWorldWidget ()
+		public ExampleHelloWorld ()
 		{
 			this.Build ();
             this.Name = "Hello World";
@@ -17,11 +17,11 @@ namespace Examples.HelloWorld
 
 #region Starter / Entry Point
 
-	public class HelloWorldWidgetFactory : ComponentFactory
+	public class ExampleHelloWorldFactory : ComponentFactory
 	{
-		public override Type TypeOfInstance { get { return typeof(HelloWorldWidget); } }
+		public override Type TypeOfInstance { get { return typeof(ExampleHelloWorld); } }
         public override String MenuPath { get { return @"View\Examples\Hello World"; } }
-		public override String Comment { get { return "Example minimal dockable view like 'Hello World'"; } }
+		public override String Comment { get { return "minimal dockable component example"; } }
         public override Mode Options { get { return Mode.MultipleInstance; } }
     }
 

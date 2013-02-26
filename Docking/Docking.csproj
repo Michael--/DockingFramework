@@ -66,12 +66,8 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="gtk-gui\generated.cs" />
-    <Compile Include="gtk-gui\Docking.Components.ComponentListWidget.cs" />
-    <Compile Include="gtk-gui\Docking.Components.ComponentMessageWidget.cs" />
     <Compile Include="gtk-gui\Docking.Components.Activities.cs" />
     <Compile Include="Framework\Components\Activities.cs" />
-    <Compile Include="Framework\Components\ComponentListWidget.cs" />
-    <Compile Include="Framework\Components\ComponentMessageWidget.cs" />
     <Compile Include="Framework\Manager\ComponentFinder.cs" />
     <Compile Include="Framework\Manager\ComponentManager.cs" />
     <Compile Include="Framework\Interfaces\IComponent.cs" />
@@ -139,6 +135,10 @@
     <Compile Include="Monodevelop.PropertyGrid\Editors\TextEditor.cs" />
     <Compile Include="Monodevelop.PropertyGrid\Editors\TextEditorDialog.cs" />
     <Compile Include="Monodevelop.PropertyGrid\Editors\TimeSpanEditor.cs" />
+    <Compile Include="Framework\Components\ComponentList.cs" />
+    <Compile Include="gtk-gui\Docking.Components.ComponentList.cs" />
+    <Compile Include="Framework\Components\Messages.cs" />
+    <Compile Include="gtk-gui\Docking.Components.Messages.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

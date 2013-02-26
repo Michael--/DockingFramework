@@ -7,7 +7,7 @@
   <import>
     <widget-library name="../bin/x86/Debug/Docking.dll" internal="true" />
   </import>
-  <widget class="Gtk.Bin" id="Docking.Components.ComponentListWidget" design-size="300 300">
+  <widget class="Gtk.Bin" id="Docking.Components.ComponentList" design-size="300 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -41,7 +41,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="Docking.Components.ComponentMessageWidget" design-size="290 275">
+  <widget class="Gtk.Bin" id="Docking.Components.Messages" design-size="290 275">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
