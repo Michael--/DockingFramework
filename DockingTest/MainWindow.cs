@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 using System.Collections.Generic;
 
 public partial class MainWindow : ComponentManager
-{	
+{
     String mConfig = "config.xml";
 
     public MainWindow (): base (Gtk.WindowType.Toplevel)
@@ -17,7 +17,7 @@ public partial class MainWindow : ComponentManager
         // Create designer elements
         Build ();
 
-        // tell the component manager about all widgets to manage 
+        // tell the component manager about all widgets to manage
         SetDockFrame(theDockFrame);
         SetStatusBar(theStatusBar);
         SetToolBar(theToolBar);
@@ -26,8 +26,8 @@ public partial class MainWindow : ComponentManager
         // search for all interrested components
         ComponentFinder.SearchForComponents (new string[] { @"./*.exe", @"./*.dll" });
 
-        // install all known component menue 
-        AddComponentMenues();
+        // install all known component menus
+        AddComponentMenus();
 
         // load old configuration or init new one if not existing
         LoadConfigurationFile(mConfig);

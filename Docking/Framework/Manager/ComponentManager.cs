@@ -38,27 +38,32 @@ namespace Docking.Components
             ToolBar = tb;
         }
 
+		public Menu FindMenu(String path)
+		{
+			// the last name is the menu name, all others are menu/sub-menu names
+			String [] m = path.Split(new char[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
+			
+			// as a minimum 1 submenu name must exist where to append the new entry
+			Debug.Assert(m.Length >= 1);
+			
+			MenuShell menuShell = MenuBar;
+			Menu foundmenu = null;
+			System.Collections.IEnumerable children = MenuBar.Children;
+			for (int i = 0; i < m.Length; i++)
+			{
+				foundmenu = SearchOrCreateMenu(m[i], menuShell, children);
+				children = foundmenu.AllChildren;
+				menuShell = foundmenu;
+			}
+
+            return foundmenu;
+		}
+
         protected void InsertMenu(String path, MenuItem item)
         {
-            // the last name is the menu name, all other are menu/sub-menue names
-            String [] m = path.Split(new char[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
-            
-            // as a minimum 1 submenu name must exist where to append the new entry
-            Debug.Assert(m.Length >= 1);
-            
-            MenuShell menuShell = MenuBar;
-            Menu componentMenu = null;
-            System.Collections.IEnumerable children = MenuBar.Children;
-            for (int i = 0; i < m.Length; i++)
-            {
-                componentMenu = SearchOrCreateMenu(m[i], menuShell, children);
-                children = componentMenu.AllChildren;
-                menuShell = componentMenu;
-            }
-			// todo: menu insert position should be overworked
-			//       position is dependent of content
-			if(componentMenu!=null)
-               componentMenu.Insert(item, 0);
+            Menu foundmenu = FindMenu(path);
+			if(foundmenu!=null)
+               foundmenu.Insert(item, 0);
         }
 
         protected void SetMenuBar(MenuBar menuBar)
@@ -82,17 +87,17 @@ namespace Docking.Components
         }
 
         /// <summary>
-        /// Add all component start/create menue entries
-        /// </summary> 
-        protected void AddComponentMenues()
+        /// Add all component start/create menu entries
+        /// </summary>
+        protected void AddComponentMenus()
         {
             InstallQuitMenu();
 
             foreach (ComponentFactoryInformation cfi in ComponentFinder.ComponentInfos)
             {
-                // the last name is the menu name, all other are menu/sub-menue names
+                // the last name is the menu name, all others are menu/sub-menu names
                 String [] m = cfi.MenuPath.Split(new char[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
-                
+
                 // as a minimum submenu-name & menu-name must exist
                 Debug.Assert(m.Length >= 2);
 
@@ -116,15 +121,15 @@ namespace Docking.Components
 
         private Menu SearchOrCreateMenu(String name, MenuShell menuShell, System.Collections.IEnumerable children)
         {
-            // 1st search menue & return if existing
+            // 1st search menu & return if existing
             foreach(MenuItem mi in children)
             {
                 Label label = (Label)mi.Child;
                 if (label != null && label.Text == name)
                     return mi.Submenu as Menu;
             }
-            
-            // 2nd append new menu 
+
+            // 2nd append new menu
             // todo: currently append at the end, may a dedicated position desired
             Menu menu = new Menu ( );
             MenuItem menuItem = new MenuItem(name);
@@ -133,12 +138,8 @@ namespace Docking.Components
             // todo: menu insert position should be overworked
             //       position is dependent of content
 
-            // current solution is only a quick hack
-            if (name == "New")
-                menuShell.Insert(menuItem, 0);
-            else
-                menuShell.Add(menuItem);
-            
+            menuShell.Add(menuItem);
+
             return menu;
         }
 
@@ -168,26 +169,26 @@ namespace Docking.Components
             // layout from file or new
             if (File.Exists (filename))
             {
-                // the manager hold the persistence in memory all the time
+                // the manager holds the persistence in memory all the time
                 LoadConfiguration(filename);
-                
+
                 // load XML node "layouts" in a memory file
                 // we should let the implementation of the Mono Develop Docking as it is
                 // to make it easier to update with newest version
-                
+
                 XmlNode layouts = XmlConfiguration.SelectSingleNode("layouts");
                 if (layouts != null)
                 {
                     MemoryStream ms = new MemoryStream();
                     XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
-                    
+
                     layouts.WriteTo(xmlWriter);
                     xmlWriter.Flush();
                     XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
-                    
+
                     DockFrame.LoadLayouts (xmlReader);
                 }
-            } 
+            }
             else
             {
                 DockFrame.CreateLayout ("Default", true);
@@ -202,11 +203,11 @@ namespace Docking.Components
             DockFrame.SaveLayouts (xmlWriter);
             xmlWriter.Flush();
             XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
-            
+
             // re-load as XmlDocument
             XmlDocument doc = new XmlDocument();
             doc.Load(xmlReader);
-            
+
             // select layouts and replace in managed persistence
             // note that a node from other document must imported before use for add/replace
             XmlNode layouts = doc.SelectSingleNode("layouts");
@@ -214,12 +215,12 @@ namespace Docking.Components
             XmlNode oldLayouts = XmlConfiguration.SelectSingleNode("layouts");
             if (oldLayouts != null)
                 XmlConfiguration.ReplaceChild(newLayouts, oldLayouts);
-            else 
+            else
                 XmlConfiguration.AppendChild(newLayouts);
 
             // save all components data
             ComponentsSave();
-            
+
             // at least save complete persistence to file
             SaveConfiguration(filename);
         }
@@ -249,7 +250,7 @@ namespace Docking.Components
                 if (item.Content is IComponentInteract)
                     (item.Content as IComponentInteract).Visible(item.Content, item.Visible);
             }
-            
+
             // tell any component about all other component
             foreach (DockItem item in DockFrame.GetItems())
             {
@@ -261,7 +262,7 @@ namespace Docking.Components
                 }
             }
         }
-        
+
         private void ComponentsSave()
         {
             foreach (DockItem item in DockFrame.GetItems())
@@ -269,7 +270,7 @@ namespace Docking.Components
                 if (item.Content is IComponent)
                     (item.Content as IComponent).Save();
             }
-            
+
             // tell any component about all other component
             foreach (DockItem item in DockFrame.GetItems())
             {
@@ -292,22 +293,22 @@ namespace Docking.Components
                 this.Move (p.WindowX, p.WindowY);
             }
         }
-        
+
         private void SavePersistence()
         {
             int wx, wy, width, height;
             this.GetPosition(out wx, out wy);
             this.GetSize(out width, out height);
-            
+
             MainWindowPersistence p = new MainWindowPersistence();
             p.WindowX = wx;
             p.WindowY = wy;
             p.Width = width;
             p.Height = height;
-            
+
             SaveObject("MainWindow", p);
         }
-        
+
         protected void PrepareExit()
         {
             PowerDown = true;
@@ -341,7 +342,7 @@ namespace Docking.Components
 
             MemoryStream ms = new MemoryStream();
             XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
-            
+
             node.WriteTo(xmlWriter);
             xmlWriter.Flush();
             XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
@@ -357,20 +358,20 @@ namespace Docking.Components
             XmlSerializer serializer = new XmlSerializer (obj.GetType ());
             serializer.Serialize (xmlWriter, obj);
             xmlWriter.Flush ();
-            
+
             XmlReader xmlReader = new XmlTextReader (new MemoryStream (ms.ToArray ()));
 
             // re-load as XmlDocument
             XmlDocument doc = new XmlDocument ();
             doc.Load (xmlReader);
-            
+
             // replace in managed persistence
             XmlNode node = doc.SelectSingleNode (obj.GetType ().Name);
             XmlNode importNode = XmlDocument.ImportNode (node, true);
             XmlNode newNode = XmlDocument.CreateElement (elementName);
             newNode.AppendChild (importNode);
             // need new base node if started without old config
-            if (XmlConfiguration == null) 
+            if (XmlConfiguration == null)
             {
                 XmlConfiguration = XmlDocument.CreateElement ("DockingConfiguration");
                 XmlDocument.AppendChild(XmlConfiguration);
@@ -383,7 +384,7 @@ namespace Docking.Components
         }
         #endregion
 
-        #region Docking 
+        #region Docking
 
         /// <summary>
         /// Searchs for requested type in all available components DLL
@@ -395,11 +396,11 @@ namespace Docking.Components
 
         private void ComponentHandleActivated(object sender, EventArgs e)
         {
-            TaggedImageMenuItem menueitem = sender as TaggedImageMenuItem;
-            ComponentFactoryInformation cfi = menueitem.Tag as ComponentFactoryInformation;
-            
+            TaggedImageMenuItem menuitem = sender as TaggedImageMenuItem;
+            ComponentFactoryInformation cfi = menuitem.Tag as ComponentFactoryInformation;
+
             String name;
-            
+
             if (cfi.IsSingleInstance)
             {
                 // show/hide existing components instance
@@ -471,7 +472,7 @@ namespace Docking.Components
 
         bool m_LockHandleVisibleChanged = true; // startup lock
         void HandleVisibleChanged(object sender, EventArgs e)
-        {   
+        {
             if (!m_LockHandleVisibleChanged)
             {
                 DockItem item = sender as DockItem;
@@ -501,7 +502,7 @@ namespace Docking.Components
             {
                 mMessage.Add(item.Id, item.Content as IMessage);
 
-                // push all queued messages 
+                // push all queued messages
                 foreach(String m in mMessageQueue)
                     (item.Content as IMessage).WriteLine(m);
             }
@@ -511,7 +512,7 @@ namespace Docking.Components
 
 
         /// <summary>
-        /// Create new item, called from persistence 
+        /// Create new item, called from persistence
         /// </summary>
         private DockItem CreateItem(string id)
         {
@@ -552,7 +553,7 @@ namespace Docking.Components
         }
 
         #endregion
-   
+
         #region Toolbar
 
         public void AddToolItem(ToolItem item)
@@ -593,7 +594,7 @@ namespace Docking.Components
             mMessageQueue.Add(message);
         }
         List<String> mMessageQueue = new List<string>();
-        Dictionary<string, IMessage> mMessage = new Dictionary<string, IMessage>(); 
+        Dictionary<string, IMessage> mMessage = new Dictionary<string, IMessage>();
         #endregion
     }
 
