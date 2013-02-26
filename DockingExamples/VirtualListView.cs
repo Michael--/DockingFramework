@@ -348,7 +348,7 @@ namespace Examples.VirtualList
         private Pango.Layout GetLayout()
         {
             Pango.Layout layout = new Pango.Layout(this.PangoContext);
-            layout.FontDescription = Pango.FontDescription.FromString("Tahoma 12");
+            layout.FontDescription = Pango.FontDescription.FromString("Tahoma 10");
             layout.Wrap = Pango.WrapMode.WordChar;
             return layout;
         }
@@ -458,7 +458,6 @@ namespace Examples.VirtualList
 
         protected override bool OnButtonPressEvent(Gdk.EventButton evnt)
         {
-                evnt.Button.ToString(), evnt.Type.ToString());
             if (evnt.Button == 1 && evnt.Type == Gdk.EventType.ButtonPress)
             {
                 int row = (int)evnt.Y / ConstantHeight + (int)vscrollbar1.Value;
