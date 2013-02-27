@@ -571,17 +571,17 @@ namespace Docking.Components
 
         #region Message
 
-        public void MessageWriteLineInvoke(String message)
+        public void MessageWriteLine(String message)
         {
             if (PowerDown)
                 return;
 
             Gtk.Application.Invoke(delegate {
-                MessageWriteLine(message);
+				MessageWriteLineWithoutInvoke(message);
             });
         }
 
-        public void MessageWriteLine(String message)
+        protected void MessageWriteLineWithoutInvoke(String message)
         {
             if (PowerDown)
                 return;

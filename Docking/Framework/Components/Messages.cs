@@ -6,10 +6,12 @@ namespace Docking.Components
     public partial class Messages : Gtk.Bin, IMessage
     {
         #region Implement IMessage
-        // FIXME this function is NOT THREADSAFE at the moment!
-        // It will crash if this function gets invoked from somewhere else
-        // while this control is currently resizing itself OR painting itself OR .......
-		// see http://delog.wordpress.com/2011/01/12/on-gtk-and-invokerequired/
+        // FIXME SLohse: This function currently may ONLY be called from the main GUI thread!
+		// If you're calling it from a different thread context, it will crash the application
+		// when it for example is currently resizing itself or painting.
+		// For this reason, class ComponentManager contains an "Invoke" delegation in function "MessageWriteLine".
+		// It should be considered to move that delegation to here.
+		// I feel it misplaced in that class.
         void IMessage.WriteLine(String str)
 		{
 			Gtk.TextIter iter = textview1.Buffer.EndIter;
@@ -38,7 +40,6 @@ namespace Docking.Components
             this.Build ();
             this.Name = "Messages";
             m_Scroll2EndMark = textview1.Buffer.CreateMark("Scroll2End", textview1.Buffer.EndIter, true);
-			(this as IMessage).WriteLine("WARNING! THIS WINDOW IS NOT THREADSAFE YET! It will crash the application if a line gets appended to it while it is repainting or resizing!");
         }
     }
 
