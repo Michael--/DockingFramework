@@ -31,7 +31,10 @@ namespace Examples
         }
 
         private List<CancellationTokenSource> cancelTokenList = new List<CancellationTokenSource>();
-        private ThreadWorker theWorker = null;
+
+        private ThreadWorker mThreadWorker = null;
+        private Object mThreadWorkerSemaphore = new object();
+
         String myThreadHeader;
         static int instances = 0;
         int myThreadId = 0;
@@ -40,46 +43,53 @@ namespace Examples
         static Random rnd = new Random();
 
         void StartNewThread()
-        {
-            if (ComponentManager.PowerDown || m_Destroyed)
-                return;
+		{
+			if(ComponentManager.PowerDown || m_Destroyed)
+				return;
 
-            // start a new thread
-            myThreadId++;
-            String name = String.Format("{0}:{1}", myThreadHeader, myThreadId);
-            String description = "Example how to use ThreadWorker";
-            Message(String.Format("Thread {0} started", name));
-            theWorker = new ThreadWorker(name, description);
-            theWorker.WorkerSupportsCancellation = true;
-            theWorker.WorkerReportsProgress = true;
-            theWorker.DoWork += new DoWorkEventHandler(Worker);
-            theWorker.ProgressChanged += new ProgressChangedEventHandler(ProgressChanged);
-            theWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(RunCompleted);
-            theWorker.RunWorkerAsync(ThreadPriority.BelowNormal);
+			lock(mThreadWorkerSemaphore)
+			{
+				myThreadId++;
+				String name = String.Format("{0}:{1}", myThreadHeader, myThreadId);
+				String description = "Example how to use ThreadWorker";
+				Message(String.Format("Thread {0} started", name));
+				mThreadWorker = new ThreadWorker(name, description);
+				mThreadWorker.WorkerSupportsCancellation = true;
+				mThreadWorker.WorkerReportsProgress = true;
+				mThreadWorker.DoWork += new DoWorkEventHandler(mThreadWorker_DoWork);
+				mThreadWorker.ProgressChanged += new ProgressChangedEventHandler(mThreadWorker_ProgressChanged);
+				mThreadWorker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(mThreadWorker_RunWorkerCompleted);
+				mThreadWorker.RunWorkerAsync(ThreadPriority.BelowNormal);
+			}
         }
 
         public void RequestStop()
-        {
-            if(theWorker != null)
-                theWorker.CancelAsync();
-            foreach(CancellationTokenSource t in cancelTokenList)
-                t.Cancel();
+		{
+			lock(mThreadWorkerSemaphore)
+			{
+				if(mThreadWorker != null)
+					mThreadWorker.CancelAsync();
+				foreach(CancellationTokenSource t in cancelTokenList)
+					t.Cancel();
+			}
         }
 
         // complete message
-        private void RunCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            Message(String.Format("Thread {0}:{1} {2}",
-                                  myThreadHeader, myThreadId,
-                                  e.Cancelled ? "Canceled" : "completed"));
-            theWorker = null;
-
+        private void mThreadWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		{
+			lock(mThreadWorkerSemaphore)
+			{
+				Message(String.Format("Thread {0}:{1} {2}",
+	                                  myThreadHeader, myThreadId,
+	                                  e.Cancelled ? "Canceled" : "completed"));
+				mThreadWorker = null;
+			}
             if (checkbutton1.Active)
                 StartNewThread();
         }
 
         // progress message
-        private void ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void mThreadWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             Gtk.Application.Invoke(delegate
             {
@@ -98,7 +108,7 @@ namespace Examples
             });
         }
 
-        private void Worker(object sender, DoWorkEventArgs e)
+        private void mThreadWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             ThreadWorker worker = sender as ThreadWorker;
 
@@ -185,7 +195,7 @@ namespace Examples
 
         protected void OnCheckbutton1Toggled(object sender, EventArgs e)
         {
-            if (checkbutton1.Active && theWorker == null)
+            if (checkbutton1.Active && mThreadWorker == null)
                 StartNewThread();
         }
     }
