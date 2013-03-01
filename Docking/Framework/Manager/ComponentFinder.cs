@@ -6,14 +6,14 @@ using Docking;
 using Gtk;
 using System.Diagnostics;
 
-namespace Docking.Components    
+namespace Docking.Components
 {
     public class ComponentFinder
     {
         private List<Type> mTypes = new List<Type>();
 
         private List<ComponentFactoryInformation> mComponents = new List<ComponentFactoryInformation> ();
-        
+
         public ComponentFactoryInformation[] ComponentInfos{ get { return mComponents.ToArray (); } }
 
         Widget CreateInstance(ComponentFactoryInformation info, ComponentManager cm)
@@ -21,7 +21,7 @@ namespace Docking.Components
             Widget widget = info.CreateInstance (cm);
             return widget;
         }
-        
+
         public ComponentFactoryInformation FindEntryPoint(Type t)
         {
             foreach (ComponentFactoryInformation info in mComponents)
@@ -31,7 +31,7 @@ namespace Docking.Components
             }
             return null;
         }
-        
+
         public ComponentFactoryInformation FindComponent(String typename)
         {
             foreach (ComponentFactoryInformation info in mComponents)
@@ -64,7 +64,7 @@ namespace Docking.Components
             }
             return null;
         }
-        
+
         public Widget FindInstance(Type type)
         {
             foreach (ComponentFactoryInformation info in mComponents)
@@ -92,13 +92,13 @@ namespace Docking.Components
         {
             return typeObj == (Type)criteriaObj;
         }
-        
+
         void SearchComponents()
         {
             foreach (Type t in mTypes)
             {
                 // find all real classes which implement interface 'IComponentFactory'
-                // and create an inctance of such 
+                // and create an inctance of such
                 if (t.IsClass)
                 {
                     Type[] myInterfaces = t.FindInterfaces (mTypeFilter, typeof(IComponentFactory));
@@ -130,7 +130,7 @@ namespace Docking.Components
         {
             SearchForComponents (new String[] { search });
         }
-        
+
         public void SearchForComponents(String[]search)
         {
             List<String> componentFiles = new List<string> ();
@@ -175,7 +175,7 @@ namespace Docking.Components
         }
 
         /// <summary>
-        /// Searchs for requested type in all available components DLL
+        /// Searches for requested type in all available components DLLs
         /// </summary>
         public Type[] SearchForTypes(Type search)
         {
@@ -190,7 +190,7 @@ namespace Docking.Components
                         if (t.BaseType != null && t.BaseType.Name == search.Name)
                         {
                             bool found = false;
-                            // todo: binary search could be faster: do not add doubles
+                            // todo: binary search could be faster: do not add duplicates
                             foreach (Type check in theList)
                                 if (check.Name == type.Name)
                                 {
@@ -208,7 +208,7 @@ namespace Docking.Components
             return theList.ToArray();
         }
 
-        
+
         public void OpenMustExists(ComponentManager cm)
         {
             foreach (ComponentFactoryInformation info in mComponents)
@@ -217,7 +217,7 @@ namespace Docking.Components
                 {
                     info.DockWidget = info.CreateInstance (cm);
                     info.DockWidget.Show ();
-                    
+
                     if (info.HideOnCreate)
                         info.DockWidget.Hide ();
                 }
@@ -233,7 +233,7 @@ namespace Docking.Components
             ComponentFactory = factory;
             Active = active;
         }
-        
+
         public Widget CreateInstance(ComponentManager cm)
         {
             Widget widget;
@@ -250,24 +250,24 @@ namespace Docking.Components
             }
             return widget;
         }
-        
+
         public Type FactoryType { get { return ComponentFactory.GetType (); } }
-        
+
         public Type ComponentType{ get { return ComponentFactory.TypeOfInstance; } }
-        
+
         public String Comment{ get { return ComponentFactory.Comment; } }
-        
+
         public String MenuPath{ get { return ComponentFactory.MenuPath; } }
-        
+
         public bool IsSingleInstance{ get { return (ComponentFactory.Options & ComponentFactory.Mode.MultipleInstance) != ComponentFactory.Mode.MultipleInstance; } }
-        
+
         public bool InstanceMustExist{ get { return (ComponentFactory.Options & ComponentFactory.Mode.AutoCreate) == ComponentFactory.Mode.AutoCreate; } }
-        
+
         public bool HideOnCreate { get { return (ComponentFactory.Options & ComponentFactory.Mode.Hidden) == ComponentFactory.Mode.Hidden; } }
 
         public bool CloseOnHide
         {
-            get 
+            get
             {
                 return (ComponentFactory.Options & ComponentFactory.Mode.CloseOnHide) == ComponentFactory.Mode.CloseOnHide
                     || !IsSingleInstance;
@@ -275,9 +275,9 @@ namespace Docking.Components
         }
 
         public ComponentFactory ComponentFactory { get; set; }
-        
+
         public bool Active { get; set; }
-        
+
         public Widget DockWidget { get; set; }
     }
 }

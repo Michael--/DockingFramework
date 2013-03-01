@@ -42,10 +42,10 @@ namespace Docking.Components
 		{
 			// the last name is the menu name, all others are menu/sub-menu names
 			String [] m = path.Split(new char[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
-			
+
 			// as a minimum 1 submenu name must exist where to append the new entry
 			Debug.Assert(m.Length >= 1);
-			
+
 			MenuShell menuShell = MenuBar;
 			Menu foundmenu = null;
 			System.Collections.IEnumerable children = MenuBar.Children;
@@ -387,7 +387,7 @@ namespace Docking.Components
         #region Docking
 
         /// <summary>
-        /// Searchs for requested type in all available components DLL
+        /// Searches for requested type in all available components DLLs
         /// </summary>
         public Type[] SearchForTypes(Type search)
         {
