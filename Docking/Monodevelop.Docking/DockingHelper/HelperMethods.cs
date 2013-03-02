@@ -15,6 +15,7 @@ namespace Docking.Helper
 
 namespace Docking.Helper
 {
+#if false
     public static class GtkUtil
     {
         public static Cairo.Color ToCairoColor (this Gdk.Color color)
@@ -24,4 +25,5 @@ namespace Docking.Helper
                                     (double)color.Blue / ushort.MaxValue);
         }
     }
+#endif
 }

@@ -38,7 +38,7 @@ namespace Docking
 {
 	class AutoHideBox: DockFrameTopLevel
 	{
-        public bool ANIMATE { get; set; }
+		const bool ANIMATE = false;
 		
 		static Gdk.Cursor resizeCursorW = new Gdk.Cursor (Gdk.CursorType.SbHDoubleArrow);
 		static Gdk.Cursor resizeCursorH = new Gdk.Cursor (Gdk.CursorType.SbVDoubleArrow);
@@ -62,7 +62,6 @@ namespace Docking
 		
 		public AutoHideBox(DockFrame frame, DockItem item, Gtk.PositionType pos, int size)
         {
-            ANIMATE = true;
             this.position = pos;
             this.frame = frame;
             this.targetSize = size;
@@ -72,39 +71,22 @@ namespace Docking
 			
             Box fr;
             CustomFrame cframe = new CustomFrame();
-            switch (pos)
-            {
-            case PositionType.Left:
-                cframe.SetMargins(1, 1, 0, 1);
-                break;
-            case PositionType.Right:
-                cframe.SetMargins(1, 1, 1, 0);
-                break;
-            case PositionType.Top:
-                cframe.SetMargins(0, 1, 1, 1);
-                break;
-            case PositionType.Bottom:
-                cframe.SetMargins(1, 0, 1, 1);
-                break;
+			switch (pos) {
+				case PositionType.Left: cframe.SetMargins (0, 0, 1, 1); break;
+				case PositionType.Right: cframe.SetMargins (0, 0, 1, 1); break;
+				case PositionType.Top: cframe.SetMargins (1, 1, 0, 0); break;
+				case PositionType.Bottom: cframe.SetMargins (1, 1, 0, 0); break;
             }
             EventBox sepBox = new EventBox();
             cframe.Add(sepBox);
 			
-            if (horiz)
-            {
+			if (horiz) {
                 fr = new HBox();
-                sepBox.Realized += delegate
-                {
-                    sepBox.GdkWindow.Cursor = resizeCursorW;
-                };
+				sepBox.Realized += delegate { sepBox.GdkWindow.Cursor = resizeCursorW; };
                 sepBox.WidthRequest = gripSize;
-            } else
-            {
+			} else {
                 fr = new VBox();
-                sepBox.Realized += delegate
-                {
-                    sepBox.GdkWindow.Cursor = resizeCursorH;
-                };
+				sepBox.Realized += delegate { sepBox.GdkWindow.Cursor = resizeCursorH; };
                 sepBox.HeightRequest = gripSize;
             }
 			
@@ -119,28 +101,24 @@ namespace Docking
             ShowAll();
             Hide();
 			
-            if (ANIMATE)
-            {
+#if ANIMATE_DOCKING
                 scrollable = new ScrollableContainer();
                 scrollable.ScrollMode = false;
                 scrollable.Show();
-            }
-
-            if (item.Widget.Parent != null)
-            {
-                ((Gtk.Container)item.Widget.Parent).Remove(item.Widget);
-            }
+#endif
+			VBox itemBox = new VBox ();
+			itemBox.Show ();
+			item.TitleTab.Active = true;
+			itemBox.PackStart (item.TitleTab, false, false, 0);
+			itemBox.PackStart (item.Widget, true, true, 0);
 
             item.Widget.Show();
-            if (ANIMATE)
-            {
-                scrollable.Add(item.Widget);
+#if ANIMATE_DOCKING
+			scrollable.Add (itemBox);
                 fr.PackStart(scrollable, true, true, 0);
-            }
-            else
-            {
-                fr.PackStart(item.Widget, true, true, 0);
-            }
+#else
+			fr.PackStart (itemBox, true, true, 0);
+#endif
 			
 			sepBox.ButtonPressEvent += OnSizeButtonPress;
 			sepBox.ButtonReleaseEvent += OnSizeButtonRelease;
@@ -157,14 +135,12 @@ namespace Docking
 		
 		public void AnimateShow()
         {
-            if (ANIMATE)
-            {
+#if ANIMATE_DOCKING
                 animating = true;
                 scrollable.ScrollMode = true;
                 scrollable.SetSize(position, targetSize);
 			
-                switch (position)
-                {
+			switch (position) {
                 case PositionType.Left:
                     WidthRequest = 0;
                     break;
@@ -182,26 +158,21 @@ namespace Docking
                 }
                 Show();
                 GLib.Timeout.Add(10, RunAnimateShow);
-            }
-            else
-            {
+#else
                 Show();
-            }
+#endif
 		}
 		
 		public void AnimateHide()
         {
-            if (ANIMATE)
-            {
+#if ANIMATE_DOCKING
                 animating = true;
                 scrollable.ScrollMode = true;
                 scrollable.SetSize(position, targetSize);
                 GLib.Timeout.Add(10, RunAnimateHide);
-            }
-            else
-            {
+#else
                 Hide();
-            }
+#endif
 		}
 		
 		bool RunAnimateShow ()
@@ -296,6 +267,12 @@ namespace Docking
 			animating = false;
 		}
 
+		protected override bool OnButtonPressEvent (EventButton evnt)
+		{
+			// Don't propagate the button press event to the parent frame,
+			// since it has a handler that hides all visible autohide pads
+			return true;
+		}
 		
 		public int Size {
 			get {
@@ -425,4 +402,5 @@ namespace Docking
 			base.OnSizeAllocated (alloc);
 		}
 	}
+
 }

@@ -139,6 +139,18 @@
     <Compile Include="gtk-gui\Docking.Components.ComponentList.cs" />
     <Compile Include="Framework\Components\Messages.cs" />
     <Compile Include="gtk-gui\Docking.Components.Messages.cs" />
+    <Compile Include="Monodevelop.Docking\DockItemTitleTab.cs" />
+    <Compile Include="Monodevelop.Docking\DockVisualStyle.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\Tweener.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\CairoExtensions.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\MouseTracker.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\ExtendedLabel.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\ImageButton.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\Styles.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\Gettext.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\GtkUtil.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\PangoCairoHelper.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\ImageService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

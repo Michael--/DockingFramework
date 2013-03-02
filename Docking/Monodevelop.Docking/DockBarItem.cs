@@ -33,9 +33,106 @@ using System;
 using Gtk;
 using Docking.Helper;
 
+using Animations = Docking.Helper.AnimationExtensions;
+
 namespace Docking
 {
-	class DockBarItem: EventBox
+	class CrossfadeIcon: Gtk.Image, Animatable
+	{
+		// This class should be subclassed from Gtk.Misc, but there is no reasonable way to do that due to there being no bindings to gtk_widget_set_has_window
+
+		SurfaceWrapper primarySurface;
+		SurfaceWrapper secondarySurface;
+		Gdk.Pixbuf primary, secondary;
+
+		float secondaryOpacity;
+
+		public CrossfadeIcon (Gdk.Pixbuf primary, Gdk.Pixbuf secondary)
+		{
+			if (primary == null)
+				throw new ArgumentNullException ("primary");
+			if (secondary == null)
+				throw new ArgumentNullException ("secondary");
+
+			this.primary = primary.Copy ();
+			this.secondary = secondary.Copy ();
+		}
+
+		protected override void OnDestroyed ()
+		{
+			if (primarySurface != null)
+				primarySurface.Dispose ();
+			if (secondarySurface != null)
+				secondarySurface.Dispose ();
+			base.OnDestroyed ();
+		}
+
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+
+			using (Cairo.Context context = Gdk.CairoHelper.Create (GdkWindow)) {
+				primarySurface = new SurfaceWrapper (context, primary);
+				secondarySurface = new SurfaceWrapper (context, secondary);
+			}
+
+			primary.Dispose ();
+			primary = null;
+
+			secondary.Dispose ();
+			secondary = null;
+		}
+
+		public void ShowPrimary ()
+		{
+			AnimateCrossfade (false);
+		}
+
+		public void ShowSecondary ()
+		{
+			AnimateCrossfade (true);
+		}
+
+		void AnimateCrossfade (bool toSecondary)
+		{
+			this.Animate (name: "CrossfadeIconSwap",
+			              start: secondaryOpacity,
+			              end: toSecondary ? 1.0f : 0.0f,
+			              callback: x => secondaryOpacity = x);
+		}
+
+		protected override void OnSizeRequested (ref Requisition requisition)
+		{
+			base.OnSizeRequested (ref requisition);
+
+			requisition.Width += primarySurface.Width;
+			requisition.Height += primarySurface.Height;
+		}
+
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			using (Cairo.Context context = Gdk.CairoHelper.Create (evnt.Window)) {
+				if (secondaryOpacity < 1.0f)
+					RenderIcon (context, primarySurface, 1.0f - (float)Math.Pow (secondaryOpacity, 3.0f));
+
+				if (secondaryOpacity > 0.0f)
+					RenderIcon (context, secondarySurface, secondaryOpacity);
+			}
+
+			return false;
+		}
+
+		void RenderIcon (Cairo.Context context, SurfaceWrapper surface, float opacity)
+		{
+			context.SetSourceSurface (surface.Surface, 
+			                          Allocation.X + (Allocation.Width - surface.Width) / 2,
+			                          Allocation.Y + (Allocation.Height - surface.Height) / 2);
+
+			context.PaintWithAlpha (opacity);
+		}
+	}
+
+	class DockBarItem: EventBox, Animatable
 	{
 		DockBar bar;
 		DockItem it;
@@ -48,6 +145,9 @@ namespace Docking
 		uint autoHideTimeout = uint.MaxValue;
 		int size;
 		Gdk.Size lastFrameSize;
+		MouseTracker tracker;
+		CrossfadeIcon crossfade;
+		float hoverProgress;
 		
 		public DockBarItem (DockBar bar, DockItem it, int size)
 		{
@@ -59,6 +159,29 @@ namespace Docking
 			UpdateTab ();
 			lastFrameSize = bar.Frame.Allocation.Size;
 			bar.Frame.SizeAllocated += HandleBarFrameSizeAllocated;
+
+			tracker = new MouseTracker (this);
+			tracker.TrackMotion = false;
+			tracker.HoveredChanged += (sender, e) => {
+
+				if (crossfade == null)
+					return;
+	
+				AnimateHover (tracker.Hovered);
+				if (tracker.Hovered)
+					crossfade.ShowSecondary ();
+				else
+					crossfade.ShowPrimary ();
+			};
+		}
+
+		void AnimateHover (bool hovered)
+		{
+			this.Animate ("Hover",
+			              length: 100,
+			              start: hoverProgress,
+			              end: hovered ? 1.0f : 0.0f,
+			              callback: x => hoverProgress = x);
 		}
 		
 		void HandleBarFrameSizeAllocated (object o, SizeAllocatedArgs args)
@@ -102,11 +225,17 @@ namespace Docking
 			mainBox = new Alignment (0,0,1,1);
 			if (bar.Orientation == Gtk.Orientation.Horizontal) {
 				box = new HBox ();
-				mainBox.LeftPadding = mainBox.RightPadding = 2;
+				if (bar.AlignToEnd)
+					mainBox.SetPadding (3, 3, 11, 9);
+				else
+					mainBox.SetPadding (3, 3, 9, 11);
 			}
 			else {
 				box = new VBox ();
-				mainBox.TopPadding = mainBox.BottomPadding = 2;
+				if (bar.AlignToEnd)
+					mainBox.SetPadding (11, 9, 3, 3);
+				else
+					mainBox.SetPadding (9, 11, 3, 3);
 			}
 			
 			Gtk.Widget customLabel = null;
@@ -118,8 +247,13 @@ namespace Docking
 				box.PackStart (customLabel, true, true, 0);
 			}
 			else {
-				if (it.Icon != null)
-					box.PackStart (new Gtk.Image (it.Icon), false, false, 0);
+				if (it.Icon != null) {
+					Gdk.Pixbuf desat = it.Icon.Copy ();
+					desat.SaturateAndPixelate (desat, 0.5f, false);
+					crossfade = new CrossfadeIcon (desat, it.Icon);
+					box.PackStart (crossfade, false, false, 0);
+					desat.Dispose ();
+				}
 					
 				if (!string.IsNullOrEmpty (it.Label)) {
 					label = new Gtk.Label (it.Label);
@@ -131,12 +265,11 @@ namespace Docking
 					label = null;
 			}
 
-			box.BorderWidth = 2;
 			box.Spacing = 2;
 			mainBox.Add (box);
 			mainBox.ShowAll ();
 			Add (mainBox);
-			SetNormalColor ();
+			QueueDraw ();
 		}
 		
 		public Docking.DockItem DockItem {
@@ -153,68 +286,6 @@ namespace Docking
 			AutoHide (false);
 		}
 
-		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
-		{
-			if (State == StateType.Prelight) {
-				int w = Allocation.Width, h = Allocation.Height;
-				double x=Allocation.Left, y=Allocation.Top, r=3;
-				x += 0.5; y += 0.5; h -=1; w -= 1;
-				
-				using (Cairo.Context ctx = Gdk.CairoHelper.Create (GdkWindow)) {
-					HslColor c = new HslColor (Style.Background (Gtk.StateType.Normal));
-					HslColor c1 = c;
-					HslColor c2 = c;
-					if (State != StateType.Prelight) {
-						c1.L *= 0.8;
-						c2.L *= 0.95;
-					} else {
-						c1.L *= 1.1;
-						c2.L *= 1;
-					}
-					Cairo.Gradient pat;
-					switch (bar.Position) {
-						case PositionType.Top: pat = new Cairo.LinearGradient (x, y, x, y+h); break;
-						case PositionType.Bottom: pat = new Cairo.LinearGradient (x, y, x, y+h); break;
-						case PositionType.Left: pat = new Cairo.LinearGradient (x+w, y, x, y); break;
-						default: pat = new Cairo.LinearGradient (x, y, x+w, y); break;
-					}
-					pat.AddColorStop (0, c1);
-					pat.AddColorStop (1, c2);
-					ctx.NewPath ();
-					ctx.Arc (x+r, y+r, r, 180 * (Math.PI / 180), 270 * (Math.PI / 180));
-					ctx.LineTo (x+w-r, y);
-					ctx.Arc (x+w-r, y+r, r, 270 * (Math.PI / 180), 360 * (Math.PI / 180));
-					ctx.LineTo (x+w, y+h);
-					ctx.LineTo (x, y+h);
-					ctx.ClosePath ();
-					ctx.Pattern = pat;
-					ctx.FillPreserve ();
-					c1 = c;
-					c1.L *= 0.7;
-					ctx.LineWidth = 1;
-					ctx.Color = c1;
-					ctx.Stroke ();
-					
-					// Inner line
-					ctx.NewPath ();
-					ctx.Arc (x+r+1, y+r+1, r, 180 * (Math.PI / 180), 270 * (Math.PI / 180));
-					ctx.LineTo (x+w-r-1, y+1);
-					ctx.Arc (x+w-r-1, y+r+1, r, 270 * (Math.PI / 180), 360 * (Math.PI / 180));
-					ctx.LineTo (x+w-1, y+h-1);
-					ctx.LineTo (x+1, y+h-1);
-					ctx.ClosePath ();
-					c1 = c;
-					//c1.L *= 0.9;
-					ctx.LineWidth = 1;
-					ctx.Color = c1;
-					ctx.Stroke ();
-				}
-			}
-		
-			bool res = base.OnExposeEvent (evnt);
-			return res;
-		}
-
 		public void Present (bool giveFocus)
 		{
 			AutoShow ();
@@ -229,17 +300,22 @@ namespace Docking
 			}
 		}
 
+		public void Minimize ()
+		{
+			AutoHide (false);
+		}
+
 		void AutoShow ()
 		{
 			UnscheduleAutoHide ();
-			if (autoShowFrame == null) {
+			if (autoShowFrame == null && !bar.Frame.OverlayWidgetVisible) {
 				if (hiddenFrame != null)
 					bar.Frame.AutoHide (it, hiddenFrame, false);
 				autoShowFrame = bar.Frame.AutoShow (it, bar, size);
 				autoShowFrame.EnterNotifyEvent += OnFrameEnter;
 				autoShowFrame.LeaveNotifyEvent += OnFrameLeave;
 				autoShowFrame.KeyPressEvent += OnFrameKeyPress;
-				SetPrelight ();
+				QueueDraw ();
 			}
 		}
 		
@@ -257,7 +333,7 @@ namespace Docking
 				autoShowFrame.LeaveNotifyEvent -= OnFrameLeave;
 				autoShowFrame.KeyPressEvent -= OnFrameKeyPress;
 				autoShowFrame = null;
-				UnsetPrelight ();
+				QueueDraw ();
 			}
 		}
 		
@@ -286,13 +362,16 @@ namespace Docking
 				it.Widget.FocusChild = null;
 			if (autoHideTimeout == uint.MaxValue) {
 				autoHideTimeout = GLib.Timeout.Add (force ? 0 : bar.Frame.AutoHideDelay, delegate {
+					// Don't hide if the context menu for the item is being shown.
+					if (it.ShowingContextMemu)
+						return true;
 					// Don't hide the item if it has the focus. Try again later.
 					if (it.Widget.FocusChild != null && !force)
 						return true;
 					// Don't hide the item if the mouse pointer is still inside the window. Try again later.
 					int px, py;
 					it.Widget.GetPointer (out px, out py);
-					if (it.Widget.Visible && it.Widget.IsRealized && it.Widget.Allocation.Contains (px, py) && !force)
+					if (it.Widget.Visible && it.Widget.IsRealized && it.Widget.Allocation.Contains (px + it.Widget.Allocation.X, py + it.Widget.Allocation.Y) && !force)
 						return true;
 					autoHideTimeout = uint.MaxValue;
 					AutoHide (true);
@@ -319,50 +398,20 @@ namespace Docking
 		
 		protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
 		{
+			if (bar.HoverActivationEnabled && autoShowFrame == null) {
 			ScheduleAutoShow ();
-			SetPrelight ();
+				QueueDraw ();
+			}
 			return base.OnEnterNotifyEvent (evnt);
 		}
 		
 		protected override bool OnLeaveNotifyEvent (Gdk.EventCrossing evnt)
 		{
 			ScheduleAutoHide (true);
-			if (autoShowFrame == null)
-				UnsetPrelight ();
+			if (autoShowFrame == null) {
+				QueueDraw ();
+			}
 			return base.OnLeaveNotifyEvent (evnt);
-		}
-		
-		void SetPrelight ()
-		{
-			if (State != StateType.Prelight) {
-				State = StateType.Prelight;
-				if (label != null)
-					label.ModifyFg (StateType.Normal, Style.Foreground (Gtk.StateType.Normal));
-			}
-		}
-		
-		void UnsetPrelight ()
-		{
-			if (State == StateType.Prelight) {
-				State = StateType.Normal;
-				SetNormalColor ();
-			}
-		}
-		
-		protected override void OnRealized ()
-		{
-			base.OnRealized();
-			SetNormalColor ();
-		}
-
-		
-		void SetNormalColor ()
-		{
-			if (label != null) {
-				HslColor c = Style.Background (Gtk.StateType.Normal);
-				c.L *= 0.4;
-				label.ModifyFg (StateType.Normal, c);
-			}
 		}
 		
 		void OnFrameEnter (object s, Gtk.EnterNotifyEventArgs args)
@@ -382,19 +431,69 @@ namespace Docking
 				ScheduleAutoHide (true);
 		}
 		
+		bool itemActivated;
+
 		protected override bool OnButtonPressEvent (Gdk.EventButton evnt)
 		{
+			if (bar.Frame.OverlayWidgetVisible)
+				return false;
 			if (evnt.TriggersContextMenu ()) {
 				it.ShowDockPopupMenu (evnt.Time);
 			} else if (evnt.Button == 1) {
 				if (evnt.Type == Gdk.EventType.TwoButtonPress) {
-					it.Status = DockItemStatus.Dockable;
+					// Instead of changing the state of the pad here, do it when the button is released.
+					// Changing the state will make this bar item to vanish before the ReleaseEvent is received, and in this
+					// case the ReleaseEvent may be fired on another widget that is taking the space of this bar item.
+					// This was happening for example with the feedback button.
+					itemActivated = true;
 				} else {
 					AutoShow ();
 					it.Present (true);
 				}
 			}
-			return base.OnButtonPressEvent (evnt);
+			return true;
+		}
+
+		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
+		{
+			if (itemActivated) {
+				itemActivated = false;
+				it.Status = DockItemStatus.Dockable;
+			}
+			return true;
+		}
+
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
+		{
+			using (var context = Gdk.CairoHelper.Create (evnt.Window)) {
+				var alloc = Allocation;
+
+				Cairo.LinearGradient lg;
+
+				if (bar.Orientation == Orientation.Horizontal) {
+					lg = new Cairo.LinearGradient (alloc.X, 0, alloc.X + alloc.Width, 0);
+				} else {
+					lg = new Cairo.LinearGradient (0, alloc.Y, 0, alloc.Y + alloc.Height);
+				}
+
+				Cairo.Color primaryColor = Styles.DockBarPrelightColor;
+				primaryColor.A = hoverProgress;
+
+				Cairo.Color transparent = primaryColor;
+				transparent.A = 0;
+
+				lg.AddColorStop (0.0, transparent);
+				lg.AddColorStop (0.35, primaryColor);
+				lg.AddColorStop (0.65, primaryColor);
+				lg.AddColorStop (1.0, transparent);
+
+				context.Rectangle (alloc.ToCairoRect ());
+				context.Pattern = lg;
+				context.Fill ();
+
+				lg.Destroy ();
+			}
+			return base.OnExposeEvent (evnt);
 		}
 	}
 }

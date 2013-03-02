@@ -110,6 +110,8 @@ namespace Docking
 			}
 		}
 		
+		public DockVisualStyle VisualStyle { get; set; }
+		
 		internal void ResetDefaultSize ()
 		{
 			defaultHorSize = -1;

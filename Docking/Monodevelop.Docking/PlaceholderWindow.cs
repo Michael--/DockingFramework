@@ -64,6 +64,12 @@ namespace Docking
 	   		redgc.RgbFgColor = frame.Style.Background (StateType.Selected);
 		}
 		
+		protected override void OnRealized ()
+		{
+			base.OnRealized ();
+			GdkWindow.Opacity = 0.6;
+		}
+		
 		void CreateShape (int width, int height)
 		{
 			Gdk.Color black, white;
@@ -104,9 +110,19 @@ namespace Docking
 		
 		public void Relocate (int x, int y, int w, int h, bool animate)
 		{
+            Gdk.Rectangle geometry = Docking.Helper.GtkWorkarounds.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
+			if (x < geometry.X)
+				x = geometry.X;
+			if (x + w > geometry.Right)
+				x = geometry.Right - w;
+			if (y < geometry.Y)
+				y = geometry.Y;
+			if (y > geometry.Bottom - h)
+				y = geometry.Bottom - h;
+
 			if (x != rx || y != ry || w != rw || h != rh) {
-				Move (x, y);
 				Resize (w, h);
+				Move (x, y);
 				
 				rx = x; ry = y; rw = w; rh = h;
 				
@@ -138,6 +154,63 @@ namespace Docking
 			}
 			anim = 0;
 			return false;
+		}
+
+		public DockDelegate DockDelegate { get; private set; }
+		public Gdk.Rectangle DockRect { get; private set; }
+
+		public void SetDockInfo (DockDelegate dockDelegate, Gdk.Rectangle rect)
+		{
+			DockDelegate = dockDelegate;
+			DockRect = rect;
+		}
+	}
+
+	class PadTitleWindow: Gtk.Window
+	{
+		public PadTitleWindow (DockFrame frame, DockItem draggedItem): base (Gtk.WindowType.Popup)
+		{
+			SkipTaskbarHint = true;
+			Decorated = false;
+			TransientFor = (Gtk.Window) frame.Toplevel;
+			TypeHint = WindowTypeHint.Utility;
+
+			VBox mainBox = new VBox ();
+
+			HBox box = new HBox (false, 3);
+			if (draggedItem.Icon != null) {
+				Gtk.Image img = new Gtk.Image (draggedItem.Icon);
+				box.PackStart (img, false, false, 0);
+			}
+			Gtk.Label la = new Label ();
+			la.Markup = draggedItem.Label;
+			box.PackStart (la, false, false, 0);
+
+			mainBox.PackStart (box, false, false, 0);
+
+/*			if (draggedItem.Widget.IsRealized) {
+				var win = draggedItem.Widget.GdkWindow;
+				var alloc = draggedItem.Widget.Allocation;
+				Gdk.Pixbuf img = Gdk.Pixbuf.FromDrawable (win, win.Colormap, alloc.X, alloc.Y, 0, 0, alloc.Width, alloc.Height);
+
+				double mw = 140, mh = 140;
+				if (img.Width > img.Height)
+					mw *= 2;
+				else
+					mh *= 2;
+
+				double r = Math.Min (mw / img.Width, mh / img.Height);
+				img = img.ScaleSimple ((int)(img.Width * r), (int)(img.Height * r), Gdk.InterpType.Hyper);
+				mainBox.PackStart (new Gtk.Image (img), false, false, 0);
+			}*/
+
+			CustomFrame f = new CustomFrame ();
+			f.SetPadding (12, 12, 12, 12);
+			f.SetMargins (1, 1, 1, 1);
+			f.Add (mainBox);
+
+			Add (f);
+			ShowAll ();
 		}
 	}
 }

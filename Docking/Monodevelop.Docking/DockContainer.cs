@@ -34,10 +34,12 @@ using System;
 using System.Collections.Generic;
 using Gtk;
 using Gdk;
+using System.Linq;
+using Docking.Helper;
 
 namespace Docking
 {
-	class DockContainer: Container, IShadedWidget
+	class DockContainer: Container
 	{
 		DockLayout layout;
 		DockFrame frame;
@@ -45,18 +47,12 @@ namespace Docking
 		List<TabStrip> notebooks = new List<TabStrip> ();
 		List<DockItem> items = new List<DockItem> ();
 		
+		List<SplitterWidget> splitters = new List<SplitterWidget> ();
+		
 		bool needsRelayout = true;
 		
-		DockGroup currentHandleGrp;
-		int currentHandleIndex;
-		bool dragging;
-		int dragPos;
-		int dragSize;
-		
 		PlaceholderWindow placeholderWindow;
-		
-		static Gdk.Cursor hresizeCursor = new Gdk.Cursor (CursorType.SbHDoubleArrow);
-		static Gdk.Cursor vresizeCursor = new Gdk.Cursor (CursorType.SbVDoubleArrow);
+		PadTitleWindow padTitleWindow;
 		
 		public DockContainer (DockFrame frame)
 		{
@@ -64,7 +60,6 @@ namespace Docking
 			
 			this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
 			this.frame = frame;
-			frame.ShadedContainer.Add (this);
 		}
 
 		internal DockGroupItem FindDockGroupItem (string id)
@@ -91,6 +86,8 @@ namespace Docking
 
 		public void LoadLayout (DockLayout dl)
 		{
+			HidePlaceholder ();
+
 			// Sticky items currently selected in notebooks will remain
 			// selected after switching the layout
 			List<DockItem> sickyOnTop = new List<DockItem> ();
@@ -150,6 +147,26 @@ namespace Docking
 			LayoutWidgets ();
 			layout.Size = -1;
 			layout.SizeAllocate (rect);
+
+			usedSplitters = 0;
+			layout.DrawSeparators (Gdk.Rectangle.Zero, null, 0, DrawSeparatorOperation.Allocate, null);
+		}
+
+		int usedSplitters;
+
+		internal void AllocateSplitter (DockGroup grp, int index, Gdk.Rectangle a)
+		{
+			var s = splitters[usedSplitters++];
+			if (a.Height > a.Width) {
+				a.Width = 5;
+				a.X -= 2;
+			}
+			else {
+				a.Height = 5;
+				a.Y -= 2;
+			}
+			s.SizeAllocate (a);
+			s.Init (grp, index);
 		}
 		
 		protected override void ForAll (bool include_internals, Gtk.Callback callback)
@@ -158,9 +175,15 @@ namespace Docking
 			foreach (Widget w in notebooks)
 				widgets.Add (w);
 			foreach (DockItem it in items) {
-				if (it.HasWidget && it.Widget.Parent == this)
+				if (it.HasWidget && it.Widget.Parent == this) {
 					widgets.Add (it.Widget);
+					if (it.TitleTab.Parent == this)
+						widgets.Add (it.TitleTab);
 			}
+			}
+			foreach (var s in splitters.Where (w => w.Parent != null))
+				widgets.Add (s);
+
 			foreach (Widget w in widgets)
 				callback (w);
 		}
@@ -170,7 +193,7 @@ namespace Docking
 			bool res = base.OnExposeEvent (evnt);
 			
 			if (layout != null) {
-				layout.Draw (evnt.Area, currentHandleGrp, currentHandleIndex);
+				layout.Draw (evnt.Area, null, 0);
 			}
 			return res;
 		}
@@ -204,6 +227,9 @@ namespace Docking
 
 		public void RelayoutWidgets ()
 		{
+			if (layout != null)
+				layout.AddRemoveWidgets ();
+
 			needsRelayout = true;
 			QueueResize ();
 		}
@@ -231,6 +257,8 @@ namespace Docking
 					notebooks.Add (ts);
 					ts.Parent = this;
 				}
+				frame.UpdateRegionStyle (grp);
+				ts.VisualStyle = grp.VisualStyle;
 				grp.UpdateNotebook (ts);
 			}
 			
@@ -243,10 +271,40 @@ namespace Docking
 				ts.Destroy ();
 			}
 				
+			// Create and add the required splitters
+
+			int reqSpliters = CountRequiredSplitters (layout);
+
+			for (int n=0; n < splitters.Count; n++) {
+				var s = splitters [n];
+				if (s.Parent != null)
+					Remove (s);
+			}
+
+			// Hide the splitters that are not required
+
+			for (int n=reqSpliters; n < splitters.Count; n++)
+				splitters[n].Hide ();
+
 			// Add widgets to the container
 			
 			layout.LayoutWidgets ();
-			NotifySeparatorsChanged ();
+
+			// Create and add the required splitters
+
+			for (int n=0; n < reqSpliters; n++) {
+				if (n < splitters.Count) {
+					var s = splitters [n];
+					if (!s.Visible)
+						s.Show ();
+					Add (s);
+				} else {
+					var s = new SplitterWidget ();
+					splitters.Add (s);
+					s.Show ();
+					Add (s);
+				}
+			}
 		}
 		
 		void GetTabbedGroups (DockGroup grp, List<DockGroup> tabbedGroups)
@@ -267,96 +325,18 @@ namespace Docking
 			}
 		}
 		
-		protected override bool OnButtonPressEvent (Gdk.EventButton ev)
+		int CountRequiredSplitters (DockGroup grp)
 		{
-			if (currentHandleGrp != null) {
-				dragging = true;
-				dragPos = (currentHandleGrp.Type == DockGroupType.Horizontal) ? (int)ev.XRoot : (int)ev.YRoot;
-				DockObject obj = currentHandleGrp.VisibleObjects [currentHandleIndex];
-				dragSize = (currentHandleGrp.Type == DockGroupType.Horizontal) ? obj.Allocation.Width : obj.Allocation.Height;
+			if (grp.Type == DockGroupType.Tabbed)
+				return 0;
+			else {
+				int num = grp.VisibleObjects.Count - 1;
+				if (num < 0)
+					return 0;
+				foreach (var c in grp.VisibleObjects.OfType<DockGroup> ())
+					num += CountRequiredSplitters (c);
+				return num;
 			}
-			return base.OnButtonPressEvent (ev);
-		}
-		
-		protected override bool OnButtonReleaseEvent (Gdk.EventButton e)
-		{
-			dragging = false;
-			return base.OnButtonReleaseEvent (e);
-		}
-		
-		protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
-		{
-			if (dragging) {
-				NotifySeparatorsChanged ();
-				int newpos = (currentHandleGrp.Type == DockGroupType.Horizontal) ? (int)e.XRoot : (int)e.YRoot;
-				if (newpos != dragPos) {
-					int nsize = dragSize + (newpos - dragPos);
-					currentHandleGrp.ResizeItem (currentHandleIndex, nsize);
-					layout.DrawSeparators (Allocation, currentHandleGrp, currentHandleIndex, true, null);
-				}
-			}
-			else if (layout != null && placeholderWindow == null) {
-				int index;
-				DockGroup grp;
-				if (FindHandle (layout, (int)e.X, (int)e.Y, out grp, out index)) {
-					if (currentHandleGrp != grp || currentHandleIndex != index) {
-						if (grp.Type == DockGroupType.Horizontal)
-							this.GdkWindow.Cursor = hresizeCursor;
-						else
-							this.GdkWindow.Cursor = vresizeCursor;
-						currentHandleGrp = grp;
-						currentHandleIndex = index;
-						layout.DrawSeparators (Allocation, currentHandleGrp, currentHandleIndex, true, null);
-					}
-				}
-				else if (currentHandleGrp != null) {
-					ResetHandleHighlight ();
-				}
-			}
-			return base.OnMotionNotifyEvent (e);
-		}
-		
-		void ResetHandleHighlight ()
-		{
-			this.GdkWindow.Cursor = null;
-			currentHandleGrp = null;
-			currentHandleIndex = -1;
-			if (layout != null)
-				layout.DrawSeparators (Allocation, null, -1, true, null);
-		}
-		
-		protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
-		{
-			if (!dragging && evnt.Mode != CrossingMode.Grab)
-				ResetHandleHighlight ();
-			return base.OnLeaveNotifyEvent (evnt);
-		}
-
-		
-		bool FindHandle (DockGroup grp, int x, int y, out DockGroup foundGrp, out int objectIndex)
-		{
-			if (grp.Type != DockGroupType.Tabbed && grp.Allocation.Contains (x, y)) {
-				for (int n=0; n<grp.VisibleObjects.Count; n++) {
-					DockObject obj = grp.VisibleObjects [n];
-					if (n < grp.Objects.Count - 1) {
-						if ((grp.Type == DockGroupType.Horizontal && x > obj.Allocation.Right && x < obj.Allocation.Right + frame.TotalHandleSize) ||
-						    (grp.Type == DockGroupType.Vertical && y > obj.Allocation.Bottom && y < obj.Allocation.Bottom + frame.TotalHandleSize))
-						{
-							foundGrp = grp;
-							objectIndex = n;
-							return true;
-						}
-					}
-					if (obj is DockGroup) {
-						if (FindHandle ((DockGroup) obj, x, y, out foundGrp, out objectIndex))
-							return true;
-					}
-				}
-			}
-			
-			foundGrp = null;
-			objectIndex = 0;
-			return false;
 		}
 		
 		protected override void OnRealized ()
@@ -391,6 +371,8 @@ namespace Docking
 			this.WidgetFlags &= ~WidgetFlags.NoWindow;
 			
 			//GdkWindow.SetBackPixmap (null, true);
+
+			ModifyBase (StateType.Normal, Styles.DockFrameBackground);
 		}
 		
 		protected override void OnUnrealized ()
@@ -403,8 +385,9 @@ namespace Docking
 			base.OnUnrealized ();
 		}
 		
-		internal void ShowPlaceholder ()
+		internal void ShowPlaceholder (DockItem draggedItem)
 		{
+			padTitleWindow = new PadTitleWindow (frame, draggedItem);
 			placeholderWindow = new PlaceholderWindow (frame);
 		}
 		
@@ -418,21 +401,36 @@ namespace Docking
 			
 			placeholderWindow.AllowDocking = allowDocking;
 			
-			DockDelegate dockDelegate;
-			Gdk.Rectangle rect;
-			if (allowDocking && layout.GetDockTarget (item, px, py, out dockDelegate, out rect)) {
 				int ox, oy;
 				GdkWindow.GetOrigin (out ox, out oy);
 				
+			int tw, th;
+			padTitleWindow.GetSize (out tw, out th);
+			padTitleWindow.Move (ox + px - tw/2, oy + py - th/2);
+			padTitleWindow.GdkWindow.KeepAbove = true;
+
+			DockDelegate dockDelegate;
+			Gdk.Rectangle rect;
+			if (allowDocking && layout.GetDockTarget (item, px, py, out dockDelegate, out rect)) {
 				placeholderWindow.Relocate (ox + rect.X, oy + rect.Y, rect.Width, rect.Height, true);
 				placeholderWindow.Show ();
+				placeholderWindow.SetDockInfo (dockDelegate, rect);
 				return true;
 			} else {
-				int ox, oy;
-				GdkWindow.GetOrigin (out ox, out oy);
-				placeholderWindow.Relocate (ox + px - size.Width / 2, oy + py - 18, size.Width, size.Height, false);
+				int w,h;
+				var gi = layout.FindDockGroupItem (item.Id);
+				if (gi != null) {
+					w = gi.Allocation.Width;
+					h = gi.Allocation.Height;
+				} else {
+					w = item.DefaultWidth;
+					h = item.DefaultHeight;
+				}
+				placeholderWindow.Relocate (ox + px - w / 2, oy + py - h / 2, w, h, false);
 				placeholderWindow.Show ();
+				placeholderWindow.AllowDocking = false;
 			}
+
 			return false;
 		}
 		
@@ -441,21 +439,17 @@ namespace Docking
 			if (placeholderWindow == null || !placeholderWindow.Visible)
 				return;
 			
+			if (placeholderWindow.AllowDocking && placeholderWindow.DockDelegate != null) {
 			item.Status = DockItemStatus.Dockable;
-			
-			int px, py;
-			GetPointer (out px, out py);
-			
-			DockDelegate dockDelegate;
-			Gdk.Rectangle rect;
-			if (placeholderWindow.AllowDocking && layout.GetDockTarget (item, px, py, out dockDelegate, out rect)) {
 				DockGroupItem dummyItem = new DockGroupItem (frame, new DockItem (frame, "__dummy"));
 				DockGroupItem gitem = layout.FindDockGroupItem (item.Id);
 				gitem.ParentGroup.ReplaceItem (gitem, dummyItem);
-				dockDelegate (item);
+				placeholderWindow.DockDelegate (item);
 				dummyItem.ParentGroup.Remove (dummyItem);
 				RelayoutWidgets ();
 			} else {
+				int px, py;
+				GetPointer (out px, out py);
 				DockGroupItem gi = FindDockGroupItem (item.Id);
 				int pw, ph;
 				placeholderWindow.GetPosition (out px, out py);
@@ -471,23 +465,100 @@ namespace Docking
 				placeholderWindow.Destroy ();
 				placeholderWindow = null;
 			}
+			if (padTitleWindow != null) {
+				padTitleWindow.Destroy ();
+				padTitleWindow = null;
+			}
 		}
 		
-		public IEnumerable<Rectangle> GetShadedAreas ()
+		internal class SplitterWidget: EventBox
 		{
-			List<Gdk.Rectangle> rects = new List<Gdk.Rectangle> ();
-			if (layout != null)
-				layout.DrawSeparators (Allocation, currentHandleGrp, currentHandleIndex, true, rects);
-			return rects;
-		}
-		
-		internal void NotifySeparatorsChanged ()
-		{
-			if (AreasChanged != null)
-				AreasChanged (this, EventArgs.Empty);
-		}
-		
-		public event EventHandler AreasChanged;
+			static Gdk.Cursor hresizeCursor = new Gdk.Cursor (CursorType.SbHDoubleArrow);
+			static Gdk.Cursor vresizeCursor = new Gdk.Cursor (CursorType.SbVDoubleArrow);
 
+			bool dragging;
+			int dragPos;
+			int dragSize;
+
+			DockGroup dockGroup;
+			int dockIndex;
+	
+			public SplitterWidget ()
+			{
+				this.VisibleWindow = false;
+				this.AboveChild = true;
+			}
+
+			public void Init (DockGroup grp, int index)
+			{
+				dockGroup = grp;
+				dockIndex = index;
+		}
+		
+			protected override void OnSizeAllocated (Rectangle allocation)
+			{
+				base.OnSizeAllocated (allocation);
+			}
+
+			protected override void OnRealized ()
+			{
+				base.OnRealized ();
+
+				// For testing purposes. Not being shown while VisibleWindow = false
+				ModifyBg (StateType.Normal, new Gdk.Color (255,0,0));
+				ModifyBase (StateType.Normal, new Gdk.Color (255,0,0));
+				ModifyFg (StateType.Normal, new Gdk.Color (255,0,0));
+			}
+
+			protected override bool OnEnterNotifyEvent (EventCrossing evnt)
+		{
+				if (Allocation.Height > Allocation.Width)
+					GdkWindow.Cursor = hresizeCursor;
+				else
+					GdkWindow.Cursor = vresizeCursor;
+				return base.OnEnterNotifyEvent (evnt);
+			}
+
+			protected override bool OnLeaveNotifyEvent (EventCrossing evnt)
+			{
+				GdkWindow.Cursor = null;
+				return base.OnLeaveNotifyEvent (evnt);
+		}
+		
+			protected override bool OnButtonPressEvent (Gdk.EventButton ev)
+			{
+				dragging = true;
+				dragPos = (dockGroup.Type == DockGroupType.Horizontal) ? (int)ev.XRoot : (int)ev.YRoot;
+				DockObject obj = dockGroup.VisibleObjects [dockIndex];
+				dragSize = (dockGroup.Type == DockGroupType.Horizontal) ? obj.Allocation.Width : obj.Allocation.Height;
+				return base.OnButtonPressEvent (ev);
+			}
+			
+			protected override bool OnButtonReleaseEvent (Gdk.EventButton e)
+			{
+				dragging = false;
+				return base.OnButtonReleaseEvent (e);
+			}
+
+			protected override bool OnMotionNotifyEvent (Gdk.EventMotion e)
+			{
+				if (dragging) {
+					int newpos = (dockGroup.Type == DockGroupType.Horizontal) ? (int)e.XRoot : (int)e.YRoot;
+					if (newpos != dragPos) {
+						int nsize = dragSize + (newpos - dragPos);
+						dockGroup.ResizeItem (dockIndex, nsize);
+					}
+				}
+				return base.OnMotionNotifyEvent (e);
+			}
+		}
+	}
+
+	enum DrawSeparatorOperation
+	{
+		Draw,
+		Invalidate,
+		Allocate,
+		CollectAreas
 	}
 }

@@ -102,45 +102,56 @@ namespace Docking.Helper
 		{
 			return new HslColor (color);
 		}
-		
-		public HslColor (Color color) : this ()
-		{
-			double r = color.Red   / (double)ushort.MaxValue;
-			double g = color.Green / (double)ushort.MaxValue;
-			double b = color.Blue  / (double)ushort.MaxValue;
 
-			double v = System.Math.Max (r, g);
-			v = System.Math.Max (v, b);
+        public static implicit operator HslColor (Cairo.Color color)
+        {
+            return new HslColor (color);
+        }
 
-			double m = System.Math.Min (r, g);
-			m = System.Math.Min (m, b);
-			
-			this.L = (m + v) / 2.0;
-			if (this.L <= 0.0)
-				return;
-			double vm = v - m;
-			this.S = vm;
-			
-			if (this.S > 0.0) {
-				this.S /= (this.L <= 0.5) ? (v + m) : (2.0 - v - m);
-			} else {
-				return;
-			}
-			
-			double r2 = (v - r) / vm;
-			double g2 = (v - g) / vm;
-			double b2 = (v - b) / vm;
-			
-			if (r == v) {
-				this.H = (g == m ? 5.0 + b2 : 1.0 - g2);
-			} else if (g == v) {
-				this.H = (b == m ? 1.0 + r2 : 3.0 - b2);
-			} else {
-				this.H = (r == m ? 3.0 + g2 : 5.0 - r2);
-			}
-			this.H /= 6.0;
-		}
-		
+
+        public HslColor (Cairo.Color color) : this (color.R, color.G, color.B)
+        {
+        }
+
+        public HslColor (Color color) : this (color.Red / (double)ushort.MaxValue, color.Green / (double)ushort.MaxValue, color.Blue / (double)ushort.MaxValue)
+        {
+        }
+
+    		
+        public HslColor (double r, double g, double b) : this ()
+        {
+            double v = System.Math.Max (r, g);
+            v = System.Math.Max (v, b);
+            
+            double m = System.Math.Min (r, g);
+            m = System.Math.Min (m, b);
+            
+            this.L = (m + v) / 2.0;
+            if (this.L <= 0.0)
+                return;
+            double vm = v - m;
+            this.S = vm;
+            
+            if (this.S > 0.0) {
+                this.S /= (this.L <= 0.5) ? (v + m) : (2.0 - v - m);
+            } else {
+                return;
+            }
+            
+            double r2 = (v - r) / vm;
+            double g2 = (v - g) / vm;
+            double b2 = (v - b) / vm;
+            
+            if (r == v) {
+                this.H = (g == m ? 5.0 + b2 : 1.0 - g2);
+            } else if (g == v) {
+                this.H = (b == m ? 1.0 + r2 : 3.0 - b2);
+            } else {
+                this.H = (r == m ? 3.0 + g2 : 5.0 - r2);
+            }
+            this.H /= 6.0;
+        }
+
 		public static double Brightness (Gdk.Color c)
 		{
 			double r = c.Red / (double)ushort.MaxValue;

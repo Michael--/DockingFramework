@@ -32,6 +32,7 @@ using System;
 using System.Xml;
 using System.Collections.Generic;
 using Gtk;
+using Docking.Helper;
 
 namespace Docking
 {
@@ -261,8 +262,7 @@ namespace Docking
 			if (VisibleObjects.Count > 0) {
 				CalcNewSizes ();
 				MarkForRelayout ();
-			} 
-            else if (ParentGroup != null)
+			} else
 				ParentGroup.UpdateVisible (this);
 		}
 		
@@ -302,7 +302,6 @@ namespace Docking
 		{
 			visibleObjects = null;
 			bool visChanged;
-			CalcNewSizes ();
 			MarkForRelayout ();
 			
 			visChanged = child.Visible ? VisibleObjects.Count == 1 : VisibleObjects.Count == 0;
@@ -349,7 +348,7 @@ namespace Docking
 			if (type == DockGroupType.Tabbed) {
 				if (boundTabStrip != null) {
 					int tabsHeight = boundTabStrip.SizeRequest ().Height;
-					boundTabStrip.SizeAllocate (new Gdk.Rectangle (newAlloc.X, newAlloc.Bottom - tabsHeight, newAlloc.Width, tabsHeight));
+					boundTabStrip.SizeAllocate (new Gdk.Rectangle (newAlloc.X, newAlloc.Y, newAlloc.Width, tabsHeight));
 				}
 				if (allocStatus == AllocStatus.Valid && newAlloc == oldAlloc) {
 					// Even if allocation has not changed, SizeAllocation has to be called on all items to avoid redrawing issues.
@@ -360,6 +359,7 @@ namespace Docking
 				if (VisibleObjects.Count > 1 && boundTabStrip != null) {
 					int tabsHeight = boundTabStrip.SizeRequest ().Height;
 					newAlloc.Height -= tabsHeight;
+					newAlloc.Y += tabsHeight;
 					boundTabStrip.QueueDraw ();
 				} else if (VisibleObjects.Count != 0) {
 					((DockGroupItem)VisibleObjects [0]).Item.Widget.Show ();
@@ -405,7 +405,14 @@ namespace Docking
 				CalcNewSizes ();
 			}
 			else if (allocStatus != AllocStatus.NewSizeRequest) {
-				// Available space has changed, so the size of the items must be changed.
+
+				// Don't proportionally resize the pads. Instead, resize only those pads with the Expand flag.
+				// This logic is implemented in CalcNewSizes, so no need to reimplement it
+				CalcNewSizes ();
+
+				// Disabled the proportional resize of pads for the above reason
+
+/*				// Available space has changed, so the size of the items must be changed.
 				// First of all, get the change fraction
 				double change;
 				if (horiz)
@@ -434,7 +441,7 @@ namespace Docking
 					}
 					ob.DefaultSize = ob.DefaultSize * change;
 				}
-				CheckMinSizes ();
+				CheckMinSizes ();*/
 			}
 
 			allocStatus = AllocStatus.Valid;
@@ -620,18 +627,20 @@ namespace Docking
 			// Add missing pages
 			foreach (DockObject ob in VisibleObjects) {
 				DockGroupItem it = ob as DockGroupItem;
-				ts.AddTab (it.Item.Widget, it.Item.Icon, it.Item.Label);
+				ts.AddTab (it.Item.TitleTab);
 			}
 
 			boundTabStrip = ts;
 			
-			if (currentTabPage != -1 && currentTabPage < boundTabStrip.TabCount) {
+			if (oldpage != null) {
+				boundTabStrip.CurrentPage = oldpage;
+			}
+			else if (currentTabPage != -1 && currentTabPage < boundTabStrip.TabCount) {
 				boundTabStrip.CurrentTab = currentTabPage;
+			}
+
 				// Discard the currentTabPage value. Current page is now tracked by the tab strip
 				currentTabPage = -1;
-			}
-			else if (oldpage != null)
-				boundTabStrip.CurrentPage = oldpage;
 			
 			if (boundTabStrip.CurrentTab == -1) {
 				if (oldtab != -1) {
@@ -679,6 +688,12 @@ namespace Docking
 				boundTabStrip.SetTabLabel (it.Widget, it.Icon, it.Label);
 		}
 				
+		internal void UpdateStyle (DockItem it)
+		{
+			if (it.Visible && type == DockGroupType.Tabbed && boundTabStrip != null)
+				boundTabStrip.UpdateStyle (it);
+		}
+		
 		internal void FocusItem (DockGroupItem it)
 		{
 			tabFocus = it;
@@ -691,9 +706,28 @@ namespace Docking
 		
 		public void LayoutWidgets ()
 		{
+			Frame.UpdateRegionStyle (this);
+
 			foreach (DockObject ob in VisibleObjects) {
 				DockGroupItem it = ob as DockGroupItem;
 				if (it != null) {
+					if (it.Visible) {
+						Frame.UpdateRegionStyle (it);
+						it.Item.SetRegionStyle (it.VisualStyle);
+					}
+				}
+				else
+					((DockGroup)ob).LayoutWidgets ();
+			}
+		}
+	
+		public void AddRemoveWidgets ()
+		{
+			foreach (DockObject ob in Objects) {
+				DockGroupItem it = ob as DockGroupItem;
+				if (it != null) {
+					if (it.Visible) {
+						// Add the dock item to the container and show it if visible
 					if (it.Item.Widget.Parent != Frame.Container) {
 						if (it.Item.Widget.Parent != null) {
 							((Gtk.Container)it.Item.Widget.Parent).Remove (it.Item.Widget);
@@ -702,9 +736,29 @@ namespace Docking
 					}
 					if (!it.Item.Widget.Visible && type != DockGroupType.Tabbed)
 						it.Item.Widget.Show ();
+
+						// Do the same for the title tab
+						if ((type != DockGroupType.Tabbed || VisibleObjects.Count == 1) && (it.Item.Behavior & DockItemBehavior.NoGrip) == 0) {
+							var tab = it.Item.TitleTab;
+							if (tab.Parent != Frame.Container) {
+								if (tab.Parent != null) {
+									((Gtk.Container)tab.Parent).Remove (tab);
+								}
+								Frame.Container.Add (tab);
+								tab.Active = true;
+							}
+							tab.ShowAll ();
+						}
+					} else {
+						if (it.Item.Widget.Parent == Frame.Container)
+							Frame.Container.Remove (it.Item.Widget);
+						var tab = it.Item.TitleTab;
+						if (tab.Parent == Frame.Container)
+							Frame.Container.Remove (tab);
+					}
 				}
 				else
-					((DockGroup)ob).LayoutWidgets ();
+					((DockGroup)ob).AddRemoveWidgets ();
 			}
 		}
 	
@@ -787,7 +841,7 @@ namespace Docking
 		public void Draw (Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex)
 		{
 			if (type != DockGroupType.Tabbed) {
-				DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, false, false, null);
+				DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, DrawSeparatorOperation.Draw, false, null);
 				foreach (DockObject it in VisibleObjects) {
 					DockGroup grp = it as DockGroup;
 					if (grp != null)
@@ -796,12 +850,12 @@ namespace Docking
 			}
 		}
 		
-		public void DrawSeparators (Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, bool invalidateOnly, List<Gdk.Rectangle> areasList)
+		public void DrawSeparators (Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, DrawSeparatorOperation oper, List<Gdk.Rectangle> areasList)
 		{
-			DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, invalidateOnly, true, areasList);
+			DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, oper, true, areasList);
 		}
 		
-		void DrawSeparators (Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, bool invalidateOnly, bool drawChildrenSep, List<Gdk.Rectangle> areasList)
+		void DrawSeparators (Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, DrawSeparatorOperation oper, bool drawChildrenSep, List<Gdk.Rectangle> areasList)
 		{
 			if (type == DockGroupType.Tabbed || VisibleObjects.Count == 0)
 				return;
@@ -813,33 +867,39 @@ namespace Docking
 			int y = Allocation.Y;
 			int hw = horiz ? Frame.HandleSize : Allocation.Width;
 			int hh = horiz ? Allocation.Height : Frame.HandleSize;
-			Gtk.Orientation or = horiz ? Gtk.Orientation.Vertical : Gtk.Orientation.Horizontal;
+
+			Gdk.GC hgc = null;
+
+			if (areasList == null && oper == DrawSeparatorOperation.Draw) {
+				hgc = new Gdk.GC (Frame.Container.GdkWindow);
+				hgc.RgbFgColor = Styles.DockFrameBackground;
+			}
 
 			for (int n=0; n<VisibleObjects.Count; n++) {
 				DockObject ob = VisibleObjects [n];
 				DockGroup grp = ob as DockGroup;
 				if (grp != null && drawChildrenSep)
-					grp.DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, invalidateOnly, areasList);
+					grp.DrawSeparators (exposedArea, currentHandleGrp, currentHandleIndex, oper, areasList);
 				if (ob != last) {
 					if (horiz)
 						x += ob.Allocation.Width + Frame.HandlePadding;
 					else
 						y += ob.Allocation.Height + Frame.HandlePadding;
 					
-					if (areasList != null) {
+					switch (oper) {
+					case DrawSeparatorOperation.CollectAreas:
 						if (Frame.ShadedSeparators)
 							areasList.Add (new Gdk.Rectangle (x, y, hw, hh));
-					} else if (invalidateOnly) {
+						break;
+					case DrawSeparatorOperation.Invalidate:
 						Frame.Container.QueueDrawArea (x, y, hw, hh);
-					}
-					else {
-						if (Frame.ShadedSeparators) {
-							Frame.ShadedContainer.DrawBackground (Frame.Container, new Gdk.Rectangle (x, y, hw, hh));
-						} else {
-							StateType state = (currentHandleGrp == this && currentHandleIndex == n) ? StateType.Prelight : StateType.Normal;
-							if (!DockFrame.IsWindows)
-								Gtk.Style.PaintHandle (Frame.Style, Frame.Container.GdkWindow, state, ShadowType.None, exposedArea, Frame, "paned", x, y, hw, hh, or);
-						}
+						break;
+					case DrawSeparatorOperation.Draw:
+						Frame.Container.GdkWindow.DrawRectangle (hgc, true, x, y, hw, hh);
+						break;
+					case DrawSeparatorOperation.Allocate:
+						Frame.Container.AllocateSplitter (this, n, new Gdk.Rectangle (x, y, hw, hh));
+						break;
 					}
 					
 					if (horiz)
@@ -848,6 +908,8 @@ namespace Docking
 						y += Frame.HandleSize + Frame.HandlePadding;
 				}
 			}
+			if (hgc != null)
+				hgc.Dispose ();
 		}
 		
 		public void ResizeItem (int index, int newSize)
@@ -907,18 +969,23 @@ namespace Docking
 		
 		internal override bool GetDockTarget (DockItem item, int px, int py, out DockDelegate dockDelegate, out Gdk.Rectangle rect)
 		{
-			if (!Allocation.Contains (px, py) || VisibleObjects.Count == 0) {
 				dockDelegate = null;
 				rect = Gdk.Rectangle.Zero;
+
+			if (!Allocation.Contains (px, py) || VisibleObjects.Count == 0)
 				return false;
-			}
 			
 			if (type == DockGroupType.Tabbed) {
 				// Tabs can only contain DockGroupItems
-				return ((DockGroupItem)VisibleObjects[0]).GetDockTarget (item, px, py, Allocation, out dockDelegate, out rect);
+				var sel = boundTabStrip != null ? VisibleObjects[boundTabStrip.CurrentTab] : VisibleObjects[VisibleObjects.Count - 1];
+				return ((DockGroupItem)sel).GetDockTarget (item, px, py, Allocation, out dockDelegate, out rect);
 			}
 			else if (type == DockGroupType.Horizontal) {
 				if (px >= Allocation.Right - DockFrame.GroupDockSeparatorSize) {
+					// Check if the item is allowed to be docked here
+					var s = Frame.GetRegionStyleForObject (VisibleObjects[VisibleObjects.Count - 1]);
+					if (s.SingleColumnMode.Value)
+						return false;
 					// Dock to the right of the group
 					dockDelegate = delegate (DockItem it) {
 						DockTarget (it, dockObjects.Count);
@@ -927,6 +994,10 @@ namespace Docking
 					return true;
 				}
 				else if (px <= Allocation.Left + DockFrame.GroupDockSeparatorSize) {
+					// Check if the item is allowed to be docked here
+					var s = Frame.GetRegionStyleForObject (VisibleObjects[0]);
+					if (s.SingleColumnMode.Value)
+						return false;
 					// Dock to the left of the group
 					dockDelegate = delegate (DockItem it) {
 						DockTarget (it, 0);
@@ -941,9 +1012,13 @@ namespace Docking
 					    px >= ob.Allocation.Right - DockFrame.GroupDockSeparatorSize/2 &&
 					    px <= ob.Allocation.Right + DockFrame.GroupDockSeparatorSize/2)
 					{
-						int dn = dockObjects.IndexOf (ob);
+						// Check if the item is allowed to be docked here
+						int dn = dockObjects.IndexOf (ob) + 1;
+						var s = Frame.GetRegionStyleForPosition (this, dn, true);
+						if (s.SingleColumnMode.Value)
+							return false;
 						dockDelegate = delegate (DockItem it) {
-							DockTarget (it, dn+1);
+							DockTarget (it, dn);
 						};
 						rect = new Gdk.Rectangle (ob.Allocation.Right - DockFrame.GroupDockSeparatorSize/2, Allocation.Y, DockFrame.GroupDockSeparatorSize, Allocation.Height);
 						return true;
@@ -954,6 +1029,10 @@ namespace Docking
 			}
 			else if (type == DockGroupType.Vertical) {
 				if (py >= Allocation.Bottom - DockFrame.GroupDockSeparatorSize) {
+					// Check if the item is allowed to be docked here
+					var s = Frame.GetRegionStyleForObject (VisibleObjects[VisibleObjects.Count - 1]);
+					if (s.SingleRowMode.Value)
+						return false;
 					// Dock to the bottom of the group
 					dockDelegate = delegate (DockItem it) {
 						DockTarget (it, dockObjects.Count);
@@ -962,6 +1041,10 @@ namespace Docking
 					return true;
 				}
 				else if (py <= Allocation.Top + DockFrame.GroupDockSeparatorSize) {
+					// Check if the item is allowed to be docked here
+					var s = Frame.GetRegionStyleForObject (VisibleObjects[0]);
+					if (s.SingleRowMode.Value)
+						return false;
 					// Dock to the top of the group
 					dockDelegate = delegate (DockItem it) {
 						DockTarget (it, 0);
@@ -976,9 +1059,13 @@ namespace Docking
 					    py >= ob.Allocation.Bottom - DockFrame.GroupDockSeparatorSize/2 &&
 					    py <= ob.Allocation.Bottom + DockFrame.GroupDockSeparatorSize/2)
 					{
-						int dn = dockObjects.IndexOf (ob);
+						// Check if the item is allowed to be docked here
+						int dn = dockObjects.IndexOf (ob) + 1;
+						var s = Frame.GetRegionStyleForPosition (this, dn, true);
+						if (s.SingleRowMode.Value)
+							return false;
 						dockDelegate = delegate (DockItem it) {
-							DockTarget (it, dn+1);
+							DockTarget (it, dn);
 						};
 						rect = new Gdk.Rectangle (Allocation.X, ob.Allocation.Bottom - DockFrame.GroupDockSeparatorSize/2, Allocation.Width, DockFrame.GroupDockSeparatorSize);
 						return true;
