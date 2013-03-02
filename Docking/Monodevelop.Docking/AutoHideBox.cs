@@ -52,8 +52,8 @@ namespace Docking
 		DockFrame frame;
 		bool animating;
 		int targetSize;
-		int targetPos;
-		ScrollableContainer scrollable;
+		int targetPos = 0;
+		ScrollableContainer scrollable = new ScrollableContainer();
 		Gtk.PositionType position;
 		bool disposed;
 		bool insideGrip;

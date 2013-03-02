@@ -99,7 +99,6 @@
     <Compile Include="Monodevelop.Docking\DockObject.cs" />
     <Compile Include="Monodevelop.Docking\DockPosition.cs" />
     <Compile Include="Monodevelop.Docking\PlaceholderWindow.cs" />
-    <Compile Include="Monodevelop.Docking\ShadedContainer.cs" />
     <Compile Include="Monodevelop.Docking\TabStrip.cs" />
     <Compile Include="Monodevelop.Docking\DockingHelper\HelperMethods.cs" />
     <Compile Include="Monodevelop.Docking\DockingHelper\HslColor.cs" />

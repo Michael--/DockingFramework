@@ -43,10 +43,10 @@ namespace Docking.Helper
 		static Gtk.IconFactory iconFactory = new Gtk.IconFactory ();
 
 		// Mapping of icon spec to stock icon id.
-		static List<Dictionary<string, string>> addinIcons = new List<Dictionary<string, string>> ();
+		//static List<Dictionary<string, string>> addinIcons = new List<Dictionary<string, string>> ();
 
 		// Mapping of icon spec to stock icon id, but used only when the icon is not bound to a specific add-in
-		static Dictionary<string, string> iconSpecToStockId = new Dictionary<string, string> ();
+		// static Dictionary<string, string> iconSpecToStockId = new Dictionary<string, string> ();
 
 		// Map of all animations
 		//static Dictionary<string, AnimatedIcon> animationFactory = new Dictionary<string, AnimatedIcon> ();
@@ -611,7 +611,7 @@ namespace Docking.Helper
         //	return aicon;
         //}
 
-		static List<WeakReference> animatedImages = new List<WeakReference> ();
+		//static List<WeakReference> animatedImages = new List<WeakReference> ();
 
 #if false
 		class AnimatedImageInfo {

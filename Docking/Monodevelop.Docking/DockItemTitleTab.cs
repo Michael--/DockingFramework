@@ -404,7 +404,7 @@ namespace Docking
 
 		void DrawAsBrowser (Gdk.EventExpose evnt)
 		{
-			var alloc = Allocation;
+			Gdk.Rectangle alloc = Allocation;
 
 			Gdk.GC bgc = new Gdk.GC (GdkWindow);
 			var c = new HslColor (VisualStyle.PadBackgroundColor.Value);
@@ -421,7 +421,8 @@ namespace Docking
 				tabStrip = tsb.TabStrip;
 			}
 
-			if (Active || (first && last)) {
+			if (Active || (first && last)) 
+            {
 				Gdk.GC gc = new Gdk.GC (GdkWindow);
 				gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value;
 				evnt.Window.DrawRectangle (gc, true, alloc);

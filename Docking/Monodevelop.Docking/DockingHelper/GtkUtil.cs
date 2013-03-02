@@ -166,7 +166,7 @@ namespace Docking.Helper
 				data.ShowTimer = 0;
 				int ox, oy;
 				tree.BinWindow.GetOrigin (out ox, out oy);
-				Gdk.Rectangle rect = tree.GetCellArea (path, col);
+				//Gdk.Rectangle rect = tree.GetCellArea (path, col);
 				//data.Tooltip = new CellTooltipWindow (tree, col, path);
 				//if (rect.X + data.Tooltip.SizeRequest ().Width > tree.Allocation.Width) {
 				//	data.Tooltip.Move (ox + rect.X - 1, oy + rect.Y);

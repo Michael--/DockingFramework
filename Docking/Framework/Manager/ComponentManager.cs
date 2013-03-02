@@ -6,6 +6,7 @@ using System.IO;
 using System.Xml.Serialization;
 using System.Text;
 using System.Collections.Generic;
+using Docking.Helper;
 
 namespace Docking.Components
 {
@@ -26,6 +27,14 @@ namespace Docking.Components
             DockFrame = df;
             DockFrame.DockItemRemoved += HandleDockItemRemoved;
             DockFrame.CreateItem = this.CreateItem;
+
+            DockVisualStyle style = new DockVisualStyle ();
+            style.PadTitleLabelColor = Styles.PadLabelColor;
+            style.PadBackgroundColor = Styles.PadBackground;
+            style.InactivePadBackgroundColor = Styles.InactivePadBackground;
+            // style.PadTitleHeight = barHeight;
+            DockFrame.DefaultVisualStyle = style;
+
         }
 
         public void SetStatusBar(Statusbar sb)
