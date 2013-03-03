@@ -539,7 +539,10 @@ namespace Docking
 			Menu menu = new Menu ();
 			
 			// Hide menuitem
-			if ((Behavior & DockItemBehavior.CantClose) == 0) {
+
+			if ((Behavior & DockItemBehavior.CantClose) == 0
+                && (Behavior & DockItemBehavior.CloseOnHide) == 0)
+            {
 				MenuItem mitem = new MenuItem (Catalog.GetString("Hide"));
 				mitem.Activated += delegate { Visible = false; };
 				menu.Append (mitem);
