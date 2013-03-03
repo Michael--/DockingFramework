@@ -53,6 +53,7 @@ namespace Examples.TestToolAndStatusBar
 
         void IComponent.Loaded(DockItem item)
         {
+            item.Icon = Gdk.Pixbuf.LoadFromResource ("Examples.TestToolBarStatusBar-16.png");
         }
 
         void IComponent.Save()

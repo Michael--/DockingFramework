@@ -5,13 +5,27 @@ using Docking.Components;
 namespace Examples
 {
 	[System.ComponentModel.ToolboxItem(false)]
-	public partial class ExampleHelloWorld : Gtk.Bin
+	public partial class ExampleHelloWorld : Gtk.Bin, IComponent
 	{
 		public ExampleHelloWorld ()
 		{
 			this.Build ();
             this.Name = "Hello World";
 		}
+
+        #region implement IComponent
+        public ComponentManager ComponentManager { get; set; }
+        
+        void IComponent.Loaded(DockItem item)
+        {
+            item.Icon = Gdk.Pixbuf.LoadFromResource ("Examples.HelloWorld-16.png");
+        }
+        
+        void IComponent.Save()
+        {
+        }
+        #endregion
+
 	}
 
 

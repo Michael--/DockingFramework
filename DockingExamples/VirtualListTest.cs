@@ -52,6 +52,7 @@ namespace Examples.VirtualList
 
         void IComponent.Loaded(DockItem item)
         {
+            item.Icon = Gdk.Pixbuf.LoadFromResource ("Examples.VirtualListTest-16.png");
             virtuallistview1.ComponentManager = this.ComponentManager;
             Persistence p = (Persistence)ComponentManager.LoadObject("VirtualListTest", typeof(Persistence));
             if (p != null)

@@ -74,6 +74,10 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="HelloWorld-16.png" />
+    <EmbeddedResource Include="TestToolBarStatusBar-16.png" />
+    <EmbeddedResource Include="VirtualListTest-16.png" />
+    <EmbeddedResource Include="ThreadWorker-16.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Docking\Docking.csproj">
