@@ -52,7 +52,6 @@ namespace Examples.VirtualList
 
         void IComponent.Loaded(DockItem item)
         {
-            item.Icon = Gdk.Pixbuf.LoadFromResource ("Examples.VirtualListTest-16.png");
             virtuallistview1.ComponentManager = this.ComponentManager;
             Persistence p = (Persistence)ComponentManager.LoadObject("VirtualListTest", typeof(Persistence));
             if (p != null)
@@ -101,6 +100,7 @@ public class Factory : ComponentFactory
     public override String MenuPath { get { return @"View\Examples\Virtual List Test"; } }
     public override String Comment { get { return "Test widget for testing virtual list view"; } }
     public override Mode Options { get { return Mode.MultipleInstance; } }
+    public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource ("Examples.VirtualListTest-16.png"); } }
 }
 
 #endregion

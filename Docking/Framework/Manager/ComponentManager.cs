@@ -502,6 +502,7 @@ namespace Docking.Components
             DockItem item = DockFrame.AddItem (name);
             item.Content = w;
             item.Label = w.Name;
+            item.Icon = cfi.Icon;
             item.VisibleChanged += HandleVisibleChanged;
 
             if (cfi.CloseOnHide)

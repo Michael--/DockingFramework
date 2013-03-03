@@ -137,7 +137,6 @@ namespace Examples
 
         void Docking.Components.IComponent.Loaded(DockItem item)
         {
-            item.Icon = Gdk.Pixbuf.LoadFromResource ("Examples.ThreadWorker-16.png");
             if (checkbutton1.Active)
                 StartNewThread();
         }
@@ -209,6 +208,7 @@ namespace Examples
         public override String MenuPath { get { return @"View\Examples\Thread Worker"; } }
         public override String Comment { get { return "Example thread worker widget, starts some worker thread(s)"; } }
         public override Mode Options { get { return Mode.MultipleInstance; } }
+        public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource ("Examples.ThreadWorker-16.png"); } }
     }
 
     #endregion

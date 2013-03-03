@@ -274,6 +274,8 @@ namespace Docking.Components
             }
         }
 
+        public Gdk.Pixbuf Icon { get { return ComponentFactory.Icon; } }
+
         public ComponentFactory ComponentFactory { get; set; }
 
         public bool Active { get; set; }

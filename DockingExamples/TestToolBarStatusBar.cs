@@ -53,7 +53,6 @@ namespace Examples.TestToolAndStatusBar
 
         void IComponent.Loaded(DockItem item)
         {
-            item.Icon = Gdk.Pixbuf.LoadFromResource ("Examples.TestToolBarStatusBar-16.png");
         }
 
         void IComponent.Save()
@@ -109,6 +108,7 @@ namespace Examples.TestToolAndStatusBar
         public override String MenuPath { get { return @"View\Examples\Test Toolbar and Statusbar"; } }
         public override String Comment { get { return "Example using toolbar and status bar"; } }
         public override Mode Options { get { return Mode.CloseOnHide; } }
+        public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource ("Examples.TestToolBarStatusBar-16.png"); } }
     }
 
     #endregion

@@ -67,7 +67,6 @@ namespace Docking.Components
             // note: job events could be happen while initializing
             JobInformation.Added += HandleAdded;
             JobInformation.Removed += HandleRemoved;
-            item.Icon = Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Components.Activities-16.png");
             Initialize();
         }
 
@@ -190,6 +189,7 @@ namespace Docking.Components
         public override String MenuPath { get { return @"View\Infrastructure\Activities"; } }
         public override String Comment { get { return "Show a list of all activities"; } }
         public override Mode Options { get { return Mode.CloseOnHide; } }
+        public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Components.Activities-16.png"); } }
     }
     #endregion
 }

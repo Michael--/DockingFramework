@@ -40,7 +40,6 @@ namespace Docking.Components
         
         void IComponent.Loaded(DockItem item)
         {
-            item.Icon = Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Components.Message-16.png");
         }
         
         void IComponent.Save()
@@ -63,6 +62,7 @@ namespace Docking.Components
         public override Type TypeOfInstance { get { return typeof(Messages); } }
         public override String MenuPath { get { return @"View\Infrastructure\Messages"; } }
         public override String Comment { get { return "shows runtime messages of the application"; } }
+        public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Components.Message-16.png"); } }
     }
 
     #endregion

@@ -42,6 +42,11 @@ namespace Docking.Components
 		/// </summary>
 		public virtual Mode Options { get { return Mode.None; } }
 
+        /// <summary>
+        /// Gets the icon displayed on menu, the tab, ... default is no icon (null)
+        /// </summary>
+        public virtual Gdk.Pixbuf Icon { get { return null; } }
+
 		[Flags]
 		public enum Mode
 		{
