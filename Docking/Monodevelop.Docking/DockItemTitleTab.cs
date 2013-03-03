@@ -159,7 +159,7 @@ namespace Docking
 
 			btnDock = new ImageButton ();
 			btnDock.Image = pixAutoHide;
-			btnDock.TooltipText = GettextCatalog.GetString ("Auto Hide");
+			btnDock.TooltipText = "Auto Hide";
 			btnDock.CanFocus = false;
 //			btnDock.WidthRequest = btnDock.HeightRequest = 17;
 			btnDock.Clicked += OnClickDock;
@@ -168,7 +168,7 @@ namespace Docking
 
 			btnClose = new ImageButton ();
 			btnClose.Image = pixClose;
-			btnClose.TooltipText = GettextCatalog.GetString ("Close");
+			btnClose.TooltipText = "Close";
 			btnClose.CanFocus = false;
 //			btnClose.WidthRequest = btnClose.HeightRequest = 17;
 			btnClose.WidthRequest = btnDock.SizeRequest ().Width;
@@ -244,10 +244,10 @@ namespace Docking
 					btnClose.Image = pixClose;
 				if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating) {
 					btnDock.Image = pixDock;
-					btnDock.TooltipText = GettextCatalog.GetString ("Dock");
+					btnDock.TooltipText = "Dock";
 				} else {
 					btnDock.Image = pixAutoHide;
-					btnDock.TooltipText = GettextCatalog.GetString ("Auto Hide");
+					btnDock.TooltipText = "Auto Hide";
 				}
 			} else {
 				btnDock.Image = null;
