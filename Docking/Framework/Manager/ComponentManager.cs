@@ -122,6 +122,10 @@ namespace Docking.Components
                 // use last entry as menu name and create
                 TaggedImageMenuItem item = new TaggedImageMenuItem(m[m.Length - 1]);
                 item.Tag = cfi;
+                // TODO: make the menu image visible if you know how
+                Gdk.Pixbuf pb = cfi.Icon;
+                if (pb != null)
+                    item.Image = new Image(pb);
                 item.Activated += ComponentHandleActivated;
                 InsertMenu(builder.ToString(), item);
             }
