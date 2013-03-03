@@ -152,4 +152,71 @@
       </widget>
     </child>
   </widget>
+  <widget class="Gtk.Bin" id="Docking.Components.VirtualListView" design-size="300 300">
+    <property name="MemberName" />
+    <property name="Visible">False</property>
+    <child>
+      <widget class="Gtk.VBox" id="vbox1">
+        <property name="MemberName" />
+        <property name="Spacing">1</property>
+        <child>
+          <placeholder />
+        </child>
+        <child>
+          <widget class="Gtk.HBox" id="hbox1">
+            <property name="MemberName" />
+            <property name="Spacing">1</property>
+            <child>
+              <widget class="Gtk.DrawingArea" id="drawingarea">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Events">PointerMotionMask, ButtonPressMask, ScrollMask</property>
+                <signal name="ExposeEvent" handler="OnDrawingareaExposeEvent" />
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.VScrollbar" id="vscrollbar1">
+                <property name="MemberName" />
+                <property name="Upper">100</property>
+                <property name="PageIncrement">10</property>
+                <property name="PageSize">10</property>
+                <property name="StepIncrement">1</property>
+                <signal name="ValueChanged" handler="OnVscrollbar1ValueChanged" />
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">True</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.HScrollbar" id="hscrollbar1">
+            <property name="MemberName" />
+            <property name="Upper">100</property>
+            <property name="PageIncrement">10</property>
+            <property name="PageSize">10</property>
+            <property name="StepIncrement">1</property>
+            <signal name="ValueChanged" handler="OnHscrollbar1ValueChanged" />
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
 </stetic-interface>

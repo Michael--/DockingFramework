@@ -150,6 +150,8 @@
     <Compile Include="Monodevelop.Docking\DockingHelper\GtkUtil.cs" />
     <Compile Include="Monodevelop.Docking\DockingHelper\PangoCairoHelper.cs" />
     <Compile Include="Monodevelop.Docking\DockingHelper\ImageService.cs" />
+    <Compile Include="Monodevelop.Components\VirtualListView.cs" />
+    <Compile Include="gtk-gui\Docking.Components.VirtualListView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

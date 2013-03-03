@@ -63,8 +63,6 @@
     <Compile Include="TestToolBarStatusBar.cs" />
     <Compile Include="gtk-gui\Examples.TestToolAndStatusBar.TestToolBarStatusBar.cs" />
     <Compile Include="VirtualListTest.cs" />
-    <Compile Include="VirtualListView.cs" />
-    <Compile Include="gtk-gui\Examples.VirtualList.VirtualListView.cs" />
     <Compile Include="gtk-gui\Examples.VirtualList.VirtualListTest.cs" />
     <Compile Include="ExampleHelloWorld.cs" />
     <Compile Include="gtk-gui\Examples.ExampleHelloWorld.cs" />
