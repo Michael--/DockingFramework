@@ -3,7 +3,7 @@ using System;
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-    public partial class Messages : Gtk.Bin, IMessage
+    public partial class Messages : Gtk.Bin, IMessage, IComponent
     {
         #region Implement IMessage
         // FIXME SLohse: This function currently may ONLY be called from the main GUI thread!
@@ -33,6 +33,19 @@ namespace Docking.Components
 
         Gtk.TextMark m_Scroll2EndMark;
 
+        #endregion
+
+        #region implement IComponent
+        public ComponentManager ComponentManager { get; set; }
+        
+        void IComponent.Loaded(DockItem item)
+        {
+            item.Icon = Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Components.Message-16.png");
+        }
+        
+        void IComponent.Save()
+        {
+        }
         #endregion
 
         public Messages()

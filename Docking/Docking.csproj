@@ -176,5 +176,8 @@
     <EmbeddedResource Include="Monodevelop.Components\MonoDevelop.Components.PropertyGrid.DefaultPropertyTab.bmp" />
     <EmbeddedResource Include="Monodevelop.Components\MonoDevelop.Components.PropertyGrid.EventPropertyTab.bmp" />
     <EmbeddedResource Include="Monodevelop.Components\MonoDevelop.Components.PropertyGrid.SortByCat.png" />
+    <EmbeddedResource Include="Framework\Components\Activities-16.png" />
+    <EmbeddedResource Include="Framework\Components\ComponentList-16.png" />
+    <EmbeddedResource Include="Framework\Components\Message-16.png" />
   </ItemGroup>
 </Project>

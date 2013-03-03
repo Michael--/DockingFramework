@@ -17,6 +17,8 @@ namespace Docking.Components
         void IComponent.Loaded(DockItem item)
         {
             item.Label = "Component List";
+            item.Icon = Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Components.ComponentList-16.png");
+
             foreach (ComponentFactoryInformation cfi in ComponentManager.ComponentFinder.ComponentInfos)
             {
                 List<String> row = new List<string>();

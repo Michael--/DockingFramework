@@ -11,10 +11,10 @@ namespace Docking.Components
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
-			// Widget Docking.Components.ComponentListWidget
+			// Widget Docking.Components.ComponentList
 			global::Stetic.BinContainer.Attach (this);
-			this.Name = "Docking.Components.ComponentListWidget";
-			// Container child Docking.Components.ComponentListWidget.Gtk.Container+ContainerChild
+			this.Name = "Docking.Components.ComponentList";
+			// Container child Docking.Components.ComponentList.Gtk.Container+ContainerChild
 			this.vbox1 = new global::Gtk.VBox ();
 			this.vbox1.Name = "vbox1";
 			this.vbox1.Spacing = 6;

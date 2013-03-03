@@ -67,6 +67,7 @@ namespace Docking.Components
             // note: job events could be happen while initializing
             JobInformation.Added += HandleAdded;
             JobInformation.Removed += HandleRemoved;
+            item.Icon = Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Components.Activities-16.png");
             Initialize();
         }
 
