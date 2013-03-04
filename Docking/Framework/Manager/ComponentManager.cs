@@ -85,6 +85,7 @@ namespace Docking.Components
         private void InstallQuitMenu()
         {
             ImageMenuItem item = new ImageMenuItem("Quit");
+			item.Image = new Image(Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Manager.Quit-16.png"));
             item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
             item.Activated +=  OnQuitActionActivated;
             InsertMenu("File", item);
