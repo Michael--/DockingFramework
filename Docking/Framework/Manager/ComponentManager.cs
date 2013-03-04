@@ -250,6 +250,10 @@ namespace Docking.Components
             XmlDocument.Save(filename);
         }
 
+        // contains the current component while load/save persistence
+        // note: because of this load/save is not thread safe, load/save have to use threads carefully
+        private DockItem currentLoadSaveItem;
+
         protected void ComponentsLoaded()
         {
             m_LockHandleVisibleChanged = false; // unlock visible change notices
@@ -259,8 +263,10 @@ namespace Docking.Components
             foreach (DockItem item in DockFrame.GetItems())
             {
                 if (item.Content is IComponent)
+                {
+                    currentLoadSaveItem = item;
                     (item.Content as IComponent).Loaded (item);
-
+                }
                 if (item.Content is IComponentInteract)
                     (item.Content as IComponentInteract).Visible(item.Content, item.Visible);
             }
@@ -282,7 +288,10 @@ namespace Docking.Components
             foreach (DockItem item in DockFrame.GetItems())
             {
                 if (item.Content is IComponent)
+                {
+                    currentLoadSaveItem = item;
                     (item.Content as IComponent).Save();
+                }
             }
 
             // tell any component about all other component
@@ -300,6 +309,7 @@ namespace Docking.Components
 
         protected void LoadPersistence()
         {
+            currentLoadSaveItem = null;
             MainWindowPersistence p = (MainWindowPersistence)LoadObject ("MainWindow", typeof(MainWindowPersistence));
             if (p != null)
             {
@@ -320,6 +330,7 @@ namespace Docking.Components
             p.Width = width;
             p.Height = height;
 
+            currentLoadSaveItem = null;
             SaveObject("MainWindow", p);
         }
 
@@ -345,9 +356,13 @@ namespace Docking.Components
 
         public object LoadObject(String elementName, Type t)
         {
-            if(XmlConfiguration == null || elementName == null)
+            String pimpedElementName = elementName;
+            if (currentLoadSaveItem != null)
+                pimpedElementName += "_" + currentLoadSaveItem.Id.ToString ();
+
+            if(XmlConfiguration == null || pimpedElementName == null)
                 return null;
-            XmlNode element = XmlConfiguration.SelectSingleNode(elementName);
+            XmlNode element = XmlConfiguration.SelectSingleNode(pimpedElementName);
             if (element == null)
                 return null;
             XmlNode node = element.SelectSingleNode(t.Name);
@@ -367,6 +382,10 @@ namespace Docking.Components
 
         public void SaveObject(String elementName, object obj)
         {
+            String pimpedElementName = elementName;
+            if (currentLoadSaveItem != null)
+                pimpedElementName += "_" + currentLoadSaveItem.Id.ToString ();
+
             MemoryStream ms = new MemoryStream ();
             XmlTextWriter xmlWriter = new XmlTextWriter (ms, System.Text.Encoding.UTF8);
             XmlSerializer serializer = new XmlSerializer (obj.GetType ());
@@ -382,7 +401,7 @@ namespace Docking.Components
             // replace in managed persistence
             XmlNode node = doc.SelectSingleNode (obj.GetType ().Name);
             XmlNode importNode = XmlDocument.ImportNode (node, true);
-            XmlNode newNode = XmlDocument.CreateElement (elementName);
+            XmlNode newNode = XmlDocument.CreateElement (pimpedElementName);
             newNode.AppendChild (importNode);
             // need new base node if started without old config
             if (XmlConfiguration == null)
@@ -390,7 +409,7 @@ namespace Docking.Components
                 XmlConfiguration = XmlDocument.CreateElement ("DockingConfiguration");
                 XmlDocument.AppendChild(XmlConfiguration);
             }
-            XmlNode oldNode = XmlConfiguration.SelectSingleNode(elementName);
+            XmlNode oldNode = XmlConfiguration.SelectSingleNode(pimpedElementName);
             if (oldNode != null)
                 XmlConfiguration.ReplaceChild(newNode, oldNode);
             else
