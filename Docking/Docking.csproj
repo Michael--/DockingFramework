@@ -149,8 +149,8 @@
     <Compile Include="Monodevelop.Docking\DockingHelper\GtkUtil.cs" />
     <Compile Include="Monodevelop.Docking\DockingHelper\PangoCairoHelper.cs" />
     <Compile Include="Monodevelop.Docking\DockingHelper\ImageService.cs" />
-    <Compile Include="Monodevelop.Components\VirtualListView.cs" />
     <Compile Include="gtk-gui\Docking.Components.VirtualListView.cs" />
+    <Compile Include="Framework\Components\VirtualListView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
@@ -181,6 +181,6 @@
     <EmbeddedResource Include="Framework\Components\ComponentList-16.png" />
     <EmbeddedResource Include="Framework\Components\Messages-16.png" />
     <EmbeddedResource Include="Framework\Components\PropertyViewer-16.png" />
-	<EmbeddedResource Include="Framework\Manager\Quit-16.png" />
+    <EmbeddedResource Include="Framework\Manager\Quit-16.png" />
   </ItemGroup>
 </Project>
