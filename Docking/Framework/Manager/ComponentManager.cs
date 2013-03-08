@@ -82,6 +82,87 @@ namespace Docking.Components
 
         public AccelGroup AccelGroup  { get; private set; }
 
+        /// <summary>
+        /// Installs the layout menu, show all existing layouts
+        /// and a possibility to add and remove layouts
+        /// The main layout is not removeable.
+        /// If the main layout name is empty or null "Default" will be used as name.
+        /// </summary>
+        public void SetDefaultLayout(String defaultLayout)
+        {
+            //AddLayout("Test2", false);
+            //AddLayout("Test1", false);
+
+            if (defaultLayout == null || defaultLayout.Length == 0)
+                defaultLayout = "Default";
+            AddLayout(defaultLayout, false);
+            DockFrame.CurrentLayout = defaultLayout;
+
+            ImageMenuItem deleteLayout = new ImageMenuItem ("Delete Current Layout");
+            deleteLayout.Activated += (object sender, EventArgs e) => 
+            {
+            };
+
+            ImageMenuItem newLayout = new ImageMenuItem ("New Layout...");
+            newLayout.Activated += (object sender, EventArgs e) => 
+            {
+                String test = "Test1";
+                if (!DockFrame.HasLayout (test))
+                {
+                    DockFrame.CreateLayout (test, true);
+                    InsertLayoutMenu(test);
+                    DockFrame.CurrentLayout = test;
+                }
+            };
+
+            InsertMenu (@"View\Layout", deleteLayout);
+            InsertMenu (@"View\Layout", newLayout);
+            InsertMenu (@"View\Layout", new SeparatorMenuItem ());
+
+            foreach (String s in DockFrame.Layouts)
+                InsertLayoutMenu (s);
+
+            MenuBar.ShowAll();
+        }
+
+        private void InsertLayoutMenu(String name)
+        {
+            CheckMenuItem item = new CheckMenuItem(name);
+            item.Active = (name == DockFrame.CurrentLayout);
+            
+            item.Activated += (object sender, EventArgs e) => 
+            {
+                CheckMenuItem nitem = sender as CheckMenuItem;
+                String label = (nitem.Child as Label).Text;
+                
+                // double check 
+                if (DockFrame.HasLayout(label) && DockFrame.CurrentLayout != label)
+                {
+                    DockFrame.CurrentLayout = label;
+                    nitem.Active = true;
+                    Console.WriteLine(String.Format("CurrentLayout={0}", label));
+                }
+            };
+            InsertMenu (@"View\Layout", item);
+            item.ShowAll ();
+
+        }
+
+        private void AddLayout(string name, bool copyCurrent)
+        {
+            if (!DockFrame.HasLayout (name))
+                DockFrame.CreateLayout (name, copyCurrent);
+        }
+
+        private void DeleteLayout(string name)
+        {
+            if (name != DockFrame.CurrentLayout)
+            {
+                DockFrame.DeleteLayout (name);
+            }
+        }
+
+
         private void InstallQuitMenu()
         {
             ImageMenuItem item = new ImageMenuItem("Quit");
@@ -436,17 +517,46 @@ namespace Docking.Components
 
             if (cfi.IsSingleInstance)
             {
-                // show/hide existing components instance
+                // show existing components instance
+                // do nothing if exist and already visible
                 name = cfi.ComponentType.ToString();
                 DockItem di = DockFrame.GetItem (name);
                 if (di != null)
                 {
-                    di.Visible = !di.Visible;
+                    // make object visible, leave already visible single instance object as it is
+                    if (!di.Visible)
+                        di.Visible = true;
                     return;
                 }
+                // no instance exist, need to create a new instance
             }
             else
             {
+                // behaviour of multiple instance is different
+                // because we could create multilple object, it is
+                // necessary to create a new one despite another object exist
+                // so far so good, but ...
+                // also a multiple instance object could be hidden in current layout
+                // and exist in another layout as a visible object
+                // as a solution we search for hidden multiple objects of requested type
+                // and show it in current layout
+                // create only a new instance if only visible instances found
+
+                name = cfi.ComponentType.ToString();
+                DockItem[] some = DockFrame.GetItemsContainsId(name);
+                foreach(DockItem it in some)
+                {
+                    // make object visible if possible
+                    // ignore already visible items
+                    if (!it.Visible)
+                    {
+                        it.Visible = true;
+                        return;
+                    }
+                }
+
+                // no item found which can be visible again
+                // need to create a new instance with a unique name
                 int instance = 1;
                 do
                 {

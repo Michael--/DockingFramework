@@ -479,8 +479,20 @@ namespace Docking
         public delegate void DockItemRemovedEvent (DockItem it);
         public event DockItemRemovedEvent DockItemRemoved;
 		
-		public void RemoveItem (DockItem it)
+		public void RemoveItemIfHiddenInAnyLayout (DockItem it)
 		{
+            // perform remove item only if hidden in any layout else return
+            // therefore search item in any layout and check if visible anywhere
+            // if so return nothing to do
+            foreach (DockGroup grp in layouts.Values) 
+            {
+                DockGroupItem dgi = grp.FindDockGroupItem(it.Id);
+                if (dgi != null && dgi.Visible)
+                    return;
+            }
+
+            // item is unused anywhere, remove it complete from memory
+
 			if (container.Layout != null)
 				container.Layout.RemoveItemRec (it);
 			foreach (DockGroup grp in layouts.Values)
@@ -494,9 +506,10 @@ namespace Docking
        
         public delegate DockItem CreateItemDelegate(string id);
         public CreateItemDelegate CreateItem { get; set; }
-                		
-		public DockItem GetItem (string id)
-		{
+
+        // search for an item with exact given ID
+        public DockItem GetItem(string id)
+        {
 			foreach (DockItem it in container.Items) {
 				if (it.Id == id) {
 					if (!it.IsPositionMarker)
@@ -507,6 +520,21 @@ namespace Docking
 			}
 			return null;
 		}
+
+        // get all items contains search string (e.g. a part of the ID)
+        public DockItem[] GetItemsContainsId (string id)
+        {
+            List<DockItem> result = new List<DockItem>();
+            foreach (DockItem it in container.Items) {
+                if (it.Id.Contains(id))
+                {
+                    if (!it.IsPositionMarker)
+                        result.Add(it);
+                }
+            }
+            return result.ToArray();
+        }
+
 		
 		public IEnumerable<DockItem> GetItems ()
 		{
@@ -528,7 +556,7 @@ namespace Docking
 			CreateLayout (name, false);
 		}
 		
-		public void DeleteLayout (string name)
+		    public void DeleteLayout (string name)
 		{
 			layouts.Remove (name);
 		}

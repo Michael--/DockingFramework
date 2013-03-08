@@ -35,8 +35,8 @@ public partial class MainWindow : ComponentManager
         // update with own persistence
         LoadPersistence();
 
-        // select current layout, multiple layout are allowed
-        theDockFrame.CurrentLayout = "Default";
+        // set default layout and add layout menu
+        SetDefaultLayout("Default");
 
         // after layout has been set, call component initialization
         // any component could load its persistence data now
