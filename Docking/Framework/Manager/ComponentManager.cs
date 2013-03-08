@@ -138,6 +138,21 @@ namespace Docking.Components
                 // double check 
                 if (DockFrame.HasLayout(label) && DockFrame.CurrentLayout != label)
                 {
+                    // uncheck all other
+                    if (nitem.Parent is Menu)
+                    {
+                        foreach(object obj in ((Menu)nitem.Parent).AllChildren)
+                        {
+                            if (obj is CheckMenuItem)
+                            {
+                                CheckMenuItem other = obj as CheckMenuItem;
+                                if (other != nitem)
+                                    other.Active = false;
+                            }
+                        }
+                    }
+
+                    // before check selected layout
                     DockFrame.CurrentLayout = label;
                     nitem.Active = true;
                     Console.WriteLine(String.Format("CurrentLayout={0}", label));
@@ -572,8 +587,8 @@ namespace Docking.Components
             if (!cfi.IsSingleInstance)
                 item.Behavior |= DockItemBehavior.CloseOnHide;
 
-            item.DefaultVisible = true;
-            item.DrawFrame = true;
+            //item.DefaultVisible = true;
+            //item.DrawFrame = true;
             item.Visible = true;
 
             // call initialization of new created component

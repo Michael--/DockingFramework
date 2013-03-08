@@ -42,7 +42,7 @@ namespace Docking
 		CantClose = 1 << 3,
 		CantAutoHide = 1 << 4,
 		NoGrip = 1 << 5,
-		Sticky = 1 << 6,  // Visibility is the same for al layouts
+		Sticky = 1 << 6,  // Visibility is the same for all layouts
 		Locked = NoGrip,
         CloseOnHide = 1 << 7, // automatically close on hide
 	}
