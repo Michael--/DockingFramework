@@ -151,6 +151,8 @@
     <Compile Include="Monodevelop.Docking\DockingHelper\ImageService.cs" />
     <Compile Include="gtk-gui\Docking.Components.VirtualListView.cs" />
     <Compile Include="Framework\Components\VirtualListView.cs" />
+    <Compile Include="Framework\Manager\NewLayout.cs" />
+    <Compile Include="gtk-gui\Docking.Components.NewLayout.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

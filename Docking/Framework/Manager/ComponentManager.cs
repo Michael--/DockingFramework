@@ -82,36 +82,65 @@ namespace Docking.Components
 
         public AccelGroup AccelGroup  { get; private set; }
 
+        String m_DefaultLayoutName;
+
         /// <summary>
         /// Installs the layout menu, show all existing layouts
         /// and a possibility to add and remove layouts
         /// The main layout is not removeable.
         /// If the main layout name is empty or null "Default" will be used as name.
         /// </summary>
-        public void SetDefaultLayout(String defaultLayout)
+        public void InstallLayoutMenu(String defaultLayoutName)
         {
-            //AddLayout("Test2", false);
-            //AddLayout("Test1", false);
-
-            if (defaultLayout == null || defaultLayout.Length == 0)
-                defaultLayout = "Default";
-            AddLayout(defaultLayout, false);
-            DockFrame.CurrentLayout = defaultLayout;
+            if (defaultLayoutName == null || defaultLayoutName.Length == 0)
+                defaultLayoutName = "Default";
+            AddLayout(defaultLayoutName, false);
+            if (m_LoadedPersistence != null && m_LoadedPersistence.Layout != null)
+                DockFrame.CurrentLayout = m_LoadedPersistence.Layout;
+            else
+                DockFrame.CurrentLayout = defaultLayoutName; 
+            m_DefaultLayoutName = defaultLayoutName;
 
             ImageMenuItem deleteLayout = new ImageMenuItem ("Delete Current Layout");
             deleteLayout.Activated += (object sender, EventArgs e) => 
             {
+                if (DockFrame.CurrentLayout != m_DefaultLayoutName)
+                {
+                    // TODO: add confirmation message box
+
+                    MenuItem nitem = sender as MenuItem;
+                    DockFrame.DeleteLayout(DockFrame.CurrentLayout);
+                    RemoveMenuItem(nitem.Parent, DockFrame.CurrentLayout);
+                    DockFrame.CurrentLayout = m_DefaultLayoutName;
+                    CheckMenuItem(nitem.Parent, DockFrame.CurrentLayout);
+                }
             };
 
             ImageMenuItem newLayout = new ImageMenuItem ("New Layout...");
             newLayout.Activated += (object sender, EventArgs e) => 
             {
-                String test = "Test1";
-                if (!DockFrame.HasLayout (test))
+                String newLayoutName = null;
+                bool createEmptyLayout = true;
+
+                NewLayout dialog = new NewLayout();
+                dialog.SetPosition(WindowPosition.CenterOnParent);
+                ResponseType response = (ResponseType) dialog.Run();
+                if (response == ResponseType.Ok)
                 {
-                    DockFrame.CreateLayout (test, true);
-                    InsertLayoutMenu(test);
-                    DockFrame.CurrentLayout = test;
+                    if (dialog.LayoutName.Length > 0)
+                        newLayoutName = dialog.LayoutName;
+                    createEmptyLayout = dialog.EmptyLayout;
+                }
+                dialog.Destroy();
+
+                if (newLayoutName == null)
+                    return;
+
+                if (!DockFrame.HasLayout (newLayoutName))
+                {
+                    DockFrame.CreateLayout (newLayoutName, !createEmptyLayout);
+                    DockFrame.CurrentLayout = newLayoutName;
+                    InsertLayoutMenu(newLayoutName, false);
                 }
             };
 
@@ -120,47 +149,115 @@ namespace Docking.Components
             InsertMenu (@"View\Layout", new SeparatorMenuItem ());
 
             foreach (String s in DockFrame.Layouts)
-                InsertLayoutMenu (s);
+                InsertLayoutMenu (s, true);
 
             MenuBar.ShowAll();
         }
 
-        private void InsertLayoutMenu(String name)
+        private void CheckMenuItem(object baseMenu, string name)
+        {
+            if (baseMenu is Menu)
+            {
+                Menu bm = baseMenu as Menu;
+                foreach(object obj in bm.AllChildren)
+                {
+                    if (obj is CheckMenuItem)
+                    {
+                        CheckMenuItem mi = obj as CheckMenuItem;
+                        String label = (mi.Child as Label).Text;
+                        
+                        if (label == name)
+                        {
+                            if (!mi.Active)
+                                mi.Active = true;
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void RemoveMenuItem(object baseMenu, string name)
+        {
+            if (baseMenu is Menu)
+            {
+                Menu bm = baseMenu as Menu;
+                foreach(object obj in bm.AllChildren)
+                {
+                    if (obj is CheckMenuItem)
+                    {
+                        CheckMenuItem mi = obj as CheckMenuItem;
+                        String label = (mi.Child as Label).Text;
+
+                        if (label == name)
+                        {
+                            bm.Remove(mi);
+                            bm.ShowAll();
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        private void UncheckMenuChildren(object baseMenu, object except)
+        {
+            recursionWorkaround = true;
+            // uncheck all other
+            if (baseMenu is Menu)
+            {
+                foreach(object obj in ((Menu)baseMenu).AllChildren)
+                {
+                    if (obj is CheckMenuItem && obj != except)
+                    {
+                        CheckMenuItem mi = obj as CheckMenuItem;
+                        if (mi.Active)
+                            mi.Active = false;
+                    }
+                }
+            }
+            recursionWorkaround = false;
+        }
+
+        bool recursionWorkaround = false;
+
+        private void InsertLayoutMenu(String name, bool init)
         {
             CheckMenuItem item = new CheckMenuItem(name);
-            item.Active = (name == DockFrame.CurrentLayout);
-            
+
             item.Activated += (object sender, EventArgs e) => 
             {
+                if (recursionWorkaround)
+                    return;
+
                 CheckMenuItem nitem = sender as CheckMenuItem;
                 String label = (nitem.Child as Label).Text;
                 
                 // double check 
-                if (DockFrame.HasLayout(label) && DockFrame.CurrentLayout != label)
+                if (DockFrame.HasLayout(label))
                 {
-                    // uncheck all other
-                    if (nitem.Parent is Menu)
+                    if (DockFrame.CurrentLayout != label)
                     {
-                        foreach(object obj in ((Menu)nitem.Parent).AllChildren)
-                        {
-                            if (obj is CheckMenuItem)
-                            {
-                                CheckMenuItem other = obj as CheckMenuItem;
-                                if (other != nitem)
-                                    other.Active = false;
-                            }
-                        }
-                    }
+                        // uncheck all other
+                        UncheckMenuChildren(nitem.Parent, nitem);
 
-                    // before check selected layout
-                    DockFrame.CurrentLayout = label;
-                    nitem.Active = true;
-                    Console.WriteLine(String.Format("CurrentLayout={0}", label));
+                        // before check selected layout
+                        DockFrame.CurrentLayout = label;
+                        if (!nitem.Active)
+                            nitem.Active = true;
+                        Console.WriteLine(String.Format("CurrentLayout={0}", label));
+                    }
+                    else if (!nitem.Active) 
+                    {
+                        nitem.Active = true;
+                    }
                 }
             };
             InsertMenu (@"View\Layout", item);
+            if (!init)
+                UncheckMenuChildren(item.Parent, item);
+            item.Active = (name == DockFrame.CurrentLayout);
             item.ShowAll ();
-
         }
 
         private void AddLayout(string name, bool copyCurrent)
@@ -403,6 +500,8 @@ namespace Docking.Components
         }
 
 
+        MainWindowPersistence m_LoadedPersistence = null;
+
         protected void LoadPersistence()
         {
             currentLoadSaveItem = null;
@@ -412,6 +511,7 @@ namespace Docking.Components
                 this.Resize(p.Width, p.Height);
                 this.Move (p.WindowX, p.WindowY);
             }
+            m_LoadedPersistence = p;
         }
 
         private void SavePersistence()
@@ -425,6 +525,7 @@ namespace Docking.Components
             p.WindowY = wy;
             p.Width = width;
             p.Height = height;
+            p.Layout = DockFrame.CurrentLayout;
 
             currentLoadSaveItem = null;
             SaveObject("MainWindow", p);
@@ -769,6 +870,7 @@ namespace Docking.Components
         public int WindowY { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
+        public string Layout { get; set; }
     }
 
 }

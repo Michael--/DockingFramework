@@ -36,7 +36,7 @@ public partial class MainWindow : ComponentManager
         LoadPersistence();
 
         // set default layout and add layout menu
-        SetDefaultLayout("Default");
+        InstallLayoutMenu("Default");
 
         // after layout has been set, call component initialization
         // any component could load its persistence data now

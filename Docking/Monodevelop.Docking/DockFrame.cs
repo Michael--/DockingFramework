@@ -556,7 +556,7 @@ namespace Docking
 			CreateLayout (name, false);
 		}
 		
-		    public void DeleteLayout (string name)
+		public void DeleteLayout (string name)
 		{
 			layouts.Remove (name);
 		}
