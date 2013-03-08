@@ -83,6 +83,7 @@ namespace Docking.Components
         public AccelGroup AccelGroup  { get; private set; }
 
         String m_DefaultLayoutName;
+        ImageMenuItem m_DeleteLayout;
 
         /// <summary>
         /// Installs the layout menu, show all existing layouts
@@ -101,18 +102,29 @@ namespace Docking.Components
                 DockFrame.CurrentLayout = defaultLayoutName; 
             m_DefaultLayoutName = defaultLayoutName;
 
-            ImageMenuItem deleteLayout = new ImageMenuItem ("Delete Current Layout");
-            deleteLayout.Activated += (object sender, EventArgs e) => 
+            m_DeleteLayout = new ImageMenuItem ("Delete Current Layout");
+            m_DeleteLayout.Activated += (object sender, EventArgs e) => 
             {
                 if (DockFrame.CurrentLayout != m_DefaultLayoutName)
                 {
-                    // TODO: add confirmation message box
+                    MessageDialog md = new MessageDialog (null, 
+                                                          DialogFlags.Modal,
+                                                          MessageType.Question, 
+                                                          ButtonsType.YesNo,
+                                                          "Are you sure to remove current layout ?");
+                    md.SetPosition(WindowPosition.CenterOnParent);    
+                    ResponseType result = (ResponseType)md.Run ();
+                    md.Destroy();
 
-                    MenuItem nitem = sender as MenuItem;
-                    DockFrame.DeleteLayout(DockFrame.CurrentLayout);
-                    RemoveMenuItem(nitem.Parent, DockFrame.CurrentLayout);
-                    DockFrame.CurrentLayout = m_DefaultLayoutName;
-                    CheckMenuItem(nitem.Parent, DockFrame.CurrentLayout);
+                    if (result == ResponseType.Yes)
+                    {
+                        MenuItem nitem = sender as MenuItem;
+                        DockFrame.DeleteLayout(DockFrame.CurrentLayout);
+                        RemoveMenuItem(nitem.Parent, DockFrame.CurrentLayout);
+                        DockFrame.CurrentLayout = m_DefaultLayoutName;
+                        CheckMenuItem(nitem.Parent, DockFrame.CurrentLayout);
+                        m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != m_DefaultLayoutName);
+                    }
                 }
             };
 
@@ -141,16 +153,18 @@ namespace Docking.Components
                     DockFrame.CreateLayout (newLayoutName, !createEmptyLayout);
                     DockFrame.CurrentLayout = newLayoutName;
                     InsertLayoutMenu(newLayoutName, false);
+                    m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != m_DefaultLayoutName);
                 }
             };
 
-            InsertMenu (@"View\Layout", deleteLayout);
+            InsertMenu (@"View\Layout", m_DeleteLayout);
             InsertMenu (@"View\Layout", newLayout);
             InsertMenu (@"View\Layout", new SeparatorMenuItem ());
 
             foreach (String s in DockFrame.Layouts)
                 InsertLayoutMenu (s, true);
 
+            m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != m_DefaultLayoutName);
             MenuBar.ShowAll();
         }
 
@@ -246,6 +260,7 @@ namespace Docking.Components
                         if (!nitem.Active)
                             nitem.Active = true;
                         Console.WriteLine(String.Format("CurrentLayout={0}", label));
+                        m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != m_DefaultLayoutName);
                     }
                     else if (!nitem.Active) 
                     {
