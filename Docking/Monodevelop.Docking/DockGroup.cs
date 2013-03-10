@@ -723,19 +723,24 @@ namespace Docking
 	
 		public void AddRemoveWidgets ()
 		{
-			foreach (DockObject ob in Objects) {
+			foreach (DockObject ob in Objects) 
+            {
 				DockGroupItem it = ob as DockGroupItem;
-				if (it != null) {
-					if (it.Visible) {
+				if (it != null) 
+                {
+					if (it.Visible) 
+                    {
 						// Add the dock item to the container and show it if visible
-					if (it.Item.Widget.Parent != Frame.Container) {
-						if (it.Item.Widget.Parent != null) {
-							((Gtk.Container)it.Item.Widget.Parent).Remove (it.Item.Widget);
-						}
-						Frame.Container.Add (it.Item.Widget);
-					}
-					if (!it.Item.Widget.Visible && type != DockGroupType.Tabbed)
-						it.Item.Widget.Show ();
+					    if (it.Item.Widget.Parent != Frame.Container) 
+                        {
+						    if (it.Item.Widget.Parent != null) 
+                            {
+							    ((Gtk.Container)it.Item.Widget.Parent).Remove (it.Item.Widget);
+						    }
+						    Frame.Container.Add (it.Item.Widget);
+					    }
+					    if (!it.Item.Widget.Visible && type != DockGroupType.Tabbed)
+						    it.Item.Widget.Show ();
 
 						// Do the same for the title tab
 						if ((type != DockGroupType.Tabbed || VisibleObjects.Count == 1) && (it.Item.Behavior & DockItemBehavior.NoGrip) == 0) {
@@ -749,7 +754,9 @@ namespace Docking
 							}
 							tab.ShowAll ();
 						}
-					} else {
+					}
+                    else
+                    {
 						if (it.Item.Widget.Parent == Frame.Container)
 							Frame.Container.Remove (it.Item.Widget);
 						var tab = it.Item.TitleTab;

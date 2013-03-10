@@ -91,8 +91,10 @@ namespace Docking
 			// Sticky items currently selected in notebooks will remain
 			// selected after switching the layout
 			List<DockItem> sickyOnTop = new List<DockItem> ();
-			foreach (DockItem it in items) {
-				if ((it.Behavior & DockItemBehavior.Sticky) != 0) {
+			foreach (DockItem it in items) 
+            {
+				if ((it.Behavior & DockItemBehavior.Sticky) != 0) 
+                {
 					DockGroupItem gitem = FindDockGroupItem (it.Id);
 					if (gitem != null && gitem.ParentGroup.IsSelectedPage (it))
 						sickyOnTop.Add (it);
@@ -105,11 +107,19 @@ namespace Docking
 			layout.RestoreAllocation ();
 			
 			// Make sure items not present in this layout are hidden
-			foreach (DockItem it in items) {
+			foreach (DockItem it in items) 
+            {
 				if ((it.Behavior & DockItemBehavior.Sticky) != 0)
 					it.Visible = it.StickyVisible;
 				if (layout.FindDockGroupItem (it.Id) == null)
-					it.HideWidget ();
+                {
+                    it.HideWidget ();
+                    // note: visible first & hide next is important
+                    // to add existing objects in this layout as a hidden object
+                    // this is a workaround to add such objects correctly, otherwise title frame is wrong
+                    it.Visible = true;
+                    it.Visible = false;
+                }
 			}
 			
 			RelayoutWidgets ();

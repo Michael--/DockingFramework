@@ -703,7 +703,7 @@ namespace Docking.Components
             if (!cfi.IsSingleInstance)
                 item.Behavior |= DockItemBehavior.CloseOnHide;
 
-            //item.DefaultVisible = true;
+            item.DefaultVisible = false;
             //item.DrawFrame = true;
             item.Visible = true;
 
@@ -768,6 +768,7 @@ namespace Docking.Components
             item.Content = w;
             item.Label = w.Name;
             item.Icon = cfi.Icon;
+            item.DefaultVisible = false;
             item.VisibleChanged += HandleVisibleChanged;
 
             if (cfi.CloseOnHide)

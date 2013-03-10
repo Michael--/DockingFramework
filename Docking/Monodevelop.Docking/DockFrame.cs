@@ -786,10 +786,12 @@ namespace Docking
 			// Add items which don't have relative defaut positions
 			
 			List<DockItem> todock = new List<DockItem> ();
-			foreach (DockItem item in container.Items) {
+			foreach (DockItem item in container.Items)
+            {
 				if (string.IsNullOrEmpty (item.DefaultLocation)) {
 					DockGroupItem dgt = new DockGroupItem (this, item);
-					dgt.SetVisible (item.DefaultVisible);
+					// dgt.SetVisible (item.DefaultVisible); // may should reactivated
+                    dgt.SetVisible(false);
 					group.AddObject (dgt);
 				}
 				else
