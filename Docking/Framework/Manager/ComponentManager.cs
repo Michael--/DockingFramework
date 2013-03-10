@@ -107,7 +107,7 @@ namespace Docking.Components
             {
                 if (DockFrame.CurrentLayout != m_DefaultLayoutName)
                 {
-                    MessageDialog md = new MessageDialog (null, 
+                    MessageDialog md = new MessageDialog (this, 
                                                           DialogFlags.Modal,
                                                           MessageType.Question, 
                                                           ButtonsType.YesNo,
@@ -134,7 +134,7 @@ namespace Docking.Components
                 String newLayoutName = null;
                 bool createEmptyLayout = true;
 
-                NewLayout dialog = new NewLayout();
+                NewLayout dialog = new NewLayout(this);
                 dialog.SetPosition(WindowPosition.CenterOnParent);
                 ResponseType response = (ResponseType) dialog.Run();
                 if (response == ResponseType.Ok)

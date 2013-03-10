@@ -5,7 +5,7 @@ namespace Docking.Components
 {
     public partial class NewLayout : Gtk.Dialog
     {
-        public NewLayout () : base("New layout", null,
+        public NewLayout (Window parent) : base("New layout", parent,
                                    DialogFlags.DestroyWithParent | DialogFlags.Modal,
                                    ResponseType.Ok)
         {
