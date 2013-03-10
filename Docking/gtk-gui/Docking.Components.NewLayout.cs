@@ -45,6 +45,7 @@ namespace Docking.Components
 			this.entryLayoutName.CanFocus = true;
 			this.entryLayoutName.Name = "entryLayoutName";
 			this.entryLayoutName.IsEditable = true;
+			this.entryLayoutName.ActivatesDefault = true;
 			this.entryLayoutName.InvisibleChar = '●';
 			this.hbox1.Add (this.entryLayoutName);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.entryLayoutName]));
@@ -119,6 +120,7 @@ namespace Docking.Components
 			}
 			this.DefaultWidth = 406;
 			this.DefaultHeight = 124;
+			this.buttonOk.HasDefault = true;
 			this.Show ();
 		}
 	}
