@@ -107,14 +107,9 @@ namespace Docking.Components
             {
                 if (DockFrame.CurrentLayout != m_DefaultLayoutName)
                 {
-                    MessageDialog md = new MessageDialog (this, 
-                                                          DialogFlags.Modal,
-                                                          MessageType.Question, 
+                    ResponseType result = MessageBox.Show(this, MessageType.Question, 
                                                           ButtonsType.YesNo,
                                                           "Are you sure to remove current layout ?");
-                    md.SetPosition(WindowPosition.CenterOnParent);    
-                    ResponseType result = (ResponseType)md.Run ();
-                    md.Destroy();
 
                     if (result == ResponseType.Yes)
                     {
