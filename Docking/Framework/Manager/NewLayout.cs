@@ -27,6 +27,23 @@ namespace Docking.Components
                 return radiobuttonEmpty.Active;
             }
         }
+
+		protected void SetOKButtonEnabling()
+		{
+			buttonOk.Sensitive =
+				radiobuttonEmpty.Active ||
+				( radiobuttonCopy.Active && entryLayoutName.Text.Length > 0);
+		}
+
+		protected void OnEntryLayoutNameChanged (object sender, EventArgs e)
+		{
+			SetOKButtonEnabling();
+		}
+
+		protected void OnRadiobuttonEmptyToggled (object sender, EventArgs e)
+		{
+			SetOKButtonEnabling();
+		}
     }
 }
 

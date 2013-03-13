@@ -17,12 +17,13 @@ namespace Docking.Components
 		{
 			global::Stetic.Gui.Initialize (this);
 			// Widget Docking.Components.NewLayout
+			this.Events = ((global::Gdk.EventMask)(65536));
 			this.Name = "Docking.Components.NewLayout";
 			this.WindowPosition = ((global::Gtk.WindowPosition)(4));
 			// Internal child Docking.Components.NewLayout.VBox
 			global::Gtk.VBox w1 = this.VBox;
 			w1.Name = "dialog1_VBox";
-			w1.BorderWidth = ((uint)(2));
+			w1.BorderWidth = ((uint)(10));
 			// Container child dialog1_VBox.Gtk.Box+BoxChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
@@ -34,7 +35,7 @@ namespace Docking.Components
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.label1 = new global::Gtk.Label ();
 			this.label1.Name = "label1";
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Layout name");
+			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("Layout Name:");
 			this.hbox1.Add (this.label1);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
 			w2.Position = 0;
@@ -104,6 +105,7 @@ namespace Docking.Components
 			w9.Fill = false;
 			// Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
 			this.buttonOk = new global::Gtk.Button ();
+			this.buttonOk.Sensitive = false;
 			this.buttonOk.CanDefault = true;
 			this.buttonOk.CanFocus = true;
 			this.buttonOk.Name = "buttonOk";
@@ -119,9 +121,11 @@ namespace Docking.Components
 				this.Child.ShowAll ();
 			}
 			this.DefaultWidth = 406;
-			this.DefaultHeight = 124;
+			this.DefaultHeight = 141;
 			this.buttonOk.HasDefault = true;
 			this.Show ();
+			this.entryLayoutName.Changed += new global::System.EventHandler (this.OnEntryLayoutNameChanged);
+			this.radiobuttonEmpty.Toggled += new global::System.EventHandler (this.OnRadiobuttonEmptyToggled);
 		}
 	}
 }
