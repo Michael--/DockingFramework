@@ -30,9 +30,7 @@ namespace Docking.Components
 
 		protected void SetOKButtonEnabling()
 		{
-			buttonOk.Sensitive =
-				radiobuttonEmpty.Active ||
-				( radiobuttonCopy.Active && entryLayoutName.Text.Length > 0);
+			buttonOk.Sensitive = entryLayoutName.Text.Length>0;
 		}
 
 		protected void OnEntryLayoutNameChanged (object sender, EventArgs e)
