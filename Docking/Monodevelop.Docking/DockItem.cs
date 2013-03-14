@@ -75,6 +75,8 @@ namespace Docking
 		public event EventHandler VisibleChanged;
 		public event EventHandler ContentVisibleChanged;
 		public event EventHandler ContentRequired;
+
+        public DockFrame DockFrame { get { return frame; } }
 		
 		internal DockItem (DockFrame frame, string id)
 		{

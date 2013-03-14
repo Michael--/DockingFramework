@@ -98,7 +98,7 @@ namespace Docking
 			}
 		}
 
-		void UpdateVisualStyle ()
+		public void UpdateVisualStyle ()
 		{
 			if (labelWidget != null && label != null) {
 				if (visualStyle.UppercaseTitles.Value)

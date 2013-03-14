@@ -27,7 +27,7 @@ namespace Docking.Components
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.drawingarea = new global::Gtk.DrawingArea ();
 			this.drawingarea.CanFocus = true;
-			this.drawingarea.Events = ((global::Gdk.EventMask)(2097412));
+			this.drawingarea.Events = ((global::Gdk.EventMask)(2113796));
 			this.drawingarea.Name = "drawingarea";
 			this.hbox1.Add (this.drawingarea);
 			global::Gtk.Box.BoxChild w1 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.drawingarea]));

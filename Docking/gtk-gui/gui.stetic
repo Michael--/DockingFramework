@@ -170,7 +170,7 @@
               <widget class="Gtk.DrawingArea" id="drawingarea">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Events">PointerMotionMask, ButtonPressMask, ScrollMask</property>
+                <property name="Events">PointerMotionMask, ButtonPressMask, FocusChangeMask, ScrollMask</property>
                 <signal name="ExposeEvent" handler="OnDrawingareaExposeEvent" />
               </widget>
               <packing>

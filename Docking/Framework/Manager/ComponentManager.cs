@@ -35,6 +35,9 @@ namespace Docking.Components
             // style.PadTitleHeight = barHeight;
             DockFrame.DefaultVisualStyle = style;
 
+            mNormalStyle = DockFrame.DefaultVisualStyle;
+            mSelectedStyle = DockFrame.DefaultVisualStyle.Clone();
+            mSelectedStyle.PadBackgroundColor = new Gdk.Color(255, 0, 0);
         }
 
         public void SetStatusBar(Statusbar sb)
@@ -751,6 +754,79 @@ namespace Docking.Components
         }
 
         /// <summary>
+        /// Relation between any object and its parent DockItem
+        /// Need to find fast the DockItem for any user selection of an object
+        /// Objects are normally widgets and similar
+        /// </summary>
+        Dictionary<object, DockItem> mSelectRelation = new Dictionary<object, DockItem>();
+        DockItem mCurrentDockItem = null;
+        DockVisualStyle mNormalStyle, mSelectedStyle;
+
+        /// <summary>
+        /// Adds events for any child widget to find out which
+        /// DockItem is selected by the user.
+        /// Care the current selected DockItem, color the title bar.
+        /// </summary>
+        private void AddSelectNotifier(DockItem item, Widget w)
+        {
+            if (mSelectRelation.ContainsKey(w))
+                return;
+            mSelectRelation.Add(w, item);
+            w.CanFocus = true;
+            w.Events |= Gdk.EventMask.FocusChangeMask;
+            w.FocusGrabbed += (object sender, EventArgs e) => 
+            {
+                DockItem select;
+                if (mSelectRelation.TryGetValue(sender, out select))
+                {
+                    if (mCurrentDockItem != select)
+                    {
+                        if (mCurrentDockItem != null)
+                        {
+                            mCurrentDockItem.TitleTab.VisualStyle = mNormalStyle;
+                        }
+                        mCurrentDockItem = select;
+                        mCurrentDockItem.TitleTab.VisualStyle = mSelectedStyle;
+                    }
+                }
+            };
+
+            w.Events |= Gdk.EventMask.ButtonPressMask;
+            w.ButtonPressEvent += (object sender, ButtonPressEventArgs args) => 
+            {
+                DockItem select;
+                if (mSelectRelation.TryGetValue(sender, out select))
+                {
+                    if (mCurrentDockItem != select)
+                    {
+                        if (mCurrentDockItem != null)
+                        {
+                            mCurrentDockItem.TitleTab.VisualStyle = mNormalStyle;
+                        }
+                        mCurrentDockItem = select;
+                        mCurrentDockItem.TitleTab.VisualStyle = mSelectedStyle;
+                    }
+                }
+            };
+
+            if (w is Gtk.Container)
+                foreach (Widget xw in ((Gtk.Container)w).AllChildren)
+                {
+                    AddSelectNotifier(item, xw);
+                }
+#if false // TODO: could be needed
+             if (w is TreeView) {
+                foreach (TreeViewColumn twc in ((TreeView)w).Columns) {
+                    twc.Clicked += (object sender, EventArgs e) => 
+                    {
+                        Console.WriteLine ("{0} Test TreeViewColumn.Clicked {1}", qwe++, sender);
+                    };
+                }
+            }
+#endif
+        }
+
+        /// <summary>
         /// Create new item, called from menu choice or persistence
         /// </summary>
         private DockItem CreateItem(ComponentFactoryInformation cfi, String name)
@@ -759,7 +835,10 @@ namespace Docking.Components
             Widget w = cfi.CreateInstance (this);
             if (w == null)
                 return null;
+
             DockItem item = DockFrame.AddItem (name);
+            AddSelectNotifier(item, w);
+            AddSelectNotifier(item, item.TitleTab);
             item.Content = w;
             item.Label = w.Name;
             item.Icon = cfi.Icon;
