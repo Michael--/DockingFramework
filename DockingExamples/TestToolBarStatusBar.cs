@@ -64,10 +64,14 @@ namespace Examples.TestToolAndStatusBar
         #region implement IComponentInteract
         void IComponentInteract.Added(object item)
         {
+            if (item is IProperty)
+                mPropertyInterface = item as IProperty;
         }
 
         void IComponentInteract.Removed(object item)
         {
+            if (item == mPropertyInterface)
+                mPropertyInterface = null;
         }
 
         void IComponentInteract.Visible(object item, bool visible)
@@ -89,9 +93,16 @@ namespace Examples.TestToolAndStatusBar
             UpdateMessageText();
         }
 
+        void IComponentInteract.Current(object item)
+        {
+            if (this == item && mPropertyInterface != null)
+                mPropertyInterface.SetObject(this);
+        }
+
         #endregion
 
         #region variables, properties
+        IProperty mPropertyInterface;
         ToolButton mPush;
         ToolButton mPop;
         bool mAdded = false;

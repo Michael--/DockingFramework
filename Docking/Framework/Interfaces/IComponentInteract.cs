@@ -25,6 +25,13 @@ namespace Docking.Components
         /// Component status changed from visible to hidden or vice versa
         /// </summary>
         void Visible(object item, bool visible);
+
+        /// <summary>
+        /// Current dock item has been changed.
+        /// If item == this, your DockItem is now the current item.
+        /// For example its time to update the property item. 
+        /// </summary>
+        void Current(object item);
     }
 }
 

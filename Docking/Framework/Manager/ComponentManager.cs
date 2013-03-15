@@ -475,6 +475,9 @@ namespace Docking.Components
                 }
                 if (item.Content is IComponentInteract)
                     (item.Content as IComponentInteract).Visible(item.Content, item.Visible);
+
+                if (item.Content is IProperty)
+                    mPropertyInterfaces.Add(item.Content as IProperty);
             }
 
             // tell any component about all other component
@@ -720,10 +723,31 @@ namespace Docking.Components
             if (item.Content is IComponentInteract)
                 foreach(DockItem other in DockFrame.GetItems())
                     (item.Content as IComponentInteract).Added (other.Content);
+
+            if (item.Content is IProperty)
+                mPropertyInterfaces.Add(item.Content as IProperty);
         }
 
         private void HandleDockItemRemoved(DockItem item)
         {
+            if (item.Content is IProperty)
+                mPropertyInterfaces.Remove(item.Content as IProperty);
+
+            // tell all other about current item changed if it the removed component
+            if (mCurrentDockItem == item)
+            {
+                // care all IProperty Widgets
+                foreach(IProperty ip in mPropertyInterfaces)
+                    ip.SetObject(null);
+
+                mCurrentDockItem = null;
+                foreach (DockItem other in DockFrame.GetItems())
+                {
+                    if (other != item && other.Content is IComponentInteract)
+                        (other.Content as IComponentInteract).Current(mCurrentDockItem.Content);
+                }
+            }
+
             // tell all other about removed component
             foreach (DockItem other in DockFrame.GetItems())
             {
@@ -816,6 +840,7 @@ namespace Docking.Components
         Dictionary<object, DockItem> mSelectRelation = new Dictionary<object, DockItem>();
         DockItem mCurrentDockItem = null;
         DockVisualStyle mNormalStyle, mSelectedStyle;
+        List<IProperty> mPropertyInterfaces = new List<IProperty>();
         
         /// <summary>
         /// Adds events for any child widget to find out which
@@ -831,47 +856,27 @@ namespace Docking.Components
             w.Events |= Gdk.EventMask.FocusChangeMask;
             w.FocusGrabbed += (object sender, EventArgs e) => 
             {
-                DockItem select;
-                if (mSelectRelation.TryGetValue(sender, out select))
-                {
-                    if (mCurrentDockItem != select)
-                    {
-                        if (mCurrentDockItem != null)
-                        {
-                            mCurrentDockItem.TitleTab.VisualStyle = mNormalStyle;
-                        }
-                        mCurrentDockItem = select;
-                        mCurrentDockItem.TitleTab.VisualStyle = mSelectedStyle;
-                    }
-                }
+                SelectCurrentEvent(sender);
             };
             
             w.Events |= Gdk.EventMask.ButtonPressMask;
             w.ButtonPressEvent += (object sender, ButtonPressEventArgs args) => 
             {
-                DockItem select;
-                if (mSelectRelation.TryGetValue(sender, out select))
-                {
-                    if (mCurrentDockItem != select)
-                    {
-                        if (mCurrentDockItem != null)
-                        {
-                            mCurrentDockItem.TitleTab.VisualStyle = mNormalStyle;
-                        }
-                        mCurrentDockItem = select;
-                        mCurrentDockItem.TitleTab.VisualStyle = mSelectedStyle;
-                    }
-                }
+                SelectCurrentEvent(sender);
             };
             
             if (w is Gtk.Container)
-                foreach (Widget xw in ((Gtk.Container)w).AllChildren)
             {
-                AddSelectNotifier(item, xw);
+                foreach (Widget xw in ((Gtk.Container)w).AllChildren)
+                {
+                    AddSelectNotifier(item, xw);
+                }
             }
             #if false // TODO: could be needed
-            if (w is TreeView) {
-                foreach (TreeViewColumn twc in ((TreeView)w).Columns) {
+            if (w is TreeView)
+            {
+                foreach (TreeViewColumn twc in ((TreeView)w).Columns) 
+                {
                     twc.Clicked += (object sender, EventArgs e) => 
                     {
                         Console.WriteLine ("{0} Test TreeViewColumn.Clicked {1}", qwe++, sender);
@@ -880,6 +885,38 @@ namespace Docking.Components
             }
             #endif
         }
+
+        void SelectCurrentEvent(object item)
+        {
+            DockItem select;
+            if (mSelectRelation.TryGetValue(item, out select))
+            {
+                if (mCurrentDockItem != select)
+                {
+                    if (mCurrentDockItem != null)
+                    {
+                        mCurrentDockItem.TitleTab.VisualStyle = mNormalStyle;
+                    }
+                    mCurrentDockItem = select;
+                    mCurrentDockItem.TitleTab.VisualStyle = mSelectedStyle;
+
+                    // care all IProperty Widgets
+                    if (!(mCurrentDockItem.Content is IProperty))
+                    {
+                        foreach(IProperty ip in mPropertyInterfaces)
+                            ip.SetObject(null);
+                    }
+
+                    // tell all other about current item changed
+                    foreach(DockItem other in DockFrame.GetItems())
+                    {
+                        if (other != item && other.Content is IComponentInteract)
+                            (other.Content as IComponentInteract).Current(mCurrentDockItem.Content);
+                    }
+                }
+            }
+        }
+               
 
         #endregion
 
