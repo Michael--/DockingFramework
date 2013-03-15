@@ -118,7 +118,17 @@ namespace MonoDevelop.Components.PropertyGrid
 			toolbar.Insert (new SeparatorToolItem (), 2);
 			helpButton = new ToggleButton ();
 			helpButton.Relief = ReliefStyle.None;
-			helpButton.Image = new Gtk.Image (Gtk.Stock.Help, IconSize.Menu);
+         pixbuf = null;
+			try
+         {
+            pixbuf = new Gdk.Pixbuf (typeof (PropertyGrid).Assembly, "Docking.Monodevelop.Components.MonoDevelop.Components.PropertyGrid.Tip.png");
+			}
+         catch (Exception e)
+         {
+            Console.WriteLine("Can't create pixbuf from resource: Docking.Monodevelop.Components.MonoDevelop.Components.PropertyGrid.Tip.png", e);
+			}
+			if(pixbuf != null)
+				helpButton.Image = new Gtk.Image(pixbuf);
 			helpButton.TooltipText = "Show help panel";
 			helpButton.Clicked += delegate {
 				ShowHelp = helpButton.Active;
@@ -151,7 +161,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			base.PackEnd (vpaned);
 			base.FocusChain = new Gtk.Widget [] { vpaned };
 			
-            helpButton.Active = ShowHelp = false; // MonoDevelop.Core.PropertyService.Get<bool> (PROP_HELP_KEY, true);
+            helpButton.Active = ShowHelp = true; // MonoDevelop.Core.PropertyService.Get<bool> (PROP_HELP_KEY, true);
 			
 			Populate ();
 			UpdateTabs ();
