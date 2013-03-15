@@ -230,7 +230,9 @@ namespace MonoDevelop.Components.PropertyGrid
 				rtb = new TabRadioToolButton (null);
 				rtb.Active = true;
 				firstTab = rtb;
+#if false // Commented out by SLohse. Our PropertyGrid currently only supports 1 tab page, so no icon in the toolbar is needed.
 				toolbar.Insert (new SeparatorToolItem (), FirstTabIndex - 1);
+#endif
 			}
 			else
 				rtb = new TabRadioToolButton (firstTab);
@@ -246,7 +248,9 @@ namespace MonoDevelop.Components.PropertyGrid
 			rtb.TooltipText = tab.TabName;
 			rtb.Toggled += new EventHandler (toolbarClick);	
 			
+#if false // Commented out by SLohse. Our PropertyGrid currently only supports 1 tab page, so no icon in the toolbar is needed.
 			toolbar.Insert (rtb, propertyTabs.Count + FirstTabIndex);
+#endif
 			
 			propertyTabs.Add(tab);
 		}
