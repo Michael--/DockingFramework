@@ -259,11 +259,16 @@ namespace Docking
 			obj.ParentGroup = null;
 			visibleObjects = null;
 			
-			if (VisibleObjects.Count > 0) {
+			if (VisibleObjects.Count > 0)
+			{
 				CalcNewSizes ();
 				MarkForRelayout ();
-			} else
-				ParentGroup.UpdateVisible (this);
+			}               
+			else
+			{
+			   if(ParentGroup!=null)
+			      ParentGroup.UpdateVisible(this);
+			}
 		}
 		
 		public void Reduce ()
