@@ -17,6 +17,16 @@ namespace Docking.Components
 			md.Destroy();
 			return result;
 		}
+
+		public static ResponseType Show(string format, params object[] args)
+		{
+			return Show(null, MessageType.Other, ButtonsType.Ok, format, args);
+		}
+
+		public static ResponseType Show(string s)
+		{
+			return Show(null, MessageType.Other, ButtonsType.Ok, s);
+		}
 	}
 }
 
