@@ -9,14 +9,15 @@ namespace Docking.Components
         {
             this.Build();
             this.Name = "Properties";
-
-            // this.propertygrid1.CurrentObject = this.propertygrid1;
         }
 
         #region implement IProperty
 
         void IProperty.SetObject(Object obj)
         {
+           if(obj==this.propertygrid1.CurrentObject)
+              return;
+
             this.propertygrid1.CurrentObject = obj;
         }
 
