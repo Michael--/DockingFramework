@@ -176,32 +176,46 @@ namespace Docking.Components
 
         /// <summary>
         /// Searches for requested type in all available components DLLs
-		  /// 
-		  /// TODO This method currently only can find classes and their base classes, but NOT interfaces they implement!
-		  /// If you for example declare class A : B, IMyInterface1, IMyInterface2
-		  /// , and you look for all classes which implement IMyInterface1, then you won't find A!
-		  /// You will only find A if you search for A or for B.
+		/// The searched type could be a class, an abstract class or an interface
         /// </summary>
+
         public Type[] SearchForTypes(Type search)
         {
+            TypeFilter TypeFilter = new TypeFilter(InterfaceFilterCallback);
             List<Type> theList = new List<Type>();
             foreach (Type type in mTypes)
             {
                 if (!type.IsAbstract && type.IsClass)
                 {
-                    for(Type t = type; t!=null; t = t.BaseType)
+                    // check if requested interface implemented
+                    if (search.IsInterface)
                     {
-                        if(t.Name==search.Name)
+                        if (type.FindInterfaces(TypeFilter, search).Length > 0)
                         {
-                           if(!theList.Contains(type)) // avoid duplicates
+                            if(!theList.Contains(type)) // avoid duplicates
                                 theList.Add(type);
-                           break;
-                        }                        
+                        }
                     }
+
+                    // test current type and search also in the base class tree
+                    else
+                    {
+                        for(Type t = type; t!=null; t = t.BaseType)
+                        {
+                            if (t.Name==search.Name)
+                            {
+                                if(!theList.Contains(type)) // avoid duplicates
+                                    theList.Add(type);
+                                break;
+                            }                        
+                        }
+                    }
+
                 }
             }
             return theList.ToArray();
         }
+       
 
 
         public void OpenMustExists(ComponentManager cm)
