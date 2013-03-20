@@ -176,6 +176,11 @@ namespace Docking.Components
 
         /// <summary>
         /// Searches for requested type in all available components DLLs
+		  /// 
+		  /// TODO This method currently only can find classes and their base classes, but NOT interfaces they implement!
+		  /// If you for example declare class A : B, IMyInterface1, IMyInterface2
+		  /// , and you look for all classes which implement IMyInterface1, then you won't find A!
+		  /// You will only find A if you search for A or for B.
         /// </summary>
         public Type[] SearchForTypes(Type search)
         {
@@ -184,24 +189,14 @@ namespace Docking.Components
             {
                 if (!type.IsAbstract && type.IsClass)
                 {
-                    Type t = type;
-                    while (t != null)
+                    for(Type t = type; t!=null; t = t.BaseType)
                     {
-                        if (t.BaseType != null && t.BaseType.Name == search.Name)
+                        if(t.Name==search.Name)
                         {
-                            bool found = false;
-                            // todo: binary search could be faster: do not add duplicates
-                            foreach (Type check in theList)
-                                if (check.Name == type.Name)
-                                {
-                                    found = true;
-                                    break;
-                                }
-                            if (!found)
+                           if(!theList.Contains(type)) // avoid duplicates
                                 theList.Add(type);
-                            break;
-                        }
-                        t = t.BaseType;
+                           break;
+                        }                        
                     }
                 }
             }
