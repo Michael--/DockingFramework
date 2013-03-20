@@ -12,10 +12,10 @@ namespace Docking.Tools
     /// </summary>
     public abstract class JobInformation
     {
-        public JobInformation (String name, String desciption)
+        public JobInformation (String name, String description)
         {
             Name = name;
-            Description = desciption;
+            Description = description;
             StartTime = DateTime.Now;
             Id = LastId++;
         }

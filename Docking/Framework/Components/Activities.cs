@@ -19,11 +19,11 @@ namespace Docking.Components
             activityColumn.Sizing = Gtk.TreeViewColumnSizing.Fixed;
             activityColumn.FixedWidth = 100;
 
-            Gtk.TreeViewColumn desciptionColumn = new Gtk.TreeViewColumn ();
-            desciptionColumn.Title = "Desciption";
-            desciptionColumn.Resizable = true;
-            desciptionColumn.Sizing = Gtk.TreeViewColumnSizing.Fixed;
-            desciptionColumn.FixedWidth = 200;
+            Gtk.TreeViewColumn descriptionColumn = new Gtk.TreeViewColumn ();
+            descriptionColumn.Title = "Description";
+            descriptionColumn.Resizable = true;
+            descriptionColumn.Sizing = Gtk.TreeViewColumnSizing.Fixed;
+            descriptionColumn.FixedWidth = 200;
 
             Gtk.TreeViewColumn statusColumn = new Gtk.TreeViewColumn ();
             statusColumn.Title = "Status";
@@ -33,7 +33,7 @@ namespace Docking.Components
 
             // Add the columns to the TreeView
             treeview1.AppendColumn (activityColumn);
-            treeview1.AppendColumn (desciptionColumn);
+            treeview1.AppendColumn (descriptionColumn);
             treeview1.AppendColumn (statusColumn);
 
             // Create the text cells that will display the content
@@ -42,11 +42,11 @@ namespace Docking.Components
             Gtk.CellRendererProgress statusCell = new Gtk.CellRendererProgress ();
 
             activityColumn.PackStart (componentsCell, true);
-            desciptionColumn.PackStart (descriptionCell, true);
+            descriptionColumn.PackStart (descriptionCell, true);
             statusColumn.PackStart (statusCell, true);
 
             activityColumn.AddAttribute (componentsCell, "text", activityIndex);
-            desciptionColumn.AddAttribute (descriptionCell, "text", descriptionIndex);
+            descriptionColumn.AddAttribute (descriptionCell, "text", descriptionIndex);
             statusColumn.AddAttribute (statusCell, "value", statusIndex);
 
             // Create a model that will hold the content, assign the model to the TreeView
