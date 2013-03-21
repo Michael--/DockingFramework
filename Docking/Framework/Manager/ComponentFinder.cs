@@ -95,33 +95,28 @@ namespace Docking.Components
 
         void SearchComponents()
         {
-            foreach (Type t in mTypes)
+            // find all real classes which implement interface 'IComponentFactory'
+            // and create an inctance of such
+			Type[] factories = SearchForTypes(typeof(IComponentFactory));
+
+            foreach (Type t in factories)
             {
-                // find all real classes which implement interface 'IComponentFactory'
-                // and create an inctance of such
-                if (t.IsClass)
+                try
                 {
-                    Type[] myInterfaces = t.FindInterfaces (mTypeFilter, typeof(IComponentFactory));
-                    if (myInterfaces.Length > 0)
-                    {
-                        try
-                        {
-                            ComponentFactory cf = (ComponentFactory)Activator.CreateInstance (t);
-                            mComponents.Add (new ComponentFactoryInformation (cf, true));
-                        }
-                        catch (InvalidCastException)
-                        {
-                            // Console.WriteLine("{0}", e.ToString());
-                        }
-                        catch (MissingMethodException)
-                        {
-                            // Console.WriteLine("{0}", e.ToString());
-                        }
-                        catch (ReflectionTypeLoadException)
-                        {
-                            // Console.WriteLine("{0}", e.ToString());
-                        }
-                    }
+                    ComponentFactory cf = (ComponentFactory)Activator.CreateInstance (t);
+                    mComponents.Add (new ComponentFactoryInformation (cf, true));
+                }
+                catch (InvalidCastException)
+                {
+                    // Console.WriteLine("{0}", e.ToString());
+                }
+                catch (MissingMethodException)
+                {
+                    // Console.WriteLine("{0}", e.ToString());
+                }
+                catch (ReflectionTypeLoadException)
+                {
+                    // Console.WriteLine("{0}", e.ToString());
                 }
             }
         }
