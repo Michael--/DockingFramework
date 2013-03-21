@@ -126,7 +126,7 @@ namespace Docking.Components
         void ChangeInstanceCount(object item, int dcount)
         {
             Gtk.TreeIter iter;
-            if (!treeview1.Model.GetIterFirst (out iter))
+            if(item==null || !treeview1.Model.GetIterFirst (out iter))
                 return;
             do 
             {
