@@ -159,6 +159,7 @@ namespace Docking.Components
                     if (TreeIterHelper.TryGetValue(e.JobInformation, out iter))
                     {
                         listStore.SetValue(iter, statusIndex, progress);
+                        this.treeview1.QueueDraw(); // TODO don't know why this explicit call is necessary. without it, repainting of the progress bars is missing :((((
                     }
                 }
             });
