@@ -125,7 +125,7 @@ namespace Docking.Components
             listStore.SetValue(iter, jobInformationIndex, job);
             listStore.SetValue(iter, activityIndex, job.Name);
             listStore.SetValue(iter, descriptionIndex, job.Description);
-            listStore.SetValue(iter, statusIndex, 0);
+            listStore.SetValue(iter, statusIndex, job.ProgressSupported ? 0 : -1); // -1 will result in an empty progress bar display. TODO instead of displaying an empty progress bar, make it invisible or show a text widget saying something like "continuous", telling the user that this thread is never finished but instead always-working
 
             lock (TreeIterHelper)
             {
