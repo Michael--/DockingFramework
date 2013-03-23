@@ -56,6 +56,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="System.Data.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -68,6 +69,8 @@
     <Compile Include="gtk-gui\Examples.ExampleHelloWorld.cs" />
     <Compile Include="ExampleThreadWorker.cs" />
     <Compile Include="gtk-gui\Examples.ExampleThreadWorker.cs" />
+    <Compile Include="Levenshtein.cs" />
+    <Compile Include="gtk-gui\Examples.Levenshtein.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
