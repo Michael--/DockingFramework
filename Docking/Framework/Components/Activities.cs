@@ -125,7 +125,15 @@ namespace Docking.Components
             listStore.SetValue(iter, jobInformationIndex, job);
             listStore.SetValue(iter, activityIndex, job.Name);
             listStore.SetValue(iter, descriptionIndex, job.Description);
-            listStore.SetValue(iter, statusIndex, job.ProgressSupported ? 0 : -1); // -1 will result in an empty progress bar display. TODO instead of displaying an empty progress bar, make it invisible or show a text widget saying something like "continuous", telling the user that this thread is never finished but instead always-working
+            listStore.SetValue(iter, statusIndex, 0); 
+
+            // if (!job.ProgressSupported) ...
+            // -1 as ProgressValue will result in an empty progress bar display, but only if no other threads with active progress exist
+            // in that case the progress copied from any other and totally flickering
+            // also a lot of GLib-GObject-WARNING at runtime occur
+            // TODO instead of displaying an empty progress bar, make it invisible or show a text widget saying something like "continuous", telling the user that this thread is never finished but instead always-working
+            // unfortunately at statusIndex a CellRendererProgress is installed always in any row
+            // we would need a special CellRenderer which could display its content as Text or Progress 
 
             lock (TreeIterHelper)
             {

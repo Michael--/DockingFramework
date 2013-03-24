@@ -7,12 +7,16 @@ namespace Examples
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.HBox hbox1;
 		private global::Gtk.Label label1;
-		private global::Gtk.CheckButton checkbutton1;
+		private global::Gtk.Button buttonStartThread;
 		private global::Gtk.ProgressBar progressbar1;
 		private global::Gtk.HBox hbox2;
 		private global::Gtk.Label label2;
-		private global::Gtk.Button button1;
+		private global::Gtk.Button buttonStartTask;
 		private global::Gtk.Label labelTaskCount;
+		private global::Gtk.HBox hbox3;
+		private global::Gtk.Label label3;
+		private global::Gtk.Button buttonEndlessStart;
+		private global::Gtk.Button buttonEndlessStop;
 		
 		protected virtual void Build ()
 		{
@@ -38,16 +42,16 @@ namespace Examples
 			w1.Expand = false;
 			w1.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.checkbutton1 = new global::Gtk.CheckButton ();
-			this.checkbutton1.CanFocus = true;
-			this.checkbutton1.Name = "checkbutton1";
-			this.checkbutton1.Label = global::Mono.Unix.Catalog.GetString ("Continuous starting");
-			this.checkbutton1.Active = true;
-			this.checkbutton1.DrawIndicator = true;
-			this.checkbutton1.UseUnderline = true;
-			this.hbox1.Add (this.checkbutton1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.checkbutton1]));
+			this.buttonStartThread = new global::Gtk.Button ();
+			this.buttonStartThread.CanFocus = true;
+			this.buttonStartThread.Name = "buttonStartThread";
+			this.buttonStartThread.UseUnderline = true;
+			this.buttonStartThread.Label = global::Mono.Unix.Catalog.GetString ("Start");
+			this.hbox1.Add (this.buttonStartThread);
+			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonStartThread]));
 			w2.Position = 1;
+			w2.Expand = false;
+			w2.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.progressbar1 = new global::Gtk.ProgressBar ();
 			this.progressbar1.Name = "progressbar1";
@@ -74,13 +78,13 @@ namespace Examples
 			w5.Expand = false;
 			w5.Fill = false;
 			// Container child hbox2.Gtk.Box+BoxChild
-			this.button1 = new global::Gtk.Button ();
-			this.button1.CanFocus = true;
-			this.button1.Name = "button1";
-			this.button1.UseUnderline = true;
-			this.button1.Label = global::Mono.Unix.Catalog.GetString ("Start a Task");
-			this.hbox2.Add (this.button1);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.button1]));
+			this.buttonStartTask = new global::Gtk.Button ();
+			this.buttonStartTask.CanFocus = true;
+			this.buttonStartTask.Name = "buttonStartTask";
+			this.buttonStartTask.UseUnderline = true;
+			this.buttonStartTask.Label = global::Mono.Unix.Catalog.GetString ("Start");
+			this.hbox2.Add (this.buttonStartTask);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.buttonStartTask]));
 			w6.Position = 1;
 			w6.Expand = false;
 			w6.Fill = false;
@@ -98,13 +102,56 @@ namespace Examples
 			w8.Position = 1;
 			w8.Expand = false;
 			w8.Fill = false;
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.hbox3 = new global::Gtk.HBox ();
+			this.hbox3.Name = "hbox3";
+			this.hbox3.Spacing = 6;
+			// Container child hbox3.Gtk.Box+BoxChild
+			this.label3 = new global::Gtk.Label ();
+			this.label3.Name = "label3";
+			this.label3.LabelProp = global::Mono.Unix.Catalog.GetString ("Endless thread");
+			this.hbox3.Add (this.label3);
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.label3]));
+			w9.Position = 0;
+			w9.Expand = false;
+			w9.Fill = false;
+			// Container child hbox3.Gtk.Box+BoxChild
+			this.buttonEndlessStart = new global::Gtk.Button ();
+			this.buttonEndlessStart.CanFocus = true;
+			this.buttonEndlessStart.Name = "buttonEndlessStart";
+			this.buttonEndlessStart.UseUnderline = true;
+			this.buttonEndlessStart.Label = global::Mono.Unix.Catalog.GetString ("Start");
+			this.hbox3.Add (this.buttonEndlessStart);
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.buttonEndlessStart]));
+			w10.Position = 1;
+			w10.Expand = false;
+			w10.Fill = false;
+			// Container child hbox3.Gtk.Box+BoxChild
+			this.buttonEndlessStop = new global::Gtk.Button ();
+			this.buttonEndlessStop.Sensitive = false;
+			this.buttonEndlessStop.CanFocus = true;
+			this.buttonEndlessStop.Name = "buttonEndlessStop";
+			this.buttonEndlessStop.UseUnderline = true;
+			this.buttonEndlessStop.Label = global::Mono.Unix.Catalog.GetString ("Stop");
+			this.hbox3.Add (this.buttonEndlessStop);
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.buttonEndlessStop]));
+			w11.Position = 2;
+			w11.Expand = false;
+			w11.Fill = false;
+			this.vbox1.Add (this.hbox3);
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox3]));
+			w12.Position = 2;
+			w12.Expand = false;
+			w12.Fill = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
 			this.Hide ();
-			this.checkbutton1.Toggled += new global::System.EventHandler (this.OnCheckbutton1Toggled);
-			this.button1.Clicked += new global::System.EventHandler (this.OnButton1Clicked);
+			this.buttonStartThread.Clicked += new global::System.EventHandler (this.OnButtonStartThreadClicked);
+			this.buttonStartTask.Clicked += new global::System.EventHandler (this.OnButton1Clicked);
+			this.buttonEndlessStart.Clicked += new global::System.EventHandler (this.OnButtonEndlessStartClicked);
+			this.buttonEndlessStop.Clicked += new global::System.EventHandler (this.OnButtonEndlessStopClicked);
 		}
 	}
 }

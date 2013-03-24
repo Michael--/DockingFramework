@@ -33,7 +33,9 @@ namespace Examples
         private List<CancellationTokenSource> cancelTokenList = new List<CancellationTokenSource>();
 
         private ThreadWorker mThreadWorker = null;
+        private ThreadWorker mThreadEndless = null;
         private Object mThreadWorkerSemaphore = new object();
+        private Object mThreadEndlessSemaphore = new object();
 
         String myThreadHeader;
         static int instances = 0;
@@ -47,7 +49,8 @@ namespace Examples
 			if(ComponentManager.PowerDown || m_Destroyed)
 				return;
 
-			lock(mThreadWorkerSemaphore)
+            buttonStartThread.Sensitive = false;
+            lock(mThreadWorkerSemaphore)
 			{
 				myThreadId++;
 				String name = String.Format("{0}:{1}", myThreadHeader, myThreadId);
@@ -63,6 +66,29 @@ namespace Examples
 			}
         }
 
+        void StartEndlessThread()
+        {
+            if(ComponentManager.PowerDown || m_Destroyed)
+                return;
+            buttonEndlessStart.Sensitive = false;
+            buttonEndlessStop.Sensitive = true;
+
+            lock(mThreadEndlessSemaphore)
+            {
+                myThreadId++;
+                String name = String.Format("Endless {0}:{1}", myThreadHeader, myThreadId);
+                String description = "Endless ThreadWorker";
+                Message(String.Format("Thread {0} started", name));
+                mThreadEndless = new ThreadWorker(name, description);
+                mThreadEndless.WorkerSupportsCancellation = true;
+                mThreadEndless.WorkerReportsProgress = false;
+                mThreadEndless.DoWork += new DoWorkEventHandler(mThreadEndless_DoWork);
+                mThreadEndless.RunWorkerCompleted += new RunWorkerCompletedEventHandler(mThreadEndless_RunWorkerCompleted);
+                mThreadEndless.RunWorkerAsync(ThreadPriority.BelowNormal);
+            }
+        }
+
+
         public void RequestStop()
 		{
 			lock(mThreadWorkerSemaphore)
@@ -72,6 +98,11 @@ namespace Examples
 				foreach(CancellationTokenSource t in cancelTokenList)
 					t.Cancel();
 			}
+            lock(mThreadEndlessSemaphore)
+            {
+                if (mThreadEndless != null)
+                    mThreadEndless.CancelAsync();
+            }
         }
 
         // complete message
@@ -84,8 +115,7 @@ namespace Examples
 	                                  e.Cancelled ? "Canceled" : "completed"));
 				mThreadWorker = null;
 			}
-            if (checkbutton1.Active)
-                StartNewThread();
+            buttonStartThread.Sensitive = true;
         }
 
         // progress message
@@ -131,14 +161,43 @@ namespace Examples
             }
         }
 
+        // complete message
+        private void mThreadEndless_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            lock(mThreadEndlessSemaphore)
+            {
+                Message(String.Format("Thread {0}:{1} {2}",
+                                      myThreadHeader, myThreadId,
+                                      e.Cancelled ? "Canceled" : "completed"));
+                mThreadEndless = null;
+            }
+            buttonEndlessStart.Sensitive = true;
+            buttonEndlessStop.Sensitive = false;
+        }
+
+        private void mThreadEndless_DoWork(object sender, DoWorkEventArgs e)
+        {
+            ThreadWorker worker = sender as ThreadWorker;
+            
+            while(true)
+            {
+                Thread.Sleep(50);
+                
+                if(worker.CancellationPending)
+                {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+        }
+
+
         #region implement IComponent
 
         public ComponentManager ComponentManager { get; set; }
 
         void Docking.Components.IComponent.Loaded(DockItem item)
         {
-            if (checkbutton1.Active)
-                StartNewThread();
         }
 
         void Docking.Components.IComponent.Save()
@@ -193,10 +252,23 @@ namespace Examples
             }, cancelTokenSource.Token);
         }
 
-        protected void OnCheckbutton1Toggled(object sender, EventArgs e)
+  
+        protected void OnButtonStartThreadClicked (object sender, EventArgs e)
         {
-            if (checkbutton1.Active && mThreadWorker == null)
+            if (mThreadWorker == null)
                 StartNewThread();
+        }
+
+        protected void OnButtonEndlessStartClicked (object sender, EventArgs e)
+        {
+            if (mThreadEndless == null)
+                StartEndlessThread();
+        }
+
+        protected void OnButtonEndlessStopClicked (object sender, EventArgs e)
+        {
+            if (mThreadEndless != null)
+                mThreadEndless.CancelAsync();
         }
     }
 
