@@ -105,11 +105,11 @@ namespace Docking.Components
                 CurrentRow = Math.Max(CurrentRow, mRow - 1);
                 SelectedRow = Math.Max(CurrentRow, mRow - 1);
                 vscrollbar1.SetRange(0, Math.Max(1, mRow - 1));
-                drawingarea.QueueDraw();
             }
         }
         private int mRow;
-        
+
+        public void TriggerRepaint() { drawingarea.QueueDraw(); }
         
         /// <summary>
         /// Get selection. Return the range of selected lines.
@@ -462,8 +462,8 @@ namespace Docking.Components
             {
                 int row = (int)evnt.Y / ConstantHeight + (int)vscrollbar1.Value;
                 OffsetCursor(row - CurrentRow);
-                if (!HasFocus)
-                    GrabFocus();
+//                if (!HasFocus)
+//                    GrabFocus();
             }
             return base.OnButtonPressEvent(evnt);
         }
@@ -582,15 +582,15 @@ namespace Docking.Components
         
         protected void OnVscrollbar1ValueChanged(object sender, EventArgs e)
         {
-            if (!HasFocus)
-                GrabFocus();
+//            if (!HasFocus)
+//                GrabFocus();
             drawingarea.QueueDraw();
         }
         
         protected void OnHscrollbar1ValueChanged(object sender, EventArgs e)
         {
-            if (!HasFocus)
-                GrabFocus();
+//            if (!HasFocus)
+//                GrabFocus();
             drawingarea.QueueDraw();
         }
     }

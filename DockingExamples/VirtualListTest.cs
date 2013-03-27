@@ -30,6 +30,7 @@ namespace Examples.VirtualList
 
             // set content size
             virtuallistview1.RowCount = 42000;
+            virtuallistview1.TriggerRepaint();
         }
 
         private String GetContent(int row, int column)
