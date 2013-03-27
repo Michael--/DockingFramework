@@ -461,7 +461,7 @@ namespace Docking.Components
             if (evnt.Button == 1 && evnt.Type == Gdk.EventType.ButtonPress)
             {
                 int row = (int)evnt.Y / ConstantHeight + (int)vscrollbar1.Value;
-                MoveCursor(row - CurrentRow);
+                OffsetCursor(row - CurrentRow);
                 if (!HasFocus)
                     GrabFocus();
             }
@@ -480,8 +480,17 @@ namespace Docking.Components
             drawingarea.QueueDraw();
             return base.OnFocusOutEvent(evnt);
         }
+
+        /// <summary>
+        /// Move Cursor to line
+        /// </summary>
+        /// <param name="index"></param>
+        public void MoveCursorToIndex(int index)
+        {
+            OffsetCursor(CurrentRow - index);
+        }
         
-        private void MoveCursor(int offset)
+        private void OffsetCursor(int offset)
         {
             int oldRow = CurrentRow;
             CurrentRow += offset;
@@ -538,27 +547,27 @@ namespace Docking.Components
                 return true;
                 
             case Gdk.Key.Up:
-                MoveCursor(-1);
+                OffsetCursor(-1);
                 return true;
                 
             case Gdk.Key.Page_Up:
-                MoveCursor(-(BottomVisibleRow - TopVisibleRow));
+                OffsetCursor(-(BottomVisibleRow - TopVisibleRow));
                 return true;
                 
             case Gdk.Key.Down:
-                MoveCursor(+1);
+                OffsetCursor(+1);
                 return true;
                 
             case Gdk.Key.Page_Down:
-                MoveCursor(BottomVisibleRow - TopVisibleRow);
+                OffsetCursor(BottomVisibleRow - TopVisibleRow);
                 return true;
                 
             case Gdk.Key.Home:
-                MoveCursor(int.MinValue / 2);
+                OffsetCursor(int.MinValue / 2);
                 return true;
                 
             case Gdk.Key.End:
-                MoveCursor(int.MaxValue / 2);
+                OffsetCursor(int.MaxValue / 2);
                 return true;
                 
             case Gdk.Key.Left:
