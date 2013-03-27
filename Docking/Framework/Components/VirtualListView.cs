@@ -40,6 +40,7 @@ namespace Docking.Components
             CurrentRow = 0;
             SelectedRow = 0;
             SelectionMode = false;
+            DocumentEnd = true;
             
             moveHandleTimer = new System.Timers.Timer();
             moveHandleTimer.Elapsed += HandleElapsed;
@@ -89,6 +90,12 @@ namespace Docking.Components
         /// Gets the current row index
         /// </summary>
         public int CurrentRow { get; private set; }
+
+        /// <summary>
+        /// Return true if the current row is at document end
+        /// Similar to CurrentRow == RowCount-1, but free of side effects if the document size grows
+        /// </summary>
+        public bool DocumentEnd { get; private set; }
         
         /// <summary>
         /// Gets or sets the row count, the possible size of the list
@@ -102,8 +109,8 @@ namespace Docking.Components
             set
             {
                 mRow = value;
-                CurrentRow = Math.Max(CurrentRow, mRow - 1);
-                SelectedRow = Math.Max(CurrentRow, mRow - 1);
+                CurrentRow = Math.Min(CurrentRow, mRow - 1);
+                SelectedRow = Math.Min(CurrentRow, mRow - 1);
                 vscrollbar1.SetRange(0, Math.Max(1, mRow - 1));
             }
         }
@@ -462,8 +469,8 @@ namespace Docking.Components
             {
                 int row = (int)evnt.Y / ConstantHeight + (int)vscrollbar1.Value;
                 OffsetCursor(row - CurrentRow);
-//                if (!HasFocus)
-//                    GrabFocus();
+                if (!HasFocus)
+                    GrabFocus();
             }
             return base.OnButtonPressEvent(evnt);
         }
@@ -487,7 +494,7 @@ namespace Docking.Components
         /// <param name="index"></param>
         public void MoveCursorToIndex(int index)
         {
-            OffsetCursor(CurrentRow - index);
+            OffsetCursor(index - CurrentRow);
         }
         
         private void OffsetCursor(int offset)
@@ -500,6 +507,7 @@ namespace Docking.Components
                 CurrentRow = RowCount - 1;
             
             bool redraw = oldRow != CurrentRow;
+            DocumentEnd = CurrentRow == RowCount - 1;
             
             if (CurrentRow < TopVisibleRow)
             {
