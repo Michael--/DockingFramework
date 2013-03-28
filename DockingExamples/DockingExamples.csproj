@@ -57,6 +57,13 @@
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Data.Linq" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="IronPython">
+      <HintPath>..\IronPython\Net40\IronPython.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Scripting">
+      <HintPath>..\IronPython\Net40\Microsoft.Scripting.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -71,6 +78,9 @@
     <Compile Include="gtk-gui\Examples.ExampleThreadWorker.cs" />
     <Compile Include="Levenshtein.cs" />
     <Compile Include="gtk-gui\Examples.Levenshtein.cs" />
+    <Compile Include="gtk-gui\Examples.PythonExample.cs" />
+    <Compile Include="Python\Python.cs" />
+    <Compile Include="gtk-gui\Examples.test1.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -81,11 +91,16 @@
     <EmbeddedResource Include="TestToolBarStatusBar-16.png" />
     <EmbeddedResource Include="VirtualListTest-16.png" />
     <EmbeddedResource Include="ThreadWorker-16.png" />
+    <EmbeddedResource Include="Python\test2.py" />
+    <EmbeddedResource Include="Python\test1.py" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Docking\Docking.csproj">
       <Project>{8DDC0184-EBA8-4264-993D-E47173F12814}</Project>
       <Name>Docking</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Python\" />
   </ItemGroup>
 </Project>

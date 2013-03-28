@@ -189,5 +189,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Tools\Text\" />
+    <Folder Include="IronPython\" />
   </ItemGroup>
 </Project>
