@@ -92,6 +92,7 @@
     <EmbeddedResource Include="ThreadWorker-16.png" />
     <EmbeddedResource Include="Python\test2.py" />
     <EmbeddedResource Include="Python\test1.py" />
+    <EmbeddedResource Include="Python\test3.py" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Docking\Docking.csproj">
