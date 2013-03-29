@@ -372,7 +372,12 @@ namespace Docking.Components
             ImageMenuItem item = new ImageMenuItem("Open");
             // item.Image = new Image(Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Manager.Quit-16.png"));
             item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.O, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
-            item.Activated += OpenFile;
+            item.Activated += (sender, e) => 
+            {
+                String filename = OpenFileDialog();
+                if (filename != null)
+                    OpenFile(filename);
+            };
             InsertMenu("File", item);
         }
         
@@ -401,9 +406,10 @@ namespace Docking.Components
             MessageWriteLine(string.Format("Don't know how to open file {0}", filename));
             return false;
         }
-        
-        void OpenFile (object sender, EventArgs e)
+
+        public String OpenFileDialog()
         {
+            String result = null;
             Gtk.FileChooserDialog fc= new Gtk.FileChooserDialog("Choose the file to open",
                                                                 this,
                                                                 FileChooserAction.Open,
@@ -412,10 +418,12 @@ namespace Docking.Components
             
             if (fc.Run() == (int)ResponseType.Accept) 
             {
-                OpenFile(fc.Filename);
+                result = fc.Filename;
             }
             fc.Destroy();
+            return result;
         }
+
         #endregion
 
         #region Private properties

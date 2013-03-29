@@ -96,6 +96,7 @@
     <EmbeddedResource Include="Python\test1.py" />
     <EmbeddedResource Include="Python\test3.py" />
     <EmbeddedResource Include="Python\test4.py" />
+    <EmbeddedResource Include="Python\test5.py" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Docking\Docking.csproj">
