@@ -308,6 +308,7 @@ namespace Docking.Components
         protected void AddComponentMenus()
         {
             InstallQuitMenu();
+            InstallFileOpenMenu();
 
             foreach (ComponentFactoryInformation cfi in ComponentFinder.ComponentInfos)
             {
@@ -363,6 +364,58 @@ namespace Docking.Components
             return menu;
         }
 
+        #endregion
+
+        #region OpenFile
+        void InstallFileOpenMenu()
+        {
+            ImageMenuItem item = new ImageMenuItem("Open");
+            // item.Image = new Image(Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Manager.Quit-16.png"));
+            item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.O, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
+            item.Activated += OpenFile;
+            InsertMenu("File", item);
+        }
+        
+        public bool OpenFile(string filename)
+        {
+            if (!File.Exists(filename))
+            {
+                MessageWriteLine(string.Format("Open file {0} not exists", filename));
+                return false;
+            }
+
+            foreach (DockItem item in DockFrame.GetItems())
+            {
+                if (item.Content is IFileOpen)
+                {
+                    IFileOpen ifile = item.Content as IFileOpen;
+                    String openAs = ifile.TryOpenFile(filename);
+                    if (openAs != null)
+                    {
+                        MessageWriteLine(string.Format("Open file {0} as {1}", filename, openAs));
+                        ifile.OpenFile(filename);
+                        return true; // TODO: consider all
+                    }
+                }
+            }
+            MessageWriteLine(string.Format("Don't know how to open file {0}", filename));
+            return false;
+        }
+        
+        void OpenFile (object sender, EventArgs e)
+        {
+            Gtk.FileChooserDialog fc= new Gtk.FileChooserDialog("Choose the file to open",
+                                                                this,
+                                                                FileChooserAction.Open,
+                                                                "Cancel",ResponseType.Cancel,
+                                                                "Open",ResponseType.Accept);
+            
+            if (fc.Run() == (int)ResponseType.Accept) 
+            {
+                OpenFile(fc.Filename);
+            }
+            fc.Destroy();
+        }
         #endregion
 
         #region Private properties

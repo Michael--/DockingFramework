@@ -38,8 +38,11 @@ public partial class MainWindow : ComponentManager
         // set default layout and add layout menu
         InstallLayoutMenu("Default");
 
+
         // after layout has been set, call component initialization
         // any component could load its persistence data now
         ComponentsLoaded();
     }
+
+
 }
