@@ -84,6 +84,7 @@ namespace Examples
             combo.AppendText("test3.py");
             combo.AppendText("test4.py");
             combo.AppendText("test5.py");
+            combo.AppendText("test6.py");
             TreeIter it;
             combo.Model.GetIterFirst(out it);
             combo.SetActiveIter(it);
