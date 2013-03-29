@@ -6,11 +6,12 @@ using System.Reflection;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Docking;
+using Gtk;
 
 
 namespace Examples
 {
-    [System.ComponentModel.ToolboxItem(true)]
+    [System.ComponentModel.ToolboxItem(false)]
     public partial class PythonExample : Gtk.Bin, IComponent
     {
         #region implement IComponent
@@ -18,7 +19,7 @@ namespace Examples
         
         void IComponent.Loaded(DockItem item)
         {
-            StartTests();
+            InitTests();
         }
         
         void IComponent.Save()
@@ -26,6 +27,8 @@ namespace Examples
         }
         
         #endregion
+
+        #region MAIN
 
         public PythonExample()
         {
@@ -35,7 +38,6 @@ namespace Examples
 
         ScriptEngine pyEngine;
         ScriptScope pyScope;
-
 
         void CompileSourceAndExecute(String code)
         {
@@ -53,24 +55,40 @@ namespace Examples
             }
         }
 
-
-        void StartTests()
+        void InitTests()
         {
+            combo.Changed += (object sender, EventArgs e) => 
+            {
+                ComboBox c = sender as ComboBox;
+                if (c == null)
+                    return;
+                
+                TreeIter iter;
+                if (c.GetActiveIter (out iter))
+                {
+                    String s = (string) c.Model.GetValue (iter, 0);
+                    String py = ReadResource("Examples.Python." + s);
+                    textview.Buffer.Clear ();
+                    if (py != null)
+                        textview.Buffer.InsertAtCursor(py);
+                }
+            };
+
+            buttonExecute.Clicked += (sender, e) => 
+            {
+                CompileSourceAndExecute(textview.Buffer.Text);
+            };
+
+            combo.AppendText("test1.py");
+            combo.AppendText("test2.py");
+            TreeIter it;
+            combo.Model.GetIterFirst(out it);
+            combo.SetActiveIter(it);
+
+
             pyEngine = Python.CreateEngine();
             pyScope = pyEngine.CreateScope();
             pyScope.SetVariable("ComponentManager", ComponentManager);
-            Test1();
-            Test2();
-        }
-
-        void Test1()
-        {
-            CompileSourceAndExecute(ReadResource("Examples.Python.test1.py"));
-        }
-
-        void Test2()
-        {
-            CompileSourceAndExecute(ReadResource("Examples.Python.test2.py"));
         }
 
         String ReadResource(String id)
@@ -89,6 +107,7 @@ namespace Examples
                 }
             }        
         }
+        #endregion
     }
 
     #region Starter / Entry Point

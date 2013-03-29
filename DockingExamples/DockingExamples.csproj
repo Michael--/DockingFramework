@@ -80,7 +80,6 @@
     <Compile Include="gtk-gui\Examples.Levenshtein.cs" />
     <Compile Include="gtk-gui\Examples.PythonExample.cs" />
     <Compile Include="Python\Python.cs" />
-    <Compile Include="gtk-gui\Examples.test1.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
