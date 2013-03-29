@@ -7,6 +7,7 @@ using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using Docking;
 using Gtk;
+using System.Text;
 
 
 namespace Examples
@@ -71,6 +72,7 @@ namespace Examples
                     textview.Buffer.Clear ();
                     if (py != null)
                         textview.Buffer.InsertAtCursor(py);
+                    InitPythonEngine(); // Init again to avoid side effects from other scripts 
                 }
             };
 
@@ -88,12 +90,31 @@ namespace Examples
             TreeIter it;
             combo.Model.GetIterFirst(out it);
             combo.SetActiveIter(it);
+        }
 
-
+        void InitPythonEngine()
+        {
             pyEngine = Python.CreateEngine();
             pyScope = pyEngine.CreateScope();
             pyScope.SetVariable("ComponentManager", ComponentManager);
+            pyScope.SetVariable("this", this);
         }
+
+        StringBuilder mPrintBuilder = new StringBuilder();
+        public void write(string s)
+        {
+            if (s == "\n")
+            {
+                ComponentManager.MessageWriteLine(mPrintBuilder.ToString());
+                mPrintBuilder.Clear();
+            }
+            else
+            {
+                mPrintBuilder.Append(s);
+            }
+        }
+
+        public int softspace { get; set; }
 
         String ReadResource(String id)
         {
