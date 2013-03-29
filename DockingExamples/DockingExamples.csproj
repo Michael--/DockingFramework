@@ -95,6 +95,7 @@
     <EmbeddedResource Include="Python\test2.py" />
     <EmbeddedResource Include="Python\test1.py" />
     <EmbeddedResource Include="Python\test3.py" />
+    <EmbeddedResource Include="Python\test4.py" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Docking\Docking.csproj">
@@ -104,5 +105,10 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Python\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Python\dummy.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
