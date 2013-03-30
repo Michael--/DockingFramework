@@ -1069,7 +1069,7 @@ namespace Docking.Components
         { 
           "# define a convinience method using ComponentManager.MessageWriteLine",
           "def message(*arg):",
-          "    asString = '  '.join(str(i) for i in arg)",
+          "    asString = ' '.join(str(i) for i in arg)",
           "    cm.MessageWriteLine(asString)"
         };
 
@@ -1079,7 +1079,8 @@ namespace Docking.Components
             ScriptScope = ScriptEngine.CreateScope();
 
             // add Python command "Message(...)" and access to this using "ComponentManager"
-            ScriptScope.SetVariable("cm", this);
+            manager = new _ComponentManager(this);
+            ScriptScope.SetVariable("cm", manager);
             Execute(String.Join("\r\n", pyMessage));
         }
 
@@ -1099,6 +1100,44 @@ namespace Docking.Components
             CompiledCode compiled = Compile(code);
             return compiled.Execute(ScriptScope);
         }
+
+        _ComponentManager manager;
+        
+        // encapsulate python access to c#, reduce access to well known methods
+        public class _ComponentManager
+        {
+            public _ComponentManager(ComponentManager cm)
+            {
+                ComponentManager = cm;
+            }
+            
+            private ComponentManager ComponentManager { get; set; }
+            
+            /// <summary>
+            /// exit application
+            /// </summary>
+            public void quit()
+            {
+                ComponentManager.quit();
+            }
+
+            public void MessageWriteLine(String message)
+            {
+                ComponentManager.MessageWriteLine(message);
+            }
+
+            public bool OpenFile(string filename)
+            {
+                return ComponentManager.OpenFile(filename);
+            }
+
+            public String OpenFileDialog()
+            {
+                return ComponentManager.OpenFileDialog();
+            }
+
+        }
+
 
         #endregion
     }

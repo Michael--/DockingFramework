@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using MonoDevelop.Components;
 
 namespace Docking.Components
 {
@@ -12,7 +13,8 @@ namespace Docking.Components
         void IComponent.Loaded(DockItem item)
         {
             // redirect print message and access to this using "command"
-            ComponentManager.ScriptScope.SetVariable("cmd", this);
+            command = new _Command(consoleview, ComponentManager);
+            ComponentManager.ScriptScope.SetVariable("cmd", command);
             ComponentManager.Execute(String.Join("\r\n", pyPrint));
         }
 
@@ -31,19 +33,34 @@ namespace Docking.Components
             "sys.stdout=cmd"
         };
 
-        public void write(string s)
-        {
-            consoleview.WriteOutput(s);
-        }
-        
-        public int softspace { get; set; }
+        _Command command;
 
-        /// <summary>
-        /// exit application
-        /// </summary>
-        public void quit()
+        // encapsulate python access to c#, reduce access to well known methods
+        public class _Command
         {
-            ComponentManager.quit();
+            public _Command(ConsoleView cv, ComponentManager cm)
+            {
+                ConsoleView = cv;
+                ComponentManager = cm;
+            }
+            
+            private ConsoleView ConsoleView { get; set; }
+            private ComponentManager ComponentManager { get; set; }
+            
+            public void write(string s)
+            {
+                ConsoleView.WriteOutput(s);
+            }
+            
+            public int softspace { get; set; }
+            
+            /// <summary>
+            /// exit application
+            /// </summary>
+            public void quit()
+            {
+                ComponentManager.quit();
+            }
         }
 
         #endregion
@@ -79,6 +96,7 @@ namespace Docking.Components
         }
         #endregion
     }
+
 
     #region Starter / Entry Point
     
