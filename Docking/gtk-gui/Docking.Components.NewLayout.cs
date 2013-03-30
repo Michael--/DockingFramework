@@ -60,6 +60,7 @@ namespace Docking.Components
 			this.radiobuttonCopy = new global::Gtk.RadioButton (global::Mono.Unix.Catalog.GetString ("Copy from current layout"));
 			this.radiobuttonCopy.CanFocus = true;
 			this.radiobuttonCopy.Name = "radiobuttonCopy";
+			this.radiobuttonCopy.Active = true;
 			this.radiobuttonCopy.DrawIndicator = true;
 			this.radiobuttonCopy.UseUnderline = true;
 			this.radiobuttonCopy.Group = new global::GLib.SList (global::System.IntPtr.Zero);

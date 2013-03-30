@@ -155,6 +155,9 @@
     <Compile Include="gtk-gui\Docking.Components.NewLayout.cs" />
     <Compile Include="Framework\Components\MessageBox.cs" />
     <Compile Include="Tools\Text\Levenshtein.cs" />
+    <Compile Include="Framework\Components\Command.cs" />
+    <Compile Include="gtk-gui\Docking.Components.Command.cs" />
+    <Compile Include="Monodevelop.Components\ConsoleView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
