@@ -7,6 +7,9 @@ using System.Xml.Serialization;
 using System.Text;
 using System.Collections.Generic;
 using Docking.Helper;
+using Microsoft.Scripting.Hosting;
+using IronPython.Hosting;
+using Microsoft.Scripting;
 
 namespace Docking.Components
 {
@@ -20,6 +23,7 @@ namespace Docking.Components
             ComponentFinder = new Docking.Components.ComponentFinder();
             XmlDocument = new XmlDocument();
             PowerDown = false;
+            InitPythonEngine();
         }
 
         public void SetDockFrame(DockFrame df)
@@ -1047,6 +1051,47 @@ namespace Docking.Components
         }
         List<String> mMessageQueue = new List<string>();
         Dictionary<string, IMessage> mMessage = new Dictionary<string, IMessage>();
+        #endregion
+
+        #region Python
+        public ScriptEngine ScriptEngine { get; private set; }
+        public ScriptScope ScriptScope { get; private set; }
+
+        string []pyMessage = new string[] 
+        { 
+          "# define a convinience method using ComponentManager.MessageWriteLine",
+          "def Message(*arg):",
+          "    asString = '  '.join(str(i) for i in arg)",
+          "    ComponentManager.MessageWriteLine(asString)"
+        };
+
+        private void InitPythonEngine()
+        {
+            ScriptEngine = Python.CreateEngine();
+            ScriptScope = ScriptEngine.CreateScope();
+
+            // add Python command "Message(...)" and access to this using "ComponentManager"
+            ScriptScope.SetVariable("ComponentManager", this);
+            PythonExecute(String.Join("\r\n", pyMessage));
+        }
+
+        public CompiledCode PythonCompile(String code)
+        {
+            ScriptSource source = ScriptEngine.CreateScriptSourceFromString(code, SourceCodeKind.AutoDetect);
+            return source.Compile();
+        }
+
+        public dynamic PythonExecute(CompiledCode compiled)
+        {
+            return compiled.Execute(ScriptScope);
+        }
+
+        public dynamic PythonExecute(String code)
+        {
+            CompiledCode compiled = PythonCompile(code);
+            return compiled.Execute(ScriptScope);
+        }
+
         #endregion
     }
 
