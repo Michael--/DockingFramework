@@ -28,8 +28,16 @@ namespace Docking.Components
         void HandleConsoleInput (object sender, MonoDevelop.Components.ConsoleInputEventArgs e)
         {
             string input = e.Text;
-            consoleview.WriteOutput("Echo: " + input);
-            consoleview.Prompt (true);
+            if (input != null)
+            {
+                //consoleview.WriteOutput("Echo: " + input);
+                //consoleview.Prompt(true);
+                consoleview.Prompt(false);
+            }
+            else
+            {
+                consoleview.Prompt(false);
+            }
         }
         #endregion
     }

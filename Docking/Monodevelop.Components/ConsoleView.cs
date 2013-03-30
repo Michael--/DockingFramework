@@ -167,6 +167,10 @@ namespace MonoDevelop.Components
 					
 						ProcessInput (InputLine);
 					}
+                    else
+                    {
+                        ProcessInput (null);
+                    }
 				}
 				return true;
 			}
