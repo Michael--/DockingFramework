@@ -13,7 +13,7 @@ namespace Docking.Components
         {
             // redirect print message and access to this using "command"
             ComponentManager.ScriptScope.SetVariable("command", this);
-            ComponentManager.PythonExecute(String.Join("\r\n", pyPrint));
+            ComponentManager.Execute(String.Join("\r\n", pyPrint));
         }
 
         void IComponent.Save()
@@ -32,7 +32,7 @@ namespace Docking.Components
         };
 
         StringBuilder mPrintBuilder = new StringBuilder();
-        bool WritePromt { get; set; }
+        bool PromtWritten { get; set; }
         public void write(string s)
         {
             if (s == "\n")
@@ -41,7 +41,7 @@ namespace Docking.Components
                 {
                     consoleview.WriteOutput(mPrintBuilder.ToString());
                     consoleview.Prompt(true);
-                    WritePromt = true;
+                    PromtWritten = true;
                 }
                 mPrintBuilder.Clear();
             }
@@ -69,9 +69,9 @@ namespace Docking.Components
             {
                 try
                 {
-                    WritePromt = false;
-                    ComponentManager.PythonExecute(input);
-                    if (!WritePromt)
+                    PromtWritten = false;
+                    ComponentManager.Execute(input);
+                    if (!PromtWritten)
                         consoleview.Prompt(false);
                 }
                 catch (Exception ex)
@@ -79,13 +79,6 @@ namespace Docking.Components
                     consoleview.WriteOutput("Error: " + ex.Message);
                     consoleview.Prompt(true);
                 }
-                finally
-                {
-                }
-
-                //consoleview.WriteOutput("Echo: " + input);
-                //consoleview.Prompt(true);
-                //consoleview.Prompt(false);
             }
             else
             {

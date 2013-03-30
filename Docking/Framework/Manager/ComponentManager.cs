@@ -1072,23 +1072,23 @@ namespace Docking.Components
 
             // add Python command "Message(...)" and access to this using "ComponentManager"
             ScriptScope.SetVariable("ComponentManager", this);
-            PythonExecute(String.Join("\r\n", pyMessage));
+            Execute(String.Join("\r\n", pyMessage));
         }
 
-        public CompiledCode PythonCompile(String code)
+        public CompiledCode Compile(String code)
         {
             ScriptSource source = ScriptEngine.CreateScriptSourceFromString(code, SourceCodeKind.AutoDetect);
             return source.Compile();
         }
 
-        public dynamic PythonExecute(CompiledCode compiled)
+        public dynamic Execute(CompiledCode compiled)
         {
             return compiled.Execute(ScriptScope);
         }
 
-        public dynamic PythonExecute(String code)
+        public dynamic Execute(String code)
         {
-            CompiledCode compiled = PythonCompile(code);
+            CompiledCode compiled = Compile(code);
             return compiled.Execute(ScriptScope);
         }
 
