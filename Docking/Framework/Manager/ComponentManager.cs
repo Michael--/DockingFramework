@@ -612,6 +612,14 @@ namespace Docking.Components
             SaveObject("MainWindow", p);
         }
 
+        /// <summary>
+        /// exit application
+        /// </summary>
+        public void quit()
+        {
+            PrepareExit();
+        }
+
         protected void PrepareExit()
         {
             PowerDown = true;
@@ -1060,9 +1068,9 @@ namespace Docking.Components
         string []pyMessage = new string[] 
         { 
           "# define a convinience method using ComponentManager.MessageWriteLine",
-          "def Message(*arg):",
+          "def message(*arg):",
           "    asString = '  '.join(str(i) for i in arg)",
-          "    ComponentManager.MessageWriteLine(asString)"
+          "    cm.MessageWriteLine(asString)"
         };
 
         private void InitPythonEngine()
@@ -1071,7 +1079,7 @@ namespace Docking.Components
             ScriptScope = ScriptEngine.CreateScope();
 
             // add Python command "Message(...)" and access to this using "ComponentManager"
-            ScriptScope.SetVariable("ComponentManager", this);
+            ScriptScope.SetVariable("cm", this);
             Execute(String.Join("\r\n", pyMessage));
         }
 

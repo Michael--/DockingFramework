@@ -1,8 +1,8 @@
 
 # define a convinience method using ComponentManager.MessageWriteLine
-def Message(*arg):
+def message(*arg):
   asString = ' '.join(str(i) for i in arg)
-  ComponentManager.MessageWriteLine(asString)
+  cm.MessageWriteLine(asString)
 
 
 # Return a list containing the Fibonacci series up to n
@@ -15,4 +15,4 @@ def Fibonacci(n):
      return result
 
 fib = Fibonacci(1000)
-Message("Fibonacci(1000):", fib)
+message("Fibonacci(1000):", fib)

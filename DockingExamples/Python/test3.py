@@ -27,9 +27,9 @@ def primeSieve(x):
 
 
 # define a convinience method using ComponentManager.MessageWriteLine
-def Message(*arg):
+def message(*arg):
   asString = ' '.join(str(i) for i in arg)
-  ComponentManager.MessageWriteLine(asString)
+  cm.MessageWriteLine(asString)
 
 
 import time
@@ -37,8 +37,8 @@ start = time.time();
 primes = primeSieve(1000)
 end = time.time()
 
-Message("Found", len(primes), "primes:", primes)
-Message("Runtime:", end - start, "seconds")
+message("Found", len(primes), "primes:", primes)
+message("Runtime:", end - start, "seconds")
 
 
 

@@ -96,8 +96,8 @@ namespace Examples
         {
             pyEngine = Python.CreateEngine();
             pyScope = pyEngine.CreateScope();
-            pyScope.SetVariable("ComponentManager", ComponentManager);
-            pyScope.SetVariable("this", this);
+            pyScope.SetVariable("cm", ComponentManager);
+            pyScope.SetVariable("cmd", this);
         }
 
         StringBuilder mPrintBuilder = new StringBuilder();

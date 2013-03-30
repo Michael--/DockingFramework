@@ -12,7 +12,7 @@ namespace Docking.Components
         void IComponent.Loaded(DockItem item)
         {
             // redirect print message and access to this using "command"
-            ComponentManager.ScriptScope.SetVariable("command", this);
+            ComponentManager.ScriptScope.SetVariable("cmd", this);
             ComponentManager.Execute(String.Join("\r\n", pyPrint));
         }
 
@@ -22,36 +22,30 @@ namespace Docking.Components
         
         #endregion
 
-        #region Python print
+        #region Python command extensions e.g. print
         string []pyPrint = new string[] 
         { 
             "#output can be redirected to any object which implement method write and property softspace",
             "import sys",
-            "sys.stderr=command",
-            "sys.stdout=command"
+            "sys.stderr=cmd",
+            "sys.stdout=cmd"
         };
 
-        StringBuilder mPrintBuilder = new StringBuilder();
-        bool PromtWritten { get; set; }
         public void write(string s)
         {
-            if (s == "\n")
-            {
-                if (mPrintBuilder.Length > 0)
-                {
-                    consoleview.WriteOutput(mPrintBuilder.ToString());
-                    consoleview.Prompt(true);
-                    PromtWritten = true;
-                }
-                mPrintBuilder.Clear();
-            }
-            else
-            {
-                mPrintBuilder.Append(s);
-            }
+            consoleview.WriteOutput(s);
         }
         
         public int softspace { get; set; }
+
+        /// <summary>
+        /// exit application
+        /// </summary>
+        public void quit()
+        {
+            ComponentManager.quit();
+        }
+
         #endregion
 
         #region MAIN
@@ -69,10 +63,8 @@ namespace Docking.Components
             {
                 try
                 {
-                    PromtWritten = false;
                     ComponentManager.Execute(input);
-                    if (!PromtWritten)
-                        consoleview.Prompt(false);
+                    consoleview.Prompt(false);
                 }
                 catch (Exception ex)
                 {

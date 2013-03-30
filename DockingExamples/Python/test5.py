@@ -4,16 +4,16 @@
 
 
 # define a convinience method using ComponentManager.MessageWriteLine
-def Message(*arg):
+def message(*arg):
   asString = ' '.join(str(i) for i in arg)
-  ComponentManager.MessageWriteLine(asString)
+  cm.MessageWriteLine(asString)
 
 
-file = ComponentManager.OpenFileDialog()
-Message("OpenFileDialog return:", file);
+file = cm.OpenFileDialog()
+message("OpenFileDialog return:", file);
 
 if file:
-    Message("Try open file", file)
-    result = ComponentManager.OpenFile(file)
-    Message("open file returned:", result);
+    message("Try open file", file)
+    result = cm.OpenFile(file)
+    message("open file returned:", result);
 

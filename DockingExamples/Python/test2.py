@@ -2,22 +2,22 @@
 # use a global object passed from C# to print into the message box
 
 #direct using the C# object
-ComponentManager.MessageWriteLine("Hello from Python")
+cm.MessageWriteLine("Hello from Python")
 
 # define a convinience method using ComponentManager.MessageWriteLine
-def Message(*arg):
+def message(*arg):
   asString = '  '.join(str(i) for i in arg)
-  ComponentManager.MessageWriteLine(asString)
+  cm.MessageWriteLine(asString)
 
 #using convinience, useful due to parameter types
-Message("Hello number:", 4711)
+message("Hello number:", 4711)
 
 #message can output also variabe lists
-Message("Show a range", range(3, 11))
+message("Show a range", range(3, 11))
 
 #output can be redirected to any object which implement method write and property softspace
 import sys
-sys.stdout=this
+sys.stdout=cmd
 print "Redirected", 4711, range(50, 60)
 
 
