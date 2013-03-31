@@ -68,7 +68,7 @@ namespace Examples
                 if (c.GetActiveIter (out iter))
                 {
                     String s = (string) c.Model.GetValue (iter, 0);
-                    String py = ReadResource("Examples.Python." + s);
+                    String py = ComponentManager.ReadResource("Examples.Python." + s);
                     textview.Buffer.Clear ();
                     if (py != null)
                         textview.Buffer.InsertAtCursor(py);
@@ -116,22 +116,6 @@ namespace Examples
 
         public int softspace { get; set; }
 
-        String ReadResource(String id)
-        {
-            Assembly asm = System.Reflection.Assembly.GetExecutingAssembly();
-            using (System.IO.Stream s = asm.GetManifestResourceStream(id))
-            {
-                if (s == null)
-                    return null;
-                using (System.IO.StreamReader reader = new System.IO.StreamReader(s))
-                {
-                    if (reader == null)
-                        return null;
-                    string result = reader.ReadToEnd();
-                    return result;
-                }
-            }        
-        }
         #endregion
     }
 

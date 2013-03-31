@@ -10,6 +10,8 @@ using Docking.Helper;
 using Microsoft.Scripting.Hosting;
 using IronPython.Hosting;
 using Microsoft.Scripting;
+using IronPython.Runtime;
+using System.Reflection;
 
 namespace Docking.Components
 {
@@ -1065,23 +1067,60 @@ namespace Docking.Components
         public ScriptEngine ScriptEngine { get; private set; }
         public ScriptScope ScriptScope { get; private set; }
 
-        string []pyMessage = new string[] 
-        { 
-          "# define a convinience method using ComponentManager.MessageWriteLine",
-          "def message(*arg):",
-          "    asString = ' '.join(str(i) for i in arg)",
-          "    cm.MessageWriteLine(asString)"
-        };
-
         private void InitPythonEngine()
         {
             ScriptEngine = Python.CreateEngine();
             ScriptScope = ScriptEngine.CreateScope();
 
-            // add Python command "Message(...)" and access to this using "ComponentManager"
+            // override import
+            ScriptScope scope = IronPython.Hosting.Python.GetBuiltinModule(ScriptEngine);
+            scope.SetVariable("__import__", new ImportDelegate(DoPythonModuleImport));
+
+            // access to this using "ComponentManager"
             manager = new _ComponentManager(this);
             ScriptScope.SetVariable("cm", manager);
-            Execute(String.Join("\r\n", pyMessage));
+
+            // add Python commands like "message(...)" 
+            Execute(ReadResource("cm.py"));
+        }
+
+        delegate object ImportDelegate(CodeContext context, string moduleName, PythonDictionary globals, PythonDictionary locals, PythonTuple tuple);
+        
+        protected object DoPythonModuleImport(CodeContext context, string moduleName, PythonDictionary globals, PythonDictionary locals, PythonTuple tuple)
+        {
+            // test, may useful to import py from embedded resource
+#if false
+            string py = ReadResource(moduleName);
+            if (py != null)
+            {
+                //var scope = Execute(py);
+                //ScriptSource source = ScriptEngine.CreateScriptSourceFromString(py);
+                //ScriptScope scope = ScriptEngine.CreateScope();
+                var scope = ScriptScope;
+                ScriptEngine.Execute(py, scope);
+                Microsoft.Scripting.Runtime.Scope ret = Microsoft.Scripting.Hosting.Providers.HostingHelpers.GetScope(scope);
+                ScriptScope.SetVariable(moduleName, ret);
+                return ret;
+            }
+            else
+            {   // fall back on the built-in method
+                return IronPython.Modules.Builtin.__import__(context, moduleName);
+            }
+#else
+            return IronPython.Modules.Builtin.__import__(context, moduleName);
+#endif
+        }
+
+        public String ReadResource(String id)
+        {
+            Assembly asm = System.Reflection.Assembly.GetCallingAssembly();
+            System.IO.Stream s = asm.GetManifestResourceStream(id);
+            if (s == null)
+                return null;
+            System.IO.StreamReader reader = new System.IO.StreamReader(s);
+            if (reader == null)
+                return null;
+            return reader.ReadToEnd();
         }
 
         public CompiledCode Compile(String code)
@@ -1103,7 +1142,9 @@ namespace Docking.Components
 
         _ComponentManager manager;
         
-        // encapsulate python access to c#, reduce access to well known methods
+        /// <summary>
+        /// Adapter class encapsulate access to Docking.Components.ComponentManager
+        /// </summary>
         public class _ComponentManager
         {
             public _ComponentManager(ComponentManager cm)
@@ -1114,31 +1155,37 @@ namespace Docking.Components
             private ComponentManager ComponentManager { get; set; }
             
             /// <summary>
-            /// exit application
+            /// exit application immediately
             /// </summary>
             public void quit()
             {
                 ComponentManager.quit();
             }
 
+            /// <summary>
+            /// Write a message to the message window (if exist)
+            /// </summary>
             public void MessageWriteLine(String message)
             {
                 ComponentManager.MessageWriteLine(message);
             }
 
+            /// <summary>
+            /// Opens the file.
+            /// </summary>
             public bool OpenFile(string filename)
             {
                 return ComponentManager.OpenFile(filename);
             }
 
+            /// <summary>
+            /// Opens the file dialog.
+            /// </summary>
             public String OpenFileDialog()
             {
                 return ComponentManager.OpenFileDialog();
             }
-
         }
-
-
         #endregion
     }
 
