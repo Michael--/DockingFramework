@@ -2,12 +2,29 @@ using System;
 using Docking.Components;
 using Gtk;
 using System.Collections.Generic;
+using Docking;
 
 namespace Examples
 {
     [System.ComponentModel.ToolboxItem(false)]
-    public partial class Levenshtein : Gtk.Bin
+    public partial class Levenshtein : Gtk.Bin, IComponent
     {
+        #region implement IComponent
+        public ComponentManager ComponentManager { get; set; }
+        
+        void IComponent.Loaded(DockItem item)
+        {
+            // attach python
+            m_Levenshtein = new _Levenshtein(this);
+            ComponentManager.ScriptScope.SetVariable("lev", m_Levenshtein);
+        }
+        
+        void IComponent.Save()
+        {
+        }
+        
+        #endregion
+
         public Levenshtein()
         {
             this.Build();
@@ -26,32 +43,62 @@ namespace Examples
 
             entryLine.Changed += (sender, e) => 
             {
-                SearchFor(entryLine.Text);
+                SearchAndMark(entryLine.Text);
             };
 
             m_Buffer.Changed += (sender, e) => 
             {
                 TokenizeText();
-                SearchFor(entryLine.Text);
+                SearchAndMark(entryLine.Text);
             };
 
             TokenizeText();
             labelBestMatch.LabelProp = "- ";
         }
 
+        void SearchAndMark(string s)
+        {
+            Byte bestkey;
+            string[] result = Search(s, out bestkey);
+            if (result != null)
+            {
+                ResetMark();
+                Mark(result);
+                labelBestMatch.LabelProp = bestkey.ToString() + " ";
+            }
+            else
+            {
+                labelBestMatch.LabelProp = "- ";
+            }
+        }
+
 
         TextBuffer m_Buffer;
         String [] m_Token;
+        _Levenshtein m_Levenshtein;
+
 
         void TokenizeText()
         {
             m_Token = textview.Buffer.Text.Split(new char[] {' ', '.', ',', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
         }
 
-        void SearchFor(String txt)
+        void ResetMark()
         {
             m_Buffer.RemoveAllTags(m_Buffer.GetIterAtOffset(0), m_Buffer.GetIterAtOffset(int.MaxValue));
-            labelBestMatch.LabelProp = "- ";
+        }
+
+        void Mark(string[]strings)
+        {
+            if (strings != null)
+            {
+                foreach(string s in strings)
+                    MarkAll(s);
+            }
+        }
+
+        string[] Search(String txt, out Byte distance)
+        {
             if (txt.Length > 0)
             {
                 Byte bestKey = 255;
@@ -77,11 +124,12 @@ namespace Examples
                 if (matches.Count > 0)
                 {
                     List<string> result = matches[bestKey];
-                    foreach(string s in result)
-                        MarkAll(s);
-                    labelBestMatch.LabelProp = bestKey.ToString() + " ";
+                    distance = bestKey;
+                    return result.ToArray();
                 }
             }
+            distance = 0;
+            return null;
         }
 
         void MarkAll(string exp)
@@ -93,6 +141,38 @@ namespace Examples
             {
                 m_Buffer.ApplyTag("bold", start, end);
                 start.Offset++;
+            }
+        }
+
+        // encapsulate python access
+        public class _Levenshtein
+        {
+            public _Levenshtein(Levenshtein l)
+            {
+                lev = l;
+            }
+
+            Levenshtein lev;
+
+            public string[] search(string s)
+            {
+                Byte bestkey;
+                return lev.Search(s, out bestkey);
+            }
+
+            public void mark(string[] strings)
+            {
+                lev.Mark(strings);
+            }
+
+            public void mark(string s)
+            {
+                lev.Mark(new string[] { s });
+            }
+
+            public void reset_mark()
+            {
+                lev.ResetMark();
             }
         }
     }
