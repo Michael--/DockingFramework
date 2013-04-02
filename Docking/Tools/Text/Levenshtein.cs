@@ -46,7 +46,7 @@ namespace Docking.Tools
         // Currently, this implementation is a straightforward standard implementation
         // of this algorithm, not using sophisticated tricks like
         // * assigning just a small, constant penalty for length differences instead of accumulating a large one
-        // * equivalence classes like ü==ue ä==ae ö==oe ss==ß etc.
+        // * equivalence classes like ü==ue ä==ae ö==oe ß==ss etc.
         public byte distance(string s1, string s2)
         {
             int i; // running index for ROWS
@@ -70,7 +70,7 @@ namespace Docking.Tools
             {
                 previous = d[0, j] = (byte) Math.Min(((uint) previous) + mCostInsOrDel, (uint) 255);
             }
-            previous = 0; // important! will be used as input even in the first loop iteration!
+            previous = 0; // important! will be used even in the first loop iteration below!
             
             int curRow = 1;
             int prevRow = 0;
