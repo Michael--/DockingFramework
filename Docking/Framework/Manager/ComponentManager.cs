@@ -375,8 +375,8 @@ namespace Docking.Components
         #region OpenFile
         void InstallFileOpenMenu()
         {
-            ImageMenuItem item = new ImageMenuItem("Open");
-            // item.Image = new Image(Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Manager.Quit-16.png"));
+            ImageMenuItem item = new ImageMenuItem("Open...");
+            item.Image = new Image(Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Manager.File-16.png"));
             item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.O, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
             item.Activated += (sender, e) => 
             {
