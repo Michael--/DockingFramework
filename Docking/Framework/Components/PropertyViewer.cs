@@ -9,16 +9,23 @@ namespace Docking.Components
         {
             this.Build();
             this.Name = "Properties";
+            this.propertygrid1.Changed += (sender, e) => 
+			{
+                if (PropertyChangedHandler != null)
+                    PropertyChangedHandler(new PropertyChangedEventArgs(this.propertygrid1.CurrentObject));
+			};
         }
 
         #region implement IProperty
 
         void IProperty.SetObject(Object obj)
         {
-           if(obj==this.propertygrid1.CurrentObject)
-              return;
+            if(obj==this.propertygrid1.CurrentObject)
+                return;
 
             this.propertygrid1.CurrentObject = obj;
+            this.propertygrid1.QueueDraw(); // TODO: work currently not as expected
+
         }
 
         /// <summary>
