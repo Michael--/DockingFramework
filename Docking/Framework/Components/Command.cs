@@ -49,7 +49,10 @@ namespace Docking.Components
             
             public void write(string s)
             {
-                ConsoleView.WriteOutput(s);
+                Gtk.Application.Invoke(delegate
+                {
+                    ConsoleView.WriteOutput(s);
+                });
             }
             
             public int softspace { get; set; }
