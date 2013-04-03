@@ -545,6 +545,9 @@ namespace Docking.Components
 
                 if (item.Content is IProperty)
                     mPropertyInterfaces.Add(item.Content as IProperty);
+
+                if (item.Content is IScript)
+                    mScriptInterfaces.Add(item.Content as IScript);
             }
 
             // tell any component about all other component
@@ -664,8 +667,15 @@ namespace Docking.Components
             xmlWriter.Flush();
             XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
 
-            XmlSerializer serializer = new XmlSerializer(t);
-            return serializer.Deserialize(xmlReader);
+            try
+            {
+                XmlSerializer serializer = new XmlSerializer(t);
+                return serializer.Deserialize(xmlReader);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public void SaveObject(String elementName, object obj)
@@ -801,6 +811,9 @@ namespace Docking.Components
 
             if (item.Content is IProperty)
                 mPropertyInterfaces.Add(item.Content as IProperty);
+
+            if (item.Content is IScript)
+                mScriptInterfaces.Add(item.Content as IScript);
         }
 
         private void HandleDockItemRemoved(DockItem item)
@@ -814,6 +827,10 @@ namespace Docking.Components
                 // care all IProperty Widgets
                 foreach(IProperty ip in mPropertyInterfaces)
                     ip.SetObject(null);
+
+                // care all IScript Widgets
+                foreach (IScript isc in mScriptInterfaces)
+                    isc.SetScript(null, null);
 
                 mCurrentDockItem = null;
                 foreach (DockItem other in DockFrame.GetItems())
@@ -916,6 +933,7 @@ namespace Docking.Components
         DockItem mCurrentDockItem = null;
         DockVisualStyle mNormalStyle, mSelectedStyle;
         List<IProperty> mPropertyInterfaces = new List<IProperty>();
+        List<IScript> mScriptInterfaces = new List<IScript>();
         
         /// <summary>
         /// Adds events for any child widget to find out which
@@ -980,6 +998,12 @@ namespace Docking.Components
                     {
                         foreach(IProperty ip in mPropertyInterfaces)
                             ip.SetObject(null);
+                    }
+                    // care all IScript Widgets
+                    if (!(mCurrentDockItem.Content is IScript))
+                    {
+                        foreach (IScript isc in mScriptInterfaces)
+                            isc.SetScript(null, null);
                     }
 
                     // tell all other about current item changed
