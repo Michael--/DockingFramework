@@ -31,6 +31,7 @@ namespace Docking.Components
 			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
 			// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
 			this.textSource = new global::Gtk.TextView ();
+			this.textSource.Sensitive = false;
 			this.textSource.CanFocus = true;
 			this.textSource.Name = "textSource";
 			this.GtkScrolledWindow.Add (this.textSource);
@@ -41,6 +42,7 @@ namespace Docking.Components
 			this.textMessage = new global::Gtk.TextView ();
 			this.textMessage.CanFocus = true;
 			this.textMessage.Name = "textMessage";
+			this.textMessage.Editable = false;
 			this.vpaned1.Add (this.textMessage);
 			this.vbox2.Add (this.vpaned1);
 			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vpaned1]));

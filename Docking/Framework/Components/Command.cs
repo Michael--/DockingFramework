@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using MonoDevelop.Components;
+using System.Threading;
 
 namespace Docking.Components
 {
@@ -13,7 +14,7 @@ namespace Docking.Components
         void IComponent.Loaded(DockItem item)
         {
             // redirect print message and access to this using "command"
-            command = new _Command(consoleview, ComponentManager);
+            command = new _Command(this, consoleview, ComponentManager);
             ComponentManager.ScriptScope.SetVariable("cmd", command);
             ComponentManager.Execute(String.Join("\r\n", pyPrint));
         }
@@ -34,25 +35,35 @@ namespace Docking.Components
         };
 
         _Command command;
+        public bool DisableInvoke { get; set; }
 
         // encapsulate python access to c#, reduce access to well known methods
         public class _Command
         {
-            public _Command(ConsoleView cv, ComponentManager cm)
+            public _Command(Command cmd, ConsoleView cv, ComponentManager cm)
             {
+                Command = cmd;
                 ConsoleView = cv;
                 ComponentManager = cm;
             }
-            
+
+            private Command Command { get; set; }
             private ConsoleView ConsoleView { get; set; }
             private ComponentManager ComponentManager { get; set; }
-            
+
             public void write(string s)
             {
-                Gtk.Application.Invoke(delegate
+                if (Command.DisableInvoke)
                 {
                     ConsoleView.WriteOutput(s);
-                });
+                }
+                else
+                {
+                    Gtk.Application.Invoke(delegate
+                    {
+                        ConsoleView.WriteOutput(s);
+                    });
+                }
             }
             
             public int softspace { get; set; }
@@ -83,7 +94,9 @@ namespace Docking.Components
             {
                 try
                 {
+                    DisableInvoke = true;
                     ComponentManager.Execute(input);
+                    DisableInvoke = true;
                     consoleview.Prompt(false);
                 }
                 catch (Exception ex)

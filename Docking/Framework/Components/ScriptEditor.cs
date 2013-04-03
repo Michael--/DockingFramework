@@ -95,7 +95,6 @@ namespace Docking.Components
 		
 		#endregion
 
-
 		#region implement IComponent
 		public ComponentManager ComponentManager { get; set; }
 		
