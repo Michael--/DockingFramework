@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Scripting.Hosting;
+using Microsoft.Scripting;
 
 namespace Docking.Components
 {
@@ -22,15 +23,19 @@ namespace Docking.Components
 			string script = this.textSource.Buffer.GetText(istart, iend, true);
 
             CompiledCode code = null;
-			try
-			{
-				code = ComponentManager.Compile(script);
+            try
+            {
+                code = ComponentManager.Compile(script);
                 Message("");
-			}
-			catch (Exception ex)
-			{
-				Message(ex.Message);
-			}
+            }
+            catch (SyntaxErrorException ex)
+            {
+                Message(string.Format("Line {0}/{1}: {2}", ex.Line, ex.Column, ex.Message));
+            }
+            catch (Exception ex)
+            {
+                Message(ex.Message);
+            }
 			finally
 			{
 				if (ScriptChangedHandler != null)
