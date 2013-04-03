@@ -86,6 +86,9 @@
     <Reference Include="Microsoft.Scripting">
       <HintPath>..\IronPython\Net40\Microsoft.Scripting.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.TextEditor">
+      <HintPath>Monodevelop.Texteditor\Mono.TextEditor.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
