@@ -151,21 +151,13 @@ namespace Docking.Components
                 Type[] types = asm.GetExportedTypes ();
                 mTypes.AddRange(types);
             }
-            catch (TypeLoadException)
-            {
-            }
-            catch (BadImageFormatException)
-            {
-            }
-            catch (ReflectionTypeLoadException)
-            {
-            }
-            catch (FileLoadException e)
+            catch(FileNotFoundException)       {} // cheap            
+            catch(BadImageFormatException)     {} // cheap
+            catch(ReflectionTypeLoadException) {} // cheap
+            catch(MissingMethodException)      {} // cheap
+            catch(FileLoadException e) // runtime expensive! avoid getting here to have a speedy start!
             {
                 Console.WriteLine(e.ToString());
-            }
-            catch (MissingMethodException)
-            {
             }
         }
 
