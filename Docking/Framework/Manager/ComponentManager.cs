@@ -380,7 +380,7 @@ namespace Docking.Components
             item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.O, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
             item.Activated += (sender, e) => 
             {
-                String filename = OpenFileDialog();
+                String filename = OpenFileDialog("Choose a file to open...");
                 if (filename != null)
                     OpenFile(filename);
             };
@@ -391,7 +391,7 @@ namespace Docking.Components
         {
             if (!File.Exists(filename))
             {
-                MessageWriteLine(string.Format("Open file {0} not exists", filename));
+                MessageWriteLine(string.Format("File {0} does not exist", filename));
                 return false;
             }
 
@@ -403,9 +403,9 @@ namespace Docking.Components
                     String openAs = ifile.TryOpenFile(filename);
                     if (openAs != null)
                     {
-                        MessageWriteLine(string.Format("Open file {0} as {1}", filename, openAs));
+                        MessageWriteLine(string.Format("Opening file {0} as {1}", filename, openAs));
                         ifile.OpenFile(filename);
-                        return true; // TODO: consider all
+                        return true; // TODO: consider all and let the user pick which one
                     }
                 }
             }
@@ -413,20 +413,41 @@ namespace Docking.Components
             return false;
         }
 
-        public String OpenFileDialog()
+        public String OpenFileDialog(string prompt)
+        {
+           return OpenFileDialog(prompt, new List<FileFilter>());
+        }
+
+        public String OpenFileDialog(string prompt, FileFilter filefilter)
+        {
+           List<FileFilter> L = null;
+           if(filefilter!=null)
+           {
+			     L = new List<FileFilter>();           
+              L.Add(filefilter);
+           }              
+           return OpenFileDialog(prompt, L);
+        }
+
+        public String OpenFileDialog(string prompt, List<FileFilter> filefilters)
         {
             String result = null;
-            Gtk.FileChooserDialog fc= new Gtk.FileChooserDialog("Choose the file to open",
-                                                                this,
-                                                                FileChooserAction.Open,
-                                                                "Cancel",ResponseType.Cancel,
-                                                                "Open",ResponseType.Accept);
-            
-            if (fc.Run() == (int)ResponseType.Accept) 
+            Gtk.FileChooserDialog dlg = new Gtk.FileChooserDialog(prompt,
+                                                                  this,
+                                                                  FileChooserAction.Open,
+                                                                  "Cancel", ResponseType.Cancel,
+                                                                  "Open",   ResponseType.Accept);
+        
+            if(filefilters!=null)
+               foreach(FileFilter filter in filefilters)
+                  dlg.AddFilter(filter);
+    
+            if (dlg.Run() == (int)ResponseType.Accept) 
             {
-                result = fc.Filename;
+                result = dlg.Filename;
             }
-            fc.Destroy();
+
+            dlg.Destroy();
             return result;
         }
 
@@ -1205,9 +1226,9 @@ namespace Docking.Components
             /// <summary>
             /// Opens the file dialog.
             /// </summary>
-            public String OpenFileDialog()
+            public String OpenFileDialog(string prompt)
             {
-                return ComponentManager.OpenFileDialog();
+                return ComponentManager.OpenFileDialog(prompt);
             }
         }
         #endregion
