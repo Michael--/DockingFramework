@@ -49,7 +49,7 @@ namespace Docking.Components
 
             ChangeInstanceCount(item, 1);
         }
-        
+
         void IComponentInteract.Removed(object item)
         {
             if (item is IProperty)
@@ -61,7 +61,7 @@ namespace Docking.Components
         void IComponentInteract.Visible(object item, bool visible)
         {
         }
-        
+
         void IComponentInteract.Current(object item)
         {
             if (this == item)
@@ -70,7 +70,7 @@ namespace Docking.Components
                 //    it.SetObject(the property object);
             }
         }
-        
+
         #endregion
 
         public ComponentList ()
@@ -128,7 +128,7 @@ namespace Docking.Components
             Gtk.TreeIter iter;
             if(item==null || !treeview1.Model.GetIterFirst (out iter))
                 return;
-            do 
+            do
             {
                 ComponentFactoryInformation cfi = treeview1.Model.GetValue(iter, CFIIndex) as ComponentFactoryInformation;
                 if (cfi.ComponentType == item.GetType())
@@ -152,12 +152,14 @@ namespace Docking.Components
             // THE ITER WILL POINT TO THE SELECTED ROW
             if(selection.GetSelected(out model, out iter))
             {
+			/*
                 String msg = String.Format ("Selected Value:[{0}] {1} {2}",
                     model.GetValue(iter, InstanceCountIndex),
-                    model.GetValue(iter, TypenameIndex).ToString(), 
+                    model.GetValue(iter, TypenameIndex).ToString(),
                     model.GetValue(iter, DescriptionIndex).ToString());
                 Console.WriteLine(msg);
                 ComponentManager.MessageWriteLine(msg);
+            */
             }
         }
 
