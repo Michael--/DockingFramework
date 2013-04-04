@@ -90,6 +90,7 @@ namespace Docking.Components
         /// Gets the current row index
         /// </summary>
         public int CurrentRow { get; private set; }
+        public event VirtualListViewEventHandler CurrentRowChanged;
 
         /// <summary>
         /// Return true if the current row is at document end
@@ -441,6 +442,16 @@ namespace Docking.Components
                     vscrollbar1.Adjustment.PageSize = pageSize;
                     vscrollbar1.Adjustment.PageIncrement = pageSize;
                 }
+
+                // position current row inside visible area
+                // TODO: please think about, because of double redraw a more sophisticated solution could be possible
+                if (CurrentRow >= 0 && CurrentRow < RowCount)
+                {
+                    if (CurrentRow < TopVisibleRow)
+                        OffsetCursor(TopVisibleRow - CurrentRow);
+                    else if (CurrentRow > BottomVisibleRow)
+                        OffsetCursor(BottomVisibleRow - CurrentRow);
+                }
             }
             
             #if DEBUG2
@@ -525,6 +536,10 @@ namespace Docking.Components
             
             if (!SelectionMode)
                 SelectedRow = CurrentRow;
+
+            // provide current row now with an event
+            if (CurrentRow != oldRow && CurrentRow < RowCount && CurrentRowChanged != null)
+                CurrentRowChanged(this, new VirtualListViewEventArgs(oldRow, CurrentRow));
         }
         
         protected override bool OnKeyReleaseEvent(Gdk.EventKey evnt)
@@ -590,16 +605,25 @@ namespace Docking.Components
         
         protected void OnVscrollbar1ValueChanged(object sender, EventArgs e)
         {
-//            if (!HasFocus)
-//                GrabFocus();
             drawingarea.QueueDraw();
         }
         
         protected void OnHscrollbar1ValueChanged(object sender, EventArgs e)
         {
-//            if (!HasFocus)
-//                GrabFocus();
             drawingarea.QueueDraw();
         }
     }
+
+    public class VirtualListViewEventArgs : EventArgs
+    {
+        public VirtualListViewEventArgs(int old, int _new)
+        {
+            OldRow = old;
+            CurrentRow = _new;
+        }
+        public int OldRow { get; private set; }
+        public int CurrentRow { get; private set; }
+    }
+
+    public delegate void VirtualListViewEventHandler(object sender, VirtualListViewEventArgs e);
 }
