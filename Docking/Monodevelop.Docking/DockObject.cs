@@ -118,17 +118,22 @@ namespace Docking
 			defaultVerSize = -1;
 		}
 
+        /// <summary>
+        /// Gets the minimum size, but limited stictly to allow small dock objects
+        /// otherwise large widgets could block to whole window
+        /// the user should have the last word while docking and resizing
+        /// </summary>
 		public int MinSize {
 			get {
 				int w,h;
 				GetMinSize (out w, out h);
 				if (parentGroup != null) {
 					if (parentGroup.Type == DockGroupType.Horizontal)
-						return w;
+                        return Math.Min(50, w);
 					else if (parentGroup.Type == DockGroupType.Vertical)
-						return h;
+                        return Math.Min(30, h);
 				}
-				return w;
+                return Math.Min(50, w);
 			}
 		}
 		
