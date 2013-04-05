@@ -4,8 +4,8 @@ using Microsoft.Scripting;
 
 namespace Docking.Components
 {
-	[System.ComponentModel.ToolboxItem(true)]
-	public partial class ScriptEditor : Gtk.Bin, IScript, IComponent
+	[System.ComponentModel.ToolboxItem(false)]
+    public partial class ScriptEditor : Gtk.Bin, IScript, IComponent
 	{
 		#region MAIN
 
@@ -169,6 +169,7 @@ namespace Docking.Components
             ComponentManager.SaveObject("ScriptEditor", mPersistence);
 		}
 		#endregion
+
 	}
 
     public class ScriptPersistence
@@ -211,6 +212,7 @@ namespace Docking.Components
 		/// </summary>
 		ScriptChangedEventHandler ScriptChanged { get; set; }
 	}
+
 
 	#region Starter / Entry Point
 	

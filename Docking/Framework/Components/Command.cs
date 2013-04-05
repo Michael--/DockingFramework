@@ -2,25 +2,79 @@ using System;
 using System.Text;
 using MonoDevelop.Components;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-    public partial class Command : Gtk.Bin, IComponent
+    public partial class Command : Gtk.Bin, IComponent, IComponentInteract
     {
         #region implement IComponent
         public ComponentManager ComponentManager { get; set; }
         
         void IComponent.Loaded(DockItem item)
         {
+            mPersistence = (CommandPersistence)ComponentManager.LoadObject("Command", typeof(CommandPersistence));
+            if (mPersistence == null)
+                mPersistence = new CommandPersistence() { Script = "" }; // TODO: set a default script here
+
+            try
+            {
+                ComponentManager.Execute(mPersistence.Script);
+            }
+            catch(Exception ex)
+            {
+                consoleview.WriteOutput("Error: " + ex.Message);
+                consoleview.Prompt(true);
+            }
+
             // redirect print message and access to this using "command"
             command = new _Command(this, consoleview, ComponentManager);
             ComponentManager.ScriptScope.SetVariable("cmd", command);
             ComponentManager.Execute(String.Join("\r\n", pyPrint));
         }
 
+        CommandPersistence mPersistence;
+
         void IComponent.Save()
         {
+            ComponentManager.SaveObject("Command", mPersistence);
+        }
+        
+        #endregion
+
+        #region implement IComponentInteract
+        
+        List<IScript> m_ScriptInterface = new List<IScript>();
+        void IComponentInteract.Added(object item)
+        {
+            if (item is IScript)
+            {
+                IScript script = item as IScript;
+                m_ScriptInterface.Add(script);
+
+                script.ScriptChanged += ScriptChanged;
+                
+            }
+        }
+
+        void IComponentInteract.Removed(object item)
+        {
+            if (item is IScript)
+                m_ScriptInterface.Remove(item as IScript);
+        }
+        
+        void IComponentInteract.Visible(object item, bool visible)
+        {
+        }
+        
+        void IComponentInteract.Current(object item)
+        {
+            if (this == item)
+            {
+                foreach(IScript it in m_ScriptInterface)
+                    it.SetScript(this, mPersistence.Script);
+            }
         }
         
         #endregion
@@ -87,6 +141,24 @@ namespace Docking.Components
             consoleview.ConsoleInput += HandleConsoleInput;
         }
 
+        void ScriptChanged(ScriptChangedEventArgs e)
+        {
+            if (e.Reference == this)
+            {
+                mPersistence.Script = e.Script;
+                try
+                {
+                    if (e.Code != null)
+                        ComponentManager.Execute(e.Code);
+                }
+                catch(Exception ex)
+                {
+                    foreach(IScript i in m_ScriptInterface)
+                        i.SetMessage(this, ex.Message);
+                }
+            }
+        }
+
         void HandleConsoleInput (object sender, MonoDevelop.Components.ConsoleInputEventArgs e)
         {
             string input = e.Text;
@@ -112,6 +184,12 @@ namespace Docking.Components
         }
         #endregion
     }
+
+    public class CommandPersistence
+    {
+        public string Script { get; set; }
+    }
+
 
 
     #region Starter / Entry Point
