@@ -6,8 +6,7 @@ namespace Docking.Components
 	{
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.VPaned vpaned1;
-		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-		private global::Gtk.TextView textSource;
+		private global::Gtk.ScrolledWindow scrolledwindow4;
 		private global::Gtk.TextView textMessage;
 		
 		protected virtual void Build ()
@@ -24,20 +23,15 @@ namespace Docking.Components
 			this.vpaned1 = new global::Gtk.VPaned ();
 			this.vpaned1.CanFocus = true;
 			this.vpaned1.Name = "vpaned1";
-			this.vpaned1.Position = 119;
+			this.vpaned1.Position = 102;
 			// Container child vpaned1.Gtk.Paned+PanedChild
-			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
-			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
-			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
-			// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
-			this.textSource = new global::Gtk.TextView ();
-			this.textSource.Sensitive = false;
-			this.textSource.CanFocus = true;
-			this.textSource.Name = "textSource";
-			this.GtkScrolledWindow.Add (this.textSource);
-			this.vpaned1.Add (this.GtkScrolledWindow);
-			global::Gtk.Paned.PanedChild w2 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.GtkScrolledWindow]));
-			w2.Resize = false;
+			this.scrolledwindow4 = new global::Gtk.ScrolledWindow ();
+			this.scrolledwindow4.CanFocus = true;
+			this.scrolledwindow4.Name = "scrolledwindow4";
+			this.scrolledwindow4.ShadowType = ((global::Gtk.ShadowType)(1));
+			this.vpaned1.Add (this.scrolledwindow4);
+			global::Gtk.Paned.PanedChild w1 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.scrolledwindow4]));
+			w1.Resize = false;
 			// Container child vpaned1.Gtk.Paned+PanedChild
 			this.textMessage = new global::Gtk.TextView ();
 			this.textMessage.CanFocus = true;
@@ -45,8 +39,8 @@ namespace Docking.Components
 			this.textMessage.Editable = false;
 			this.vpaned1.Add (this.textMessage);
 			this.vbox2.Add (this.vpaned1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vpaned1]));
-			w4.Position = 1;
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vpaned1]));
+			w3.Position = 1;
 			this.Add (this.vbox2);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

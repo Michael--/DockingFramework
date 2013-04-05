@@ -8,19 +8,48 @@ namespace Docking.Components
 	public partial class ScriptEditor : Gtk.Bin, IScript, IComponent
 	{
 		#region MAIN
+
+        Mono.TextEditor.TextEditor textEditor;
+        System.Timers.Timer m_TextChangedTimer;
+
 		public ScriptEditor()
 		{
 			this.Build();
 			this.Name = "Script Editor";
+            textEditor = new Mono.TextEditor.TextEditor();
+            scrolledwindow4.Child = textEditor;
 
-			this.textSource.Buffer.Changed += ContentChanged;
-		}
+            // use a timer to catch multiple LineChange events in very short time 
+            m_TextChangedTimer = new System.Timers.Timer();
+            m_TextChangedTimer.Elapsed += ContentChanged;
+            m_TextChangedTimer.Interval = 50;
+            m_TextChangedTimer.Enabled = false;
 
-		void ContentChanged (object sender, EventArgs e)
-		{
-			Gtk.TextIter istart = textSource.Buffer.StartIter;
-			Gtk.TextIter iend = textSource.Buffer.EndIter;
-			string script = this.textSource.Buffer.GetText(istart, iend, true);
+            // see also http://monodevelop.com/Developers/Articles/Language_Addins
+            // to enable code completion, smart indent and such like this additional code is necessary
+            textEditor.Document.MimeType = "text/x-python";
+            textEditor.Options.ColorScheme = "Tango"; //  TODO: user could select one
+            textEditor.Options.DrawIndentationMarkers = true;
+            textEditor.Options.EnableSyntaxHighlighting = true;
+            textEditor.Options.HighlightCaretLine = true;
+            textEditor.Options.HighlightMatchingBracket = true;
+            textEditor.Options.IndentStyle = Mono.TextEditor.IndentStyle.Auto;
+            textEditor.Options.ShowFoldMargin = true;
+            textEditor.Options.ShowRuler = true;
+            textEditor.Sensitive = false; // will be enabled on request
+            textEditor.Text = "# input disabled ...";
+
+            textEditor.Document.LineChanged += (object sender, Mono.TextEditor.LineEventArgs e) => 
+            {
+                if (!m_TextChangedTimer.Enabled)
+                    m_TextChangedTimer.Enabled = true;
+            };
+        }
+
+        void ContentChanged (object sender, System.Timers.ElapsedEventArgs e)
+        {
+            string script = textEditor.Text;
+            m_TextChangedTimer.Enabled = false;
 
             CompiledCode code = null;
             try
@@ -60,16 +89,15 @@ namespace Docking.Components
                 return;
 
             m_Reference = reference;
-			textSource.Buffer.Clear();
             if (script != null)
             {
-                textSource.Sensitive = true;
-                Gtk.TextIter iter = textSource.Buffer.EndIter;
-                textSource.Buffer.Insert(ref iter, script);
+                textEditor.Sensitive = true;
+                textEditor.Text = script;
             }
             else
             {
-                textSource.Sensitive = false;
+                textEditor.Sensitive = false;
+                textEditor.Text = "# input disabled ...";
             }
 		}
 
@@ -106,6 +134,10 @@ namespace Docking.Components
 
             // set vpaned position delayed when really possible, TODO: find event called only once, better as ExposeEvent
             vpaned1.ExposeEvent += new Gtk.ExposeEventHandler(vpaned1_ExposeEvent);
+
+            // Iterate over all loaded styles. TODO: user should select from available styles
+            // foreach (string s in Mono.TextEditor.Highlighting.SyntaxModeService.Styles)
+            //    ComponentManager.MessageWriteLine(s);
 		}
 
         bool mSetPositionOnlyOnce = true;

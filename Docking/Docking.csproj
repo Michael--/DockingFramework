@@ -89,6 +89,15 @@
     <Reference Include="Mono.TextEditor">
       <HintPath>Monodevelop.Texteditor\Mono.TextEditor.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.NRefactory.CSharp">
+      <HintPath>Monodevelop.Texteditor\ICSharpCode.NRefactory.CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>Monodevelop.Texteditor\ICSharpCode.NRefactory.dll</HintPath>
+    </Reference>
+    <Reference Include="Xwt">
+      <HintPath>Monodevelop.Texteditor\Xwt.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
