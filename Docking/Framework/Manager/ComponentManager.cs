@@ -905,7 +905,7 @@ namespace Docking.Components
             AddSelectNotifier(item, item.TitleTab);
             item.Content = w;
             int index = item.InstanceIndex; // add an instance counter if multiple instances exist to the label 
-            item.Label = index == 1 ? w.Name : (w.Name + " " + index);
+            item.Label = index <= 1 ? w.Name : (w.Name + " " + index);
             item.Icon = cfi.Icon;
             item.DefaultVisible = false;
             item.VisibleChanged += HandleVisibleChanged;
