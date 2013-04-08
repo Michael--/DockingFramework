@@ -94,6 +94,21 @@ namespace Docking
 			get { return id; }
 		}
 
+        public int InstanceIndex
+        {
+            get
+            {
+                int i = Id.LastIndexOf('-');
+                if (i < 0)
+                    return 0;
+                if (i + 1 >= Id.Length)
+                    return 0;
+                string s = Id.Substring(i + 1);
+                int index = Convert.ToInt32(s);
+                return index;
+            }
+        }
+
 		internal bool StickyVisible {
 			get { return stickyVisible; }
 			set { stickyVisible = value; }
