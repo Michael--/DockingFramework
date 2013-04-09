@@ -101,6 +101,16 @@ namespace Docking.Components
             }
 		}
 
+        void IScript.RemoveScript(object reference)
+        {
+            if (m_Reference != reference)
+                return;
+
+            m_Reference = null;
+            textEditor.Sensitive = false;
+            textEditor.Text = "# input disabled ...";
+        }
+
         void IScript.SetMessage(object reference, string msg)
         {
             if (m_Reference != reference)
@@ -201,6 +211,10 @@ namespace Docking.Components
 		/// </summary>
 		void SetScript(object reference, string script);
 
+        /// <summary>
+        /// Remove script if currently displayed by given reference
+        /// </summary>
+        void RemoveScript(object reference);
 
         /// <summary>
         /// Show a message in the script editor message window
