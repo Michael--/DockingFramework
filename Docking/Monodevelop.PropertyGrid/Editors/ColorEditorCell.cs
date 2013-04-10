@@ -54,11 +54,12 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			else if (color.IsEmpty)
 				return "";
 			else
-				return String.Format("#{0:x2}{1:x2}{2:x2}", color.R, color.G, color.B);
+                return String.Format("RGBA#{0},{1},{2},{3}", color.R, color.G, color.B, color.A);
 		}
 		
 		public override void Render (Gdk.Drawable window, Gdk.Rectangle bounds, Gtk.StateType state)
 		{
+            // TODO: render with cairo to support alpha channel
 			Gdk.GC gc = new Gdk.GC (window);
 	   		gc.RgbFgColor = GetColor ();
 	   		int yd = (bounds.Height - ColorBoxSize) / 2;
@@ -88,6 +89,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		{
 			if (session.Property.PropertyType != typeof(System.Drawing.Color))
 				throw new ApplicationException ("Color editor does not support editing values of type " + session.Property.PropertyType);
+            this.UseAlpha = true;
 		}
 		
 		public object Value { 
@@ -95,11 +97,13 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 				int red = (int) (255 * (float) Color.Red / ushort.MaxValue);
 				int green = (int) (255 * (float) Color.Green / ushort.MaxValue);
 				int blue = (int) (255 * (float) Color.Blue / ushort.MaxValue);
-				return System.Drawing.Color.FromArgb (red, green, blue);
+                int alpha = (int)(255 * (float)Alpha / ushort.MaxValue);
+				return System.Drawing.Color.FromArgb (alpha, red, green, blue);
 			}
 			set {
 				System.Drawing.Color color = (System.Drawing.Color) value;
 				Color = new Gdk.Color (color.R, color.G, color.B);
+                Alpha = (ushort)(color.A * ushort.MaxValue / 255.0f);
 			}
 		}
 		
