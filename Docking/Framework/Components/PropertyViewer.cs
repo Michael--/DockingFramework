@@ -25,7 +25,15 @@ namespace Docking.Components
 
             this.propertygrid1.CurrentObject = obj;
             this.propertygrid1.QueueDraw(); // TODO: work currently not as expected
+        }
 
+        void IProperty.SetObject(Object obj, Object[] providers)
+        {
+            if (obj == this.propertygrid1.CurrentObject)
+                return;
+
+            this.propertygrid1.SetCurrentObject(obj, providers);
+            this.propertygrid1.QueueDraw(); // TODO: work currently not as expected
         }
 
         /// <summary>
@@ -62,6 +70,13 @@ namespace Docking.Components
         /// Sets the current object to display its properties
         /// </summary>
         void SetObject(Object obj);
+
+        /// <summary>
+        /// Sets the current object and display the properties of given providers
+        /// Show the properties of more than one instance
+        /// The base object is the anchor, also used to send PropertyChanged event
+        /// </summary>
+        void SetObject(Object obj, Object[] providers);
 
         /// <summary>
         /// Get an event on any property changes
