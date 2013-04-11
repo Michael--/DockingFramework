@@ -54,28 +54,52 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			else if (color.IsEmpty)
 				return "";
 			else
-                return String.Format("RGBA#{0},{1},{2},{3}", color.R, color.G, color.B, color.A);
+                return String.Format("RGBA {0},{1},{2},{3}", color.R, color.G, color.B, color.A);
 		}
 		
 		public override void Render (Gdk.Drawable window, Gdk.Rectangle bounds, Gtk.StateType state)
 		{
-            // TODO: render with cairo to support alpha channel
-			Gdk.GC gc = new Gdk.GC (window);
-	   		gc.RgbFgColor = GetColor ();
-	   		int yd = (bounds.Height - ColorBoxSize) / 2;
-			window.DrawRectangle (gc, true, bounds.X, bounds.Y + yd, ColorBoxSize - 1, ColorBoxSize - 1);
-			window.DrawRectangle (Container.Style.BlackGC, false, bounds.X, bounds.Y + yd, ColorBoxSize - 1, ColorBoxSize - 1);
-			bounds.X += ColorBoxSize + ColorBoxSpacing;
-			bounds.Width -= ColorBoxSize + ColorBoxSpacing;
+	   		int yd = (bounds.Height - ColorBoxSize) * 4 / 5;
+            int width = ColorBoxSize * 2 - 1;
+            int heigth = ColorBoxSize - 1;
+
+            Cairo.Context cr = Gdk.CairoHelper.Create(window);
+
+            // black cross to show alpha
+            cr.LineWidth = 2;
+            cr.Color = new Cairo.Color(0, 0, 0);
+            cr.MoveTo(bounds.X, bounds.Y + yd);
+            cr.LineTo(bounds.X + width, bounds.Y + heigth);
+            cr.MoveTo(bounds.X, bounds.Y + yd + heigth);
+            cr.LineTo(bounds.X + width, bounds.Y);
+            cr.Stroke();
+
+            // rect around, also only visible with alpha
+            cr.Rectangle(bounds.X, bounds.Y + yd, width, heigth);
+            cr.Stroke();
+
+            // fill with color
+            cr.Color = GetCairoColor();
+            cr.Rectangle(bounds.X, bounds.Y + yd, width, heigth);
+            cr.Fill();
+
+            bounds.X += width + ColorBoxSpacing;
+            bounds.Width -= heigth + ColorBoxSpacing;
+
 			base.Render (window, bounds, state);
 		}
 		
-		private Gdk.Color GetColor ()
+		private Gdk.Color GetColor()
 		{
 			System.Drawing.Color color = (System.Drawing.Color) Value;
-			//TODO: Property.Converter.ConvertTo() fails: why?
 			return new Gdk.Color (color.R, color.G, color.B);
 		}
+
+        private Cairo.Color GetCairoColor()
+        {
+            System.Drawing.Color color = (System.Drawing.Color)Value;
+            return new Cairo.Color(color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
+        }
 
 		protected override IPropertyEditor CreateEditor (Gdk.Rectangle cell_area, Gtk.StateType state)
 		{
