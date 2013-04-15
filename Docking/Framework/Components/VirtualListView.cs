@@ -83,8 +83,11 @@ namespace Docking.Components
         /// <summary>
         /// Sets the get content delegate. Will be called for any content request.
         /// </summary>
-        public ContentDelegate GetContentDelegate { private get; set; } 
+        public ContentDelegate GetContentDelegate { private get; set; }
         public delegate String ContentDelegate(int row, int column);
+
+        public ColorDelegate GetColorDelegate { private get; set; }
+        public delegate void ColorDelegate(int row, ref System.Drawing.Color background, ref System.Drawing.Color foreground);
         
         /// <summary>
         /// Gets the current row index
@@ -397,19 +400,35 @@ namespace Docking.Components
             int dy = exposeRect.Top;
             offset += dy / ConstantHeight;
             dy -= dy % ConstantHeight;
+
+            Gdk.GC backgound = new Gdk.GC((Gdk.Drawable)base.GdkWindow);
+            Gdk.GC text = new Gdk.GC((Gdk.Drawable)base.GdkWindow);
+
             for (int row = offset; row < RowCount; row++)
             {
                 int dx = -(int)hscrollbar1.Value;
                 Gdk.Rectangle rect = new Gdk.Rectangle(dx, dy, 0, ConstantHeight);
-                StateType st;
+
+                System.Drawing.Color backColor = System.Drawing.Color.WhiteSmoke;
+                System.Drawing.Color textColor = System.Drawing.Color.Black;
+
                 if (isRowSelected(row))
-                    st = StateType.Selected;
-                else if (HasFocus)
-                    st = StateType.Prelight;
-                else 
-                    st = StateType.Insensitive;
-                Gdk.GC gc = Style.BackgroundGC(st);
-                
+                {
+                    if (HasFocus)
+                        backColor = System.Drawing.Color.DarkGray;
+                    else
+                        backColor = System.Drawing.Color.LightGray;
+                }
+                else
+                {
+                    if (GetColorDelegate != null)
+                        GetColorDelegate(row, ref backColor, ref textColor);
+                }
+
+                backgound.RgbFgColor = new Gdk.Color(backColor.R, backColor.G, backColor.B);
+                text.RgbFgColor = new Gdk.Color(textColor.R, textColor.G, textColor.B);
+
+
                 for (int column = 0; column < ColumnCount; column++)
                 {
                     int xwidth = GetColumWidth(column);
@@ -418,9 +437,9 @@ namespace Docking.Components
                         break;
                     String content = GetContentDelegate(row, column);
                     LineLayout.SetMarkup(content);
-                    win.DrawRectangle(gc, true, rect);
+                    win.DrawRectangle(backgound, true, rect);
                     dx += 2;
-                    win.DrawLayout(Style.BlackGC, dx, dy, LineLayout);
+                    win.DrawLayout(text, dx, dy, LineLayout);
                     dx += xwidth;
                     rect.Offset(xwidth, 0);
                 }
