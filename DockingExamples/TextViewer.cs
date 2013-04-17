@@ -1,7 +1,9 @@
 using System;
+using System.IO;
+using System.Collections.Generic;
 using Docking.Components;
 using Docking;
-using System.IO;
+using Gtk;
 
 namespace Examples
 {
@@ -22,6 +24,19 @@ namespace Examples
         #endregion
 
         #region implement IFileOpen
+
+        List<FileFilter> IFileOpen.SupportedFileTypes()
+        {
+           List<FileFilter> result = new List<FileFilter>();
+
+           FileFilter txtfile = new FileFilter();
+           txtfile.AddPattern("*.txt");
+           txtfile.Name = "*.txt - Text File";
+           result.Add(txtfile);
+
+           return result;
+        }
+
         String IFileOpen.TryOpenFile(String filename)
         {
             if (!File.Exists(filename))
@@ -30,24 +45,25 @@ namespace Examples
             String ext = System.IO.Path.GetExtension(filename);
             
             if (ext.ToLower() == ".txt")
-                return "text file";
+                return "Text File";
 
             return null;
         }
         
-        void IFileOpen.OpenFile(String filename)
+        bool IFileOpen.OpenFile(String filename)
         {
             if (!File.Exists(filename))
-                return;
+                return false;
 
             using (System.IO.StreamReader reader = new System.IO.StreamReader(filename))
             {
-                if (reader != null)
-                {
-                    string txt = reader.ReadToEnd();
-                    textview.Buffer.Clear();
-                    textview.Buffer.InsertAtCursor(txt);
-                }
+                if(reader==null)
+                   return false;
+
+               string txt = reader.ReadToEnd();
+               textview.Buffer.Clear();
+               textview.Buffer.InsertAtCursor(txt);
+               return true;
             }
         }
         #endregion

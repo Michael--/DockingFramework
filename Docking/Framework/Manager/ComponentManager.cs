@@ -372,6 +372,21 @@ namespace Docking.Components
 
         #endregion
 
+        #region private properties
+        private Statusbar StatusBar { get;  set; }
+        private Toolbar ToolBar { get;  set; }
+        private MenuBar MenuBar { get; set; }
+        private XmlDocument XmlDocument { get;  set; }
+        private XmlNode XmlConfiguration { get;  set; }
+        #endregion
+
+        #region public properties
+        public DockFrame DockFrame { get; private set; }
+        public ComponentFinder ComponentFinder { get; private set; }
+        public bool PowerDown { get; set; }
+        public String ConfigurationFile  { get; set; }
+        #endregion
+
         #region OpenFile
         void InstallFileOpenMenu()
         {
@@ -380,37 +395,58 @@ namespace Docking.Components
             item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.O, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
             item.Activated += (sender, e) => 
             {
-                String filename = OpenFileDialog("Choose a file to open...");
+                List<FileFilter> filefilters = new List<FileFilter>();
+                foreach(DockItem d in DockFrame.GetItems())
+                   if(d.Content is IFileOpen)
+                      filefilters.AddRange( (d.Content as IFileOpen).SupportedFileTypes() );
+
+#if false // as long as we have no mechanism (see below) which offers the user to instantiate new components which can handle new file types, we should not offer him this *.* option
+                FileFilter any = new FileFilter();
+                any.AddPattern("*.*");
+                any.Name = "*.* - Any File";
+                filefilters.Add(any);
+#endif
+
+                String filename = OpenFileDialog("Choose a file to open...", filefilters);
                 if (filename != null)
                     OpenFile(filename);
             };
             InsertMenu("File", item);
         }
-        
+
         public bool OpenFile(string filename)
         {
-            if (!File.Exists(filename))
+            if(!File.Exists(filename))
             {
                 MessageWriteLine(string.Format("File {0} does not exist", filename));
                 return false;
             }
-
-            foreach (DockItem item in DockFrame.GetItems())
-            {
-                if (item.Content is IFileOpen)
+            
+            List< KeyValuePair<IFileOpen, string> > openers = new List< KeyValuePair<IFileOpen, string> >();
+            // search EXISTING instances of components if they can handle this file:
+            foreach(DockItem item in DockFrame.GetItems())
+            {                
+                if(item.Content is IFileOpen)
                 {
-                    IFileOpen ifile = item.Content as IFileOpen;
-                    String openAs = ifile.TryOpenFile(filename);
-                    if (openAs != null)
-                    {
-                        MessageWriteLine(string.Format("Opening file {0} as {1}", filename, openAs));
-                        ifile.OpenFile(filename);
-                        return true; // TODO: consider all and let the user pick which one
-                    }
+                    IFileOpen opener = (item.Content as IFileOpen);
+                    string info = opener.TryOpenFile(filename);
+                    if(info!=null)
+                       openers.Add(new KeyValuePair<IFileOpen, string>(opener, info));
                 }
             }
-            MessageWriteLine(string.Format("Don't know how to open file {0}", filename));
-            return false;
+
+            if(openers.Count<=0)
+            {               
+               // TODO now search all classes implementing IFileOpen by calling their method IFileOpen.SupportedFileTypes()
+               // and let the user instantiate them to handle this file.
+               // That's not implemented yet. For now we fail with despair:
+               MessageWriteLine(string.Format("No component is instantiated which can handle file {0}", filename));
+               return false;
+            }
+
+            // TODO: consider all and let the user pick which one
+            MessageWriteLine(string.Format("Opening file {0} as {1}", filename, openers[0].Value));
+            return openers[0].Key.OpenFile(filename);
         }
 
         public String OpenFileDialog(string prompt)
@@ -451,21 +487,6 @@ namespace Docking.Components
             return result;
         }
 
-        #endregion
-
-        #region Private properties
-        private Statusbar StatusBar { get;  set; }
-        private Toolbar ToolBar { get;  set; }
-        private MenuBar MenuBar { get; set; }
-        private XmlDocument XmlDocument { get;  set; }
-        private XmlNode XmlConfiguration { get;  set; }
-        #endregion
-
-        #region Public properties
-        public DockFrame DockFrame { get; private set; }
-        public ComponentFinder ComponentFinder { get; private set; }
-        public bool PowerDown { get; set; }
-        public String ConfigurationFile  { get; set; }
         #endregion
 
         #region Configuration

@@ -1,9 +1,18 @@
 using System;
+using System.Collections.Generic;
+using Gtk;
 
 namespace Docking.Components
 {
     public interface IFileOpen
     {
+        /// <summary>
+        /// Returns a list of supported file types. The framework for example will use collect all these from the individual components
+        /// and offer them in its FileOpen dialog.
+        /// </summary>
+        /// <returns></returns>
+        List<FileFilter> SupportedFileTypes();
+
         /// <summary>
         /// Ask the component if file type supported.
         /// Get short description if file type can be loaded by component.
@@ -12,9 +21,9 @@ namespace Docking.Components
         String TryOpenFile(String filename);
 
         /// <summary>
-        /// Load the file.
+        /// Load the file. Returs true on success.
         /// </summary>
-        void OpenFile(String filename);
+        bool OpenFile(String filename);
     }
 }
 
