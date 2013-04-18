@@ -1104,27 +1104,27 @@ namespace Docking.Components
 
         #region Message
 
-        public void MessageWriteLine(String message)
+        public void MessageWriteLine(String format, params object[] args)
         {
             if (PowerDown)
                 return;
 
             Gtk.Application.Invoke(delegate {
-				MessageWriteLineWithoutInvoke(message);
+				MessageWriteLineWithoutInvoke(format, args);
             });
         }
 
-        protected void MessageWriteLineWithoutInvoke(String message)
+        protected void MessageWriteLineWithoutInvoke(String format, params object[] args)
         {
             if (PowerDown)
                 return;
 
             foreach (KeyValuePair<string, IMessage> kvp in mMessage)
-                kvp.Value.WriteLine (message);
+               kvp.Value.WriteLine(format, args);
 
             // queue all messages for new not yet existing receiver
             // todo: may should store only some messages to avoid memory leak ?
-            mMessageQueue.Add(message);
+            mMessageQueue.Add(String.Format(format, args));
         }
         List<String> mMessageQueue = new List<string>();
         Dictionary<string, IMessage> mMessage = new Dictionary<string, IMessage>();
