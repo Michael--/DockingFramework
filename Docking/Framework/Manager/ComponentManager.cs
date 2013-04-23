@@ -12,6 +12,7 @@ using IronPython.Hosting;
 using Microsoft.Scripting;
 using IronPython.Runtime;
 using System.Reflection;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Docking.Components
 {
@@ -589,9 +590,8 @@ namespace Docking.Components
                currentLoadSaveItem = item;
                (item.Content as IComponent).Loaded(item);
                w.Stop();
-#if DEBUG
-               MessageWriteLine("Loaded used {0:0.00}s for {1}", w.Elapsed.TotalSeconds, item.Id);
-#endif
+               if (w.ElapsedMilliseconds > 25)
+                  MessageWriteLine("Loaded used {0:0.00}s for {1}", w.Elapsed.TotalSeconds, item.Id);
             }
             if (item.Content is IComponentInteract)
                (item.Content as IComponentInteract).Visible(item.Content, item.Visible);
@@ -614,9 +614,8 @@ namespace Docking.Components
             }
          }
          total.Stop();
-#if DEBUG
-         MessageWriteLine("ComponentsLoaded() total time ={0}s", total.Elapsed.TotalSeconds);
-#endif
+         if (total.ElapsedMilliseconds > 100)
+            MessageWriteLine("ComponentsLoaded() total time ={0}s", total.Elapsed.TotalSeconds);
       }
 
       private void ComponentsSave()
@@ -716,10 +715,35 @@ namespace Docking.Components
 
          if (XmlConfiguration == null || pimpedElementName == null)
             return null;
+
          XmlNode element = XmlConfiguration.SelectSingleNode(pimpedElementName);
          if (element == null)
             return null;
-         XmlNode node = element.SelectSingleNode(t.Name);
+
+         // deserialize new method
+         XmlNode node = element.SelectSingleNode(t.Name + "_FMT");
+         if (node != null)
+         {
+            MemoryStream formattedStream = new MemoryStream();
+            byte[] data = FromHexString(node.InnerText);
+            formattedStream.Write(data, 0, data.Length);
+            formattedStream.Flush();
+            formattedStream.Seek(0, SeekOrigin.Begin);
+
+            try
+            {
+               System.Runtime.Serialization.IFormatter formatter = new BinaryFormatter();
+               object result = (object)formatter.Deserialize(formattedStream);
+               return result;
+            }
+            catch (Exception)
+            {
+               return null;
+            }
+         }
+
+         // deserialize old method, only necessary to read old persistence, can be removed in some weeks
+         node = element.SelectSingleNode(t.Name);
          if (node == null)
             return null;
 
@@ -742,6 +766,27 @@ namespace Docking.Components
          }
       }
 
+      // hexdump hex dump (copied from LittleHelper, need in also in other context) 
+      public static String ToHexString(byte[] ar)
+      {
+         StringBuilder result = new StringBuilder();
+         for (int i = 0; i < ar.Length; i++)
+            result.Append(BitConverter.ToString(ar, i, 1));
+         return result.ToString();
+      }
+
+      // Byte array from hexdump string
+      public static Byte[] FromHexString(String s)
+      {
+         if (s == null || (s.Length % 2) != 0)
+            return null;
+         Byte[] bytes = new Byte[s.Length / 2];
+         for (int i = 0; i < s.Length / 2; i++)
+            bytes[i] = Convert.ToByte(s.Substring(i * 2, 2), 16);
+         return bytes;
+      }
+
+
       /// <summary>
       /// Save an object to persistence.
       /// The optional paranmeter should be used only loading from threads to identify correct DockItem
@@ -754,23 +799,19 @@ namespace Docking.Components
          else if (currentLoadSaveItem != null)
             pimpedElementName += "_" + currentLoadSaveItem.Id.ToString();
 
-         MemoryStream ms = new MemoryStream();
-         XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
-         XmlSerializer serializer = new XmlSerializer(obj.GetType());
-         serializer.Serialize(xmlWriter, obj);
-         xmlWriter.Flush();
-
-         XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
-
-         // re-load as XmlDocument
-         XmlDocument doc = new XmlDocument();
-         doc.Load(xmlReader);
-
          // replace in managed persistence
-         XmlNode node = doc.SelectSingleNode(obj.GetType().Name);
-         XmlNode importNode = XmlDocument.ImportNode(node, true);
          XmlNode newNode = XmlDocument.CreateElement(pimpedElementName);
-         newNode.AppendChild(importNode);
+
+         // add serialized data
+         MemoryStream formattedStream = new MemoryStream();
+         System.Runtime.Serialization.IFormatter formatter = new BinaryFormatter();
+         formatter.Serialize(formattedStream, obj);
+         formattedStream.Flush();
+         string serializedAsHex = ToHexString(formattedStream.GetBuffer());
+         XmlNode importNode = XmlDocument.CreateElement(obj.GetType().Name + "_FMT");
+         importNode.InnerText = serializedAsHex;
+         newNode.AppendChild(importNode); 
+
          // need new base node if started without old config
          if (XmlConfiguration == null)
          {
@@ -1291,6 +1332,7 @@ namespace Docking.Components
       public System.Object Tag { get; set; }
    }
 
+   [Serializable]
    public class MainWindowPersistence
    {
       public int WindowX { get; set; }

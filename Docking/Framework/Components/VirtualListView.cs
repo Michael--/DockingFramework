@@ -775,6 +775,7 @@ namespace Docking.Components
       public int Width { get; set; }
    }
 
+   [Serializable]
    public class VirtualListPersistenceList
    {
       public List<VirtualListPersistence> Persistence = new List<VirtualListPersistence>();

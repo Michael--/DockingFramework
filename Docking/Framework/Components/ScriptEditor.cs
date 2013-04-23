@@ -182,7 +182,8 @@ namespace Docking.Components
 
 	}
 
-    public class ScriptPersistence
+   [Serializable]
+   public class ScriptPersistence
     {
         public int VPanedPosition { get { return m_VPaned_Position; } set { m_VPaned_Position = value; } }
         int m_VPaned_Position;

@@ -189,6 +189,7 @@ namespace Docking.Components
       #endregion
    }
 
+   [Serializable]
    public class CommandPersistence
    {
       public string Script { get; set; }
