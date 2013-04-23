@@ -179,6 +179,7 @@ namespace Docking.Components
     {
         public void SaveColumnWidth(Gtk.TreeViewColumn []columns)
         {
+           m_Width.Clear();
             foreach (Gtk.TreeViewColumn c in columns)
                 m_Width.Add(c.Width);
         }
