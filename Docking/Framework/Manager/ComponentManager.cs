@@ -13,12 +13,14 @@ using Microsoft.Scripting;
 using IronPython.Runtime;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Net;
 
 namespace Docking.Components
 {
    public class ComponentManager : Gtk.Window
    {
       #region Initialization
+
       public ComponentManager(WindowType wt)
          : base(wt)
       {
@@ -28,6 +30,8 @@ namespace Docking.Components
          XmlDocument = new XmlDocument();
          PowerDown = false;
          InitPythonEngine();
+        
+         MakeWidgetReceiveDropEvents(Toplevel, OnDragDataReceived);
       }
 
       public void SetDockFrame(DockFrame df)
@@ -418,7 +422,13 @@ namespace Docking.Components
 
       public bool OpenFile(string filename)
       {
-         if (!File.Exists(filename))
+         if(Directory.Exists(filename))
+         {
+            MessageWriteLine(string.Format("Opening whole directories like {0} currently isn't implemented", filename));
+            return false;
+         }
+
+         if(!File.Exists(filename))
          {
             MessageWriteLine(string.Format("File {0} does not exist", filename));
             return false;
@@ -487,6 +497,191 @@ namespace Docking.Components
 
          dlg.Destroy();
          return result;
+      }
+
+      static bool PlatformIsWin32ish { get
+      {
+         switch(Environment.OSVersion.Platform)
+         {
+         case PlatformID.Win32S:       return true;
+         case PlatformID.Win32Windows: return true;
+         case PlatformID.Win32NT:      return true;
+         case PlatformID.WinCE:        return false; // note this. WinCE is very different than Win32
+         case PlatformID.Unix:         return false;
+         case PlatformID.Xbox:         return false; // or should we return true here better???
+         case PlatformID.MacOSX:       return false;
+         default:                      return false;
+         }
+      }}
+
+      const string URL_PREFIX_FILE  = "file://";
+      const string URL_PREFIX_HTTP  = "http://";
+      const string URL_PREFIX_HTTPS = "https://";
+
+      public bool OpenURL(string url)
+      {
+            if(url.StartsWith(URL_PREFIX_FILE))
+            { 
+               string filename = url.Substring(URL_PREFIX_FILE.Length);
+               if(PlatformIsWin32ish)
+               {
+                  // treat how local filenames are encoded on Windows. Example: file:///D:/some/folder/myfile.txt
+                  if(  filename.Length>=3 && 
+                        filename[0]=='/' &&
+                     //filename[1]=='C' && // drive letter
+                        filename[2]==':')
+                  {
+                     filename = filename.Substring(1);
+                  }                    
+                  filename = filename.Replace('/', System.IO.Path.DirectorySeparatorChar);
+               }
+               return OpenFile(filename); 
+            }
+            else if(url.StartsWith(URL_PREFIX_HTTP) || url.StartsWith(URL_PREFIX_HTTPS))
+            {
+               string filename;
+               if(url.StartsWith(URL_PREFIX_HTTP))
+                  filename = url.Substring(URL_PREFIX_HTTP.Length);
+               else if(url.StartsWith(URL_PREFIX_HTTPS))
+                  filename = url.Substring(URL_PREFIX_HTTPS.Length);
+               else
+                  return false;
+               string[] portions = filename.Split('/');
+               if(portions.Length<1)
+                  return false;
+               filename = portions[portions.Length-1];
+               if(!filename.Contains("."))
+                  filename = System.IO.Path.GetFileNameWithoutExtension(System.AppDomain.CurrentDomain.FriendlyName)+" TempFile.tmp";               
+               filename = System.IO.Path.Combine(System.IO.Path.GetTempPath(), filename);
+               if(File.Exists(filename))
+               {
+                  int i = 2;
+                  string newfilename = filename;
+                  while(File.Exists(newfilename))
+                  {                      
+                     newfilename = System.IO.Path.GetFileNameWithoutExtension(filename)+" ("+i+")"+System.IO.Path.GetExtension(filename);
+                     newfilename = System.IO.Path.Combine(System.IO.Path.GetTempPath(), newfilename);
+                     i++;
+                  }
+                  filename = newfilename;
+               }               
+               WebClient www = new WebClient();
+               FileStream file = null;
+               try 
+               {                     
+                  file = File.Create(filename, 10000, FileOptions.DeleteOnClose);
+                  www.OpenRead(url).CopyTo(file);
+               }
+               catch(Exception)
+               {
+                  file = null;
+               }                  
+               if(file!=null)
+               {
+                  bool result = OpenFile(filename);
+                  file.Close(); // will implicitly delete the file, see FileOptions.DeleteOnClose above 
+                  file = null;
+                  return result;
+               }
+         }
+         return false;
+      }
+
+      #endregion
+
+      #region drag+drop
+
+      // our own enum to which we map the various MIME types we receive via drag+drop
+      enum DragDropDataType
+      {
+         Unknown,
+         Text,
+         URL,
+         URLList
+      }
+
+      private static TargetEntry[] sMapMIMEtoEnum = new TargetEntry[]
+      {
+          new TargetEntry("text/plain",                    0, (uint) DragDropDataType.Text),    // does not work yet, we don't get drop events for this type currently >:(
+          new TargetEntry("STRING",                        0, (uint) DragDropDataType.Text),    // does not work yet, we don't get drop events for this type currently >:(
+          new TargetEntry("text/x-uri",                    0, (uint) DragDropDataType.URL),     // does not work yet, we don't get drop events for this type currently >:(
+          new TargetEntry("text/x-moz-url",                0, (uint) DragDropDataType.URL),     // does not work yet, we don't get drop events for this type currently >:(
+          new TargetEntry("application/x-bookmark",        0, (uint) DragDropDataType.URL),     // does not work yet, we don't get drop events for this type currently >:(
+          new TargetEntry("application/x-mswinurl",        0, (uint) DragDropDataType.URL),     // does not work yet, we don't get drop events for this type currently >:(
+          new TargetEntry("_NETSCAPE_URL",                 0, (uint) DragDropDataType.URL),     // does not work yet, we don't get drop events for this type currently >:(
+          new TargetEntry("text/uri-list",                 0, (uint) DragDropDataType.URLList), // THE ONLY THING THAT CURRENTLY WORKS FROM THIS LIST
+      };
+
+      private void MakeWidgetReceiveDropEvents(Widget widget, DragDataReceivedHandler callback)
+      {
+#if false // for debugging to see which events get fired put breakpoints at the return statements
+        widget.DragBegin += (sender, args) => { return; };
+        widget.DragDataDelete += (sender, args) => { return; };
+        widget.DragDataGet += (sender, args) => { return; };
+        widget.DragDrop += (sender, args) => { return; };
+        widget.DragEnd += (sender, args) => { return; };
+        widget.DragFailed += (sender, args) => { return; };
+        widget.DragLeave += (sender, args) => { return; };
+        widget.DragMotion += (sender, args) => { return; };
+#endif
+        
+        widget.DragDataReceived += callback;
+        Gtk.Drag.DestSet(widget, DestDefaults.All, sMapMIMEtoEnum,
+                         Gdk.DragAction.Default |
+                         Gdk.DragAction.Copy    |
+                       //Gdk.DragAction.Move    
+                         Gdk.DragAction.Link     
+                       //Gdk.DragAction.Private  
+                       //Gdk.DragAction.Ask
+                        );        
+      }
+
+      // parse text/uri-list byte stream as specified in RFC 2483, see http://www.rfc-editor.org/rfc/rfc2483.txt
+      static List<string> ParseURLListRFC2483(byte[] input)
+      {
+         List<string> result = new List<string>();
+         string[] lines = Encoding.UTF8.GetString(input).Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+         foreach(string line in lines)
+         {       
+            if(line.StartsWith("#"))
+               continue;
+            string s = line.Trim();
+            if(s=="\0")
+               continue;
+            result.Add(s);
+         }
+         return result;
+      }
+
+      void OnDragDataReceived(object sender, DragDataReceivedArgs args)
+      {
+         bool success = false;
+         if(args!=null && args.SelectionData!=null)
+         {
+            switch((DragDropDataType) args.Info)
+            {
+               case DragDropDataType.Text:
+                  // we currently have no usecase for this
+                  break;
+               case DragDropDataType.URL:
+               {  
+                  // untested:
+                  // string url = Encoding.UTF8.GetString(args.SelectionData.Data).Trim(); 
+                  // success = OpenURL(url);
+                  success = false;
+                  break;
+               }
+               case DragDropDataType.URLList:
+               {
+                  List<string> uris = ParseURLListRFC2483(args.SelectionData.Data);            
+                  foreach(string uri in uris)
+                     success |= OpenURL(uri);
+                  break;
+               }
+            }
+         }
+         if(success)
+            Gtk.Drag.Finish(args.Context, success, false, args.Time);
       }
 
       #endregion
