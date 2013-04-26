@@ -17,7 +17,7 @@ namespace Docking.Components
       {
          mPersistence = (CommandPersistence)ComponentManager.LoadObject("Command", typeof(CommandPersistence), item);
 
-         Task t = Task.Factory.StartNew(() =>
+         Task.Factory.StartNew(() =>
          {
             if (mPersistence == null)
                mPersistence = new CommandPersistence() { Script = "" }; // TODO: set a default script here

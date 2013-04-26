@@ -295,13 +295,16 @@ namespace Docking.Components
             backgound.RgbFgColor = new Gdk.Color(backColor.R, backColor.G, backColor.B);
             text.RgbFgColor = new Gdk.Color(textColor.R, textColor.G, textColor.B);
 
-            foreach (ColumnControl.Column column in columns)
+            for (int c = 0; c < columns.Length; c++)
             {
+               ColumnControl.Column column = columns[c];
                int columnIndex = column.SortOrder;
                int xwidth = column.Width;
                if (dx > exposeRect.Right)
                   break;
                rect = new Gdk.Rectangle(rect.Left, rect.Top, xwidth + mColumnControl.GripperWidth, ConstantHeight);
+               if (c == columns.Length - 1)
+                  rect.Width = Math.Max(rect.Width, exposeRect.Right - rect.Left + 1);
                String content = GetContentDelegate(row, columnIndex);
                LineLayout.SetMarkup(content);
                win.DrawRectangle(backgound, true, rect);
@@ -310,8 +313,6 @@ namespace Docking.Components
                dx += xwidth + mColumnControl.GripperWidth - 2;
                rect.Offset(xwidth + mColumnControl.GripperWidth, 0);
             }
-            rect.Width = exposeRect.Right - rect.Left + 1;
-            win.DrawRectangle(Style.BackgroundGC(StateType.Normal), true, rect);
 
             dy += ConstantHeight;
             if (dy > exposeRect.Bottom)
@@ -564,12 +565,11 @@ namespace Docking.Components
             DragGripper = -1;
       }
 
-      public static Gdk.Cursor CursorArrow = new Gdk.Cursor(Gdk.CursorType.Arrow);
       public static Gdk.Cursor CursorSizing = new Gdk.Cursor(Gdk.CursorType.SbHDoubleArrow);
 
       void TheLeaveNotifyEvent(object o, LeaveNotifyEventArgs args)
       {
-         EventBox.GdkWindow.Cursor = CursorArrow;
+         EventBox.GdkWindow.Cursor = null;
       }
 
       protected override bool OnMotionNotifyEvent(Gdk.EventMotion evnt)
@@ -580,7 +580,7 @@ namespace Docking.Components
             if (gripper >= 0 && evnt.Y >= 0 && evnt.Y < TotalHeight)
                EventBox.GdkWindow.Cursor = CursorSizing;
             else
-               EventBox.GdkWindow.Cursor = CursorArrow;
+               EventBox.GdkWindow.Cursor = null;
          }
          else
          {
@@ -648,7 +648,6 @@ namespace Docking.Components
             if (kvp.Key.Visible)
                offset += kvp.Value.Width + GripperWidth;
 
-         int sortOrder = mColumns.Count;
          Column column = new Column(widget, tag, width, min_width) { SortOrder = mColumns.Count, X = offset };
          mColumns.Add(widget, column);
          base.Put(widget, offset, TopOffset);
