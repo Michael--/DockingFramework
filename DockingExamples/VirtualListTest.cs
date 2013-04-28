@@ -50,7 +50,7 @@ namespace Examples.VirtualList
             VBox box = new VBox();
             box.PackStart(new Label("Message"), false, false, 0);
             box.PackStart(new Entry(""), false, false, 0);
-            virtuallistview1.AddColumn(2, box, 150, true);
+            virtuallistview1.AddColumn(2, "Message", box, 150, true);
 
             // set content size
             virtuallistview1.RowCount = 42000;

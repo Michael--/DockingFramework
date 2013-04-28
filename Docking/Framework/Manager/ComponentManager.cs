@@ -1532,6 +1532,13 @@ namespace Docking.Components
       public System.Object Tag { get; set; }
    }
 
+   class TaggedCheckedMenuItem : CheckMenuItem
+   {
+      public TaggedCheckedMenuItem(String name) : base(name) {}
+      public System.Object Tag { get; set; }
+   }
+
+
    [Serializable]
    public class MainWindowPersistence
    {

@@ -4,6 +4,7 @@ using GLib;
 using System.Collections.Generic;
 using Docking.Components;
 using Docking;
+using Docking.Helper;
 
 namespace Docking.Components
 {
@@ -122,7 +123,7 @@ namespace Docking.Components
          Label label = new Label(name);
          label.SetPadding(2, 2);
          label.Visible = visible;
-         AddColumn(label, tag, width);
+         AddColumn(name, label, tag, width);
       }
 
       /// <summary>
@@ -133,14 +134,14 @@ namespace Docking.Components
       /// <param name="widget">Widget.</param>
       /// <param name="width">Width.</param>
       /// <param name="visible">If set to <c>true</c> visible.</param>
-      public void AddColumn(int tag, Widget widget, int width, bool visible)
+      public void AddColumn(int tag, string name, Widget widget, int width, bool visible)
       {
          if (visible)
             widget.ShowAll();
-         AddColumn(widget, tag, width);
+         AddColumn(name, widget, tag, width);
       }
 
-      void AddColumn(Widget widget, int tag, int width)
+      void AddColumn(string name, Widget widget, int tag, int width)
       {
          if (mPersistence != null)
          {
@@ -153,7 +154,7 @@ namespace Docking.Components
                }
             }
          }
-         mColumnControl.AddColumn(widget, tag, width);
+         mColumnControl.AddColumn(name, widget, tag, width);
       }
 
       /// <summary>
@@ -361,9 +362,40 @@ namespace Docking.Components
          return base.OnScrollEvent(evnt);
       }
 
+      internal void ShowDockPopupMenu (uint time)
+      {
+         Menu menu = new Menu ();
+
+
+         ColumnControl.Column[] columns = mColumnControl.GetColumns();
+         foreach(ColumnControl.Column c in columns)
+         {
+            TaggedCheckedMenuItem item = new TaggedCheckedMenuItem(c.Name);
+            item.Active = c.Visible;
+            item.Tag = c;
+            item.Activated += (object sender, EventArgs e) => 
+            {
+               TaggedCheckedMenuItem it = sender as TaggedCheckedMenuItem;
+               ColumnControl.Column ct = it.Tag as ColumnControl.Column;
+               // TODO: change column visibility, recalculate column control and redraw all
+               //ct.Visible = !ct.Visible;
+            };
+            menu.Add(item);
+         }
+         
+         menu.ShowAll ();
+         menu.Popup (null, null, null, 3, time);
+      }
+
+
       protected override bool OnButtonPressEvent(Gdk.EventButton evnt)
       {
-         if (evnt.Button == 1 && evnt.Type == Gdk.EventType.ButtonPress)
+         if (GtkWorkarounds.TriggersContextMenu(evnt))
+         {
+            ShowDockPopupMenu(evnt.Time);
+         }
+
+         else if (evnt.Button == 1 && evnt.Type == Gdk.EventType.ButtonPress)
          {
             int row = (int)evnt.Y / ConstantHeight + (int)vscrollbar1.Value;
             OffsetCursor(row - CurrentRow);
@@ -641,14 +673,14 @@ namespace Docking.Components
       int DragGripper = -1;
       int LastDragX = 0;
 
-      public void AddColumn(Widget widget, int tag, int width = 50, int min_width = 20)
+      public void AddColumn(string name, Widget widget, int tag, int width = 50, int min_width = 20)
       {
          int offset = 0;
          foreach (KeyValuePair<Widget, Column> kvp in mColumns)
             if (kvp.Key.Visible)
                offset += kvp.Value.Width + GripperWidth;
 
-         Column column = new Column(widget, tag, width, min_width) { SortOrder = mColumns.Count, X = offset };
+         Column column = new Column(name, widget, tag, width, min_width) { SortOrder = mColumns.Count, X = offset };
          mColumns.Add(widget, column);
          base.Put(widget, offset, TopOffset);
          widget.SizeAllocated += (o, args) =>
@@ -746,15 +778,17 @@ namespace Docking.Components
 
       public class Column
       {
-         public Column(Widget w, int tag, int width, int minWidth)
+         public Column(string name, Widget w, int tag, int width, int minWidth)
          {
             Initialized = false;
+            Name = name;
             Widget = w;
             Tag = tag;
             Width = width;
             MinWidth = minWidth;
          }
          public bool Initialized { get; set; }
+         public string Name { get; set; }
          public Widget Widget { get; set; }
          public int Tag { get; set; }
          public int SortOrder { get; set; }
