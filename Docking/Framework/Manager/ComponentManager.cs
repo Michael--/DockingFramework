@@ -1091,6 +1091,11 @@ namespace Docking.Components
 
          // add new instance of desired component
          DockItem item = CreateItem(cfi, name);
+         if(item==null)
+         {
+            MessageWriteLine("ERROR: cannot instantiate component "+name);
+            return;
+         }
          item.Behavior = DockItemBehavior.Normal;
          if (!cfi.IsSingleInstance)
             item.Behavior |= DockItemBehavior.CloseOnHide;
