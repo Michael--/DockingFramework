@@ -518,71 +518,72 @@ namespace Docking.Components
       const string URL_PREFIX_HTTP  = "http://";
       const string URL_PREFIX_HTTPS = "https://";
 
-      public bool OpenURL(string url)
+      public bool OpenURL(string url_)
       {
-            if(url.StartsWith(URL_PREFIX_FILE))
-            { 
-               string filename = url.Substring(URL_PREFIX_FILE.Length);
-               if(PlatformIsWin32ish)
-               {
-                  // treat how local filenames are encoded on Windows. Example: file:///D:/some/folder/myfile.txt
-                  if(  filename.Length>=3 && 
-                        filename[0]=='/' &&
-                     //filename[1]=='C' && // drive letter
-                        filename[2]==':')
-                  {
-                     filename = filename.Substring(1);
-                  }                    
-                  filename = filename.Replace('/', System.IO.Path.DirectorySeparatorChar);
-               }
-               return OpenFile(filename); 
-            }
-            else if(url.StartsWith(URL_PREFIX_HTTP) || url.StartsWith(URL_PREFIX_HTTPS))
+         string url = System.Uri.UnescapeDataString(url_);
+         if(url.StartsWith(URL_PREFIX_FILE))
+         { 
+            string filename = url.Substring(URL_PREFIX_FILE.Length);
+            if(PlatformIsWin32ish)
             {
-               string filename;
-               if(url.StartsWith(URL_PREFIX_HTTP))
-                  filename = url.Substring(URL_PREFIX_HTTP.Length);
-               else if(url.StartsWith(URL_PREFIX_HTTPS))
-                  filename = url.Substring(URL_PREFIX_HTTPS.Length);
-               else
-                  return false;
-               string[] portions = filename.Split('/');
-               if(portions.Length<1)
-                  return false;
-               filename = portions[portions.Length-1];
-               if(!filename.Contains("."))
-                  filename = System.IO.Path.GetFileNameWithoutExtension(System.AppDomain.CurrentDomain.FriendlyName)+" TempFile.tmp";               
-               filename = System.IO.Path.Combine(System.IO.Path.GetTempPath(), filename);
-               if(File.Exists(filename))
+               // treat how local filenames are encoded on Windows. Example: file:///D:/some/folder/myfile.txt
+               if(  filename.Length>=3 && 
+                     filename[0]=='/' &&
+                  //filename[1]=='C' && // drive letter
+                     filename[2]==':')
                {
-                  int i = 2;
-                  string newfilename = filename;
-                  while(File.Exists(newfilename))
-                  {                      
-                     newfilename = System.IO.Path.GetFileNameWithoutExtension(filename)+" ("+i+")"+System.IO.Path.GetExtension(filename);
-                     newfilename = System.IO.Path.Combine(System.IO.Path.GetTempPath(), newfilename);
-                     i++;
-                  }
-                  filename = newfilename;
-               }               
-               WebClient www = new WebClient();
-               FileStream file = null;
-               try 
-               {                     
-                  file = File.Create(filename, 10000, FileOptions.DeleteOnClose);
-                  www.OpenRead(url).CopyTo(file);
+                  filename = filename.Substring(1);
+               }                    
+               filename = filename.Replace('/', System.IO.Path.DirectorySeparatorChar);
+            }
+            return OpenFile(filename); 
+         }
+         else if(url.StartsWith(URL_PREFIX_HTTP) || url.StartsWith(URL_PREFIX_HTTPS))
+         {
+            string filename;
+            if(url.StartsWith(URL_PREFIX_HTTP))
+               filename = url.Substring(URL_PREFIX_HTTP.Length);
+            else if(url.StartsWith(URL_PREFIX_HTTPS))
+               filename = url.Substring(URL_PREFIX_HTTPS.Length);
+            else
+               return false;
+            string[] portions = filename.Split('/');
+            if(portions.Length<1)
+               return false;
+            filename = portions[portions.Length-1];
+            if(!filename.Contains("."))
+               filename = System.IO.Path.GetFileNameWithoutExtension(System.AppDomain.CurrentDomain.FriendlyName)+" TempFile.tmp";               
+            filename = System.IO.Path.Combine(System.IO.Path.GetTempPath(), filename);
+            if(File.Exists(filename))
+            {
+               int i = 2;
+               string newfilename = filename;
+               while(File.Exists(newfilename))
+               {                      
+                  newfilename = System.IO.Path.GetFileNameWithoutExtension(filename)+" ("+i+")"+System.IO.Path.GetExtension(filename);
+                  newfilename = System.IO.Path.Combine(System.IO.Path.GetTempPath(), newfilename);
+                  i++;
                }
-               catch(Exception)
-               {
-                  file = null;
-               }                  
-               if(file!=null)
-               {
-                  bool result = OpenFile(filename);
-                  file.Close(); // will implicitly delete the file, see FileOptions.DeleteOnClose above 
-                  file = null;
-                  return result;
-               }
+               filename = newfilename;
+            }               
+            WebClient www = new WebClient();
+            FileStream file = null;
+            try 
+            {                     
+               file = File.Create(filename, 10000, FileOptions.DeleteOnClose);
+               www.OpenRead(url).CopyTo(file);
+            }
+            catch(Exception)
+            {
+               file = null;
+            }                  
+            if(file!=null)
+            {
+               bool result = OpenFile(filename);
+               file.Close(); // will implicitly delete the file, see FileOptions.DeleteOnClose above 
+               file = null;
+               return result;
+            }
          }
          return false;
       }
