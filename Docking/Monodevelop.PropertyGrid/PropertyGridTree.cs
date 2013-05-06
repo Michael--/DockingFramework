@@ -113,6 +113,9 @@ namespace MonoDevelop.Components.PropertyGrid
 		{
 			collapseStatus.Clear ();
 
+			if(tree==null || tree.Model==null)
+		   	   return;
+
 			TreeIter iter;
 			if (!tree.Model.GetIterFirst (out iter))
 				return;
@@ -126,6 +129,9 @@ namespace MonoDevelop.Components.PropertyGrid
 		
 		public void RestoreStatus ()
 		{
+			if(tree==null || tree.Model==null)
+		   	   return;
+
 			TreeIter iter;
 			if (!tree.Model.GetIterFirst (out iter))
 				return;
