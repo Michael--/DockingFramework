@@ -1,2 +1,0 @@
-This is a dummy text file used by a python sample.
-
