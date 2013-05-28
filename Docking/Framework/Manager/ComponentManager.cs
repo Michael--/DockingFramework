@@ -14,10 +14,11 @@ using IronPython.Runtime;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Net;
+using System.Globalization;
 
 namespace Docking.Components
 {
-   public class ComponentManager : Gtk.Window
+   public class ComponentManager : Gtk.Window, IPersistency
    {
       #region Initialization
 
@@ -894,12 +895,13 @@ namespace Docking.Components
 
 
       #endregion
-
-      #region Persistence
+                     
+      #region Binary Persistency
+      // TODO It does not really make sense to but binary blobs into XML... this way the file is not really editable/parsable anymore. Suggestion: Prefer using IPersistency.
 
       /// <summary>
       /// Load an object from persistence.
-      /// The optional paranmeter should be used only loading from threads to identify correct DockItem
+      /// The optional parameter 'item' can be used to identify the proper DockItem instance.
       /// </summary>
       public object LoadObject(String elementName, Type t, DockItem item = null)
       {
@@ -1019,6 +1021,98 @@ namespace Docking.Components
             XmlConfiguration.ReplaceChild(newNode, oldNode);
          else
             XmlConfiguration.AppendChild(newNode);
+      }
+      #endregion
+
+      #region IPersistency
+
+      public string LoadSetting(string instance, string key, string defaultval)
+      {
+         if(XmlConfiguration==null)
+            return defaultval;
+
+         XmlNode N = XmlConfiguration[instance];
+         if(N==null)
+            return defaultval;
+
+         XmlNode S = N.SelectSingleNode(key);
+         if(S==null)
+            return defaultval;
+
+         return S.InnerText;
+      }
+
+      public UInt32 LoadSetting(string instance, string key, UInt32 defaultval)
+      {
+         string s = LoadSetting(instance, key, defaultval.ToString(CultureInfo.InvariantCulture));
+         UInt32 result;
+         return UInt32.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result) ? result : defaultval;
+      }
+
+      public Int32 LoadSetting(string instance, string key, Int32 defaultval)
+      {
+         string s = LoadSetting(instance, key, defaultval.ToString(CultureInfo.InvariantCulture));
+         Int32 result;
+         return Int32.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result) ? result : defaultval;
+      }
+
+      public double LoadSetting(string instance, string key, double defaultval)
+      {
+         string s = LoadSetting(instance, key, defaultval.ToString(CultureInfo.InvariantCulture));
+         double result;
+         return Double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out result) ? result : defaultval;
+      }
+
+      public bool LoadSetting(string instance, string key, bool defaultval)
+      {
+         string s = LoadSetting(instance, key, defaultval.ToString(CultureInfo.InvariantCulture)).ToLowerInvariant();
+         return s=="true";
+      }
+
+      public void SaveSetting(string instance, string key, string val)
+      {
+         if(XmlConfiguration==null)
+            return;
+
+         List<string> portions = new List<string>(instance.Split('/'));
+         portions.Add(key);
+         
+         if(portions.Count<=0)
+            return;
+
+         XmlNode N = null;
+         XmlNode parent = XmlConfiguration;
+         foreach(string p in portions)
+         {
+            N = parent.SelectSingleNode(p);
+            if(N==null)
+            {
+               N = XmlDocument.CreateElement(p);
+               parent.AppendChild(N);
+            }
+            parent = N;
+         }
+         N.InnerText = val;
+      }
+
+      public void SaveSetting(string instance, string key, UInt32 val)
+      {
+         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
+      }
+
+      public void SaveSetting(string instance, string key, Int32 val)
+      {
+         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
+      }
+
+      public void SaveSetting(string instance, string key, double val)
+      {
+         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
+      }
+
+      public void SaveSetting(string instance, string key, bool val)
+      {
+         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
       }
       #endregion
 
