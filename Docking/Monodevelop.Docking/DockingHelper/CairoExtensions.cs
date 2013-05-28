@@ -586,6 +586,7 @@ namespace Docking.Helper
 					context.Scale (displayScale, displayScale);
 					draw(context, 1.0f);
 					context.Restore ();
+               ((IDisposable)context).Dispose(); 
 				}
 			}
 
@@ -631,6 +632,7 @@ namespace Docking.Helper
 			using (Cairo.Context context = new Cairo.Context (surface)) {
 				Gdk.CairoHelper.SetSourcePixbuf (context, source, 0, 0);
 				context.Paint ();
+            ((IDisposable)context).Dispose(); 
 			}
 
 			Surface = surface;
