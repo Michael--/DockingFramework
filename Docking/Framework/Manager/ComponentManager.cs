@@ -15,6 +15,7 @@ using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Net;
 using System.Globalization;
+using Docking.Tools;
 
 namespace Docking.Components
 {
@@ -1031,42 +1032,64 @@ namespace Docking.Components
          if(XmlConfiguration==null)
             return defaultval;
 
-         XmlNode N = XmlConfiguration[instance];
-         if(N==null)
+         List<string> portions = new List<string>(instance.Split('/'));
+         portions.Add(key);
+         if(portions.Count<=0)
             return defaultval;
 
-         XmlNode S = N.SelectSingleNode(key);
-         if(S==null)
-            return defaultval;
-
-         return S.InnerText;
+         XmlNode N = null;
+         XmlNode parent = XmlConfiguration;
+         foreach(string p in portions)
+         {
+            N = parent.SelectSingleNode(p);
+            if(N==null)
+               return defaultval;
+            parent = N;
+         }
+         return N.InnerText;
       }
 
       public UInt32 LoadSetting(string instance, string key, UInt32 defaultval)
       {
-         string s = LoadSetting(instance, key, defaultval.ToString(CultureInfo.InvariantCulture));
+         string s = LoadSetting(instance, key, "");
          UInt32 result;
-         return UInt32.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result) ? result : defaultval;
+         return (s!="" && UInt32.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
+                ? result : defaultval;
       }
 
       public Int32 LoadSetting(string instance, string key, Int32 defaultval)
       {
-         string s = LoadSetting(instance, key, defaultval.ToString(CultureInfo.InvariantCulture));
+         string s = LoadSetting(instance, key, "");
          Int32 result;
-         return Int32.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result) ? result : defaultval;
+         return (s!="" && Int32.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
+                ? result : defaultval;
       }
 
       public double LoadSetting(string instance, string key, double defaultval)
       {
-         string s = LoadSetting(instance, key, defaultval.ToString(CultureInfo.InvariantCulture));
+         string s = LoadSetting(instance, key, "");
          double result;
-         return Double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out result) ? result : defaultval;
+         return (s!="" && Double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out result))
+                ? result : defaultval;
       }
 
       public bool LoadSetting(string instance, string key, bool defaultval)
       {
-         string s = LoadSetting(instance, key, defaultval.ToString(CultureInfo.InvariantCulture)).ToLowerInvariant();
-         return s=="true";
+         string s = LoadSetting(instance, key, "").ToLowerInvariant();
+         if(s=="true")
+            return true;
+         else if(s=="false")
+            return false;
+         else        
+            return defaultval;
+      }
+
+      public System.Drawing.Color LoadSetting(string instance, string key, System.Drawing.Color defaultval)
+      {
+         string s = LoadSetting(instance, key, "");
+         System.Drawing.Color result;
+         return (s!="" && ColorConverter.RGBAString_to_Color(s, out result))
+                ? result : defaultval;
       }
 
       public void SaveSetting(string instance, string key, string val)
@@ -1076,7 +1099,6 @@ namespace Docking.Components
 
          List<string> portions = new List<string>(instance.Split('/'));
          portions.Add(key);
-         
          if(portions.Count<=0)
             return;
 
@@ -1113,6 +1135,11 @@ namespace Docking.Components
       public void SaveSetting(string instance, string key, bool val)
       {
          SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
+      }
+
+      public void SaveSetting(string instance, string key, System.Drawing.Color val)
+      {
+         SaveSetting(instance, key, ColorConverter.Color_to_RGBAString(val));
       }
       #endregion
 
