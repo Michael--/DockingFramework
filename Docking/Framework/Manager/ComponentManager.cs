@@ -842,7 +842,7 @@ namespace Docking.Components
 
       MainWindowPersistence m_LoadedPersistence = null;
 
-      protected void LoadPersistence()
+      protected virtual void LoadPersistence()
       {
          currentLoadSaveItem = null;
          MainWindowPersistence p = (MainWindowPersistence)LoadObject("MainWindow", typeof(MainWindowPersistence));
@@ -854,7 +854,7 @@ namespace Docking.Components
          m_LoadedPersistence = p;
       }
 
-      private void SavePersistence()
+      protected virtual void SavePersistence()
       {
          int wx, wy, width, height;
          this.GetPosition(out wx, out wy);
