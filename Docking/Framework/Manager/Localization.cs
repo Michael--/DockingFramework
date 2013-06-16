@@ -58,7 +58,10 @@ namespace Docking.Components
                 string comment = node.Comment;
 
                 Node n = new Node(key, value, comment, basename);
-                lang.Nodes.Add(key, n);
+                if (!lang.Nodes.ContainsKey(key))
+                    lang.Nodes.Add(key, n);
+                else
+                    componentManager.MessageWriteLine("Localization: Key '{0}' already exist", key);
             }
         }
 
@@ -111,9 +114,9 @@ namespace Docking.Components
 
    public static class LocalizationExtensions
    {
-      public static string L(this string key, Type t)
+      public static string L(this string key, string header)
       {
-          string result = Localization.GetString(t.ToString() + "." + key);
+          string result = Localization.GetString(header + "." + key);
           if (result != null)
               return result;
           return key;
