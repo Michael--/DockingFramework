@@ -26,6 +26,8 @@ namespace Docking.Components
       public ComponentManager(WindowType wt)
          : base(wt)
       {
+         Localization = new Components.Localization(this);
+         Localization.SearchForResources(@"./*.resx");
          AccelGroup = new AccelGroup();
          AddAccelGroup(AccelGroup);
          ComponentFinder = new Docking.Components.ComponentFinder();
@@ -393,6 +395,7 @@ namespace Docking.Components
       public ComponentFinder ComponentFinder { get; private set; }
       public bool PowerDown { get; set; }
       public String ConfigurationFile { get; set; }
+      public Localization Localization { get; private set; }
       #endregion
 
       #region OpenFile

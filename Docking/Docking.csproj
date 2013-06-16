@@ -102,11 +102,13 @@
     <Reference Include="Xwt">
       <HintPath>Monodevelop.Texteditor\Xwt.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Framework\Interfaces\IPersistable.cs" />
     <Compile Include="Framework\Interfaces\IPersistency.cs" />
+    <Compile Include="Framework\Manager\Localization.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="gtk-gui\Docking.Components.Activities.cs" />
     <Compile Include="Framework\Components\Activities.cs" />
@@ -206,6 +208,14 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Content Include="Docking-default.resx">
+      <LastGenOutput>Docking-default.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Docking-de-DE.resx">
+      <LastGenOutput>Docking-default.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
