@@ -437,10 +437,11 @@ namespace Docking.Components
             // tell all component about changed language
             foreach (DockItem item in DockFrame.GetItems())
             {
+               if (item.Content != null)
+                  LocalizeControls(item.Content.GetType().Namespace, item.Widget);
                if (item.Content is ILocalizable)
-               {
-                  (item.Content as ILocalizable).Changed(item);
-               }
+                  (item.Content as ILocalizable).LocalizationChanged(item);
+               item.UpdateLabel();
             }
 
             // todo: change menue and further language depending stuff
@@ -448,6 +449,18 @@ namespace Docking.Components
             // redraw workaround
             this.Hide();
             this.Show();
+         }
+      }
+
+      void LocalizeControls(string namespc, Gtk.Container bin)
+      {
+         foreach (Gtk.Widget b in bin.Children)
+         {
+            if (b is Gtk.Container)
+               LocalizeControls(namespc, (b as Gtk.Container));
+
+            if (b is ILocalized)
+               (b as ILocalized).Localize(namespc);
          }
       }
 

@@ -153,7 +153,7 @@ namespace Docking.Components
 
    public static class LocalizationExtensions
    {
-      public static string L(this string key, string header)
+      public static string Localized(this string key, string header)
       {
          string result = Localization.GetString(header + "." + key);
          if (result != null)
@@ -161,7 +161,7 @@ namespace Docking.Components
          return key;
       }
 
-      public static string L(this string key)
+      public static string Localized(this string key)
       {
          string result = Localization.GetString(key);
          if (result != null)
@@ -169,4 +169,27 @@ namespace Docking.Components
          return key;
       }
    }
-}
+
+   [System.ComponentModel.ToolboxItem(true)]
+   public class LabelLocalized : Gtk.Label, ILocalized
+   {
+      void ILocalized.Localize(string namespc)
+      {
+         if (LocalizationKey == null)
+            LocalizationKey = LabelProp;
+         LabelProp = LocalizationKey.Localized(namespc);
+      }
+      public string LocalizationKey { get; set; }
+   }
+
+   [System.ComponentModel.ToolboxItem(true)]
+   public class ButtonLocalized : Gtk.Button, ILocalized
+   {
+      void ILocalized.Localize(string namespc)
+      {
+         if (LocalizationKey == null)
+            LocalizationKey = Label;
+         Label = LocalizationKey.Localized(namespc);
+      }
+      public string LocalizationKey { get; set; }
+   }}

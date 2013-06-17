@@ -128,7 +128,8 @@ namespace Docking
 
       public void UpdateLabel()
       {
-         this.Label = InstanceIndex <= 1 ? this.Content.Name : (this.Content.Name + " " + InstanceIndex);
+         if (this.Content != null)
+            this.Label = InstanceIndex <= 1 ? this.Content.Name : (this.Content.Name + " " + InstanceIndex);
       }
 
 		public bool Visible {
