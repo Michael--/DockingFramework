@@ -120,4 +120,7 @@
   <data name="Delete Current Layout" xml:space="preserve">
     <value>Lösche aktuelles Layout</value>
   </data>
+  <data name="LANGUAGE_NAME" xml:space="preserve">
+    <value>Deutsch</value>
+  </data>
 </root>

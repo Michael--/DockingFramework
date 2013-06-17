@@ -394,13 +394,22 @@ namespace Docking.Components
 
          foreach (string s in languages)
          {
-            TaggedCheckedMenuItem item = new TaggedCheckedMenuItem(s);
+            string[] split = s.Split(new Char[] { '|' }, StringSplitOptions.RemoveEmptyEntries);
+            if (split.Length < 2)
+               continue;
+
+            string code = split[0];
+            string name = split[1];
+
+            TaggedCheckedMenuItem item = new TaggedCheckedMenuItem(name);
             item.Activated += OnLanguageActivated;
-            item.Active = Localization.CurrentLanguage == s;
-            InsertMenu(string.Format("{0}\\Language", baseMenu, s), item);
+            item.Tag = code;
+            InsertMenu(string.Format("{0}\\Language", baseMenu, name), item);
 
             if (mLanguageBaseMenu == null)
                mLanguageBaseMenu = item.Parent as Menu;
+
+            item.Active = Localization.CurrentLanguage == code;
          }
       }
 
@@ -409,9 +418,9 @@ namespace Docking.Components
          if (recursionWorkaround)
             return;
 
-         MenuItem nitem = sender as MenuItem;
-         string txt = (nitem.Child as Label).Text;
-         SetLanguage(txt);
+         TaggedCheckedMenuItem nitem = sender as TaggedCheckedMenuItem;
+         string code = nitem.Tag as string;
+         SetLanguage(code);
       }
 
       protected void SetLanguage(string code)
@@ -421,7 +430,7 @@ namespace Docking.Components
 
          bool result = Localization.SetLanguage(code);
          UncheckMenuChildren(mLanguageBaseMenu, null);
-         CheckMenuItem(mLanguageBaseMenu, Localization.CurrentLanguage);
+         CheckMenuItem(mLanguageBaseMenu, Localization.CurrentLanguageName);
 
          if (result)
          {

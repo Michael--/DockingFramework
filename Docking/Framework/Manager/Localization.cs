@@ -20,7 +20,18 @@ namespace Docking.Components
 
       public string[] AvailableLanguages()
       {
-         return Languages.Keys.ToArray();
+         List<string> av = new List<string>();
+
+         foreach (KeyValuePair<string, Language> kvp in Languages)
+         {
+            string code = kvp.Value.Code;
+            string name = kvp.Value.Code;
+            Node node;
+            if (kvp.Value.Nodes.TryGetValue("LANGUAGE_NAME", out node))
+               name = node.Value as string;
+            av.Add(code + "|" + name);
+         }
+         return av.ToArray();
       }
 
       public bool SetLanguage(string code)
@@ -29,13 +40,20 @@ namespace Docking.Components
          if (code != mCurrentLanguageCode && Languages.TryGetValue(code, out newLanguage))
          {
             mCurrentLanguageCode = code;
+            mCurrentLanguageName = code;
             mCurrentLanguage = newLanguage;
+
+            Node node;
+            if (mCurrentLanguage.Nodes.TryGetValue("LANGUAGE_NAME", out node))
+               mCurrentLanguageName = node.Value as string;
+
             return true;
          }
          return false;
       }
 
       public string CurrentLanguage { get { return mCurrentLanguageCode; } }
+      public string CurrentLanguageName { get { return mCurrentLanguageName; } }
 
       public void SearchForResources(string s)
       {
@@ -89,6 +107,7 @@ namespace Docking.Components
       static Language mDefaultLanguage;
       static Language mCurrentLanguage;
       static string mCurrentLanguageCode;
+      static string mCurrentLanguageName;
 
       class Language
       {
