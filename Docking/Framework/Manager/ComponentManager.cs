@@ -184,6 +184,7 @@ namespace Docking.Components
 
       private void CheckMenuItem(object baseMenu, string name)
       {
+         recursionWorkaround = true;
          if (baseMenu is Menu)
          {
             Menu bm = baseMenu as Menu;
@@ -198,11 +199,13 @@ namespace Docking.Components
                   {
                      if (!mi.Active)
                         mi.Active = true;
+                     recursionWorkaround = false;
                      return;
                   }
                }
             }
          }
+         recursionWorkaround = false;
       }
 
       private void RemoveMenuItem(object baseMenu, string name)
@@ -325,6 +328,7 @@ namespace Docking.Components
       {
          InstallQuitMenu();
          InstallFileOpenMenu();
+         // InstallLanguageMenu("Options");
 
          foreach (ComponentFactoryInformation cfi in ComponentFinder.ComponentInfos)
          {
@@ -378,6 +382,51 @@ namespace Docking.Components
          menuShell.Add(menuItem);
 
          return menu;
+      }
+
+      private Menu mLanguageBaseMenu = null;
+
+      protected void InstallLanguageMenu(string baseMenu)
+      {
+         string[] languages = Localization.AvailableLanguages();
+         if (languages == null || languages.Length == 0)
+            return;
+
+         foreach (string s in languages)
+         {
+            TaggedCheckedMenuItem item = new TaggedCheckedMenuItem(s);
+            item.Activated += OnLanguageActivated;
+            item.Active = Localization.CurrentLanguage == s;
+            InsertMenu(string.Format("{0}\\Language", baseMenu, s), item);
+
+            if (mLanguageBaseMenu == null)
+               mLanguageBaseMenu = item.Parent as Menu;
+         }
+      }
+
+      protected void OnLanguageActivated(object sender, EventArgs e)
+      {
+         if (recursionWorkaround)
+            return;
+
+         MenuItem nitem = sender as MenuItem;
+         string txt = (nitem.Child as Label).Text;
+         SetLanguage(txt);
+      }
+
+      protected void SetLanguage(string code)
+      {
+         if (recursionWorkaround)
+            return;
+
+         bool result = Localization.SetLanguage(code);
+         UncheckMenuChildren(mLanguageBaseMenu, null);
+         CheckMenuItem(mLanguageBaseMenu, Localization.CurrentLanguage);
+
+         if (result)
+         {
+            // TODO: localization has been switched, perform necessary changes ...
+         }
       }
 
       #endregion
