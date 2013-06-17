@@ -10,6 +10,7 @@ namespace Docking.Components
    /// </summary>
    public interface ILocalizable
    {
+      string Name { get; }
       void LocalizationChanged(DockItem item);
    }
 

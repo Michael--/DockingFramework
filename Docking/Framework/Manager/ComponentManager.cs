@@ -420,10 +420,10 @@ namespace Docking.Components
 
          TaggedCheckedMenuItem nitem = sender as TaggedCheckedMenuItem;
          string code = nitem.Tag as string;
-         SetLanguage(code);
+         SetLanguage(code, false);
       }
 
-      protected void SetLanguage(string code)
+      protected void SetLanguage(string code, bool always)
       {
          if (recursionWorkaround)
             return;
@@ -432,7 +432,7 @@ namespace Docking.Components
          UncheckMenuChildren(mLanguageBaseMenu, null);
          CheckMenuItem(mLanguageBaseMenu, Localization.CurrentLanguageName);
 
-         if (result)
+         if (result || always)
          {
             // tell all component about changed language
             foreach (DockItem item in DockFrame.GetItems())
@@ -440,7 +440,12 @@ namespace Docking.Components
                if (item.Content != null)
                   LocalizeControls(item.Content.GetType().Namespace, item.Widget);
                if (item.Content is ILocalizable)
-                  (item.Content as ILocalizable).LocalizationChanged(item);
+               {
+                  ILocalizable il = item.Content as ILocalizable;
+                  il.LocalizationChanged(item);
+                  item.Content.Name = il.Name.Localized(item.Content.GetType().Namespace);
+               }
+
                item.UpdateLabel();
             }
 
