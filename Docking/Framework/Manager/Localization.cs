@@ -46,8 +46,8 @@ namespace Docking.Components
          foreach (string f in files)
             Read(f);
 
-         Languages.TryGetValue("default", out mDefaultLanguage); // last alternative
-         SetLanguage("default"); // could be switched by user
+         Languages.TryGetValue("en-US", out mDefaultLanguage); // last alternative
+         SetLanguage("en-US"); // could be switched by user
       }
 
       void Read(string filename)
