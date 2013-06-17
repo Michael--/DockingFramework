@@ -220,6 +220,10 @@
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
+    <Content Include="Languages\Docking-zh-CHS.resx">
+      <LastGenOutput>Docking-default.Designer.cs</LastGenOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <EmbeddedResource Include="Monodevelop.Docking\stock-auto-hide.png">
       <LogicalName>stock-auto-hide.png</LogicalName>
     </EmbeddedResource>
