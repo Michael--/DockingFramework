@@ -425,7 +425,20 @@ namespace Docking.Components
 
          if (result)
          {
-            // TODO: localization has been switched, perform necessary changes ...
+            // tell all component about changed language
+            foreach (DockItem item in DockFrame.GetItems())
+            {
+               if (item.Content is ILocalizable)
+               {
+                  (item.Content as ILocalizable).Changed(item);
+               }
+            }
+
+            // todo: change menue and further language depending stuff
+
+            // redraw workaround
+            this.Hide();
+            this.Show();
          }
       }
 
@@ -1368,8 +1381,7 @@ namespace Docking.Components
          AddSelectNotifier(item, w);
          AddSelectNotifier(item, item.TitleTab);
          item.Content = w;
-         int index = item.InstanceIndex; // add an instance counter if multiple instances exist to the label 
-         item.Label = index <= 1 ? w.Name : (w.Name + " " + index);
+         item.UpdateLabel();
          item.Icon = cfi.Icon;
          item.DefaultVisible = false;
          item.VisibleChanged += HandleVisibleChanged;

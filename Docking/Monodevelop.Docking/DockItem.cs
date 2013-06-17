@@ -126,6 +126,11 @@ namespace Docking
 			}
 		}
 
+      public void UpdateLabel()
+      {
+         this.Label = InstanceIndex <= 1 ? this.Content.Name : (this.Content.Name + " " + InstanceIndex);
+      }
+
 		public bool Visible {
 			get {
 				return frame.GetVisible (this); 
