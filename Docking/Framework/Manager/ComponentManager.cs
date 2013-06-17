@@ -27,7 +27,7 @@ namespace Docking.Components
          : base(wt)
       {
          Localization = new Components.Localization(this);
-         Localization.SearchForResources(@"./*.resx");
+         Localization.SearchForResources(@"./Languages/*.resx");
          AccelGroup = new AccelGroup();
          AddAccelGroup(AccelGroup);
          ComponentFinder = new Docking.Components.ComponentFinder();
