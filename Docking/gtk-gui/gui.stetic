@@ -444,7 +444,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="Docking.LocalizationEditor" design-size="300 300">
+  <widget class="Gtk.Bin" id="Docking.Components.LocalizationEditor" design-size="300 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>
@@ -480,7 +480,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
-                <property name="Label" translatable="yes">test</property>
+                <property name="Label" translatable="yes">Save</property>
                 <property name="UseUnderline">True</property>
               </widget>
               <packing>

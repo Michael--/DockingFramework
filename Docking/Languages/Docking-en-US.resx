@@ -117,8 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Docking.Components.Localization Editor" xml:space="preserve">
+    <value>Localization Editor</value>
+  </data>
   <data name="Docking.Components.Properties" xml:space="preserve">
     <value>Properties</value>
+  </data>
+  <data name="Docking.Components.Save" xml:space="preserve">
+    <value>Save</value>
   </data>
   <data name="LANGUAGE_NAME" xml:space="preserve">
     <value>US English</value>
@@ -146,6 +152,9 @@
   </data>
   <data name="MENU.Layout" xml:space="preserve">
     <value>Layout</value>
+  </data>
+  <data name="MENU.Localization Editor" xml:space="preserve">
+    <value>Localization Editor</value>
   </data>
   <data name="MENU.Message" xml:space="preserve">
     <value>Message</value>

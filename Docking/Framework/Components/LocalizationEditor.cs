@@ -3,7 +3,7 @@ using Gtk;
 using Docking.Components;
 using System.Collections.Generic;
 
-namespace Docking
+namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(true)]
    public partial class LocalizationEditor : Gtk.Bin, ILocalizable, IComponent
@@ -40,6 +40,11 @@ namespace Docking
          // Create a model that will hold the content, assign the model to the TreeView
          listStore = new Gtk.ListStore(typeof(Localization.Node), typeof(string), typeof(string), typeof(string)); 
          treeview1.Model = listStore;
+
+         button1.Clicked += (sender, e) =>
+         {
+            ComponentManager.Localization.Write();
+         };
       }
 
       void localValueCell_Edited(object o, EditedArgs args)
@@ -50,7 +55,7 @@ namespace Docking
             listStore.SetValue(iter, localValueIndex, args.NewText);
 
             Localization.Node node = listStore.GetValue(iter, nodeIndex) as Localization.Node;
-            Localization.Node ln = Localization.FindCurrentNode(node.Key);
+            Localization.Node ln = ComponentManager.Localization.FindCurrentNode(node.Key);
             if (ln != null)
             {
                ln.Value = args.NewText;
@@ -58,7 +63,7 @@ namespace Docking
             else
             {
                Localization.Node newNode = new Localization.Node(node.Key, args.NewText, "", node.Base);
-               Localization.AddNewCurrentNode(newNode);
+               ComponentManager.Localization.AddNewCurrentNode(newNode);
             }
             ComponentManager.UpdateLanguage();
          }
@@ -98,12 +103,12 @@ namespace Docking
 
       void UpdateList()
       {
-         if (displayedHashCode == Localization.GetCurrentHashcode())
+         if (displayedHashCode == ComponentManager.Localization.GetCurrentHashcode())
             return;
-         displayedHashCode = Localization.GetCurrentHashcode();
+         displayedHashCode = ComponentManager.Localization.GetCurrentHashcode();
          listStore.Clear();
 
-         Dictionary<string, Localization.Node> dn = Localization.GetDefaultNodes();
+         Dictionary<string, Localization.Node> dn = ComponentManager.Localization.GetDefaultNodes();
          foreach (Localization.Node node in dn.Values)
          {
             Gtk.TreeIter iter = listStore.Append();
@@ -111,7 +116,7 @@ namespace Docking
             listStore.SetValue(iter, keyIndex, node.Key);
             listStore.SetValue(iter, usValueIndex, node.Value);
 
-            Localization.Node ln = Localization.FindCurrentNode(node.Key);
+            Localization.Node ln = ComponentManager.Localization.FindCurrentNode(node.Key);
             if (ln != null)
                listStore.SetValue(iter, localValueIndex, ln.Value);
          }

@@ -129,4 +129,19 @@
   <data name="MENU.Quit" xml:space="preserve">
     <value>Beenden</value>
   </data>
+  <data name="MENU.Infrastructure" xml:space="preserve">
+    <value>Infrastruktur</value>
+  </data>
+  <data name="Docking.Components.Save" xml:space="preserve">
+    <value>Speichern</value>
+  </data>
+  <data name="Docking.Components.Properties" xml:space="preserve">
+    <value>Eigenschaften</value>
+  </data>
+  <data name="Docking.Components.Localization Editor" xml:space="preserve">
+    <value>Lokalisierungs Editor</value>
+  </data>
+  <data name="MENU.Localization Editor" xml:space="preserve">
+    <value>Lokalisierungs Editor</value>
+  </data>
 </root>

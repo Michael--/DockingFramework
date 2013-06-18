@@ -57,10 +57,10 @@ namespace Docking.Components
 
       public void SearchForResources(string s)
       {
-         String folder = Path.GetDirectoryName(s);
+         mFolder = Path.GetDirectoryName(s);
          String name = Path.GetFileName(s);
 
-         string[] files = Directory.GetFiles(folder, name);
+         string[] files = Directory.GetFiles(mFolder, name);
          foreach (string f in files)
             Read(f);
 
@@ -102,16 +102,38 @@ namespace Docking.Components
          }
       }
 
-      public static Dictionary<string, Node> GetDefaultNodes() { return mDefaultLanguage.Nodes; }
-      public static int GetCurrentHashcode() { return mCurrentLanguage.GetHashCode(); }
-      public static Node FindCurrentNode(string key)
+      public void Write()
+      {
+         Dictionary<string, ResXResourceWriter> resourceWriter = new Dictionary<string, ResXResourceWriter>();
+         foreach (Language l in Languages.Values)
+         {
+            foreach (Node n in l.Nodes.Values)
+            {
+               string filename = String.Format("{0}/{1}-{2}.resx", mFolder, n.Base, l.Code);
+               ResXResourceWriter rw;
+               if (!resourceWriter.TryGetValue(filename, out rw))
+               {
+                  rw = new ResXResourceWriter(filename);
+                  resourceWriter.Add(filename, rw);
+               }
+               ResXDataNode rnode = new ResXDataNode(n.Key, n.Value);
+               rw.AddResource(rnode);
+            }
+         }
+         foreach (ResXResourceWriter w in resourceWriter.Values)
+            w.Close();
+      }
+
+      public Dictionary<string, Node> GetDefaultNodes() { return mDefaultLanguage.Nodes; }
+      public int GetCurrentHashcode() { return mCurrentLanguage.GetHashCode(); }
+      public Node FindCurrentNode(string key)
       {
          Node node = null;
          mCurrentLanguage.Nodes.TryGetValue(key, out node);
          return node;
       }
 
-      public static void AddNewCurrentNode(Node node)
+      public void AddNewCurrentNode(Node node)
       {
          if (!mCurrentLanguage.Nodes.ContainsKey(node.Key))
             mCurrentLanguage.Nodes.Add(node.Key, node);
@@ -119,6 +141,7 @@ namespace Docking.Components
 
       static ComponentManager componentManager;
       Dictionary<string, Language> Languages = new Dictionary<string, Language>();
+      string mFolder;
       static Language mDefaultLanguage;
       static Language mCurrentLanguage;
       static string mCurrentLanguageCode;
