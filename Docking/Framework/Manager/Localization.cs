@@ -146,7 +146,7 @@ namespace Docking.Components
          if (mDefaultLanguage != null && mDefaultLanguage.Nodes.TryGetValue(key, out node))
             return node.Value as string;
 
-         componentManager.MessageWriteLine("Localization: Key '{0}' not existing", key);
+         componentManager.MessageWriteLine("Missing localization key '{0}'", key);
          return null;
       }
    }
@@ -155,6 +155,8 @@ namespace Docking.Components
    {
       public static string Localized(this string key, string header)
       {
+         if (header == null)
+            return Localized(key);
          string result = Localization.GetString(header + "." + key);
          if (result != null)
             return result;

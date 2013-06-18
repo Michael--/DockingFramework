@@ -120,4 +120,40 @@
   <data name="LANGUAGE_NAME" xml:space="preserve">
     <value>US English</value>
   </data>
+  <data name="MENU.Activities" xml:space="preserve">
+    <value>Activities</value>
+  </data>
+  <data name="MENU.Command" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="MENU.Component List" xml:space="preserve">
+    <value>Component List</value>
+  </data>
+  <data name="MENU.File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="MENU.Infrastructure" xml:space="preserve">
+    <value>Infrastructure</value>
+  </data>
+  <data name="MENU.Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="MENU.Message" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="MENU.Messages" xml:space="preserve">
+    <value>Messages</value>
+  </data>
+  <data name="MENU.Open..." xml:space="preserve">
+    <value>Open...</value>
+  </data>
+  <data name="MENU.Properties" xml:space="preserve">
+    <value>Properties</value>
+  </data>
+  <data name="MENU.Quit" xml:space="preserve">
+    <value>Quit</value>
+  </data>
+  <data name="MENU.Script Editor" xml:space="preserve">
+    <value>Script Editor</value>
+  </data>
 </root>

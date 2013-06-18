@@ -120,4 +120,13 @@
   <data name="LANGUAGE_NAME" xml:space="preserve">
     <value>Deutsch</value>
   </data>
+  <data name="MENU.File" xml:space="preserve">
+    <value>Datei</value>
+  </data>
+  <data name="MENU.Open..." xml:space="preserve">
+    <value>Öffnen...</value>
+  </data>
+  <data name="MENU.Quit" xml:space="preserve">
+    <value>Beenden</value>
+  </data>
 </root>

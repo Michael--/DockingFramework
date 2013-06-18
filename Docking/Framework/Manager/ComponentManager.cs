@@ -121,7 +121,7 @@ namespace Docking.Components
             DockFrame.CurrentLayout = defaultLayoutName;
          m_DefaultLayoutName = defaultLayoutName;
 
-         m_DeleteLayout = new ImageMenuItem("Delete Current Layout");
+         m_DeleteLayout = new TaggedImageMenuItem("Delete Current Layout");
          m_DeleteLayout.Activated += (object sender, EventArgs e) =>
          {
             if (DockFrame.CurrentLayout != m_DefaultLayoutName)
@@ -142,7 +142,7 @@ namespace Docking.Components
             }
          };
 
-         ImageMenuItem newLayout = new ImageMenuItem("New Layout...");
+         ImageMenuItem newLayout = new TaggedImageMenuItem("New Layout...");
          newLayout.Activated += (object sender, EventArgs e) =>
          {
             String newLayoutName = null;
@@ -309,7 +309,7 @@ namespace Docking.Components
 
       private void InstallQuitMenu()
       {
-         ImageMenuItem item = new ImageMenuItem("Quit");
+         ImageMenuItem item = new TaggedImageMenuItem("Quit");
          item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Manager.Quit-16.png"));
          item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          item.Activated += OnQuitActionActivated;
@@ -373,7 +373,7 @@ namespace Docking.Components
          // 2nd append new menu
          // todo: currently append at the end, may a dedicated position desired
          Menu menu = new Menu();
-         MenuItem menuItem = new MenuItem(name);
+         MenuItem menuItem = new TaggedMenuItem(name);
          menuItem.Submenu = menu;
 
          // todo: menu insert position should be overworked
@@ -401,7 +401,7 @@ namespace Docking.Components
             string code = split[0];
             string name = split[1];
 
-            TaggedCheckedMenuItem item = new TaggedCheckedMenuItem(name);
+            TaggedCheckedMenuItem item = new TaggedCheckedMenuItem(name) { IgnoreLocalization = true };
             item.Activated += OnLanguageActivated;
             item.Tag = code;
             InsertMenu(string.Format("{0}\\Language", baseMenu, name), item);
@@ -450,10 +450,28 @@ namespace Docking.Components
             }
 
             // todo: change menue and further language depending stuff
+            LocalizeMenu(MenuBar);
 
             // redraw workaround
             this.Hide();
             this.Show();
+         }
+      }
+
+      void LocalizeMenu(Gtk.Container bin)
+      {
+         foreach (Gtk.Widget b in bin.Children)
+         {
+            MenuItem item = b as MenuItem;
+
+            if (item != null && item.Submenu != null)
+               LocalizeMenu(item.Submenu as Menu);
+
+            if (b is Gtk.Container)
+               LocalizeMenu((b as Gtk.Container));
+
+            if (b is ILocalized)
+               (b as ILocalized).Localize("MENU");
          }
       }
 
@@ -490,7 +508,7 @@ namespace Docking.Components
       #region OpenFile
       void InstallFileOpenMenu()
       {
-         ImageMenuItem item = new ImageMenuItem("Open...");
+         ImageMenuItem item = new TaggedImageMenuItem("Open...");
          item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Manager.File-16.png"));
          item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.O, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          item.Activated += (sender, e) =>
@@ -1739,16 +1757,54 @@ namespace Docking.Components
       #endregion
    }
 
-   class TaggedImageMenuItem : ImageMenuItem
+   public class TaggedMenuItem : MenuItem, ILocalized
+   {
+      public TaggedMenuItem(String name) : base(name) { }
+      public System.Object Tag { get; set; }
+
+      void ILocalized.Localize(string namespc)
+      {
+         Label l = this.Child as Label;
+         if (LocalizationKey == null)
+            LocalizationKey = l.Text;
+         l.Text = LocalizationKey.Localized(namespc);
+      }
+      public string LocalizationKey { get; set; }
+   }
+
+
+   public class TaggedImageMenuItem : ImageMenuItem, ILocalized
    {
       public TaggedImageMenuItem(String name) : base(name) { }
       public System.Object Tag { get; set; }
+
+      void ILocalized.Localize(string namespc)
+      {
+         Label l = this.Child as Label;
+         if (LocalizationKey == null)
+            LocalizationKey = l.Text;
+         l.Text = LocalizationKey.Localized(namespc);
+      }
+      public string LocalizationKey { get; set; }
    }
 
-   class TaggedCheckedMenuItem : CheckMenuItem
+   public class TaggedCheckedMenuItem : CheckMenuItem, ILocalized
    {
-      public TaggedCheckedMenuItem(String name) : base(name) {}
+      public TaggedCheckedMenuItem(String name) : base(name) { IgnoreLocalization = false; }
       public System.Object Tag { get; set; }
+
+      void ILocalized.Localize(string namespc)
+      {
+         if (!IgnoreLocalization)
+         {
+            Label l = this.Child as Label;
+            if (LocalizationKey == null)
+               LocalizationKey = l.Text;
+            l.Text = LocalizationKey.Localized(namespc);
+         }
+      }
+      public string LocalizationKey { get; set; }
+      public bool IgnoreLocalization { get; set; }
    }
 
 
