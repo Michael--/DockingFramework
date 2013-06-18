@@ -144,4 +144,46 @@
   <data name="MENU.Localization Editor" xml:space="preserve">
     <value>Lokalisierungs Editor</value>
   </data>
+  <data name="MENU.Language" xml:space="preserve">
+    <value>Sprache</value>
+  </data>
+  <data name="MENU.Properties" xml:space="preserve">
+    <value>Eigenschaften</value>
+  </data>
+  <data name="MENU.Script Editor" xml:space="preserve">
+    <value>Drehbuch Editor</value>
+  </data>
+  <data name="MENU.New Layout..." xml:space="preserve">
+    <value>Neue Gestaltung</value>
+  </data>
+  <data name="MENU.Messages" xml:space="preserve">
+    <value>Nachrichten</value>
+  </data>
+  <data name="MENU.Message" xml:space="preserve">
+    <value>Nachricht</value>
+  </data>
+  <data name="MENU.Layout" xml:space="preserve">
+    <value>Gestaltung</value>
+  </data>
+  <data name="MENU.Delete Current Layout" xml:space="preserve">
+    <value>Lösche aktuelle Gestaltung</value>
+  </data>
+  <data name="MENU.Component List" xml:space="preserve">
+    <value>Komponenten Liste</value>
+  </data>
+  <data name="MENU.Command" xml:space="preserve">
+    <value>Kommando</value>
+  </data>
+  <data name="MENU.Activities" xml:space="preserve">
+    <value>Aktivitäten</value>
+  </data>
+  <data name="Docking.Components.US name" xml:space="preserve">
+    <value>US Name</value>
+  </data>
+  <data name="Docking.Components.Key" xml:space="preserve">
+    <value>Schlüssel</value>
+  </data>
+  <data name="Docking.Components.Current name" xml:space="preserve">
+    <value>Aktueller Name</value>
+  </data>
 </root>
