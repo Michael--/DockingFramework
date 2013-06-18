@@ -18,10 +18,9 @@ namespace Docking.Components
         // set the displayed name of the widget
         string ILocalizable.Name { get { return "Properties"; } }
 
-        // currently nothing do to, but special cases can be considered
+        // force redraw with same data
         void ILocalizable.LocalizationChanged(Docking.DockItem item)
         {
-           // force redraw with same data
            Object save = this.propertygrid1.CurrentObject;
            this.propertygrid1.CurrentObject = null;
            this.propertygrid1.CurrentObject = save;

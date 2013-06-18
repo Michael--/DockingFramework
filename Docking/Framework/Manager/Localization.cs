@@ -102,6 +102,21 @@ namespace Docking.Components
          }
       }
 
+      public static Dictionary<string, Node> GetDefaultNodes() { return mDefaultLanguage.Nodes; }
+      public static int GetCurrentHashcode() { return mCurrentLanguage.GetHashCode(); }
+      public static Node FindCurrentNode(string key)
+      {
+         Node node = null;
+         mCurrentLanguage.Nodes.TryGetValue(key, out node);
+         return node;
+      }
+
+      public static void AddNewCurrentNode(Node node)
+      {
+         if (!mCurrentLanguage.Nodes.ContainsKey(node.Key))
+            mCurrentLanguage.Nodes.Add(node.Key, node);
+      }
+
       static ComponentManager componentManager;
       Dictionary<string, Language> Languages = new Dictionary<string, Language>();
       static Language mDefaultLanguage;
@@ -121,7 +136,7 @@ namespace Docking.Components
       }
 
 
-      class Node
+      public class Node
       {
          public Node(string key, object value, string comment, string bse)
          {

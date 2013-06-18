@@ -206,6 +206,8 @@
     <Compile Include="Monodevelop.Components\ConsoleView.cs" />
     <Compile Include="Framework\Components\ScriptEditor.cs" />
     <Compile Include="gtk-gui\Docking.Components.ScriptEditor.cs" />
+    <Compile Include="Framework\Components\LocalizationEditor.cs" />
+    <Compile Include="gtk-gui\Docking.LocalizationEditor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

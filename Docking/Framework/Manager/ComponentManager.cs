@@ -433,30 +433,34 @@ namespace Docking.Components
          CheckMenuItem(mLanguageBaseMenu, Localization.CurrentLanguageName);
 
          if (result || always)
-         {
-            // tell all component about changed language
-            foreach (DockItem item in DockFrame.GetItems())
-            {
-               if (item.Content != null)
-                  LocalizeControls(item.Content.GetType().Namespace, item.Widget);
-               if (item.Content is ILocalizable)
-               {
-                  ILocalizable il = item.Content as ILocalizable;
-                  il.LocalizationChanged(item);
-                  item.Content.Name = il.Name.Localized(item.Content.GetType().Namespace);
-               }
+            UpdateLanguage();
+      }
 
-               item.UpdateLabel();
+      public void UpdateLanguage()
+      {
+         // tell all component about changed language
+         foreach (DockItem item in DockFrame.GetItems())
+         {
+            if (item.Content != null)
+               LocalizeControls(item.Content.GetType().Namespace, item.Widget);
+            if (item.Content is ILocalizable)
+            {
+               ILocalizable il = item.Content as ILocalizable;
+               il.LocalizationChanged(item);
+               item.Content.Name = il.Name.Localized(item.Content.GetType().Namespace);
             }
 
-            // todo: change menue and further language depending stuff
-            LocalizeMenu(MenuBar);
-
-            // redraw workaround
-            this.Hide();
-            this.Show();
+            item.UpdateLabel();
          }
+
+         // todo: change menue and further language depending stuff
+         LocalizeMenu(MenuBar);
+
+         // redraw workaround
+         this.Hide();
+         this.Show();
       }
+
 
       void LocalizeMenu(Gtk.Container bin)
       {
