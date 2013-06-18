@@ -486,6 +486,15 @@ namespace Docking.Components
             if (b is Gtk.Container)
                LocalizeControls(namespc, (b as Gtk.Container));
 
+            if (b is TreeView)
+            {
+               foreach(TreeViewColumn c in (b as TreeView).Columns)
+               {
+                  if (c is ILocalized)
+                     (c as ILocalized).Localize(namespc);
+               }
+            }
+
             if (b is ILocalized)
                (b as ILocalized).Localize(namespc);
          }

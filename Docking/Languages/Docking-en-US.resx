@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Docking.Components.Current name" xml:space="preserve">
+    <value>Current name</value>
+  </data>
+  <data name="Docking.Components.Key" xml:space="preserve">
+    <value>Key</value>
+  </data>
   <data name="Docking.Components.Localization Editor" xml:space="preserve">
     <value>Localization Editor</value>
   </data>
@@ -125,6 +131,9 @@
   </data>
   <data name="Docking.Components.Save" xml:space="preserve">
     <value>Save</value>
+  </data>
+  <data name="Docking.Components.US name" xml:space="preserve">
+    <value>US name</value>
   </data>
   <data name="LANGUAGE_NAME" xml:space="preserve">
     <value>US English</value>

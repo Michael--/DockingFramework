@@ -14,9 +14,9 @@ namespace Docking.Components
 
          // TODO: fix sizing could be better because of soome very long values
 
-         TreeViewColumn keyColumn = new TreeViewColumn()          { Title = "Key", Resizable = true, Sizing = TreeViewColumnSizing.Autosize };
-         TreeViewColumn usValueColumn = new TreeViewColumn()      { Title = "US name", Resizable = true, Sizing = TreeViewColumnSizing.Autosize };
-         TreeViewColumn localValueColumn = new TreeViewColumn()   { Title = "Current name", Resizable = true, Sizing = TreeViewColumnSizing.Autosize };
+         TreeViewColumn keyColumn = new TreeViewColumnLocalized() { Title = "Key", Resizable = true, Sizing = TreeViewColumnSizing.Autosize };
+         TreeViewColumn usValueColumn = new TreeViewColumnLocalized() { Title = "US name", Resizable = true, Sizing = TreeViewColumnSizing.Autosize };
+         TreeViewColumn localValueColumn = new TreeViewColumnLocalized() { Title = "Current name", Resizable = true, Sizing = TreeViewColumnSizing.Autosize };
 
          treeview1.AppendColumn(keyColumn);
          treeview1.AppendColumn(usValueColumn);

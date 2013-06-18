@@ -178,10 +178,10 @@ namespace Docking.Components
       public static string GetString(string key)
       {
          Node node = null;
-         if (mCurrentLanguage != null && mCurrentLanguage.Nodes.TryGetValue(key, out node))
+         if (mCurrentLanguage != null && mCurrentLanguage.Nodes.TryGetValue(key, out node) && (node.Value as String).Length > 0)
             return node.Value as string;
 
-         if (mDefaultLanguage != null && mDefaultLanguage.Nodes.TryGetValue(key, out node))
+         if (mDefaultLanguage != null && mDefaultLanguage.Nodes.TryGetValue(key, out node) && (node.Value as String).Length > 0)
             return node.Value as string;
 
          componentManager.MessageWriteLine("Missing localization key '{0}'", key);
@@ -230,6 +230,18 @@ namespace Docking.Components
          if (LocalizationKey == null)
             LocalizationKey = Label;
          Label = LocalizationKey.Localized(namespc);
+      }
+      public string LocalizationKey { get; set; }
+   }
+
+   [System.ComponentModel.ToolboxItem(true)] // ?? is this really necessary as a Toolbox item ??
+   public class TreeViewColumnLocalized : Gtk.TreeViewColumn, ILocalized
+   {
+      void ILocalized.Localize(string namespc)
+      {
+         if (LocalizationKey == null)
+            LocalizationKey = Title;
+         Title = LocalizationKey.Localized(namespc);
       }
       public string LocalizationKey { get; set; }
    }}
