@@ -33,6 +33,7 @@ using System.ComponentModel;
 using Gtk;
 using Gdk;
 using MonoDevelop.Components.PropertyGrid.PropertyEditors;
+using Docking.Components;
 
 namespace MonoDevelop.Components.PropertyGrid
 {
@@ -195,9 +196,9 @@ namespace MonoDevelop.Components.PropertyGrid
 				TreeIter catIter = TreeIter.Zero;
 				
 				foreach (PropertyDescriptor pd in sorted) {
-					if (pd.Category != oldCat) {
-						catIter = store.AppendValues (pd.Category, null, true, idata);
-						oldCat = pd.Category;
+					if (pd.Category.Localized() != oldCat) {
+						catIter = store.AppendValues (pd.Category.Localized(), null, true, idata);
+						oldCat = pd.Category.Localized();
 					}
 					AppendProperty (catIter, pd, idata);
 				}
@@ -251,9 +252,9 @@ namespace MonoDevelop.Components.PropertyGrid
 			TreeIter iter;
 			
 			if (piter.Equals (TreeIter.Zero))
-				iter = store.AppendValues (prop.DisplayName, prop, false, idata);
+				iter = store.AppendValues (prop.DisplayName.Localized(), prop, false, idata);
 			else
-				iter = store.AppendValues (piter, prop.DisplayName, prop, false, idata);
+				iter = store.AppendValues (piter, prop.DisplayName.Localized(), prop, false, idata);
 			propertyRows [prop] = store.GetStringFromIter (iter);
 			
 			TypeConverter tc = prop.Converter;
@@ -285,7 +286,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			if (tree.Selection.GetSelected (out iter)) {
 				PropertyDescriptor prop = (PropertyDescriptor) store.GetValue (iter, 1);
 				if (prop != null)
-					parentGrid.SetHelp (prop.DisplayName, prop.Description);
+               parentGrid.SetHelp(prop.DisplayName.Localized(), prop.Description.Localized());
 				else
 					parentGrid.SetHelp (string.Empty, string.Empty);
 			} else {
@@ -330,10 +331,10 @@ namespace MonoDevelop.Components.PropertyGrid
 		{
 			public int Compare (object x, object y)
 			{
-				int catcomp = ((PropertyDescriptor)x).Category.CompareTo (((PropertyDescriptor)y).Category);
+				int catcomp = ((PropertyDescriptor)x).Category.Localized().CompareTo (((PropertyDescriptor)y).Category.Localized());
 
 				if (catcomp == 0)
-					return ((PropertyDescriptor)x).DisplayName.CompareTo (((PropertyDescriptor)y).DisplayName);
+					return ((PropertyDescriptor)x).DisplayName.Localized().CompareTo (((PropertyDescriptor)y).DisplayName.Localized());
 				else
 					return catcomp;
 			}
@@ -343,7 +344,7 @@ namespace MonoDevelop.Components.PropertyGrid
 		{
 			public int Compare(object x, object y)
 			{
-				return ((PropertyDescriptor)x).DisplayName.CompareTo (((PropertyDescriptor)y).DisplayName);
+				return ((PropertyDescriptor)x).DisplayName.Localized().CompareTo (((PropertyDescriptor)y).DisplayName.Localized());
 			}
 		}
 	}

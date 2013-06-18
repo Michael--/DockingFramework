@@ -3,17 +3,29 @@ using System;
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-    public partial class PropertyViewer : Gtk.Bin, IProperty
+    public partial class PropertyViewer : Gtk.Bin, IProperty, ILocalizable
     {
         public PropertyViewer ()
         {
             this.Build();
-            this.Name = "Properties";
             this.propertygrid1.Changed += (sender, e) => 
 			{
                 if (PropertyChangedHandler != null)
                     PropertyChangedHandler(new PropertyChangedEventArgs(this.propertygrid1.CurrentObject));
 			};
+        }
+
+        // set the displayed name of the widget
+        string ILocalizable.Name { get { return "Properties"; } }
+
+        // currently nothing do to, but special cases can be considered
+        void ILocalizable.LocalizationChanged(Docking.DockItem item)
+        {
+           // force redraw with same data
+           Object save = this.propertygrid1.CurrentObject;
+           this.propertygrid1.CurrentObject = null;
+           this.propertygrid1.CurrentObject = save;
+           this.propertygrid1.QueueDraw(); 
         }
 
         #region implement IProperty

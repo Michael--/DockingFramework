@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Docking.Components.Properties" xml:space="preserve">
+    <value>Properties</value>
+  </data>
   <data name="LANGUAGE_NAME" xml:space="preserve">
     <value>US English</value>
   </data>
@@ -129,6 +132,9 @@
   <data name="MENU.Component List" xml:space="preserve">
     <value>Component List</value>
   </data>
+  <data name="MENU.Delete Current Layout" xml:space="preserve">
+    <value>Delete Current Layout</value>
+  </data>
   <data name="MENU.File" xml:space="preserve">
     <value>File</value>
   </data>
@@ -138,11 +144,17 @@
   <data name="MENU.Language" xml:space="preserve">
     <value>Language</value>
   </data>
+  <data name="MENU.Layout" xml:space="preserve">
+    <value>Layout</value>
+  </data>
   <data name="MENU.Message" xml:space="preserve">
     <value>Message</value>
   </data>
   <data name="MENU.Messages" xml:space="preserve">
     <value>Messages</value>
+  </data>
+  <data name="MENU.New Layout..." xml:space="preserve">
+    <value>New Layout...</value>
   </data>
   <data name="MENU.Open..." xml:space="preserve">
     <value>Open...</value>

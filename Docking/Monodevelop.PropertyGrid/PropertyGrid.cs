@@ -47,7 +47,7 @@ namespace MonoDevelop.Components.PropertyGrid
 {
 	[System.ComponentModel.Category("MonoDevelop.Components")]
 	[System.ComponentModel.ToolboxItem(true)]
-	public class PropertyGrid: Gtk.VBox
+   public class PropertyGrid : Gtk.VBox
 	{
 		object currentObject;
 		object[] propertyProviders;
@@ -281,7 +281,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			UpdateTabs ();
 			Populate();
 		}
-		
+
 		public void CommitPendingChanges ()
 		{
 			tree.CommitChanges ();
