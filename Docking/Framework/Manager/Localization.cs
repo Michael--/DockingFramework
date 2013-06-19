@@ -96,7 +96,7 @@ namespace Docking.Components
             string value = obj as string;
             string comment = node.Comment;
 
-            Node n = new Node(key, value, comment, basename);
+            Node n = new Node(key, value, comment, basename, value, comment);
             if (!lang.Nodes.ContainsKey(key))
                lang.Nodes.Add(key, n);
             else
@@ -203,15 +203,15 @@ namespace Docking.Components
 
       public class Node
       {
-         public Node(string key, string value, string comment, string bse)
+         public Node(string key, string value, string comment, string bse, string oldValue, string oldComment)
          {
             Key = key;
             Value = value;
             Comment = comment;
             Base = bse;
 
-            OldValue = Value.Clone() as String;
-            OldComment = Comment.Clone() as String; 
+            OldValue = oldValue;
+            OldComment = oldComment; 
          }
 
          public string Key { get; private set; }
@@ -233,8 +233,8 @@ namespace Docking.Components
 
          public void Saved() // changes has been saved
          {
-            OldValue = Value.Clone() as String;
-            OldComment = Comment.Clone() as String;
+            OldValue = Value;
+            OldComment = Comment;
          }
       }
 

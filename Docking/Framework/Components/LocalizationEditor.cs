@@ -63,7 +63,7 @@ namespace Docking.Components
             }
             else
             {
-               Localization.Node newNode = new Localization.Node(node.Key, args.NewText, "", node.Base);
+               Localization.Node newNode = new Localization.Node(node.Key, args.NewText, "", node.Base, "", "");
                ComponentManager.Localization.AddNewCurrentNode(newNode);
             }
             ComponentManager.UpdateLanguage();
