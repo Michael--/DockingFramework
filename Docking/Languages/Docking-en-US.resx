@@ -117,11 +117,35 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Docking.Components.Activities" xml:space="preserve">
+    <value>Activities</value>
+  </data>
+  <data name="Docking.Components.Activity" xml:space="preserve">
+    <value>Activity</value>
+  </data>
+  <data name="Docking.Components.Cancel Activity" xml:space="preserve">
+    <value>Cancel Activity</value>
+  </data>
   <data name="Docking.Components.Changes: {0}" xml:space="preserve">
     <value>Changes: {0}</value>
   </data>
+  <data name="Docking.Components.Command" xml:space="preserve">
+    <value>Command</value>
+  </data>
+  <data name="Docking.Components.Component" xml:space="preserve">
+    <value>Component</value>
+  </data>
+  <data name="Docking.Components.Component List" xml:space="preserve">
+    <value>Component List</value>
+  </data>
   <data name="Docking.Components.Current name" xml:space="preserve">
     <value>Current name</value>
+  </data>
+  <data name="Docking.Components.Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Docking.Components.Instances" xml:space="preserve">
+    <value>Instances</value>
   </data>
   <data name="Docking.Components.Key" xml:space="preserve">
     <value>Key</value>
@@ -129,11 +153,20 @@
   <data name="Docking.Components.Localization Editor" xml:space="preserve">
     <value>Localization Editor</value>
   </data>
+  <data name="Docking.Components.Messages" xml:space="preserve">
+    <value>Messages</value>
+  </data>
   <data name="Docking.Components.Properties" xml:space="preserve">
     <value>Properties</value>
   </data>
   <data name="Docking.Components.Save" xml:space="preserve">
     <value>Save</value>
+  </data>
+  <data name="Docking.Components.Script Editor" xml:space="preserve">
+    <value>Script Editor</value>
+  </data>
+  <data name="Docking.Components.Status" xml:space="preserve">
+    <value>Status</value>
   </data>
   <data name="Docking.Components.US name" xml:space="preserve">
     <value>US name</value>

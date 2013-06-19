@@ -6,30 +6,15 @@ using System.Collections.Generic;
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-    public partial class Activities : Gtk.Bin, IComponent
+    public partial class Activities : Gtk.Bin, IComponent, ILocalizable
     {
         public Activities ()
         {
             this.Build();
-            this.Name = "Activities";
 
-            Gtk.TreeViewColumn activityColumn = new Gtk.TreeViewColumn ();
-            activityColumn.Title = "Activity";
-            activityColumn.Resizable = true;
-            activityColumn.Sizing = Gtk.TreeViewColumnSizing.Fixed;
-            activityColumn.FixedWidth = 100;
-
-            Gtk.TreeViewColumn descriptionColumn = new Gtk.TreeViewColumn ();
-            descriptionColumn.Title = "Description";
-            descriptionColumn.Resizable = true;
-            descriptionColumn.Sizing = Gtk.TreeViewColumnSizing.Fixed;
-            descriptionColumn.FixedWidth = 200;
-
-            Gtk.TreeViewColumn statusColumn = new Gtk.TreeViewColumn ();
-            statusColumn.Title = "Status";
-            statusColumn.Resizable = true;
-            statusColumn.Sizing = Gtk.TreeViewColumnSizing.Fixed;
-            statusColumn.FixedWidth = 100;
+            Gtk.TreeViewColumn activityColumn = new TreeViewColumnLocalized() { Title = "Activity", Resizable = true, Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 100 };
+            Gtk.TreeViewColumn descriptionColumn = new TreeViewColumnLocalized() { Title = "Description", Resizable = true, Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 200 };
+            Gtk.TreeViewColumn statusColumn = new TreeViewColumnLocalized() { Title = "Status", Resizable = true, Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 100 };
 
             // Add the columns to the TreeView
             treeview1.AppendColumn (activityColumn);
@@ -74,6 +59,17 @@ namespace Docking.Components
         {
         }
         #endregion
+
+        #region implement  ILocalizable
+
+        // set the displayed name of the widget
+        string ILocalizable.Name { get { return "Activities"; } }
+
+        void ILocalizable.LocalizationChanged(Docking.DockItem item)
+        {
+        }
+        #endregion
+
 
         void Initialize()
         {

@@ -3,7 +3,7 @@ using System;
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-    public partial class Messages : Gtk.Bin, IMessage, IComponent
+   public partial class Messages : Gtk.Bin, IMessage, IComponent, ILocalizable
     {
         #region Implement IMessage
         // FIXME SLohse: This function currently may ONLY be called from the main GUI thread!
@@ -48,10 +48,20 @@ namespace Docking.Components
         }
         #endregion
 
+        #region implement  ILocalizable
+
+        // set the displayed name of the widget
+        string ILocalizable.Name { get { return "Messages"; } }
+
+        void ILocalizable.LocalizationChanged(Docking.DockItem item)
+        {
+        }
+        #endregion
+
+
         public Messages()
         {
             this.Build ();
-            this.Name = "Messages";
             m_Scroll2EndMark = textview1.Buffer.CreateMark("Scroll2End", textview1.Buffer.EndIter, true);
         }
     }

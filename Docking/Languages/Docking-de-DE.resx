@@ -189,4 +189,37 @@
   <data name="Docking.Components.Changes: {0}" xml:space="preserve">
     <value>Änderungen: {0}</value>
   </data>
+  <data name="Docking.Components.Messages" xml:space="preserve">
+    <value>Meldungen</value>
+  </data>
+  <data name="Docking.Components.Activities" xml:space="preserve">
+    <value>Aktivitäten</value>
+  </data>
+  <data name="Docking.Components.Cancel Activity" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="Docking.Components.Command" xml:space="preserve">
+    <value>Kommando</value>
+  </data>
+  <data name="Docking.Components.Activity" xml:space="preserve">
+    <value>Aktivität</value>
+  </data>
+  <data name="Docking.Components.Component" xml:space="preserve">
+    <value>Komponente</value>
+  </data>
+  <data name="Docking.Components.Component List" xml:space="preserve">
+    <value>Komponenten Liste</value>
+  </data>
+  <data name="Docking.Components.Description" xml:space="preserve">
+    <value>Beschreibung</value>
+  </data>
+  <data name="Docking.Components.Instances" xml:space="preserve">
+    <value>Instanzen</value>
+  </data>
+  <data name="Docking.Components.Script Editor" xml:space="preserve">
+    <value>Skript Editor</value>
+  </data>
+  <data name="Docking.Components.Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
 </root>

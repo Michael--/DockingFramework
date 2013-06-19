@@ -106,7 +106,7 @@
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.Button" id="buttonCancel">
+              <widget class="Docking.Components.ButtonLocalized" id="buttonCancel">
                 <property name="MemberName" />
                 <property name="Sensitive">False</property>
                 <property name="CanFocus">True</property>
