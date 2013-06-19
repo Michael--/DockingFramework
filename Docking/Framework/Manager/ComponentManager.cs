@@ -1442,6 +1442,8 @@ namespace Docking.Components
          AddSelectNotifier(item, w);
          AddSelectNotifier(item, item.TitleTab);
          item.Content = w;
+         if (item.Content is ILocalizable)
+            item.Content.Name = (item.Content as ILocalizable).Name.Localized(item.Content.GetType().Namespace);
          item.UpdateLabel();
          item.Icon = cfi.Icon;
          item.DefaultVisible = false;
