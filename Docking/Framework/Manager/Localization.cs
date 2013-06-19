@@ -297,6 +297,16 @@ namespace Docking.Components
             return Localized(key);
          }
       }
+
+
+      // TODO: export to better place
+      static public TreeViewColumnLocalized AppendColumn(this Gtk.TreeView treeview, TreeViewColumnLocalized column, Gtk.CellRenderer cell, string attr, int col)
+      {
+         treeview.AppendColumn(column);
+         column.PackStart(cell, true);
+         column.AddAttribute(cell, attr, col);
+         return column;
+      }
    }
 
    [System.ComponentModel.ToolboxItem(true)]
@@ -338,6 +348,9 @@ namespace Docking.Components
    [System.ComponentModel.ToolboxItem(true)]
    public class CheckButtonLocalized : Gtk.CheckButton, ILocalized
    {
+      public CheckButtonLocalized() : base() { }
+      public CheckButtonLocalized(string label) : base(label) { }
+
       void ILocalized.Localize(string namespc)
       {
          if (LocalizationKey == null)
@@ -345,4 +358,19 @@ namespace Docking.Components
          Label = LocalizationKey.Localized(namespc);
       }
       public string LocalizationKey { get; set; }
-   }}
+   }
+
+   [System.ComponentModel.ToolboxItem(true)]
+   public class RadioButtonLocalized : Gtk.RadioButton, ILocalized
+   {
+      public RadioButtonLocalized() : base("") { }
+      public RadioButtonLocalized(string label) : base(label) { }
+      void ILocalized.Localize(string namespc)
+      {
+         if (LocalizationKey == null)
+            LocalizationKey = Label;
+         Label = LocalizationKey.Localized(namespc);
+      }
+      public string LocalizationKey { get; set; }
+   }
+}
