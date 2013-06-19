@@ -210,8 +210,8 @@ namespace Docking.Components
             Comment = comment;
             Base = bse;
 
-            OldValue = Value;
-            OldComment = Comment; 
+            OldValue = Value.Clone() as String;
+            OldComment = Comment.Clone() as String; 
          }
 
          public string Key { get; private set; }
@@ -221,11 +221,20 @@ namespace Docking.Components
          private string OldValue { get; set; }
          private string OldComment { get; set; }
 
-         public bool Changed { get { return Value != OldValue || Comment != OldComment; } }
+         public bool Changed
+         {
+            get
+            {
+               if (Value != OldValue)
+                  return true;
+               return Comment != OldComment;
+            }
+         }
+
          public void Saved() // changes has been saved
          {
-            OldValue = Value;
-            OldComment = Comment;
+            OldValue = Value.Clone() as String;
+            OldComment = Comment.Clone() as String;
          }
       }
 
@@ -314,7 +323,7 @@ namespace Docking.Components
       public string LocalizationKey { get; set; }
    }
 
-   [System.ComponentModel.ToolboxItem(true)] // ?? is this really necessary as a Toolbox item ??
+   // [System.ComponentModel.ToolboxItem(true)] // ?? is this really necessary as a Toolbox item ??
    public class TreeViewColumnLocalized : Gtk.TreeViewColumn, ILocalized
    {
       void ILocalized.Localize(string namespc)
@@ -322,6 +331,18 @@ namespace Docking.Components
          if (LocalizationKey == null)
             LocalizationKey = Title;
          Title = LocalizationKey.Localized(namespc);
+      }
+      public string LocalizationKey { get; set; }
+   }
+
+   [System.ComponentModel.ToolboxItem(true)]
+   public class CheckButtonLocalized : Gtk.CheckButton, ILocalized
+   {
+      void ILocalized.Localize(string namespc)
+      {
+         if (LocalizationKey == null)
+            LocalizationKey = Label;
+         Label = LocalizationKey.Localized(namespc);
       }
       public string LocalizationKey { get; set; }
    }}
