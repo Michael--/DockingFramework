@@ -186,4 +186,7 @@
   <data name="Docking.Components.Current name" xml:space="preserve">
     <value>Aktueller Name</value>
   </data>
+  <data name="Docking.Components.Changes: {0}" xml:space="preserve">
+    <value>Änderungen: {0}</value>
+  </data>
 </root>

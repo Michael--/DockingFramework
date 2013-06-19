@@ -91,7 +91,9 @@ namespace Docking.Components
          {
             ResXDataNode node = dict.Value as ResXDataNode;
             string key = node.Name;
-            object value = node.GetValue((ITypeResolutionService)null);
+            object obj = node.GetValue((ITypeResolutionService)null);
+            Debug.Assert(obj is string);
+            string value = obj as string;
             string comment = node.Comment;
 
             Node n = new Node(key, value, comment, basename);
@@ -102,22 +104,47 @@ namespace Docking.Components
          }
       }
 
-      public void Write()
+      public void WriteChangedResourceFiles()
       {
+         // 1st: find out which file contains changes and prepare writing
          Dictionary<string, ResXResourceWriter> resourceWriter = new Dictionary<string, ResXResourceWriter>();
+         foreach (Language l in Languages.Values)
+         {
+            foreach (Node n in l.Nodes.Values)
+            {
+               if (!n.Changed) // no write necessary
+                  continue;
+
+               string filename = String.Format("{0}/{1}-{2}.resx", mFolder, n.Base, l.Code);
+               if (resourceWriter.ContainsKey(filename)) // already considered
+                  continue;
+
+               ResXResourceWriter rw = new ResXResourceWriter(filename);
+               resourceWriter.Add(filename, rw);
+            }
+         }
+
+         if (resourceWriter.Count == 0) // nothing to do, no changes
+            return;
+
+         // 2nd: write any node for any open resource file
          foreach (Language l in Languages.Values)
          {
             foreach (Node n in l.Nodes.Values)
             {
                string filename = String.Format("{0}/{1}-{2}.resx", mFolder, n.Base, l.Code);
                ResXResourceWriter rw;
-               if (!resourceWriter.TryGetValue(filename, out rw))
+               if (resourceWriter.TryGetValue(filename, out rw))
                {
-                  rw = new ResXResourceWriter(filename);
-                  resourceWriter.Add(filename, rw);
+                  ResXDataNode rnode = new ResXDataNode(n.Key, n.Value);
+                  rnode.Comment = n.Comment;
+                  rw.AddResource(rnode);
+                  n.Saved(); // mark as saved
                }
-               ResXDataNode rnode = new ResXDataNode(n.Key, n.Value);
-               rw.AddResource(rnode);
+               else
+               {
+                  Debug.Assert(!n.Changed); // last check, changed nodes must not exist here
+               }
             }
          }
          foreach (ResXResourceWriter w in resourceWriter.Values)
@@ -139,7 +166,22 @@ namespace Docking.Components
             mCurrentLanguage.Nodes.Add(node.Key, node);
       }
 
-      static ComponentManager componentManager;
+      public int CurrentChangeCount
+      {
+         get
+         {
+            int changes = 0;
+            foreach (Node n in mCurrentLanguage.Nodes.Values)
+            {
+               if (n.Changed)
+                  changes++;
+            }
+            return changes;
+         }
+      }
+
+
+      public static ComponentManager componentManager;
       Dictionary<string, Language> Languages = new Dictionary<string, Language>();
       string mFolder;
       static Language mDefaultLanguage;
@@ -161,18 +203,30 @@ namespace Docking.Components
 
       public class Node
       {
-         public Node(string key, object value, string comment, string bse)
+         public Node(string key, string value, string comment, string bse)
          {
             Key = key;
             Value = value;
             Comment = comment;
             Base = bse;
+
+            OldValue = Value;
+            OldComment = Comment; 
          }
 
          public string Key { get; private set; }
-         public object Value { get; set; }
+         public string Value { get; set; }
          public string Comment { get; set; }
          public string Base { get; private set; }
+         private string OldValue { get; set; }
+         private string OldComment { get; set; }
+
+         public bool Changed { get { return Value != OldValue || Comment != OldComment; } }
+         public void Saved() // changes has been saved
+         {
+            OldValue = Value;
+            OldComment = Comment;
+         }
       }
 
       public static string GetString(string key)
@@ -207,6 +261,32 @@ namespace Docking.Components
          if (result != null)
             return result;
          return key;
+      }
+
+      public static string FormatLocalized(this string key, string header, params object[] args)
+      {
+         try
+         {
+            return String.Format(Localized(key, header), args);
+         }
+         catch (FormatException)
+         {
+            Localization.componentManager.MessageWriteLine("FormatLocalized Exception: key='{0}.{1}' fmt='{2}'", header, key, Localized(key, header));
+            return Localized(key, header);
+         }
+      }
+
+      public static string FormatLocalized(this string key, params object[] args)
+      {
+         try
+         {
+            return String.Format(Localized(key), args);
+         }
+         catch (FormatException)
+         {
+            Localization.componentManager.MessageWriteLine("FormatLocalized Exception: key='{0}' fmt='{1}'", key, Localized(key));
+            return Localized(key);
+         }
       }
    }
 

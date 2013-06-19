@@ -43,7 +43,8 @@ namespace Docking.Components
 
          button1.Clicked += (sender, e) =>
          {
-            ComponentManager.Localization.Write();
+            ComponentManager.Localization.WriteChangedResourceFiles();
+            UpdateChangeCount();
          };
       }
 
@@ -66,6 +67,7 @@ namespace Docking.Components
                ComponentManager.Localization.AddNewCurrentNode(newNode);
             }
             ComponentManager.UpdateLanguage();
+            UpdateChangeCount();
          }
       }
 
@@ -85,6 +87,7 @@ namespace Docking.Components
       void ILocalizable.LocalizationChanged(Docking.DockItem item)
       {
          UpdateList();
+         UpdateChangeCount();
       }
       #endregion
 
@@ -94,12 +97,18 @@ namespace Docking.Components
       void IComponent.Loaded(DockItem item)
       {
          UpdateList();
+         UpdateChangeCount();
       }
 
       void IComponent.Save()
       {
       }
       #endregion
+
+      void UpdateChangeCount()
+      {
+         labelChanges.LabelProp = "Changes: {0}".FormatLocalized(GetType().Namespace, ComponentManager.Localization.CurrentChangeCount);
+      }
 
       void UpdateList()
       {

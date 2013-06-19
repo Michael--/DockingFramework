@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="Docking.Components.Changes: {0}" xml:space="preserve">
+    <value>Changes: {0}</value>
+  </data>
   <data name="Docking.Components.Current name" xml:space="preserve">
     <value>Current name</value>
   </data>

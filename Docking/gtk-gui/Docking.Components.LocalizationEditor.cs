@@ -9,14 +9,15 @@ namespace Docking.Components
 		private global::Gtk.TreeView treeview1;
 		private global::Gtk.HBox hbox1;
 		private global::Docking.Components.ButtonLocalized button1;
+		private global::Gtk.Label labelChanges;
 
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
-			// Widget Docking.LocalizationEditor
+			// Widget Docking.Components.LocalizationEditor
 			global::Stetic.BinContainer.Attach (this);
-			this.Name = "Docking.LocalizationEditor";
-			// Container child Docking.LocalizationEditor.Gtk.Container+ContainerChild
+			this.Name = "Docking.Components.LocalizationEditor";
+			// Container child Docking.Components.LocalizationEditor.Gtk.Container+ContainerChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.Name = "vbox2";
 			this.vbox2.Spacing = 6;
@@ -47,11 +48,20 @@ namespace Docking.Components
 			w3.Position = 0;
 			w3.Expand = false;
 			w3.Fill = false;
-			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
-			w4.Position = 2;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.labelChanges = new global::Gtk.Label ();
+			this.labelChanges.Name = "labelChanges";
+			this.labelChanges.LabelProp = global::Mono.Unix.Catalog.GetString ("Changes: 0");
+			this.hbox1.Add (this.labelChanges);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.labelChanges]));
+			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
+			this.vbox2.Add (this.hbox1);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
+			w5.Position = 2;
+			w5.Expand = false;
+			w5.Fill = false;
 			this.Add (this.vbox2);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

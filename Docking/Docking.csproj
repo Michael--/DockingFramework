@@ -23,7 +23,6 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>0219</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
@@ -207,7 +206,7 @@
     <Compile Include="Framework\Components\ScriptEditor.cs" />
     <Compile Include="gtk-gui\Docking.Components.ScriptEditor.cs" />
     <Compile Include="Framework\Components\LocalizationEditor.cs" />
-    <Compile Include="gtk-gui\Docking.LocalizationEditor.cs" />
+    <Compile Include="gtk-gui\Docking.Components.LocalizationEditor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -873,6 +873,9 @@ namespace Docking.Components
          // save all components data
          ComponentsSave();
 
+         // save resources if necessary
+         Localization.WriteChangedResourceFiles();
+
          // at least save complete persistence to file
          SaveConfiguration(filename);
       }
