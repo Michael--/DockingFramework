@@ -479,7 +479,7 @@ namespace Docking.Components
          }
       }
 
-      void LocalizeControls(string namespc, Gtk.Container bin)
+      public void LocalizeControls(string namespc, Gtk.Container bin)
       {
          foreach (Gtk.Widget b in bin.Children)
          {
