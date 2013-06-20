@@ -50,7 +50,43 @@ namespace Docking.Components
             UpdateChangeCount();
          };
 
-         buttonlTranslate.Clicked += new EventHandler(buttonTranslate_Clicked);
+         buttonTranslate.Clicked += new EventHandler(buttonTranslate_Clicked);
+         buttonTranslateAll.Clicked += new EventHandler(buttonTranslateAll_Clicked);
+      }
+
+      void buttonTranslateAll_Clicked(object sender, EventArgs e)
+      {
+         if (ResponseType.Yes != MessageBox.Show(null, MessageType.Question,
+                     ButtonsType.YesNo,
+                     "Sure to translate all empty recources ?"))
+            return;
+
+         TreeIter iter;
+         for(bool ok = listStore.GetIterFirst(out iter); ok; ok = listStore.IterNext(ref iter))
+         {
+            Localization.Node usNode = listStore.GetValue(iter, nodeIndex) as Localization.Node;
+            Localization.Node currentNode = ComponentManager.Localization.FindCurrentNode(usNode.Key);
+            if (currentNode != null && !string.IsNullOrWhiteSpace(currentNode.Value))
+               continue; // translate only empty fields
+
+            string translation = TranslateGoogle(usNode.Value, ComponentManager.Localization.DefaultLanguageCode, ComponentManager.Localization.CurrentLanguageCode);
+            if (string.IsNullOrWhiteSpace(translation))
+               continue;
+
+            listStore.SetValue(iter, localValueIndex, translation);
+
+            if (currentNode != null)
+            {
+               currentNode.Value = translation;
+            }
+            else
+            {
+               Localization.Node newNode = new Localization.Node(usNode.Key, translation, "", usNode.Base, "", "");
+               ComponentManager.Localization.AddNewCurrentNode(newNode);
+            }
+         }
+         ComponentManager.UpdateLanguage();
+         UpdateChangeCount();
       }
 
       void buttonTranslate_Clicked(object sender, EventArgs e)

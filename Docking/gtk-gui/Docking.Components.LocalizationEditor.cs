@@ -10,7 +10,8 @@ namespace Docking.Components
 		private global::Gtk.HBox hbox1;
 		private global::Docking.Components.ButtonLocalized button1;
 		private global::Gtk.Label labelChanges;
-		private global::Docking.Components.ButtonLocalized buttonlTranslate;
+		private global::Docking.Components.ButtonLocalized buttonTranslate;
+		private global::Docking.Components.ButtonLocalized buttonTranslateAll;
 
 		protected virtual void Build ()
 		{
@@ -59,21 +60,33 @@ namespace Docking.Components
 			w4.Expand = false;
 			w4.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.buttonlTranslate = new global::Docking.Components.ButtonLocalized ();
-			this.buttonlTranslate.CanFocus = true;
-			this.buttonlTranslate.Name = "buttonlTranslate";
-			this.buttonlTranslate.UseUnderline = true;
-			this.buttonlTranslate.Label = global::Mono.Unix.Catalog.GetString ("Translate");
-			this.hbox1.Add (this.buttonlTranslate);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonlTranslate]));
+			this.buttonTranslate = new global::Docking.Components.ButtonLocalized ();
+			this.buttonTranslate.CanFocus = true;
+			this.buttonTranslate.Name = "buttonTranslate";
+			this.buttonTranslate.UseUnderline = true;
+			this.buttonTranslate.Label = global::Mono.Unix.Catalog.GetString ("Translate");
+			this.hbox1.Add (this.buttonTranslate);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonTranslate]));
 			w5.Position = 2;
 			w5.Expand = false;
 			w5.Fill = false;
-			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
-			w6.Position = 2;
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.buttonTranslateAll = new global::Docking.Components.ButtonLocalized ();
+			this.buttonTranslateAll.CanFocus = true;
+			this.buttonTranslateAll.Name = "buttonTranslateAll";
+			this.buttonTranslateAll.UseUnderline = true;
+			this.buttonTranslateAll.Label = global::Mono.Unix.Catalog.GetString ("Translate All");
+			this.hbox1.Add (this.buttonTranslateAll);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonTranslateAll]));
+			w6.PackType = ((global::Gtk.PackType)(1));
+			w6.Position = 3;
 			w6.Expand = false;
 			w6.Fill = false;
+			this.vbox2.Add (this.hbox1);
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
+			w7.Position = 2;
+			w7.Expand = false;
+			w7.Fill = false;
 			this.Add (this.vbox2);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
