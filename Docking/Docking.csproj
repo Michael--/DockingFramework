@@ -110,6 +110,7 @@
     <Compile Include="Framework\Interfaces\IPersistable.cs" />
     <Compile Include="Framework\Interfaces\IPersistency.cs" />
     <Compile Include="Framework\Manager\Localization.cs" />
+    <Compile Include="Framework\Manager\LocalizedWidgets.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="gtk-gui\Docking.Components.Activities.cs" />
     <Compile Include="Framework\Components\Activities.cs" />
@@ -120,6 +121,8 @@
     <Compile Include="Framework\Interfaces\IComponentInteract.cs" />
     <Compile Include="Framework\Interfaces\IMessage.cs" />
     <Compile Include="Tools\Colors\Colors.cs" />
+    <Compile Include="Tools\Misc\LocalizationExtensions.cs" />
+    <Compile Include="Tools\Misc\TreeViewExtensions.cs" />
     <Compile Include="Tools\Threading\JobInformation.cs" />
     <Compile Include="Tools\Threading\TaskInformation.cs" />
     <Compile Include="Tools\Threading\ThreadWorker.cs" />

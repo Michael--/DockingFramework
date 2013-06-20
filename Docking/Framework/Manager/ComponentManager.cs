@@ -447,7 +447,7 @@ namespace Docking.Components
             {
                ILocalizable il = item.Content as ILocalizable;
                il.LocalizationChanged(item);
-               item.Content.Name = il.Name.Localized(item.Content.GetType().Namespace);
+               item.Content.Name = il.Name.Localized(item.Content);
             }
 
             item.UpdateLabel();
@@ -1443,7 +1443,7 @@ namespace Docking.Components
          AddSelectNotifier(item, item.TitleTab);
          item.Content = w;
          if (item.Content is ILocalizable)
-            item.Content.Name = (item.Content as ILocalizable).Name.Localized(item.Content.GetType().Namespace);
+            item.Content.Name = (item.Content as ILocalizable).Name.Localized(item.Content);
          item.UpdateLabel();
          item.Icon = cfi.Icon;
          item.DefaultVisible = false;

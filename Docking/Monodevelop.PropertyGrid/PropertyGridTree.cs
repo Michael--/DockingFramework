@@ -33,7 +33,7 @@ using System.ComponentModel;
 using Gtk;
 using Gdk;
 using MonoDevelop.Components.PropertyGrid.PropertyEditors;
-using Docking.Components;
+using Docking.Tools;
 
 namespace MonoDevelop.Components.PropertyGrid
 {
