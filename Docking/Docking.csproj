@@ -124,7 +124,7 @@
     <Compile Include="Tools\Colors\Colors.cs" />
     <Compile Include="Tools\Misc\LocalizationExtensions.cs" />
     <Compile Include="Tools\Misc\TreeViewExtensions.cs" />
-    <Compile Include="Tools\Misc\WebClient.cs">
+    <Compile Include="Tools\Misc\WebClient2.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Tools\Threading\JobInformation.cs" />
