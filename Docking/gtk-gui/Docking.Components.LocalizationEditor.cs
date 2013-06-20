@@ -10,6 +10,7 @@ namespace Docking.Components
 		private global::Gtk.HBox hbox1;
 		private global::Docking.Components.ButtonLocalized button1;
 		private global::Gtk.Label labelChanges;
+		private global::Docking.Components.ButtonLocalized buttonlTranslate;
 
 		protected virtual void Build ()
 		{
@@ -57,11 +58,22 @@ namespace Docking.Components
 			w4.Position = 1;
 			w4.Expand = false;
 			w4.Fill = false;
-			this.vbox2.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
+			// Container child hbox1.Gtk.Box+BoxChild
+			this.buttonlTranslate = new global::Docking.Components.ButtonLocalized ();
+			this.buttonlTranslate.CanFocus = true;
+			this.buttonlTranslate.Name = "buttonlTranslate";
+			this.buttonlTranslate.UseUnderline = true;
+			this.buttonlTranslate.Label = global::Mono.Unix.Catalog.GetString ("Translate");
+			this.hbox1.Add (this.buttonlTranslate);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.buttonlTranslate]));
 			w5.Position = 2;
 			w5.Expand = false;
 			w5.Fill = false;
+			this.vbox2.Add (this.hbox1);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.hbox1]));
+			w6.Position = 2;
+			w6.Expand = false;
+			w6.Fill = false;
 			this.Add (this.vbox2);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

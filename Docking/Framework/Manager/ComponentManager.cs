@@ -409,7 +409,7 @@ namespace Docking.Components
             if (mLanguageBaseMenu == null)
                mLanguageBaseMenu = item.Parent as Menu;
 
-            item.Active = Localization.CurrentLanguage == code;
+            item.Active = Localization.CurrentLanguageCode == code;
          }
       }
 

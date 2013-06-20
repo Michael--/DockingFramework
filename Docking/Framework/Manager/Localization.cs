@@ -52,8 +52,10 @@ namespace Docking.Components
          return false;
       }
 
-      public string CurrentLanguage { get { return mCurrentLanguageCode; } }
+      public string CurrentLanguageCode { get { return mCurrentLanguageCode; } }
       public string CurrentLanguageName { get { return mCurrentLanguageName; } }
+      public string DefaultLanguageCode { get { return mDefaultLanguageCode; } }
+      public string DefaultLanguageName { get { return mDefaultLanguageName; } }
 
       public void SearchForResources(string s)
       {
@@ -64,7 +66,14 @@ namespace Docking.Components
          foreach (string f in files)
             Read(f);
 
-         Languages.TryGetValue("en-US", out mDefaultLanguage); // last alternative
+         mDefaultLanguageCode = mDefaultLanguageName = "en-US";
+         Languages.TryGetValue(mDefaultLanguageCode, out mDefaultLanguage); // last alternative
+         if (mDefaultLanguage != null)
+         {
+            Node node;
+            if (mDefaultLanguage.Nodes.TryGetValue("LANGUAGE_NAME", out node))
+               mDefaultLanguageName = node.Value as string;
+         }
          SetLanguage("en-US"); // could be switched by user
       }
 
@@ -166,6 +175,13 @@ namespace Docking.Components
             mCurrentLanguage.Nodes.Add(node.Key, node);
       }
 
+      public Node FindDefaultNode(string key)
+      {
+         Node node = null;
+         mDefaultLanguage.Nodes.TryGetValue(key, out node);
+         return node;
+      }
+
       public int CurrentChangeCount
       {
          get
@@ -188,6 +204,8 @@ namespace Docking.Components
       static Language mCurrentLanguage;
       static string mCurrentLanguageCode;
       static string mCurrentLanguageName;
+      static string mDefaultLanguageCode;
+      static string mDefaultLanguageName;
 
       class Language
       {

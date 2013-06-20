@@ -168,6 +168,9 @@
   <data name="Docking.Components.Status" xml:space="preserve">
     <value>Status</value>
   </data>
+  <data name="Docking.Components.Translate" xml:space="preserve">
+    <value>Translate</value>
+  </data>
   <data name="Docking.Components.US name" xml:space="preserve">
     <value>US name</value>
   </data>

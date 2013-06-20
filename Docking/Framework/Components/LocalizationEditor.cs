@@ -2,6 +2,9 @@ using System;
 using Gtk;
 using Docking.Components;
 using System.Collections.Generic;
+using System.Net;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Docking.Components
 {
@@ -46,6 +49,52 @@ namespace Docking.Components
             ComponentManager.Localization.WriteChangedResourceFiles();
             UpdateChangeCount();
          };
+
+         buttonlTranslate.Clicked += new EventHandler(buttonTranslate_Clicked);
+      }
+
+      void buttonTranslate_Clicked(object sender, EventArgs e)
+      {
+         Gtk.TreeSelection selection = treeview1.Selection;
+         Gtk.TreeModel model;
+         Gtk.TreeIter iter;
+         if (selection.GetSelected(out model, out iter))
+         {
+            Localization.Node usNode = listStore.GetValue(iter, nodeIndex) as Localization.Node;
+            Localization.Node currentNode = ComponentManager.Localization.FindCurrentNode(usNode.Key);
+            if (usNode == null)
+               return;
+
+            string translation = TranslateGoogle(usNode.Value, ComponentManager.Localization.DefaultLanguageCode, ComponentManager.Localization.CurrentLanguageCode);
+            if (string.IsNullOrWhiteSpace(translation))
+               return;
+            string reverted = TranslateGoogle(translation, ComponentManager.Localization.CurrentLanguageCode, ComponentManager.Localization.DefaultLanguageCode);
+
+            ComponentManager.MessageWriteLine("Translate {0}-{1} '{2}' -> '{3}'", ComponentManager.Localization.DefaultLanguageCode, ComponentManager.Localization.CurrentLanguageCode, usNode.Value, translation);
+            ComponentManager.MessageWriteLine("Translate {0}-{1} '{2}' -> '{3}'", ComponentManager.Localization.CurrentLanguageCode, ComponentManager.Localization.DefaultLanguageCode, translation, reverted);
+
+            if (currentNode != null && currentNode.Value.Length > 0)
+            {
+               if (ResponseType.Yes != MessageBox.Show(null, MessageType.Question,
+                           ButtonsType.YesNo,
+                           "Overwrite value with new translation ?"))
+                  return;
+            }
+
+            listStore.SetValue(iter, localValueIndex, translation);
+
+            if (currentNode != null)
+            {
+               currentNode.Value = translation;
+            }
+            else
+            {
+               Localization.Node newNode = new Localization.Node(usNode.Key, translation, "", usNode.Base, "", "");
+               ComponentManager.Localization.AddNewCurrentNode(newNode);
+            }
+            ComponentManager.UpdateLanguage();
+            UpdateChangeCount();
+         }
       }
 
       void localValueCell_Edited(object o, EditedArgs args)
@@ -129,6 +178,59 @@ namespace Docking.Components
             if (ln != null)
                listStore.SetValue(iter, localValueIndex, ln.Value);
          }
+      }
+
+      /// <summary>
+      /// Translates a string into another language using Google's translate API JSON calls.
+      /// <seealso>Class TranslationServices</seealso>
+      /// </summary>
+      /// <param name="Text">Text to translate. Should be a single word or sentence.</param>
+      /// <param name="FromCulture">
+      /// Two letter culture (en of en-us, fr of fr-ca, de of de-ch)
+      /// </param>
+      /// <param name="ToCulture">
+      /// Two letter culture (as for FromCulture)
+      /// </param>
+      public string TranslateGoogle(string text, string fromCulture, string toCulture)
+      {
+         fromCulture = fromCulture.ToLower();
+         toCulture = toCulture.ToLower();
+
+         // normalize the culture in case something like en-us was passed 
+         // retrieve only en since Google doesn't support sub-locales
+         string[] tokens = fromCulture.Split('-');
+         if (tokens.Length > 1)
+            fromCulture = tokens[0];
+
+         // normalize ToCulture
+         tokens = toCulture.Split('-');
+         if (tokens.Length > 1)
+            toCulture = tokens[0];
+
+         string url = string.Format(@"http://translate.google.com/translate_a/t?client=j&text={0}&hl=en&sl={1}&tl={2}",
+                  System.Web.HttpUtility.UrlEncode(text), fromCulture, toCulture);
+
+         // Retrieve Translation with HTTP GET call
+         string html = null;
+         try
+         {
+            WebClient web = new WebClient();
+
+            // MUST add a known browser user agent or else response encoding doen't return UTF-8 (WTF Google?)
+            web.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0");
+            web.Headers.Add(HttpRequestHeader.AcceptCharset, "UTF-8");
+
+            // Make sure we have response encoding to UTF-8
+            web.Encoding = Encoding.UTF8;
+            html = web.DownloadString(url);
+         }
+         catch (Exception)
+         {
+            return null;
+         }
+
+         // Extract out trans":"...[Extracted]...","from the JSON string
+         return Regex.Match(html, "trans\":(\".*?\"),\"", RegexOptions.IgnoreCase).Groups[1].Value.Trim(new char[] { '"' });
       }
    }
 
