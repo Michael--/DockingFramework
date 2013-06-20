@@ -251,7 +251,7 @@ namespace Docking.Components
          string html = null;
          try
          {
-            WebClient web = new WebClient();
+            WebClient2 web = new WebClient2();
 
             // MUST add a known browser user agent or else response encoding doen't return UTF-8 (WTF Google?)
             web.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0");

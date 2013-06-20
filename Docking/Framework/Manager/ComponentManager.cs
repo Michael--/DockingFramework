@@ -690,8 +690,8 @@ namespace Docking.Components
                   i++;
                }
                filename = newfilename;
-            }               
-            WebClient www = new WebClient();
+            }
+            WebClient2 www = new WebClient2();
             FileStream file = null;
             try 
             {                     

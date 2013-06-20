@@ -56,6 +56,7 @@
     </Reference>
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
@@ -123,6 +124,9 @@
     <Compile Include="Tools\Colors\Colors.cs" />
     <Compile Include="Tools\Misc\LocalizationExtensions.cs" />
     <Compile Include="Tools\Misc\TreeViewExtensions.cs" />
+    <Compile Include="Tools\Misc\WebClient.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Tools\Threading\JobInformation.cs" />
     <Compile Include="Tools\Threading\TaskInformation.cs" />
     <Compile Include="Tools\Threading\ThreadWorker.cs" />
