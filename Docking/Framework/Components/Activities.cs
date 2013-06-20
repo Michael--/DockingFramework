@@ -12,9 +12,9 @@ namespace Docking.Components
         {
             this.Build();
 
-            Gtk.TreeViewColumn activityColumn = new TreeViewColumnLocalized() { Title = "Activity", Resizable = true, Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 100 };
-            Gtk.TreeViewColumn descriptionColumn = new TreeViewColumnLocalized() { Title = "Description", Resizable = true, Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 200 };
-            Gtk.TreeViewColumn statusColumn = new TreeViewColumnLocalized() { Title = "Status", Resizable = true, Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 100 };
+            Gtk.TreeViewColumn activityColumn = new TreeViewColumnLocalized() { Title = "Activity", Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 100, Resizable = true };
+            Gtk.TreeViewColumn descriptionColumn = new TreeViewColumnLocalized() { Title = "Description", Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 200, Resizable = true };
+            Gtk.TreeViewColumn statusColumn = new TreeViewColumnLocalized() { Title = "Status", Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 100, Resizable = true };
 
             // Add the columns to the TreeView
             treeview1.AppendColumn (activityColumn);

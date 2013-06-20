@@ -18,9 +18,9 @@ namespace Docking.Components
 
          // TODO: fix sizing could be better because of soome very long values
 
-         TreeViewColumn keyColumn = new TreeViewColumnLocalized() { Title = "Key", Resizable = true, Sizing = TreeViewColumnSizing.Autosize };
-         TreeViewColumn usValueColumn = new TreeViewColumnLocalized() { Title = "US name", Resizable = true, Sizing = TreeViewColumnSizing.Autosize };
-         TreeViewColumn localValueColumn = new TreeViewColumnLocalized() { Title = "Current name", Resizable = true, Sizing = TreeViewColumnSizing.Autosize };
+         TreeViewColumn keyColumn = new TreeViewColumnLocalized() { Title = "Key", Sizing = TreeViewColumnSizing.Fixed, FixedWidth = 150, Resizable = true };
+         TreeViewColumn usValueColumn = new TreeViewColumnLocalized() { Title = "US name", Sizing = TreeViewColumnSizing.Fixed, FixedWidth = 150, Resizable = true };
+         TreeViewColumn localValueColumn = new TreeViewColumnLocalized() { Title = "Current name", Sizing = TreeViewColumnSizing.Autosize, Resizable = true };
 
          treeview1.AppendColumn(keyColumn);
          treeview1.AppendColumn(usValueColumn);
@@ -59,7 +59,7 @@ namespace Docking.Components
       {
          if (ResponseType.Yes != MessageBox.Show(null, MessageType.Question,
                      ButtonsType.YesNo,
-                     "Sure to translate all empty recources ?"))
+                     "Sure to translate all empty recources ?".FormatLocalized(this)))
             return;
 
          TreeIter iter;
@@ -114,7 +114,7 @@ namespace Docking.Components
             {
                if (ResponseType.Yes != MessageBox.Show(null, MessageType.Question,
                            ButtonsType.YesNo,
-                           "Overwrite value with new translation ?"))
+                           "Overwrite value with new translation ?".FormatLocalized(this)))
                   return;
             }
 
@@ -193,7 +193,7 @@ namespace Docking.Components
 
       void UpdateChangeCount()
       {
-         labelChanges.LabelProp = "Changes: {0}".FormatLocalized(GetType().Namespace, ComponentManager.Localization.CurrentChangeCount);
+         labelChanges.LabelProp = "Changes: {0}".FormatLocalized(this, ComponentManager.Localization.CurrentChangeCount);
       }
 
       void UpdateList()

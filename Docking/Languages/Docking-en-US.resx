@@ -156,6 +156,9 @@
   <data name="Docking.Components.Messages" xml:space="preserve">
     <value>Messages</value>
   </data>
+  <data name="Docking.Components.Overwrite value with new translation ?" xml:space="preserve">
+    <value>Overwrite value with new translation ?</value>
+  </data>
   <data name="Docking.Components.Properties" xml:space="preserve">
     <value>Properties</value>
   </data>
@@ -167,6 +170,9 @@
   </data>
   <data name="Docking.Components.Status" xml:space="preserve">
     <value>Status</value>
+  </data>
+  <data name="Docking.Components.Sure to translate all empty recources ?" xml:space="preserve">
+    <value>Sure to translate all empty recources ?</value>
   </data>
   <data name="Docking.Components.Translate" xml:space="preserve">
     <value>Translate</value>

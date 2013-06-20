@@ -31,16 +31,22 @@ namespace Docking.Tools
          return key;
       }
 
-      public static string FormatLocalized(this string key, string header, params object[] args)
+      public static string FormatLocalized(this string key, object o, params object[] args)
+      {
+         return FormatLocalized(key, o.GetType().Namespace, args);
+      }
+
+
+      public static string FormatLocalized(this string key, string prefix, params object[] args)
       {
          try
          {
-            return String.Format(Localized(key, header), args);
+            return String.Format(Localized(key, prefix), args);
          }
          catch (FormatException)
          {
-            Localization.componentManager.MessageWriteLine("FormatLocalized Exception: key='{0}.{1}' fmt='{2}'", header, key, Localized(key, header));
-            return Localized(key, header);
+            Localization.componentManager.MessageWriteLine("FormatLocalized Exception: key='{0}.{1}' fmt='{2}'", prefix, key, Localized(key, prefix));
+            return Localized(key, prefix);
          }
       }
 
