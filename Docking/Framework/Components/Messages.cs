@@ -3,7 +3,7 @@ using System;
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-   public partial class Messages : Gtk.Bin, IMessage, IComponent, ILocalizable
+   public partial class Messages : Gtk.Bin, IMessage, IComponent, ILocalizableComponent
     {
         #region Implement IMessage
         // FIXME SLohse: This function currently may ONLY be called from the main GUI thread!
@@ -51,9 +51,9 @@ namespace Docking.Components
         #region implement  ILocalizable
 
         // set the displayed name of the widget
-        string ILocalizable.Name { get { return "Messages"; } }
+        string ILocalizableComponent.Name { get { return "Messages"; } }
 
-        void ILocalizable.LocalizationChanged(Docking.DockItem item)
+        void ILocalizableComponent.LocalizationChanged(Docking.DockItem item)
         {
         }
         #endregion

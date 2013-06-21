@@ -9,7 +9,7 @@ using Docking.Helper;
 namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(true)]
-   public partial class VirtualListView : Gtk.Bin, ILocalized
+   public partial class VirtualListView : Gtk.Bin, ILocalizableWidget
    {
       public ComponentManager ComponentManager
       {
@@ -536,9 +536,9 @@ namespace Docking.Components
          drawingarea.QueueDraw();
       }
 
-      void ILocalized.Localize(string namespc)
+      void ILocalizableWidget.Localize(string namespc)
       {
-         ((ILocalized)mColumnControl).Localize(namespc);
+         ((ILocalizableWidget)mColumnControl).Localize(namespc);
       }
    }
 
@@ -556,7 +556,7 @@ namespace Docking.Components
    public delegate void VirtualListViewEventHandler(object sender, VirtualListViewEventArgs e);
 
 
-   public class ColumnControl : Gtk.Fixed, ILocalized
+   public class ColumnControl : Gtk.Fixed, ILocalizableWidget
    {
       public ColumnControl()
       {
@@ -763,7 +763,7 @@ namespace Docking.Components
          return c.ToArray();
       }
 
-      void ILocalized.Localize(string namespc)
+      void ILocalizableWidget.Localize(string namespc)
       {
          foreach (Column c in mColumns.Values)
          {
@@ -771,8 +771,8 @@ namespace Docking.Components
                continue;
             if (c.Widget is Gtk.Container)
                Localization.LocalizeControls(namespc, c.Widget as Gtk.Container);
-            if (c.Widget is ILocalized)
-               (c.Widget as ILocalized).Localize(namespc);
+            if (c.Widget is ILocalizableWidget)
+               (c.Widget as ILocalizableWidget).Localize(namespc);
          }
       }
 

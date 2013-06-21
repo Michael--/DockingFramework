@@ -3,7 +3,7 @@ using System;
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-    public partial class PropertyViewer : Gtk.Bin, IProperty, ILocalizable
+    public partial class PropertyViewer : Gtk.Bin, IProperty, ILocalizableComponent
     {
         public PropertyViewer ()
         {
@@ -16,10 +16,10 @@ namespace Docking.Components
         }
 
         // set the displayed name of the widget
-        string ILocalizable.Name { get { return "Properties"; } }
+        string ILocalizableComponent.Name { get { return "Properties"; } }
 
         // force redraw with same data
-        void ILocalizable.LocalizationChanged(Docking.DockItem item)
+        void ILocalizableComponent.LocalizationChanged(Docking.DockItem item)
         {
            Object save = this.propertygrid1.CurrentObject;
            this.propertygrid1.CurrentObject = null;

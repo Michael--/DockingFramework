@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-    public partial class Activities : Gtk.Bin, IComponent, ILocalizable
+    public partial class Activities : Gtk.Bin, IComponent, ILocalizableComponent
     {
         public Activities ()
         {
@@ -63,9 +63,9 @@ namespace Docking.Components
         #region implement  ILocalizable
 
         // set the displayed name of the widget
-        string ILocalizable.Name { get { return "Activities"; } }
+        string ILocalizableComponent.Name { get { return "Activities"; } }
 
-        void ILocalizable.LocalizationChanged(Docking.DockItem item)
+        void ILocalizableComponent.LocalizationChanged(Docking.DockItem item)
         {
         }
         #endregion

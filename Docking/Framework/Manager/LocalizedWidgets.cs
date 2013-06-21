@@ -8,9 +8,9 @@ using Docking.Tools;
 namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(true)]
-   public class LabelLocalized : Gtk.Label, ILocalized
+   public class LabelLocalized : Gtk.Label, ILocalizableWidget
    {
-      void ILocalized.Localize(string namespc)
+      void ILocalizableWidget.Localize(string namespc)
       {
          if (LocalizationKey == null || LocalizationKey.Length<=0)
             LocalizationKey = UseMarkup ? StringTools.StripGTKMarkupTags(LabelProp) : LabelProp;
@@ -20,9 +20,9 @@ namespace Docking.Components
    }
 
    [System.ComponentModel.ToolboxItem(true)]
-   public class ButtonLocalized : Gtk.Button, ILocalized
+   public class ButtonLocalized : Gtk.Button, ILocalizableWidget
    {
-      void ILocalized.Localize(string namespc)
+      void ILocalizableWidget.Localize(string namespc)
       {
 			if (LocalizationKey == null || LocalizationKey.Length<=0)
             LocalizationKey = Label;
@@ -32,9 +32,9 @@ namespace Docking.Components
    }
 
    // [System.ComponentModel.ToolboxItem(true)] // ?? is this really necessary as a Toolbox item ??
-   public class TreeViewColumnLocalized : Gtk.TreeViewColumn, ILocalized
+   public class TreeViewColumnLocalized : Gtk.TreeViewColumn, ILocalizableWidget
    {
-      void ILocalized.Localize(string namespc)
+      void ILocalizableWidget.Localize(string namespc)
       {
 			if (LocalizationKey == null  || LocalizationKey.Length<=0)
             LocalizationKey = Title;
@@ -44,12 +44,12 @@ namespace Docking.Components
    }
 
    [System.ComponentModel.ToolboxItem(true)]
-   public class CheckButtonLocalized : Gtk.CheckButton, ILocalized
+   public class CheckButtonLocalized : Gtk.CheckButton, ILocalizableWidget
    {
       public CheckButtonLocalized() : base() { }
       public CheckButtonLocalized(string label) : base(label) { }
 
-      void ILocalized.Localize(string namespc)
+      void ILocalizableWidget.Localize(string namespc)
       {
 			if (LocalizationKey == null  || LocalizationKey.Length<=0)
             LocalizationKey = Label;
@@ -59,11 +59,11 @@ namespace Docking.Components
    }
 
    [System.ComponentModel.ToolboxItem(true)]
-   public class RadioButtonLocalized : Gtk.RadioButton, ILocalized
+   public class RadioButtonLocalized : Gtk.RadioButton, ILocalizableWidget
    {
       public RadioButtonLocalized() : base("") { }
       public RadioButtonLocalized(string label) : base(label) { }
-      void ILocalized.Localize(string namespc)
+      void ILocalizableWidget.Localize(string namespc)
       {
 			if (LocalizationKey == null  || LocalizationKey.Length<=0)
             LocalizationKey = Label;

@@ -5,7 +5,7 @@ using Microsoft.Scripting;
 namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(false)]
-   public partial class ScriptEditor : Gtk.Bin, IScript, IComponent, ILocalizable
+   public partial class ScriptEditor : Gtk.Bin, IScript, IComponent, ILocalizableComponent
    {
       #region MAIN
 
@@ -182,9 +182,9 @@ namespace Docking.Components
       #region implement  ILocalizable
 
       // set the displayed name of the widget
-      string ILocalizable.Name { get { return "Script Editor"; } }
+      string ILocalizableComponent.Name { get { return "Script Editor"; } }
 
-      void ILocalizable.LocalizationChanged(Docking.DockItem item)
+      void ILocalizableComponent.LocalizationChanged(Docking.DockItem item)
       {
       }
       #endregion

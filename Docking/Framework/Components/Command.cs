@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(false)]
-   public partial class Command : Gtk.Bin, IComponent, IComponentInteract, ILocalizable
+   public partial class Command : Gtk.Bin, IComponent, IComponentInteract, ILocalizableComponent
    {
       #region implement IComponent
       public ComponentManager ComponentManager { get; set; }
@@ -190,9 +190,9 @@ namespace Docking.Components
       #region implement  ILocalizable
 
       // set the displayed name of the widget
-      string ILocalizable.Name { get { return "Command"; } }
+      string ILocalizableComponent.Name { get { return "Command"; } }
 
-      void ILocalizable.LocalizationChanged(Docking.DockItem item)
+      void ILocalizableComponent.LocalizationChanged(Docking.DockItem item)
       {
       }
       #endregion

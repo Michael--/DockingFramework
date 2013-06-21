@@ -37,8 +37,8 @@ namespace Docking.Components
             if (w is Gtk.Container)
                LocalizeMenu((w as Gtk.Container));
 
-            if (w is ILocalized)
-               (w as ILocalized).Localize("MENU");
+            if (w is ILocalizableWidget)
+               (w as ILocalizableWidget).Localize("MENU");
          }
       }
 
@@ -53,13 +53,13 @@ namespace Docking.Components
             {
                foreach(TreeViewColumn c in (w as TreeView).Columns)
                {
-                  if (c is ILocalized)
-                     (c as ILocalized).Localize(namespc);
+                  if (c is ILocalizableWidget)
+                     (c as ILocalizableWidget).Localize(namespc);
                }
             }
 
-            if (w is ILocalized)
-               (w as ILocalized).Localize(namespc);
+            if (w is ILocalizableWidget)
+               (w as ILocalizableWidget).Localize(namespc);
          }
       }
 

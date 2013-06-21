@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(true)]
-   public partial class LocalizationEditor : Gtk.Bin, ILocalizable, IComponent
+   public partial class LocalizationEditor : Gtk.Bin, ILocalizableComponent, IComponent
    {
       public LocalizationEditor()
       {
@@ -168,9 +168,9 @@ namespace Docking.Components
       #region implement  ILocalizable
 
       // set the displayed name of the widget
-      string ILocalizable.Name { get { return "Localization Editor"; } }
+      string ILocalizableComponent.Name { get { return "Localization Editor"; } }
 
-      void ILocalizable.LocalizationChanged(Docking.DockItem item)
+      void ILocalizableComponent.LocalizationChanged(Docking.DockItem item)
       {
          UpdateList();
          UpdateChangeCount();

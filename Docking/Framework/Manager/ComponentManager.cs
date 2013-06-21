@@ -445,9 +445,9 @@ namespace Docking.Components
             {
                Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
                
-               if (item.Content is ILocalizable)
+               if (item.Content is ILocalizableComponent)
                {
-                  ILocalizable il = item.Content as ILocalizable;
+                  ILocalizableComponent il = item.Content as ILocalizableComponent;
                   il.LocalizationChanged(item);
                   item.Content.Name = il.Name.Localized(item.Content);
                }
@@ -1404,8 +1404,8 @@ namespace Docking.Components
          AddSelectNotifier(item, w);
          AddSelectNotifier(item, item.TitleTab);
          item.Content = w;
-         if (item.Content is ILocalizable)
-            item.Content.Name = (item.Content as ILocalizable).Name.Localized(item.Content);
+         if (item.Content is ILocalizableComponent)
+            item.Content.Name = (item.Content as ILocalizableComponent).Name.Localized(item.Content);
          item.UpdateLabel();
          item.Icon = cfi.Icon;
          item.DefaultVisible = false;
@@ -1737,12 +1737,12 @@ namespace Docking.Components
       #endregion
    }
 
-   public class TaggedMenuItem : MenuItem, ILocalized
+   public class TaggedMenuItem : MenuItem, ILocalizableWidget
    {
       public TaggedMenuItem(String name) : base(name) { }
       public System.Object Tag { get; set; }
 
-      void ILocalized.Localize(string namespc)
+      void ILocalizableWidget.Localize(string namespc)
       {
          Label l = this.Child as Label;
          if (LocalizationKey == null)
@@ -1753,12 +1753,12 @@ namespace Docking.Components
    }
 
 
-   public class TaggedImageMenuItem : ImageMenuItem, ILocalized
+   public class TaggedImageMenuItem : ImageMenuItem, ILocalizableWidget
    {
       public TaggedImageMenuItem(String name) : base(name) { }
       public System.Object Tag { get; set; }
 
-      void ILocalized.Localize(string namespc)
+      void ILocalizableWidget.Localize(string namespc)
       {
          Label l = this.Child as Label;
          if (LocalizationKey == null)
@@ -1768,12 +1768,12 @@ namespace Docking.Components
       public string LocalizationKey { get; set; }
    }
 
-   public class TaggedCheckedMenuItem : CheckMenuItem, ILocalized
+   public class TaggedCheckedMenuItem : CheckMenuItem, ILocalizableWidget
    {
       public TaggedCheckedMenuItem(String name) : base(name) { IgnoreLocalization = false; }
       public System.Object Tag { get; set; }
 
-      void ILocalized.Localize(string namespc)
+      void ILocalizableWidget.Localize(string namespc)
       {
          if (!IgnoreLocalization)
          {
