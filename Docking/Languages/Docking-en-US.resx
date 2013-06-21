@@ -157,7 +157,7 @@
     <value>Messages</value>
   </data>
   <data name="Docking.Components.Overwrite value with new translation ?" xml:space="preserve">
-    <value>Really replace previouly existing translation with new one?</value>
+    <value>Really replace previously existing translation with new one?</value>
   </data>
   <data name="Docking.Components.Properties" xml:space="preserve">
     <value>Properties</value>
@@ -172,13 +172,14 @@
     <value>Status</value>
   </data>
   <data name="Docking.Components.Sure to translate all empty recources ?" xml:space="preserve">
-    <value>Do you want to fill all un-localized strings with auto-translated ones from GoogleTranslate?</value>
+    <value>Do you want to fill all un-localized strings with auto-translated ones from GoogleTranslate?
+It is recommended to manually check the translations afterwards.</value>
   </data>
   <data name="Docking.Components.Translate" xml:space="preserve">
     <value>Translate</value>
   </data>
   <data name="Docking.Components.Translate All" xml:space="preserve">
-    <value>Translate All</value>
+    <value>Add missing with GoogleTranslate</value>
   </data>
   <data name="Docking.Components.US name" xml:space="preserve">
     <value>Text in US English</value>

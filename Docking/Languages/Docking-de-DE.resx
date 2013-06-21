@@ -226,12 +226,13 @@
     <value>Vorhandenen Wert mit neuer Übersetzung überschreiben?</value>
   </data>
   <data name="Docking.Components.Sure to translate all empty recources ?" xml:space="preserve">
-    <value>Alle leeren Lokalisierungen mit Übersetzungsvorschlag aus GoogleTranslate füllen?</value>
+    <value>Alle leeren Lokalisierungen mit Übersetzungsvorschlag aus GoogleTranslate füllen?
+Es wird empfohlen, anschließend die Übersetzungen manuell zu überprüfen.</value>
   </data>
   <data name="Docking.Components.Translate" xml:space="preserve">
     <value>Übersetzen</value>
   </data>
   <data name="Docking.Components.Translate All" xml:space="preserve">
-    <value>Alle übersetzen</value>
+    <value>Fehlende mit GoogleTranslate füllen</value>
   </data>
 </root>
