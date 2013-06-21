@@ -225,4 +225,40 @@
   <data name="Docking.Components.Activities" xml:space="preserve">
     <value>活动</value>
   </data>
+  <data name="Docking.Components.Overwrite value with new translation ?" xml:space="preserve">
+    <value>且未曾真正取代现有的翻译新？</value>
+  </data>
+  <data name="Docking.Components.Sure to translate all empty recources ?" xml:space="preserve">
+    <value>你想填补所有未本地化的字符串自动翻译的GoogleTranslate？</value>
+  </data>
+  <data name="Docking.Components.Translate All" xml:space="preserve">
+    <value>全部翻译</value>
+  </data>
+  <data name="Docking.Components.Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Docking.Components.Choose a file to open..." xml:space="preserve">
+    <value>选择要打开的文件...</value>
+  </data>
+  <data name="Docking.Components.Create Folder" xml:space="preserve">
+    <value>创建文件夹</value>
+  </data>
+  <data name="Docking.Components.File {0} does not exist" xml:space="preserve">
+    <value>文件{0}不存在</value>
+  </data>
+  <data name="Docking.Components.No component is instantiated which can handle file {0}" xml:space="preserve">
+    <value>没有组件实例，它可以处理文件{0}</value>
+  </data>
+  <data name="Docking.Components.Open" xml:space="preserve">
+    <value>打开</value>
+  </data>
+  <data name="Docking.Components.Opening file {0} as {1}" xml:space="preserve">
+    <value>打开文件{0} {1}</value>
+  </data>
+  <data name="Docking.Components.Opening whole directories like {0} currently isn't implemented" xml:space="preserve">
+    <value>像{0}目前不开放整个目录</value>
+  </data>
+  <data name="Docking.Components.Path" xml:space="preserve">
+    <value>路径</value>
+  </data>
 </root>
