@@ -121,7 +121,7 @@
     <value>中文</value>
   </data>
   <data name="MENU.Activities" xml:space="preserve">
-    <value>活动</value>
+    <value>处理器线程</value>
   </data>
   <data name="MENU.Command" xml:space="preserve">
     <value>命令</value>
@@ -145,13 +145,13 @@
     <value>布局</value>
   </data>
   <data name="MENU.Localization Editor" xml:space="preserve">
-    <value>本地化编辑器</value>
+    <value>翻译编辑器</value>
   </data>
   <data name="MENU.Message" xml:space="preserve">
     <value>信息</value>
   </data>
   <data name="MENU.Messages" xml:space="preserve">
-    <value>消息</value>
+    <value>信息</value>
   </data>
   <data name="MENU.New Layout..." xml:space="preserve">
     <value>新布局...</value>
@@ -190,19 +190,19 @@
     <value>消息</value>
   </data>
   <data name="Docking.Components.Localization Editor" xml:space="preserve">
-    <value>本地化编辑器</value>
+    <value>翻译编辑器</value>
   </data>
   <data name="Docking.Components.Key" xml:space="preserve">
-    <value>关键</value>
+    <value>识别码</value>
   </data>
   <data name="Docking.Components.Instances" xml:space="preserve">
-    <value>实例</value>
+    <value>存在</value>
   </data>
   <data name="Docking.Components.Description" xml:space="preserve">
     <value>描述</value>
   </data>
   <data name="Docking.Components.Current name" xml:space="preserve">
-    <value>现有名称。</value>
+    <value>现有名称</value>
   </data>
   <data name="Docking.Components.Component List" xml:space="preserve">
     <value>组件列表</value>
@@ -217,16 +217,16 @@
     <value>变化：{0}</value>
   </data>
   <data name="Docking.Components.Cancel Activity" xml:space="preserve">
-    <value>取消活动</value>
+    <value>停止</value>
   </data>
   <data name="Docking.Components.Activity" xml:space="preserve">
-    <value>活动</value>
+    <value>处理器线程</value>
   </data>
   <data name="Docking.Components.Activities" xml:space="preserve">
-    <value>活动</value>
+    <value>处理器线程</value>
   </data>
   <data name="Docking.Components.Overwrite value with new translation ?" xml:space="preserve">
-    <value>且未曾真正取代现有的翻译新？</value>
+    <value>难道你真的想保存一个新的翻译？</value>
   </data>
   <data name="Docking.Components.Sure to translate all empty recources ?" xml:space="preserve">
     <value>你想填补所有未本地化的字符串自动翻译的GoogleTranslate？</value>
@@ -235,7 +235,7 @@
     <value>全部翻译</value>
   </data>
   <data name="Docking.Components.Cancel" xml:space="preserve">
-    <value>取消</value>
+    <value>停止</value>
   </data>
   <data name="Docking.Components.Choose a file to open..." xml:space="preserve">
     <value>选择要打开的文件...</value>
@@ -247,7 +247,7 @@
     <value>文件{0}不存在</value>
   </data>
   <data name="Docking.Components.No component is instantiated which can handle file {0}" xml:space="preserve">
-    <value>没有组件实例，它可以处理文件{0}</value>
+    <value>没有组件，它可以处理文件{0}</value>
   </data>
   <data name="Docking.Components.Open" xml:space="preserve">
     <value>打开</value>
@@ -256,7 +256,7 @@
     <value>打开文件{0} {1}</value>
   </data>
   <data name="Docking.Components.Opening whole directories like {0} currently isn't implemented" xml:space="preserve">
-    <value>像{0}目前不开放整个目录</value>
+    <value>文件夹无法打开 {0}</value>
   </data>
   <data name="Docking.Components.Path" xml:space="preserve">
     <value>路径</value>
