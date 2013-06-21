@@ -501,7 +501,7 @@ namespace Docking.Components
                 filefilters.Add(any);
 #endif
 
-            String filename = OpenFileDialog("Choose a file to open...", filefilters);
+            String filename = OpenFileDialog("Choose a file to open...".Localized("Docking.Components"), filefilters);
             if (filename != null)
                OpenFile(filename);
          };
@@ -512,13 +512,13 @@ namespace Docking.Components
       {
          if(Directory.Exists(filename))
          {
-            MessageWriteLine(string.Format("Opening whole directories like {0} currently isn't implemented", filename));
+             MessageWriteLine("Opening whole directories like {0} currently isn't implemented".FormatLocalized("Docking.Components", filename));
             return false;
          }
 
          if(!File.Exists(filename))
          {
-            MessageWriteLine(string.Format("File {0} does not exist", filename));
+             MessageWriteLine("File {0} does not exist".FormatLocalized("Docking.Components", filename));
             return false;
          }
 
@@ -540,12 +540,12 @@ namespace Docking.Components
             // TODO now search all classes implementing IFileOpen by calling their method IFileOpen.SupportedFileTypes()
             // and let the user instantiate them to handle this file.
             // That's not implemented yet. For now we fail with despair:
-            MessageWriteLine(string.Format("No component is instantiated which can handle file {0}", filename));
+             MessageWriteLine("No component is instantiated which can handle file {0}".FormatLocalized("Docking.Components"), filename);
             return false;
          }
 
          // TODO: consider all and let the user pick which one
-         MessageWriteLine(string.Format("Opening file {0} as {1}", filename, openers[0].Value));
+         MessageWriteLine("Opening file {0} as {1}".FormatLocalized("Docking.Components"), filename, openers[0].Value);
          return openers[0].Key.OpenFile(filename);
       }
 
@@ -568,7 +568,7 @@ namespace Docking.Components
       public String OpenFileDialog(string prompt, List<FileFilter> filefilters)
       {
          String result = null;
-         Gtk.FileChooserDialog dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Open,
+         FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Open,
              "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
              "Open".Localized("Docking.Components"),   ResponseType.Accept);
 

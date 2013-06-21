@@ -129,6 +129,7 @@
     <Compile Include="Tools\Misc\WebClient2.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Tools\Misc\WidgetExtensions.cs" />
     <Compile Include="Tools\Threading\JobInformation.cs" />
     <Compile Include="Tools\Threading\TaskInformation.cs" />
     <Compile Include="Tools\Threading\ThreadWorker.cs" />

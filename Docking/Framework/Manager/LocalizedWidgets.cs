@@ -85,14 +85,7 @@ namespace Docking.Components
           { (this as ILocalizableWidget).Localize(this.GetType().Namespace); }
       void ILocalizableWidget.Localize(string namespc)
       {
-          int x = 3;
-/*
           Localization.LocalizeControls(namespc, this);
-		if (LocalizationKey == null  || LocalizationKey.Length<=0)
-            LocalizationKey = StringTools.StripSpecialCharacters(Label);
-         Label = LocalizationKey.Localized(namespc);
- */
       }
-      public string LocalizationKey { get; set; }
    }
 }
