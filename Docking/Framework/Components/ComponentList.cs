@@ -73,14 +73,12 @@ namespace Docking.Components
 
       #endregion
 
-      #region implement  ILocalizable
+      #region ILocalizable
 
-      // set the displayed name of the widget
       string ILocalizableComponent.Name { get { return "Component List"; } }
 
       void ILocalizableComponent.LocalizationChanged(Docking.DockItem item)
-      {
-      }
+      {}
       #endregion
 
 

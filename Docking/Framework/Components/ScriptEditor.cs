@@ -179,14 +179,12 @@ namespace Docking.Components
       }
       #endregion
 
-      #region implement  ILocalizable
+      #region ILocalizable
 
-      // set the displayed name of the widget
       string ILocalizableComponent.Name { get { return "Script Editor"; } }
 
       void ILocalizableComponent.LocalizationChanged(Docking.DockItem item)
-      {
-      }
+      {}
       #endregion
 
    }

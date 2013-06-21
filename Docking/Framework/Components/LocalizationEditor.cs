@@ -165,9 +165,8 @@ namespace Docking.Components
       const int usValueIndex = 2;
       const int localValueIndex = 3;
 
-      #region implement  ILocalizable
+      #region ILocalizable
 
-      // set the displayed name of the widget
       string ILocalizableComponent.Name { get { return "Localization Editor"; } }
 
       void ILocalizableComponent.LocalizationChanged(Docking.DockItem item)
