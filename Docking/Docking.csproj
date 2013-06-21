@@ -122,6 +122,7 @@
     <Compile Include="Framework\Interfaces\IComponentInteract.cs" />
     <Compile Include="Framework\Interfaces\IMessage.cs" />
     <Compile Include="Tools\Colors\Colors.cs" />
+    <Compile Include="Tools\Misc\StringTools.cs" />
     <Compile Include="Tools\Misc\LocalizationExtensions.cs" />
     <Compile Include="Tools\Misc\TreeViewExtensions.cs" />
     <Compile Include="Tools\Misc\WebClient2.cs">

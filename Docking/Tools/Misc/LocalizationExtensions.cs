@@ -41,7 +41,7 @@ namespace Docking.Tools
       {
          try
          {
-            return String.Format(Localized(key, prefix), args);
+            return String.Format(System.Globalization.CultureInfo.InvariantCulture, Localized(key, prefix), args);
          }
          catch (FormatException)
          {
@@ -54,7 +54,7 @@ namespace Docking.Tools
       {
          try
          {
-            return String.Format(Localized(key), args);
+            return String.Format(System.Globalization.CultureInfo.InvariantCulture, Localized(key), args);
          }
          catch (FormatException)
          {

@@ -139,10 +139,10 @@
     <value>Eigenschaften</value>
   </data>
   <data name="Docking.Components.Localization Editor" xml:space="preserve">
-    <value>Lokalisierungs Editor</value>
+    <value>Lokalisierungs-Editor</value>
   </data>
   <data name="MENU.Localization Editor" xml:space="preserve">
-    <value>Lokalisierungs Editor</value>
+    <value>Lokalisierungseditor</value>
   </data>
   <data name="MENU.Language" xml:space="preserve">
     <value>Sprache</value>
@@ -151,10 +151,10 @@
     <value>Eigenschaften</value>
   </data>
   <data name="MENU.Script Editor" xml:space="preserve">
-    <value>Drehbuch Editor</value>
+    <value>Skript-Editor</value>
   </data>
   <data name="MENU.New Layout..." xml:space="preserve">
-    <value>Neue Gestaltung</value>
+    <value>Neue Fensteranordnung</value>
   </data>
   <data name="MENU.Messages" xml:space="preserve">
     <value>Nachrichten</value>
@@ -163,28 +163,28 @@
     <value>Nachricht</value>
   </data>
   <data name="MENU.Layout" xml:space="preserve">
-    <value>Gestaltung</value>
+    <value>Fensteranordnung</value>
   </data>
   <data name="MENU.Delete Current Layout" xml:space="preserve">
-    <value>Lösche aktuelle Gestaltung</value>
+    <value>Lösche aktuelle Fensteranordnung</value>
   </data>
   <data name="MENU.Component List" xml:space="preserve">
-    <value>Komponenten Liste</value>
+    <value>Komponentenliste</value>
   </data>
   <data name="MENU.Command" xml:space="preserve">
-    <value>Kommando</value>
+    <value>Kommandozeile</value>
   </data>
   <data name="MENU.Activities" xml:space="preserve">
-    <value>Aktivitäten</value>
+    <value>Threads</value>
   </data>
   <data name="Docking.Components.US name" xml:space="preserve">
-    <value>US Name</value>
+    <value>US-Englischer Text</value>
   </data>
   <data name="Docking.Components.Key" xml:space="preserve">
     <value>Schlüssel</value>
   </data>
   <data name="Docking.Components.Current name" xml:space="preserve">
-    <value>Aktueller Name</value>
+    <value>Lokalisierter Text</value>
   </data>
   <data name="Docking.Components.Changes: {0}" xml:space="preserve">
     <value>Änderungen: {0}</value>
@@ -193,7 +193,7 @@
     <value>Meldungen</value>
   </data>
   <data name="Docking.Components.Activities" xml:space="preserve">
-    <value>Aktivitäten</value>
+    <value>Threads</value>
   </data>
   <data name="Docking.Components.Cancel Activity" xml:space="preserve">
     <value>Abbrechen</value>
@@ -202,13 +202,13 @@
     <value>Kommando</value>
   </data>
   <data name="Docking.Components.Activity" xml:space="preserve">
-    <value>Aktivität</value>
+    <value>Thread</value>
   </data>
   <data name="Docking.Components.Component" xml:space="preserve">
     <value>Komponente</value>
   </data>
   <data name="Docking.Components.Component List" xml:space="preserve">
-    <value>Komponenten Liste</value>
+    <value>Komponentenliste</value>
   </data>
   <data name="Docking.Components.Description" xml:space="preserve">
     <value>Beschreibung</value>
@@ -217,9 +217,21 @@
     <value>Instanzen</value>
   </data>
   <data name="Docking.Components.Script Editor" xml:space="preserve">
-    <value>Skript Editor</value>
+    <value>Skript-Editor</value>
   </data>
   <data name="Docking.Components.Status" xml:space="preserve">
     <value>Status</value>
+  </data>
+  <data name="Docking.Components.Overwrite value with new translation ?" xml:space="preserve">
+    <value>Vorhandenen Wert mit neuer Übersetzung überschreiben?</value>
+  </data>
+  <data name="Docking.Components.Sure to translate all empty recources ?" xml:space="preserve">
+    <value>Alle leeren Lokalisierungen mit Übersetzungsvorschlag aus GoogleTranslate füllen?</value>
+  </data>
+  <data name="Docking.Components.Translate" xml:space="preserve">
+    <value>Übersetzen</value>
+  </data>
+  <data name="Docking.Components.Translate All" xml:space="preserve">
+    <value>Alle übersetzen</value>
   </data>
 </root>

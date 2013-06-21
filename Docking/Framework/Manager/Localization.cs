@@ -9,6 +9,7 @@ using System.IO;
 using System.Globalization;
 using System.Diagnostics;
 using Docking.Tools;
+using Gtk;
 
 namespace Docking.Components
 {
@@ -16,7 +17,50 @@ namespace Docking.Components
    {
       public Localization(ComponentManager cm)
       {
+         // TODO try to get rid of the dependency of class "Localization" from "ComponentManager".
+         // Why should "Localization" depend on a concept of "ComponentManager"?
+         // The only reason this class is needed here is that it is used for debug output.
+         // This can be much better done using an interface IDebugOutput here as parameter instead of "cm".
+         // Then let class ComponentManager simply implement that IDebugOutput.
          componentManager = cm;
+      }
+
+      public static void LocalizeMenu(Gtk.Container container)
+      {
+         foreach (Gtk.Widget w in container.AllChildren)  // strange GTK artefact: method .Children does _not_ return ALL children. .AllChildren does. So what should .Children be GOOD FOR???? WTF
+         {
+            MenuItem item = w as MenuItem;
+
+            if (item != null && item.Submenu != null)
+               LocalizeMenu(item.Submenu as Menu);
+
+            if (w is Gtk.Container)
+               LocalizeMenu((w as Gtk.Container));
+
+            if (w is ILocalized)
+               (w as ILocalized).Localize("MENU");
+         }
+      }
+
+      public static void LocalizeControls(string namespc, Gtk.Container container)
+      {
+         foreach (Gtk.Widget w in container.AllChildren) // strange GTK artefact: method .Children does _not_ return ALL children. .AllChildren does. So what should .Children be GOOD FOR???? WTF
+         {
+            if (w is Gtk.Container)
+               LocalizeControls(namespc, (w as Gtk.Container));
+
+            if (w is TreeView)
+            {
+               foreach(TreeViewColumn c in (w as TreeView).Columns)
+               {
+                  if (c is ILocalized)
+                     (c as ILocalized).Localize(namespc);
+               }
+            }
+
+            if (w is ILocalized)
+               (w as ILocalized).Localize(namespc);
+         }
       }
 
       public string[] AvailableLanguages()

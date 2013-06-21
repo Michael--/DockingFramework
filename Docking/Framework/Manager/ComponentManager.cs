@@ -113,7 +113,7 @@ namespace Docking.Components
       public void InstallLayoutMenu(String defaultLayoutName)
       {
          if (defaultLayoutName == null || defaultLayoutName.Length == 0)
-            defaultLayoutName = "Default";
+            defaultLayoutName = "Default"; // TODO can we localize this string? Careful, the name is persisted...
          AddLayout(defaultLayoutName, false);
          if (m_LoadedPersistence != null && m_LoadedPersistence.Layout != null)
             DockFrame.CurrentLayout = m_LoadedPersistence.Layout;
@@ -171,9 +171,9 @@ namespace Docking.Components
             }
          };
 
-         InsertMenu(@"View\Layout", m_DeleteLayout);
-         InsertMenu(@"View\Layout", newLayout);
-         InsertMenu(@"View\Layout", new SeparatorMenuItem());
+         InsertMenu(@"Options\Layout", m_DeleteLayout); // TODO localization does not work correctly here
+         InsertMenu(@"Options\Layout", newLayout); // TODO localization does not work correctly here
+         InsertMenu(@"Options\Layout", new SeparatorMenuItem()); // TODO localization does not work correctly here
 
          foreach (String s in DockFrame.Layouts)
             InsertLayoutMenu(s, true);
@@ -285,7 +285,7 @@ namespace Docking.Components
                }
             }
          };
-         InsertMenu(@"View\Layout", item);
+         InsertMenu(@"Options\Layout", item); // TODO localization does not work correctly here
          if (!init)
             UncheckMenuChildren(item.Parent, item);
          item.Active = (name == DockFrame.CurrentLayout);
@@ -438,68 +438,30 @@ namespace Docking.Components
 
       public void UpdateLanguage()
       {
-         // tell all component about changed language
+         // tell all components about changed language
          foreach (DockItem item in DockFrame.GetItems())
          {
             if (item.Content != null)
-               LocalizeControls(item.Content.GetType().Namespace, item.Widget);
-            if (item.Content is ILocalizable)
             {
-               ILocalizable il = item.Content as ILocalizable;
-               il.LocalizationChanged(item);
-               item.Content.Name = il.Name.Localized(item.Content);
+               Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
+               
+               if (item.Content is ILocalizable)
+               {
+                  ILocalizable il = item.Content as ILocalizable;
+                  il.LocalizationChanged(item);
+                  item.Content.Name = il.Name.Localized(item.Content);
+               }
             }
-
             item.UpdateLabel();
          }
 
          // todo: change menue and further language depending stuff
-         LocalizeMenu(MenuBar);
+         Localization.LocalizeMenu(MenuBar);
 
          // redraw workaround
          this.Hide();
          this.Show();
       }
-
-
-      void LocalizeMenu(Gtk.Container bin)
-      {
-         foreach (Gtk.Widget b in bin.Children)
-         {
-            MenuItem item = b as MenuItem;
-
-            if (item != null && item.Submenu != null)
-               LocalizeMenu(item.Submenu as Menu);
-
-            if (b is Gtk.Container)
-               LocalizeMenu((b as Gtk.Container));
-
-            if (b is ILocalized)
-               (b as ILocalized).Localize("MENU");
-         }
-      }
-
-      public void LocalizeControls(string namespc, Gtk.Container bin)
-      {
-         foreach (Gtk.Widget b in bin.Children)
-         {
-            if (b is Gtk.Container)
-               LocalizeControls(namespc, (b as Gtk.Container));
-
-            if (b is TreeView)
-            {
-               foreach(TreeViewColumn c in (b as TreeView).Columns)
-               {
-                  if (c is ILocalized)
-                     (c as ILocalized).Localize(namespc);
-               }
-            }
-
-            if (b is ILocalized)
-               (b as ILocalized).Localize(namespc);
-         }
-      }
-
       #endregion
 
       #region private properties

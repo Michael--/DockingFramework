@@ -770,7 +770,7 @@ namespace Docking.Components
             if (c.Widget == null)
                continue;
             if (c.Widget is Gtk.Container)
-               ComponentManager.LocalizeControls(namespc, c.Widget as Gtk.Container);
+               Localization.LocalizeControls(namespc, c.Widget as Gtk.Container);
             if (c.Widget is ILocalized)
                (c.Widget as ILocalized).Localize(namespc);
          }
