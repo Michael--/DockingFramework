@@ -10,20 +10,21 @@ using System.Globalization;
 using System.Diagnostics;
 using Docking.Tools;
 using Gtk;
+using Docking.Framework;
 
 namespace Docking.Components
 {
    public class Localization
    {
-      public Localization(ComponentManager cm)
-      {
-         // TODO try to get rid of the dependency of class "Localization" from "ComponentManager".
-         // Why should "Localization" depend on a concept of "ComponentManager"?
-         // The only reason this class is needed here is that it is used for debug output.
-         // This can be much better done using an interface IDebugOutput here as parameter instead of "cm".
-         // Then let class ComponentManager simply implement that IDebugOutput.
-         componentManager = cm;
-      }
+       public static IMessageWriteLine mDbgOut;
+
+       public Localization()
+       {}
+
+       public Localization(IMessageWriteLine dbgout)
+       {
+          mDbgOut = dbgout;
+       }
 
       public static void LocalizeMenu(Gtk.Container container)
       {
@@ -154,7 +155,8 @@ namespace Docking.Components
             if (!lang.Nodes.ContainsKey(key))
                lang.Nodes.Add(key, n);
             else
-               componentManager.MessageWriteLine("Localization: Key '{0}' already exist", key);
+                if (Localization.mDbgOut != null)
+                    Localization.mDbgOut.MessageWriteLine("Localization: Key '{0}' already exists", key);
          }
       }
 
@@ -241,8 +243,6 @@ namespace Docking.Components
          }
       }
 
-
-      public static ComponentManager componentManager;
       Dictionary<string, Language> Languages = new Dictionary<string, Language>();
       string mFolder;
       static Language mDefaultLanguage;
@@ -310,7 +310,8 @@ namespace Docking.Components
          if (mDefaultLanguage != null && mDefaultLanguage.Nodes.TryGetValue(key, out node) && (node.Value as String).Length > 0)
             return node.Value as string;
 
-         componentManager.MessageWriteLine("Missing localization key '{0}'", key);
+         if (Localization.mDbgOut != null)
+             Localization.mDbgOut.MessageWriteLine("Missing localization key '{0}'", key);
          return null;
       }
    }

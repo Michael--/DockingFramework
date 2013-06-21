@@ -45,7 +45,8 @@ namespace Docking.Tools
          }
          catch (FormatException)
          {
-            Localization.componentManager.MessageWriteLine("FormatLocalized Exception: key='{0}.{1}' fmt='{2}'", prefix, key, Localized(key, prefix));
+            if(Localization.mDbgOut!=null)
+                Localization.mDbgOut.MessageWriteLine("FormatLocalized Exception: key='{0}.{1}' fmt='{2}'", prefix, key, Localized(key, prefix));
             return Localized(key, prefix);
          }
       }
@@ -58,7 +59,8 @@ namespace Docking.Tools
          }
          catch (FormatException)
          {
-            Localization.componentManager.MessageWriteLine("FormatLocalized Exception: key='{0}' fmt='{1}'", key, Localized(key));
+             if (Localization.mDbgOut != null)
+                 Localization.mDbgOut.MessageWriteLine("FormatLocalized Exception: key='{0}' fmt='{1}'", key, Localized(key));
             return Localized(key);
          }
       }

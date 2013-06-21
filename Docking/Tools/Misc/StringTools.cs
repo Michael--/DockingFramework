@@ -13,6 +13,10 @@ namespace Docking.Tools
       {
          return Regex.Replace(s, @"<[^>]*>", string.Empty);
       }
-  
+
+      public static string StripSpecialCharacters(string s)
+      {
+          return Regex.Replace(s, "\n", " ");
+      }
    }
 }

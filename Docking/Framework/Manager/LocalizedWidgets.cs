@@ -12,8 +12,8 @@ namespace Docking.Components
    {
       void ILocalizableWidget.Localize(string namespc)
       {
-         if (LocalizationKey == null || LocalizationKey.Length<=0)
-            LocalizationKey = UseMarkup ? StringTools.StripGTKMarkupTags(LabelProp) : LabelProp;
+          if (LocalizationKey == null || LocalizationKey.Length <= 0)
+              LocalizationKey = StringTools.StripSpecialCharacters(UseMarkup ? StringTools.StripGTKMarkupTags(LabelProp) : LabelProp);
          LabelProp = LocalizationKey.Localized(namespc);
       }
       public string LocalizationKey { get; set; }
@@ -24,8 +24,8 @@ namespace Docking.Components
    {
       void ILocalizableWidget.Localize(string namespc)
       {
-			if (LocalizationKey == null || LocalizationKey.Length<=0)
-            LocalizationKey = Label;
+		if (LocalizationKey == null || LocalizationKey.Length<=0)
+            LocalizationKey = StringTools.StripSpecialCharacters(Label);
          Label = LocalizationKey.Localized(namespc);
       }
       public string LocalizationKey { get; set; }
@@ -36,8 +36,8 @@ namespace Docking.Components
    {
       void ILocalizableWidget.Localize(string namespc)
       {
-			if (LocalizationKey == null  || LocalizationKey.Length<=0)
-            LocalizationKey = Title;
+		if (LocalizationKey == null  || LocalizationKey.Length<=0)
+            LocalizationKey = StringTools.StripSpecialCharacters(Title);
          Title = LocalizationKey.Localized(namespc);
       }
       public string LocalizationKey { get; set; }
@@ -51,8 +51,8 @@ namespace Docking.Components
 
       void ILocalizableWidget.Localize(string namespc)
       {
-			if (LocalizationKey == null  || LocalizationKey.Length<=0)
-            LocalizationKey = Label;
+		if (LocalizationKey == null  || LocalizationKey.Length<=0)
+            LocalizationKey = StringTools.StripSpecialCharacters(Label);
          Label = LocalizationKey.Localized(namespc);
       }
       public string LocalizationKey { get; set; }
@@ -66,7 +66,7 @@ namespace Docking.Components
       void ILocalizableWidget.Localize(string namespc)
       {
 			if (LocalizationKey == null  || LocalizationKey.Length<=0)
-            LocalizationKey = Label;
+            LocalizationKey = StringTools.StripSpecialCharacters(Label);
          Label = LocalizationKey.Localized(namespc);
       }
       public string LocalizationKey { get; set; }

@@ -16,10 +16,11 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Net;
 using System.Globalization;
 using Docking.Tools;
+using Docking.Framework;
 
 namespace Docking.Components
 {
-   public class ComponentManager : Gtk.Window, IPersistency
+    public class ComponentManager : Gtk.Window, IPersistency, IMessageWriteLine
    {
       #region Initialization
 
@@ -1582,7 +1583,7 @@ namespace Docking.Components
 
       #endregion
 
-      #region Message
+      #region IMessageWriteLine
 
       public void MessageWriteLine(String format, params object[] args)
       {
