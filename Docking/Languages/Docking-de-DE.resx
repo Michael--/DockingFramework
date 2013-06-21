@@ -235,4 +235,10 @@ Es wird empfohlen, anschließend die Übersetzungen manuell zu überprüfen.</va
   <data name="Docking.Components.Translate All" xml:space="preserve">
     <value>Fehlende mit GoogleTranslate füllen</value>
   </data>
+  <data name="Docking.Components.Cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="Docking.Components.Open" xml:space="preserve">
+    <value>Öffnen</value>
+  </data>
 </root>

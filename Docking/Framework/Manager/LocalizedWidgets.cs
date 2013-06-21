@@ -71,4 +71,28 @@ namespace Docking.Components
       }
       public string LocalizationKey { get; set; }
    }
+
+   public class FileChooserDialogLocalized : Gtk.FileChooserDialog, ILocalizableWidget
+   {
+       public FileChooserDialogLocalized(IntPtr raw)
+          : base(raw)
+          { (this as ILocalizableWidget).Localize(this.GetType().Namespace); }
+       public FileChooserDialogLocalized(string title, Gtk.Window parent, Gtk.FileChooserAction action, params object[] button_data)
+          : base(title, parent, action, button_data)
+          { (this as ILocalizableWidget).Localize(this.GetType().Namespace); }
+       public FileChooserDialogLocalized(string backend, string title, Gtk.Window parent, Gtk.FileChooserAction action, params object[] button_data)
+          : base(backend, title, parent, action, button_data)
+          { (this as ILocalizableWidget).Localize(this.GetType().Namespace); }
+      void ILocalizableWidget.Localize(string namespc)
+      {
+          int x = 3;
+/*
+          Localization.LocalizeControls(namespc, this);
+		if (LocalizationKey == null  || LocalizationKey.Length<=0)
+            LocalizationKey = StringTools.StripSpecialCharacters(Label);
+         Label = LocalizationKey.Localized(namespc);
+ */
+      }
+      public string LocalizationKey { get; set; }
+   }
 }

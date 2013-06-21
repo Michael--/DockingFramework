@@ -568,11 +568,9 @@ namespace Docking.Components
       public String OpenFileDialog(string prompt, List<FileFilter> filefilters)
       {
          String result = null;
-         Gtk.FileChooserDialog dlg = new Gtk.FileChooserDialog(prompt,
-                                                               this,
-                                                               FileChooserAction.Open,
-                                                               "Cancel", ResponseType.Cancel,
-                                                               "Open", ResponseType.Accept);
+         Gtk.FileChooserDialog dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Open,
+             "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
+             "Open".Localized("Docking.Components"),   ResponseType.Accept);
 
          if (filefilters != null)
             foreach (FileFilter filter in filefilters)

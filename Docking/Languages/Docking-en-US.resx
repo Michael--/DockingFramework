@@ -123,6 +123,9 @@
   <data name="Docking.Components.Activity" xml:space="preserve">
     <value>Thread</value>
   </data>
+  <data name="Docking.Components.Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
   <data name="Docking.Components.Cancel Activity" xml:space="preserve">
     <value>Cancel Thread</value>
   </data>
@@ -155,6 +158,9 @@
   </data>
   <data name="Docking.Components.Messages" xml:space="preserve">
     <value>Messages</value>
+  </data>
+  <data name="Docking.Components.Open" xml:space="preserve">
+    <value>Open</value>
   </data>
   <data name="Docking.Components.Overwrite value with new translation ?" xml:space="preserve">
     <value>Really replace previously existing translation with new one?</value>
