@@ -31,7 +31,7 @@ namespace Docking.Tools
          return key;
       }
 
-      public static string FormatLocalized(this string key, object o, params object[] args)
+      public static string FormatLocalized(this string key, IFormatLocalizedObject o, params object[] args)
       {
          return FormatLocalized(key, o.GetType().Namespace, args);
       }
