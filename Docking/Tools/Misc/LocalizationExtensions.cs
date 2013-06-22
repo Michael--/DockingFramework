@@ -3,6 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Docking.Components;
+using Docking.Tools;
+
+namespace Docking.Components
+{
+   public partial class Localization
+   {
+      public static string Format(string fmt, IFormatLocalizedObject o, params object[] args)
+      {
+         return fmt.FormatLocalized(o, args);
+      }
+
+      public static string Format(string fmt, string prefix, params object[] args)
+      {
+         return fmt.FormatLocalized(prefix, args);
+      }
+
+      public static string Format(string fmt, params object[] args)
+      {
+         return fmt.FormatLocalized(args);
+      }
+   }
+}
 
 namespace Docking.Tools
 {

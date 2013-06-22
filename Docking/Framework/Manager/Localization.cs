@@ -14,7 +14,7 @@ using Docking.Framework;
 
 namespace Docking.Components
 {
-   public class Localization
+   public partial class Localization
    {
        public static IMessageWriteLine mDbgOut;
 

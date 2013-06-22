@@ -192,7 +192,7 @@ namespace Docking.Components
 
       void UpdateChangeCount()
       {
-         labelChanges.LabelProp = "Changes: {0}".FormatLocalized(this, ComponentManager.Localization.CurrentChangeCount);
+         labelChanges.LabelProp = Localization.Format("Changes: {0}", this, ComponentManager.Localization.CurrentChangeCount);
       }
 
       void UpdateList()
