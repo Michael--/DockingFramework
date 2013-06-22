@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(true)]
-   public partial class LocalizationEditor : Gtk.Bin, ILocalizableComponent, IComponent
+   public partial class LocalizationEditor : Gtk.Bin, ILocalizableComponent, IComponent, IFormatLocalizedObject
    {
       public LocalizationEditor()
       {

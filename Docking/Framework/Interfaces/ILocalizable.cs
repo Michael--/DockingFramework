@@ -28,4 +28,13 @@ namespace Docking.Components
    {
       void Localize(string namespc);
    }
+
+   /// <summary>
+   /// Helper interface declaration without content
+   /// Use as replacement for an object like declarion object but not object itself...
+   /// Don't ask for deeper explanation and try and see yourself
+   /// </summary>
+   public interface IFormatLocalizedObject
+   {
+   }
 }
