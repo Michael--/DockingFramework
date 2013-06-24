@@ -865,7 +865,7 @@ namespace Docking.Components
          total.Start();
 
          // tell all components about load state
-         // time for late initialization and/or load persistence
+         // time for late initialization and/or loading persistence
          foreach (DockItem item in DockFrame.GetItems())
          {
             if (item.Content is IComponent)
@@ -876,7 +876,7 @@ namespace Docking.Components
                (item.Content as IComponent).Loaded(item);
                w.Stop();
                if (w.ElapsedMilliseconds > 25)
-                  MessageWriteLine("Loaded used {0:0.00}s for {1}", w.Elapsed.TotalSeconds, item.Id);
+                  MessageWriteLine("Invoking IComponent.Loaded() for component {0} took {1:0.00}s", item.Id, w.Elapsed.TotalSeconds);
             }
             if (item.Content is IComponentInteract)
                (item.Content as IComponentInteract).Visible(item.Content, item.Visible);
@@ -888,7 +888,7 @@ namespace Docking.Components
                mScriptInterfaces.Add(item.Content as IScript);
          }
 
-         // tell any component about all other component
+         // tell every component about all other components
          foreach (DockItem item in DockFrame.GetItems())
          {
             if (item.Content is IComponentInteract)
@@ -900,7 +900,7 @@ namespace Docking.Components
          }
          total.Stop();
          if (total.ElapsedMilliseconds > 100)
-            MessageWriteLine("ComponentsLoaded() total time ={0}s", total.Elapsed.TotalSeconds);
+            MessageWriteLine("ComponentsLoaded() total time = {0}s", total.Elapsed.TotalSeconds);
       }
 
       private void ComponentsSave()
