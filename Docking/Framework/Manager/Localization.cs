@@ -327,10 +327,8 @@ namespace Docking.Components
          if (mDefaultLanguage != null && mDefaultLanguage.Nodes.TryGetValue(key, out node) && (node.Value as String).Length > 0)
             return node.Value as string;
 
-#if false // TODO temporarily deactivated to not annoy
          if (Localization.mDbgOut != null)
              Localization.mDbgOut.MessageWriteLine("Missing localization key '{0}'", key);
-#endif 
 
          return null;
       }
