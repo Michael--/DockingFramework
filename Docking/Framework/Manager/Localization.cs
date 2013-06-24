@@ -70,8 +70,10 @@ namespace Docking.Components
                 Gtk.Label lbl_Size         = w.GetChild(0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0) as Gtk.Label; // TODO WHY DO WE GET null HERE??
                 Gtk.Label lbl_Modified     = w.GetChild(0, 0, 1, 1, 0, 0, 0, 2, 0, 0, 0) as Gtk.Label; // TODO WHY DO WE GET null HERE??
                 */
-                lbl_CreateFolder.LabelProp = "Create Folder".Localized("Docking.Components");
-                lbl_Location.LabelProp = "Path".Localized("Docking.Components");
+                if(lbl_CreateFolder!=null)
+                   lbl_CreateFolder.LabelProp = "Create Folder".Localized("Docking.Components");
+                if(lbl_Location!=null)
+                  lbl_Location.LabelProp = "Path".Localized("Docking.Components");
             }
 
             if (w is ILocalizableWidget)

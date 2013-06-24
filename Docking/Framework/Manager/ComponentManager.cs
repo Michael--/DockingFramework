@@ -585,6 +585,42 @@ namespace Docking.Components
          return result;
       }
 
+      public String SaveFileDialog(string prompt)
+      {
+         return SaveFileDialog(prompt, new List<FileFilter>());
+      }
+
+      public String SaveFileDialog(string prompt, FileFilter filefilter)
+      {
+         List<FileFilter> L = null;
+         if (filefilter != null)
+         {
+            L = new List<FileFilter>();
+            L.Add(filefilter);
+         }
+         return SaveFileDialog(prompt, L);
+      }
+
+      public String SaveFileDialog(string prompt, List<FileFilter> filefilters)
+      {
+         String result = null;
+         FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Save,
+             "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
+             "Save".Localized("Docking.Components"),   ResponseType.Accept);
+
+         if (filefilters != null)
+            foreach (FileFilter filter in filefilters)
+               dlg.AddFilter(filter);
+
+         if (dlg.Run() == (int)ResponseType.Accept)
+         {
+            result = dlg.Filename;
+         }
+
+         dlg.Destroy();
+         return result;
+      }
+
       static bool PlatformIsWin32ish { get
       {
          switch(Environment.OSVersion.Platform)
