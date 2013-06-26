@@ -16,11 +16,9 @@ namespace Docking.Components
       {
          this.Build();
 
-         // TODO: fix sizing could be better because of soome very long values
-
-         TreeViewColumn keyColumn = new TreeViewColumnLocalized() { Title = "Key", Sizing = TreeViewColumnSizing.Fixed, FixedWidth = 150, Resizable = true };
-         TreeViewColumn usValueColumn = new TreeViewColumnLocalized() { Title = "US name", Sizing = TreeViewColumnSizing.Fixed, FixedWidth = 150, Resizable = true };
-         TreeViewColumn localValueColumn = new TreeViewColumnLocalized() { Title = "Current name", Sizing = TreeViewColumnSizing.Autosize, Resizable = true };
+         TreeViewColumn keyColumn = new TreeViewColumnLocalized() { Title = "Key", Sizing = TreeViewColumnSizing.Fixed, FixedWidth = 150, Resizable = true, SortColumnId = keyIndex };
+         TreeViewColumn usValueColumn = new TreeViewColumnLocalized() { Title = "US name", Sizing = TreeViewColumnSizing.Fixed, FixedWidth = 150, Resizable = true, SortColumnId = usValueIndex };
+         TreeViewColumn localValueColumn = new TreeViewColumnLocalized() { Title = "Current name", Sizing = TreeViewColumnSizing.Autosize, Resizable = true, SortColumnId = localValueIndex };
 
          treeview1.AppendColumn(keyColumn);
          treeview1.AppendColumn(usValueColumn);
@@ -44,6 +42,7 @@ namespace Docking.Components
          // Create a model that will hold the content, assign the model to the TreeView
          listStore = new Gtk.ListStore(typeof(Localization.Node), typeof(string), typeof(string), typeof(string)); 
          treeview1.Model = listStore;
+         treeview1.GetColumn(0).Click(); // enable sorting 1st column ascending as default
 
          button1.Clicked += (sender, e) =>
          {
