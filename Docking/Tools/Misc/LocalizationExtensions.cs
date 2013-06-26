@@ -9,6 +9,11 @@ namespace Docking.Components
 {
    public partial class Localization
    {
+      public static string Format(string fmt, Gtk.Bin o, params object[] args)
+      {
+         return fmt.FormatLocalized(o, args);
+      }
+
       public static string Format(string fmt, IFormatLocalizedObject o, params object[] args)
       {
          return fmt.FormatLocalized(o, args);
@@ -51,6 +56,11 @@ namespace Docking.Tools
          if (result != null)
             return result;
          return key;
+      }
+
+      public static string FormatLocalized(this string key, Gtk.Bin o, params object[] args)
+      {
+         return FormatLocalized(key, o.GetType().Namespace, args);
       }
 
       public static string FormatLocalized(this string key, IFormatLocalizedObject o, params object[] args)
