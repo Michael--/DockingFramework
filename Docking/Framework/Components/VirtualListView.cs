@@ -267,6 +267,7 @@ namespace Docking.Components
             TopVisibleRow = offset;
             BottomVisibleRow = offset;
          }
+         int hscrollRange = 0;
          int dy = exposeRect.Top;
          offset += dy / ConstantHeight;
          dy -= dy % ConstantHeight;
@@ -318,7 +319,7 @@ namespace Docking.Components
                dx += xwidth + mColumnControl.GripperWidth - 2;
                rect.Offset(xwidth + mColumnControl.GripperWidth, 0);
             }
-
+            hscrollRange = Math.Max(hscrollRange, dx);
             dy += ConstantHeight;
             if (dy > exposeRect.Bottom)
                break;
@@ -334,6 +335,8 @@ namespace Docking.Components
                vscrollbar1.Adjustment.PageSize = pageSize;
                vscrollbar1.Adjustment.PageIncrement = pageSize;
             }
+            hscrollRange += (int)hscrollbar1.Value;
+            hscrollbar1.SetRange(0, hscrollRange);
 
             // position current row inside visible area
             // TODO: please think about, because of double redraw a more sophisticated solution could be possible
@@ -533,6 +536,7 @@ namespace Docking.Components
 
       protected void OnHscrollbar1ValueChanged(object sender, EventArgs e)
       {
+         mColumnControl.SetScrollOffset((int)hscrollbar1.Value);
          drawingarea.QueueDraw();
       }
 
@@ -652,7 +656,7 @@ namespace Docking.Components
             c.Width += dx;
             Requisition r = widget.SizeRequest();
             widget.SetSizeRequest(c.Width, r.Height);
-            this.Move(widget, c.X, TopOffset); // move to same position, helper to redraw parent
+            this.Move(widget, c.X - mCurrentScollOffset, TopOffset); // move to same position, helper to redraw parent
 
             for (int i = DragGripper + 1; i < mColumns.Count; i++)
             {
@@ -661,7 +665,7 @@ namespace Docking.Components
                   break;
                c = mColumns[widget];
                c.X += dx;
-               this.Move(widget, c.X, TopOffset);
+               this.Move(widget, c.X - mCurrentScollOffset, TopOffset);
             }
          }
       }
@@ -676,164 +680,195 @@ namespace Docking.Components
       /// </summary>
       public delegate void ColumnChangedEventHandler(object obj, EventArgs e);
 
-      public int GripperWidth { get; private set; }
-      int TopOffset = 2;
-      int TotalHeight = 0;
-      int DragGripper = -1;
-      int LastDragX = 0;
+         public int GripperWidth { get; private set; }
 
-      public void AddColumn(string name, Widget widget, int tag, int width = 50, int min_width = 20)
-      {
-         int offset = 0;
-         foreach (KeyValuePair<Widget, Column> kvp in mColumns)
-            if (kvp.Key.Visible)
-               offset += kvp.Value.Width + GripperWidth;
+         int TopOffset = 2;
+         int TotalHeight = 0;
+         int DragGripper = -1;
+         int LastDragX = 0;
 
-         Column column = new Column(name, widget, tag, width, min_width) { SortOrder = mColumns.Count, X = offset };
-         mColumns.Add(widget, column);
-         base.Put(widget, offset, TopOffset);
-         widget.SizeAllocated += (o, args) =>
+         public void AddColumn(string name, Widget widget, int tag, int width = 50, int min_width = 20)
          {
-            Widget w = (Widget)o;
-            Column co = mColumns[w];
-            if (co.Initialized)
-               return;
-            co.Initialized = true;
-            w.SetSizeRequest(co.Width, args.Allocation.Height);
+            int offset = 0;
+            foreach (KeyValuePair<Widget, Column> kvp in mColumns)
+               if (kvp.Key.Visible)
+                  offset += kvp.Value.Width + GripperWidth;
 
-            int ewidth, eheight;
-            this.EventBox.GetSizeRequest(out ewidth, out eheight);
-            if (args.Allocation.Height > eheight)
+            Column column = new Column(name, widget, tag, width, min_width) { SortOrder = mColumns.Count, X = offset };
+            mColumns.Add(widget, column);
+            base.Put(widget, offset, TopOffset);
+            widget.SizeAllocated += (o, args) =>
             {
-               this.EventBox.SetSizeRequest(5000, args.Allocation.Height);
-               TotalHeight = args.Allocation.Height;
-            }
-         };
-      }
+               Widget w = (Widget)o;
+               Column co = mColumns[w];
+               if (co.Initialized)
+                  return;
+               co.Initialized = true;
+               w.SetSizeRequest(co.Width, args.Allocation.Height);
 
-      Widget GetWidgetFromGripperIndex(int i)
-      {
-         foreach (KeyValuePair<Widget, Column> kvp in mColumns)
-         {
-            Widget w = kvp.Key;
-            Column c = kvp.Value;
-            if (c.GripperIndex == i)
-               return w;
+               int ewidth, eheight;
+               this.EventBox.GetSizeRequest(out ewidth, out eheight);
+               if (args.Allocation.Height > eheight)
+               {
+                  this.EventBox.SetSizeRequest(5000, args.Allocation.Height);
+                  TotalHeight = args.Allocation.Height;
+               }
+            };
          }
-         return null;
-      }
 
-      int[] GripperPositions()
-      {
-         List<int> gripper = new List<int>();
-         foreach (KeyValuePair<Widget, Column> kvp in mColumns)
+         Widget GetWidgetFromGripperIndex(int i)
          {
-            Widget w = kvp.Key;
-            Column c = kvp.Value;
-            if (w.Visible)
+            foreach (KeyValuePair<Widget, Column> kvp in mColumns)
             {
-               c.GripperIndex = gripper.Count;
-               gripper.Add(w.Allocation.Right + 3);
+               Widget w = kvp.Key;
+               Column c = kvp.Value;
+               if (c.GripperIndex == i)
+                  return w;
+            }
+            return null;
+         }
+
+         int[] GripperPositions()
+         {
+            List<int> gripper = new List<int>();
+            foreach (KeyValuePair<Widget, Column> kvp in mColumns)
+            {
+               Widget w = kvp.Key;
+               Column c = kvp.Value;
+               if (w.Visible)
+               {
+                  c.GripperIndex = gripper.Count;
+                  gripper.Add(w.Allocation.Right + 3);
+               }
+            }
+            return gripper.ToArray();
+         }
+
+         void TheExposeEvent(object o, ExposeEventArgs args)
+         {
+            Gdk.EventExpose expose = args.Args[0] as Gdk.EventExpose;
+            Gdk.Window win = expose.Window;
+
+            Gdk.GC gc = new Gdk.GC(this.GdkWindow);
+            gc.RgbFgColor = new Gdk.Color(150, 150, 150);
+
+            int[] gripper = GripperPositions();
+            int dy = 8;
+            foreach (int x in gripper)
+            {
+               win.DrawLine(gc, x + 2, dy, x + 2, TotalHeight - dy + 1);
             }
          }
-         return gripper.ToArray();
-      }
 
-      void TheExposeEvent(object o, ExposeEventArgs args)
-      {
-         Gdk.EventExpose expose = args.Args[0] as Gdk.EventExpose;
-         Gdk.Window win = expose.Window;
-
-         Gdk.GC gc = new Gdk.GC(this.GdkWindow);
-         gc.RgbFgColor = new Gdk.Color(150, 150, 150);
-
-         int[] gripper = GripperPositions();
-         int dy = 8;
-         foreach (int x in gripper)
+         public Column[] GetColumns()
          {
-            win.DrawLine(gc, x + 2, dy, x + 2, TotalHeight - dy + 1);
-         }
-      }
-
-      public Column[] GetColumns()
-      {
-         List<Column> c = new List<Column>();
-         foreach (KeyValuePair<Widget, Column> kvp in mColumns)
-            c.Add(kvp.Value);
-         return c.ToArray();
-      }
-
-      void ILocalizableWidget.Localize(string namespc)
-      {
-         foreach (Column c in mColumns.Values)
-         {
-            if (c.Widget == null)
-               continue;
-            if (c.Widget is Gtk.Container)
-               Localization.LocalizeControls(namespc, c.Widget as Gtk.Container);
-            if (c.Widget is ILocalizableWidget)
-               (c.Widget as ILocalizableWidget).Localize(namespc);
-         }
-      }
-
-
-      public Column[] GetVisbleColumnsInDrawOrder()
-      {
-         // TODO: could be initialzed on any change only and not an any method call
-         List<Column> c = new List<Column>();
-         foreach (KeyValuePair<Widget, Column> kvp in mColumns)
-         {
-            if (kvp.Key.Visible)
+            List<Column> c = new List<Column>();
+            foreach (KeyValuePair<Widget, Column> kvp in mColumns)
                c.Add(kvp.Value);
+            return c.ToArray();
          }
-         c.Sort(CompareSortOrder);
-         return c.ToArray();
-      }
 
-      private static int CompareSortOrder(Column c1, Column c2)
-      {
-         if (c1.SortOrder < c2.SortOrder)
-            return -1;
-         else if (c1.SortOrder > c2.SortOrder)
-            return 1;
-         return 0;
-      }
+         int mCurrentScollOffset = 0;
 
-      public class Column
-      {
-         public Column(string name, Widget w, int tag, int width, int minWidth)
+         public void SetScrollOffset(int offset)
          {
-            Initialized = false;
-            Name = name;
-            Widget = w;
-            Tag = tag;
-            Width = width;
-            MinWidth = minWidth;
+            if (mCurrentScollOffset == offset)
+               return;
+            mCurrentScollOffset = offset;
+            int dx = -offset;
+            foreach (Column c in mColumns.Values)
+            {
+               if (c.Widget == null)
+                  continue;
+               Widget w = c.Widget;
+               this.Move(w, dx, TopOffset); // move to same position, helper to redraw parent
+               dx += w.Allocation.Width + GripperWidth;
+            }
          }
-         public bool Initialized { get; set; }
-         public string Name { get; set; }
-         public Widget Widget { get; set; }
+
+         void ILocalizableWidget.Localize(string namespc)
+         {
+            foreach (Column c in mColumns.Values)
+            {
+               if (c.Widget == null)
+                  continue;
+               if (c.Widget is Gtk.Container)
+                  Localization.LocalizeControls(namespc, c.Widget as Gtk.Container);
+               if (c.Widget is ILocalizableWidget)
+                  (c.Widget as ILocalizableWidget).Localize(namespc);
+            }
+         }
+
+         public Column[] GetVisbleColumnsInDrawOrder()
+         {
+            // TODO: could be initialzed on any change only and not an any method call
+            List<Column> c = new List<Column>();
+            foreach (KeyValuePair<Widget, Column> kvp in mColumns)
+            {
+               if (kvp.Key.Visible)
+                  c.Add(kvp.Value);
+            }
+            c.Sort(CompareSortOrder);
+            return c.ToArray();
+         }
+
+         private static int CompareSortOrder(Column c1, Column c2)
+         {
+            if (c1.SortOrder < c2.SortOrder)
+               return -1;
+            else
+            if (c1.SortOrder > c2.SortOrder)
+               return 1;
+            return 0;
+         }
+
+         public class Column
+         {
+            public Column(string name, Widget w, int tag, int width, int minWidth)
+            {
+               Initialized = false;
+               Name = name;
+               Widget = w;
+               Tag = tag;
+               Width = width;
+               MinWidth = minWidth;
+            }
+
+            public bool Initialized { get; set; }
+
+            public string Name { get; set; }
+
+            public Widget Widget { get; set; }
+
+            public int Tag { get; set; }
+
+            public int SortOrder { get; set; }
+
+            public int X { get; set; }
+
+            public int Width { get; set; }
+
+            public int MinWidth { get; set; }
+
+            public int GripperIndex { get; set; }
+
+            public bool Visible { get { return Widget.Visible; } }
+         }
+      }
+
+      [Serializable()]
+      public class VirtualListPersistence
+      {
          public int Tag { get; set; }
-         public int SortOrder { get; set; }
-         public int X { get; set; }
+
+         public bool Visible { get; set; }
+
          public int Width { get; set; }
-         public int MinWidth { get; set; }
-         public int GripperIndex { get; set; }
-         public bool Visible { get { return Widget.Visible; } }
+      }
+
+      [Serializable]
+      public class VirtualListPersistenceList
+      {
+         public List<VirtualListPersistence> Persistence = new List<VirtualListPersistence>();
       }
    }
-
-   [Serializable()]
-   public class VirtualListPersistence
-   {
-      public int Tag { get; set; }
-      public bool Visible { get; set; }
-      public int Width { get; set; }
-   }
-
-   [Serializable]
-   public class VirtualListPersistenceList
-   {
-      public List<VirtualListPersistence> Persistence = new List<VirtualListPersistence>();
-   }
-}
