@@ -9,7 +9,7 @@ namespace Docking.Components
 		private global::Gtk.DrawingArea drawingarea;
 		private global::Gtk.VScrollbar vscrollbar1;
 		private global::Gtk.HScrollbar hscrollbar1;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);
