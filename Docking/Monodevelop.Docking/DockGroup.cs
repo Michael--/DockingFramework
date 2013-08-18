@@ -263,12 +263,8 @@ namespace Docking
 			{
 				CalcNewSizes ();
 				MarkForRelayout ();
-			}               
-			else
-			{
-			   if(ParentGroup!=null)
-			      ParentGroup.UpdateVisible(this);
-			}
+			} else
+				ParentGroup.UpdateVisible (this);
 		}
 		
 		public void Reduce ()
