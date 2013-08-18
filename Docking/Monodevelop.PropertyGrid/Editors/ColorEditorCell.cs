@@ -29,6 +29,7 @@
 
 using System;
 using System.ComponentModel;
+using Docking.Helper;
 
 namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 {
@@ -67,7 +68,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 
             // black cross to show alpha
             cr.LineWidth = 2;
-            cr.Color = new Cairo.Color(0, 0, 0);
+            cr.SetSourceColor(new Cairo.Color(0, 0, 0));
             cr.MoveTo(bounds.X, bounds.Y + yd);
             cr.LineTo(bounds.X + width, bounds.Y + heigth);
             cr.MoveTo(bounds.X, bounds.Y + yd + heigth);
@@ -79,7 +80,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
             cr.Stroke();
 
             // fill with color
-            cr.Color = GetCairoColor();
+            cr.SetSourceColor(GetCairoColor());
             cr.Rectangle(bounds.X, bounds.Y + yd, width, heigth);
             cr.Fill();
 

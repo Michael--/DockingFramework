@@ -341,7 +341,7 @@ namespace Docking
 			StateType s = insideGrip ? StateType.Prelight : StateType.Normal;
 			
 			using (var ctx = CairoHelper.Create (args.Event.Window)) {
-				ctx.Color = (HslColor) (w.Style.Background (s));
+				ctx.SetSourceColor ((HslColor) (w.Style.Background (s)));
 				ctx.Paint ();
 			}
 		}

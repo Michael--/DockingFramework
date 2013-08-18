@@ -64,9 +64,6 @@ namespace Docking
 		DockItemToolbar toolbarRight;
 		
 		DockItemTitleTab titleTab;
-		//bool allowPlaceholderDocking;
-		//static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
-		//static Gdk.Cursor handCursor = new Gdk.Cursor (Gdk.CursorType.LeftPtr);
 
 		DockVisualStyle regionStyle;
 		DockVisualStyle itemStyle;
@@ -592,6 +589,11 @@ namespace Docking
 				citem = new MenuItem (Catalog.GetString("Undock"));
 				citem.Activated += delegate { Status = DockItemStatus.Floating; };
 				menu.Append (citem);
+			}
+
+			if (menu.Children.Length == 0) {
+				menu.Destroy ();
+				return;
 			}
 
 			ShowingContextMemu = true;

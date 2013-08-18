@@ -35,49 +35,47 @@ using Docking.Helper;
 
 namespace Docking
 {
-    class TabStrip: Gtk.EventBox
-    {
-        int currentTab = -1;
-        HBox box = new HBox ();
-        // DockFrame frame;
-        Label bottomFiller = new Label ();
-        DockVisualStyle visualStyle;
-        
-        public TabStrip (DockFrame frame)
-        {
-            // this.frame = frame;
-            VBox vbox = new VBox ();
-            box = new TabStripBox () { TabStrip = this };
-            vbox.PackStart (box, false, false, 0);
-            //  vbox.PackStart (bottomFiller, false, false, 0);
-            Add (vbox);
-            ShowAll ();
-            bottomFiller.Hide ();
-            BottomPadding = 3;
-            WidthRequest = 0;
-            box.Removed += HandleRemoved;
-        }
-        
-        public int BottomPadding {
-            get { return bottomFiller.HeightRequest; }
-            set {
-                bottomFiller.HeightRequest = value;
-                bottomFiller.Visible = value > 0;
-            }
-        }
-        
-        public DockVisualStyle VisualStyle {
-            get { return visualStyle; }
-            set {
-                visualStyle = value;
-                box.QueueDraw ();
-            }
-        }
-        
-        public void AddTab (DockItemTitleTab tab)
-        {
-            if (tab.Parent != null)
-                ((Gtk.Container)tab.Parent).Remove (tab);
+	class TabStrip: Gtk.EventBox
+	{
+		int currentTab = -1;
+		HBox box = new HBox ();
+		Label bottomFiller = new Label ();
+		DockVisualStyle visualStyle;
+
+		public TabStrip (DockFrame frame)
+		{
+			VBox vbox = new VBox ();
+			box = new TabStripBox () { TabStrip = this };
+			vbox.PackStart (box, false, false, 0);
+		//	vbox.PackStart (bottomFiller, false, false, 0);
+			Add (vbox);
+			ShowAll ();
+			bottomFiller.Hide ();
+			BottomPadding = 3;
+			WidthRequest = 0;
+			box.Removed += HandleRemoved;
+		}
+
+		public int BottomPadding {
+			get { return bottomFiller.HeightRequest; }
+			set {
+				bottomFiller.HeightRequest = value;
+				bottomFiller.Visible = value > 0;
+			}
+		}
+
+		public DockVisualStyle VisualStyle {
+			get { return visualStyle; }
+			set {
+				visualStyle = value;
+				box.QueueDraw ();
+			}
+		}
+		
+		public void AddTab (DockItemTitleTab tab)
+		{
+			if (tab.Parent != null)
+				((Gtk.Container)tab.Parent).Remove (tab);
 
             //box.PackStart (tab, true, true, 0);
             box.PackStart (tab, false, false, 0);
@@ -116,67 +114,67 @@ namespace Docking
             QueueResize ();
         }
 
-        public int TabCount {
-            get { return box.Children.Length; }
-        }
-        
-        public int CurrentTab {
-            get { return currentTab; }
-            set {
-                if (currentTab == value)
-                    return;
-                if (currentTab != -1) {
-                    DockItemTitleTab t = (DockItemTitleTab)box.Children [currentTab];
-                    t.Page.Hide ();
-                    t.Active = false;
-                }
-                currentTab = value;
-                if (currentTab != -1) {
-                    DockItemTitleTab t = (DockItemTitleTab)box.Children [currentTab];
-                    t.Active = true;
-                    t.Page.Show ();
-                }
-            }
-        }
-        
-        public Gtk.Widget CurrentPage {
-            get {
-                if (currentTab != -1) {
-                    DockItemTitleTab t = (DockItemTitleTab)box.Children [currentTab];
-                    return t.Page;
-                } else
-                    return null;
-            }
-            set {
-                if (value != null) {
-                    Gtk.Widget[] tabs = box.Children;
-                    for (int n = 0; n < tabs.Length; n++) {
-                        DockItemTitleTab tab = (DockItemTitleTab)tabs [n];
-                        if (tab.Page == value) {
-                            CurrentTab = n;
-                            return;
-                        }
-                    }
-                }
-                CurrentTab = -1;
-            }
-        }
-        
-        public void Clear ()
-        {
-            currentTab = -1;
-            foreach (DockItemTitleTab w in box.Children)
-                box.Remove (w);
-        }
-        
-        void OnTabPress (object s, Gtk.ButtonPressEventArgs args)
-        {
-            CurrentTab = Array.IndexOf (box.Children, s);
-            DockItemTitleTab t = (DockItemTitleTab)s;
-            DockItem.SetFocus (t.Page);
-            QueueDraw ();
-            args.RetVal = true;
-        }
+		public int TabCount {
+			get { return box.Children.Length; }
+		}
+		
+		public int CurrentTab {
+			get { return currentTab; }
+			set {
+				if (currentTab == value)
+					return;
+				if (currentTab != -1) {
+					DockItemTitleTab t = (DockItemTitleTab) box.Children [currentTab];
+					t.Page.Hide ();
+					t.Active = false;
+				}
+				currentTab = value;
+				if (currentTab != -1) {
+					DockItemTitleTab t = (DockItemTitleTab) box.Children [currentTab];
+					t.Active = true;
+					t.Page.Show ();
+				}
+			}
+		}
+		
+		public Gtk.Widget CurrentPage {
+			get {
+				if (currentTab != -1) {
+					DockItemTitleTab t = (DockItemTitleTab) box.Children [currentTab];
+					return t.Page;
+				} else
+					return null;
+			}
+			set {
+				if (value != null) {
+					Gtk.Widget[] tabs = box.Children;
+					for (int n = 0; n < tabs.Length; n++) {
+						DockItemTitleTab tab = (DockItemTitleTab) tabs [n];
+						if (tab.Page == value) {
+							CurrentTab = n;
+							return;
+						}
+					}
+				}
+				CurrentTab = -1;
+			}
+		}
+		
+		public void Clear ()
+		{
+			currentTab = -1;
+			foreach (DockItemTitleTab w in box.Children)
+				box.Remove (w);
+		}
+		
+		void OnTabPress (object s, Gtk.ButtonPressEventArgs args)
+		{
+			CurrentTab = Array.IndexOf (box.Children, s);
+			DockItemTitleTab t = (DockItemTitleTab) s;
+			DockItem.SetFocus (t.Page);
+			QueueDraw ();
+			args.RetVal = true;
+		}
 
         protected override void OnSizeAllocated (Gdk.Rectangle allocation)
         {

@@ -274,14 +274,16 @@ namespace Docking
 					cr.RelLineTo (-rect.Width, 0);
 					cr.RelLineTo (0, -rect.Height);
 					cr.ClosePath ();
-					Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, bottom);
-					pat.AddColorStop (0, bcolor.ToCairoColor ());
-					HslColor gcol = bcolor;
-					gcol.L -= 0.1;
-					if (gcol.L < 0) gcol.L = 0;
-					pat.AddColorStop (1, gcol);
-					cr.Pattern = pat;
-					cr.Fill ();
+					using (Cairo.Gradient pat = new Cairo.LinearGradient (rect.X, rect.Y, rect.X, bottom)) {
+						pat.AddColorStop (0, bcolor.ToCairoColor ());
+						HslColor gcol = bcolor;
+						gcol.L -= 0.1;
+						if (gcol.L < 0)
+							gcol.L = 0;
+						pat.AddColorStop (1, gcol);
+						cr.SetSource (pat);
+						cr.Fill ();
+					}
 				} else {
 					if (backgroundColorSet) {
 						Gdk.GC gc = new Gdk.GC (GdkWindow);
@@ -295,7 +297,7 @@ namespace Docking
 			base.OnExposeEvent (evnt);
 			
 			using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
-				cr.Color = (HslColor) Style.Dark (Gtk.StateType.Normal);
+				cr.SetSourceColor ((HslColor) Style.Dark (Gtk.StateType.Normal));
 				
 				double y = rect.Y + topMargin / 2d;
 				cr.LineWidth = topMargin;

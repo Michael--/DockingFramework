@@ -52,7 +52,6 @@ namespace Docking
 		bool allowPlaceholderDocking;
 		bool mouseOver;
 
-		static Gdk.Cursor handCursor = new Gdk.Cursor (Gdk.CursorType.LeftPtr);
 		static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
 
 		static Gdk.Pixbuf pixClose;
@@ -98,7 +97,7 @@ namespace Docking
 			}
 		}
 
-		public void UpdateVisualStyle ()
+		void UpdateVisualStyle ()
 		{
 			if (labelWidget != null && label != null) {
 				if (visualStyle.UppercaseTitles.Value)
@@ -289,7 +288,7 @@ namespace Docking
 				frame.DockInPlaceholder (item);
 				frame.HidePlaceholder ();
 				if (GdkWindow != null)
-					GdkWindow.Cursor = handCursor;
+					GdkWindow.Cursor = null;
 				frame.Toplevel.KeyPressEvent -= HeaderKeyPress;
 				frame.Toplevel.KeyReleaseEvent -= HeaderKeyRelease;
 			}
@@ -299,7 +298,7 @@ namespace Docking
 
 		protected override bool OnMotionNotifyEvent (Gdk.EventMotion evnt)
 		{
-			if (tabPressed && Math.Abs (evnt.X - pressX) > 3 && Math.Abs (evnt.Y - pressY) > 3) {
+			if (tabPressed && !item.Behavior.HasFlag (DockItemBehavior.NoGrip) && Math.Abs (evnt.X - pressX) > 3 && Math.Abs (evnt.Y - pressY) > 3) {
 				frame.ShowPlaceholder (item);
 				GdkWindow.Cursor = fleurCursor;
 				frame.Toplevel.KeyPressEvent += HeaderKeyPress;
@@ -407,7 +406,7 @@ namespace Docking
 
 		void DrawAsBrowser (Gdk.EventExpose evnt)
 		{
-			Gdk.Rectangle alloc = Allocation;
+			var alloc = Allocation;
 
 			Gdk.GC bgc = new Gdk.GC (GdkWindow);
 			var c = new HslColor (VisualStyle.PadBackgroundColor.Value);
@@ -455,13 +454,13 @@ namespace Docking
 				using (var g = new Cairo.LinearGradient (x, y + 1, x, y + Allocation.Height - 1)) {
 					g.AddColorStop (0, Styles.DockTabBarGradientStart);
 					g.AddColorStop (1, Styles.DockTabBarGradientEnd);
-					ctx.Pattern = g;
+					ctx.SetSource (g);
 					ctx.Fill ();
 				}
 
 				ctx.MoveTo (x + 0.5, y + 0.5);
 				ctx.LineTo (x + Allocation.Width - 0.5d, y + 0.5);
-				ctx.Color = Styles.DockTabBarGradientTop;
+				ctx.SetSourceColor (Styles.DockTabBarGradientTop);
 				ctx.Stroke ();
 
 				if (active) {
@@ -471,7 +470,7 @@ namespace Docking
 						g.AddColorStop (0, new Cairo.Color (0, 0, 0, 0.01));
 						g.AddColorStop (0.5, new Cairo.Color (0, 0, 0, 0.08));
 						g.AddColorStop (1, new Cairo.Color (0, 0, 0, 0.01));
-						ctx.Pattern = g;
+						ctx.SetSource (g);
 						ctx.Fill ();
 					}
 

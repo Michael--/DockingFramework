@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 
 using System;
+using Docking.Helper;
 
 namespace MonoDevelop.Components
 {
@@ -139,7 +140,7 @@ namespace MonoDevelop.Components
 				Gdk.CairoHelper.Region (cr, evnt.Region);
 				cr.Clip ();
 				
-				cr.Color = (Docking.Helper.HslColor)Style.Dark (Gtk.StateType.Normal);
+                cr.SetSourceColor ((HslColor)Style.Dark (Gtk.StateType.Normal));
 				cr.LineWidth = lineWidth;
 				cr.Translate (rect.X, rect.Y);
 

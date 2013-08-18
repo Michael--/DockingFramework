@@ -9,6 +9,12 @@ namespace Docking.Helper
             cr.MoveTo (x1, y1);
             cr.LineTo (x2, y2);
         }
+
+         public static void SetSourceColor (this Cairo.Context cr, Cairo.Color color)
+         {
+            cr.SetSourceRGBA (color.R, color.G, color.B, color.A);
+         }
+
     }
 }
 

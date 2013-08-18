@@ -213,25 +213,15 @@ namespace Docking
 			System.Diagnostics.Debug.Assert (
 				widget.Parent == null,
 				"Widget is already parented on another widget");
-#if false
-			System.Diagnostics.Debug.Assert (
-				System.Linq.Enumerable.Any (items, item => item.Widget == widget),
-				"Can only add widgets to the container that are in the parent DockFrame's DockItem collection");
-#endif
+
 			widget.Parent = this;
 		}
 
 		protected override void OnRemoved (Widget widget)
 		{
-            if (widget.Parent != this)
-                System.Diagnostics.Debug.Assert (widget.Parent != this, "Widget is not parented on this widget");
-
-// TODO SLohse: Check why this assertion occurs currently frequently. For the time being, I deactivated it.
-/*
 			System.Diagnostics.Debug.Assert (
-				System.Linq.Enumerable.Any (items, item => item.Widget == widget),
-				"Can only remove widgets from the container that are in the parent DockFrame's DockItem collection");
-*/
+				widget.Parent == this,
+				"Widget is not parented on this widget");
 
 			widget.Unparent ();
 		}
