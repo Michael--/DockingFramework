@@ -196,7 +196,6 @@
     <Compile Include="gtk-gui\Docking.Components.Messages.cs" />
     <Compile Include="Monodevelop.Docking\DockItemTitleTab.cs" />
     <Compile Include="Monodevelop.Docking\DockVisualStyle.cs" />
-    <Compile Include="Monodevelop.Docking\DockingHelper\Tweener.cs" />
     <Compile Include="Monodevelop.Docking\DockingHelper\CairoExtensions.cs" />
     <Compile Include="Monodevelop.Docking\DockingHelper\MouseTracker.cs" />
     <Compile Include="Monodevelop.Docking\DockingHelper\ExtendedLabel.cs" />
@@ -218,6 +217,12 @@
     <Compile Include="gtk-gui\Docking.Components.ScriptEditor.cs" />
     <Compile Include="Framework\Components\LocalizationEditor.cs" />
     <Compile Include="gtk-gui\Docking.Components.LocalizationEditor.cs" />
+    <Compile Include="Xwt.Motion\Animation.cs" />
+    <Compile Include="Xwt.Motion\AnimationExtensions.cs" />
+    <Compile Include="Xwt.Motion\Easing.cs" />
+    <Compile Include="Xwt.Motion\IAnimatable.cs" />
+    <Compile Include="Xwt.Motion\ObjectTransforms.cs" />
+    <Compile Include="Xwt.Motion\Tweener.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -267,6 +272,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="IronPython\" />
+    <Folder Include="Xwt.Motion\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Framework\Manager\File-16.png" />
