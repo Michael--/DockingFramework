@@ -54,8 +54,9 @@ namespace Xwt.Motion
 		}
 
 		bool HandleElapsed ()
-		{	
-			if (timeouts.Count > 0) {
+		{
+         if (timeouts.Count > 0)
+         {
 				SendSignals ();
 				stopwatch.Reset ();
 				stopwatch.Start ();
@@ -97,12 +98,19 @@ namespace Xwt.Motion
 
 		protected virtual void EnableTimer ()
 		{
-			timer = Xwt.Application.TimeoutInvoke (16, HandleElapsed);
+         try
+         {
+            timer = Xwt.Application.TimeoutInvoke(16, HandleElapsed);
+         }
+         catch (NullReferenceException)
+         {
+         }
 		}
 
 		protected virtual void DisableTimer ()
 		{
-			timer.Dispose ();
+         if (timer != null)
+			   timer.Dispose ();
 			timer = null;
 		}
 
