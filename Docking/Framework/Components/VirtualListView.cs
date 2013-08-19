@@ -319,7 +319,7 @@ namespace Docking.Components
                dx += xwidth + mColumnControl.GripperWidth - 2;
                rect.Offset(xwidth + mColumnControl.GripperWidth, 0);
             }
-            hscrollRange = Math.Max(hscrollRange, dx);
+            hscrollRange = Math.Max(hscrollRange, dx + rect.Width);
             dy += ConstantHeight;
             if (dy > exposeRect.Bottom)
                break;
