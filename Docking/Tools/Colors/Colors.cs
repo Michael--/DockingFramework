@@ -196,6 +196,11 @@ namespace Docking.Tools
             return new Gdk.Color((byte)(color.R*255), (byte)(color.G*255), (byte)(color.B*255));
         }
 
+        public static int ToAbgr(this System.Drawing.Color color)
+        {
+           return color.A << 24 | color.B << 16 | color.G << 8 | color.R;
+        }
+
         public static void ToRGBA(this Cairo.Color color, out byte r, out byte g, out byte b, out byte a)
         {
            r = (byte)(color.R*255f);
