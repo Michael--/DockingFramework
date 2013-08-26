@@ -171,13 +171,13 @@ namespace Docking.Components
                m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != m_DefaultLayoutName);
             }
          };
+        
+         AppendMenu(@"Options\Layout", newLayout); // TODO localization does not work correctly here
+         AppendMenu(@"Options\Layout", m_DeleteLayout); // TODO localization does not work correctly here
+         AppendMenu(@"Options\Layout", new SeparatorMenuItem()); // TODO localization does not work correctly here
 
          foreach (String s in DockFrame.Layouts)
             AppendLayoutMenu(s, true);
-
-         AppendMenu(@"Options\Layout", new SeparatorMenuItem()); // TODO localization does not work correctly here
-         AppendMenu(@"Options\Layout", newLayout); // TODO localization does not work correctly here
-         AppendMenu(@"Options\Layout", m_DeleteLayout); // TODO localization does not work correctly here
 
          m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != m_DefaultLayoutName);
          MenuBar.ShowAll();
@@ -459,7 +459,7 @@ namespace Docking.Components
             }
             else if(mi is TaggedLocalizedCheckedMenuItem)
             {
-               if((mi as TaggedLocalizedCheckedMenuItem).LocalizationKey!=null && (mi as TaggedLocalizedCheckedMenuItem).LocalizationKey==name)
+               if((mi as TaggedLocalizedCheckedMenuItem).LocalizationKey!=null && !(mi as TaggedLocalizedCheckedMenuItem).IgnoreLocalization && (mi as TaggedLocalizedCheckedMenuItem).LocalizationKey==name)
                   return mi.Submenu as Menu;
             }
 
