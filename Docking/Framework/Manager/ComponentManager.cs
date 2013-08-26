@@ -447,6 +447,27 @@ namespace Docking.Components
          // 1st search menu & return if existing
          foreach (MenuItem mi in children)
          {
+            if(mi is TaggedMenuItem)
+            {
+               if((mi as TaggedMenuItem).LocalizationKey!=null && (mi as TaggedMenuItem).LocalizationKey==name)
+                     return mi.Submenu as Menu;
+            }
+            else if(mi is TaggedImageMenuItem)
+            {
+               if((mi as TaggedImageMenuItem).LocalizationKey!=null && (mi as TaggedImageMenuItem).LocalizationKey==name)
+                  return mi.Submenu as Menu;
+            }
+            else if(mi is TaggedCheckedMenuItem)
+            {
+               if((mi as TaggedCheckedMenuItem).LocalizationKey!=null && (mi as TaggedCheckedMenuItem).LocalizationKey==name)
+                  return mi.Submenu as Menu;
+            }
+
+            // When we get here, localization hasn't taken place yet (LocalizationKey==null)
+            // OR
+            // we are dealing with non-localized menu entries.
+            // In both cases, the current label text of the menu is the one to look at.
+
             Label label = (Label)mi.Child;
             if (label != null && label.Text == name)
                return mi.Submenu as Menu;
