@@ -212,7 +212,7 @@ namespace Docking.Components
       public override Type TypeOfInstance { get { return typeof(Command); } }
       public override String MenuPath { get { return @"View\Infrastructure\Command"; } }
       public override String Comment { get { return "Command line"; } }
-      public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource("Docking.Framework.Components.Messages-16.png"); } }
+      public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Messages-16.png"); } }
    }
 
    #endregion

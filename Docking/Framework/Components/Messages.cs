@@ -71,7 +71,7 @@ namespace Docking.Components
         public override Type TypeOfInstance { get { return typeof(Messages); } }
         public override String MenuPath { get { return @"View\Infrastructure\Messages"; } }
         public override String Comment { get { return "shows runtime messages of the application"; } }
-        public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Components.Messages-16.png"); } }
+        public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Resources.Messages-16.png"); } }
     }
 
     #endregion

@@ -277,7 +277,7 @@ namespace Docking.Components
       public override String MenuPath { get { return @"View\Infrastructure\Localization Editor"; } }
       public override String Comment { get { return "Edit possibility for all localization strings"; } }
       public override Mode Options { get { return Mode.CloseOnHide; } }
-      // public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource("Docking.Framework.Components.PropertyViewer-16.png"); } }
+      public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Localization-16.png"); } }
    }
    #endregion
 

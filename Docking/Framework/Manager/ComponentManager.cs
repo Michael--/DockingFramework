@@ -311,7 +311,7 @@ namespace Docking.Components
       private void InstallQuitMenu()
       {
          ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit");
-         item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Manager.Quit-16.png"));
+         item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png"));
          item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.F4, Gdk.ModifierType.Mod1Mask, AccelFlags.Visible));
          item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          item.Activated += OnQuitActionActivated;
@@ -330,7 +330,7 @@ namespace Docking.Components
       private void InstallEditMenu()
       {
          mMenuCut = new TaggedLocalizedImageMenuItem("Cut");
-         mMenuCut.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Manager.Cut-16.png"));
+         mMenuCut.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Cut-16.png"));
          mMenuCut.Activated += OnCutActivated;
          mMenuCut.Sensitive = false;
          mMenuCut.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.x,      Gdk.ModifierType.ControlMask, AccelFlags.Visible));
@@ -338,7 +338,7 @@ namespace Docking.Components
          AppendMenu("Edit", mMenuCut);         
 
          mMenuCopy = new TaggedLocalizedImageMenuItem("Copy");
-         mMenuCopy.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Manager.Copy-16.png"));
+         mMenuCopy.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Copy-16.png"));
          mMenuCopy.Activated += OnCopyActivated;
          mMenuCopy.Sensitive = false;
          mMenuCopy.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.c,      Gdk.ModifierType.ControlMask, AccelFlags.Visible));
@@ -346,7 +346,7 @@ namespace Docking.Components
          AppendMenu("Edit", mMenuCopy);         
 
          mMenuPaste = new TaggedLocalizedImageMenuItem("Paste");
-         mMenuPaste.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Manager.Paste-16.png"));
+         mMenuPaste.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Paste-16.png"));
          mMenuPaste.Activated += OnPasteActivated;
          mMenuPaste.Sensitive = false;
          mMenuPaste.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.v,      Gdk.ModifierType.ControlMask, AccelFlags.Visible));
@@ -587,7 +587,7 @@ namespace Docking.Components
       void InstallFileOpenMenu()
       {
          ImageMenuItem item = new TaggedLocalizedImageMenuItem("Open...");
-         item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Manager.File-16.png"));
+         item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.File-16.png"));
          item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.O, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          item.Activated += (sender, e) =>
          {

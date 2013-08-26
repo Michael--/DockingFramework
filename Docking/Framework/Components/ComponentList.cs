@@ -200,7 +200,7 @@ namespace Docking.Components
       public override Type TypeOfInstance { get { return typeof(ComponentList); } }
       public override String MenuPath { get { return @"View\Infrastructure\Component List"; } }
       public override String Comment { get { return "displays a list of all components"; } }
-      public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource("Docking.Framework.Components.ComponentList-16.png"); } }
+      public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.ComponentList-16.png"); } }
    }
 
    #endregion
