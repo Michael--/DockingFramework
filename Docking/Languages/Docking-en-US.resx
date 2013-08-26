@@ -180,7 +180,7 @@
   <data name="Docking.Components.Opening whole directories like {0} currently isn't implemented" xml:space="preserve">
     <value>Opening whole directories like {0} currently isn't implemented</value>
   </data>
-  <data name="Docking.Components.Overwrite value with new translation ?" xml:space="preserve">
+  <data name="Docking.Components.Overwrite value with new translation?" xml:space="preserve">
     <value>Really replace previously existing translation with new one?</value>
   </data>
   <data name="Docking.Components.Path" xml:space="preserve">
@@ -198,7 +198,7 @@
   <data name="Docking.Components.Status" xml:space="preserve">
     <value>Status</value>
   </data>
-  <data name="Docking.Components.Sure to translate all empty recources ?" xml:space="preserve">
+  <data name="Docking.Components.Sure to translate all empty resources?" xml:space="preserve">
     <value>Do you want to fill all un-localized strings with auto-translated ones from GoogleTranslate?
 It is recommended to manually check the translations afterwards.</value>
   </data>
