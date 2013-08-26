@@ -377,12 +377,12 @@ namespace Docking.Components
          ColumnControl.Column[] columns = mColumnControl.GetColumns();
          foreach(ColumnControl.Column c in columns)
          {
-            TaggedCheckedMenuItem item = new TaggedCheckedMenuItem(c.Name);
+            TaggedLocalizedCheckedMenuItem item = new TaggedLocalizedCheckedMenuItem(c.Name);
             item.Active = c.Visible;
             item.Tag = c;
             item.Activated += (object sender, EventArgs e) => 
             {
-               TaggedCheckedMenuItem it = sender as TaggedCheckedMenuItem;
+               TaggedLocalizedCheckedMenuItem it = sender as TaggedLocalizedCheckedMenuItem;
                ColumnControl.Column ct = it.Tag as ColumnControl.Column;
                // TODO: change column visibility, recalculate column control and redraw all
                //ct.Visible = !ct.Visible;
