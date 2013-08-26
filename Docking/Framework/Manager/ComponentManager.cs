@@ -1429,6 +1429,8 @@ namespace Docking.Components
          if (!cfi.IsSingleInstance)
             item.Behavior |= DockItemBehavior.CloseOnHide;
 
+         Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
+
          item.DefaultVisible = false;
          //item.DrawFrame = true;
          item.Visible = true;
