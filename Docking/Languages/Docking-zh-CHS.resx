@@ -225,10 +225,10 @@
   <data name="Docking.Components.Activities" xml:space="preserve">
     <value>处理器线程</value>
   </data>
-  <data name="Docking.Components.Overwrite value with new translation ?" xml:space="preserve">
+  <data name="Docking.Components.Overwrite value with new translation?" xml:space="preserve">
     <value>难道你真的想保存一个新的翻译？</value>
   </data>
-  <data name="Docking.Components.Sure to translate all empty recources ?" xml:space="preserve">
+  <data name="Docking.Components.Sure to translate all empty resources?" xml:space="preserve">
     <value>你想填补所有未本地化的字符串自动翻译的GoogleTranslate？</value>
   </data>
   <data name="Docking.Components.Translate All" xml:space="preserve">

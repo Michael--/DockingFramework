@@ -20,7 +20,7 @@ using Docking.Framework;
 
 namespace Docking.Components
 {
-    public class ComponentManager : Gtk.Window, IPersistency, IMessageWriteLine
+    public class ComponentManager : Gtk.Window, IPersistency, IMessageWriteLine, ICut, ICopy, IPaste
    {
       #region Initialization
 
@@ -88,11 +88,11 @@ namespace Docking.Components
          return foundmenu;
       }
 
-      protected void InsertMenu(String path, MenuItem item)
+      protected void AppendMenu(String path, MenuItem item)
       {
          Menu foundmenu = FindMenu(path);
          if (foundmenu != null)
-            foundmenu.Insert(item, 0);
+            foundmenu.Append(item);
       }
 
       protected void SetMenuBar(MenuBar menuBar)
@@ -129,7 +129,7 @@ namespace Docking.Components
             {
                ResponseType result = MessageBox.Show(this, MessageType.Question,
                                                      ButtonsType.YesNo,
-                                                     "Are you sure to remove current layout ?");
+                                                     "Are you sure to remove the current layout?");
 
                if (result == ResponseType.Yes)
                {
@@ -167,17 +167,17 @@ namespace Docking.Components
             {
                DockFrame.CreateLayout(newLayoutName, !createEmptyLayout);
                DockFrame.CurrentLayout = newLayoutName;
-               InsertLayoutMenu(newLayoutName, false);
+               AppendLayoutMenu(newLayoutName, false);
                m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != m_DefaultLayoutName);
             }
          };
 
-         InsertMenu(@"Options\Layout", m_DeleteLayout); // TODO localization does not work correctly here
-         InsertMenu(@"Options\Layout", newLayout); // TODO localization does not work correctly here
-         InsertMenu(@"Options\Layout", new SeparatorMenuItem()); // TODO localization does not work correctly here
-
          foreach (String s in DockFrame.Layouts)
-            InsertLayoutMenu(s, true);
+            AppendLayoutMenu(s, true);
+
+         AppendMenu(@"Options\Layout", new SeparatorMenuItem()); // TODO localization does not work correctly here
+         AppendMenu(@"Options\Layout", newLayout); // TODO localization does not work correctly here
+         AppendMenu(@"Options\Layout", m_DeleteLayout); // TODO localization does not work correctly here
 
          m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != m_DefaultLayoutName);
          MenuBar.ShowAll();
@@ -253,7 +253,7 @@ namespace Docking.Components
 
       bool recursionWorkaround = false;
 
-      private void InsertLayoutMenu(String name, bool init)
+      private void AppendLayoutMenu(String name, bool init)
       {
          CheckMenuItem item = new CheckMenuItem(name);
 
@@ -286,7 +286,7 @@ namespace Docking.Components
                }
             }
          };
-         InsertMenu(@"Options\Layout", item); // TODO localization does not work correctly here
+         AppendMenu(@"Options\Layout", item); // TODO localization does not work correctly here
          if (!init)
             UncheckMenuChildren(item.Parent, item);
          item.Active = (name == DockFrame.CurrentLayout);
@@ -312,9 +312,10 @@ namespace Docking.Components
       {
          ImageMenuItem item = new TaggedImageMenuItem("Quit");
          item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Manager.Quit-16.png"));
+         item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.F4, Gdk.ModifierType.Mod1Mask, AccelFlags.Visible));
          item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          item.Activated += OnQuitActionActivated;
-         InsertMenu("File", item);
+         AppendMenu("File", item);
       }
 
       protected void OnQuitActionActivated(object sender, EventArgs e)
@@ -322,14 +323,94 @@ namespace Docking.Components
          PrepareExit();
       }
 
+      #region cut, copy, paste
+
+      ImageMenuItem mMenuCut, mMenuCopy, mMenuPaste;
+
+      private void InstallEditMenu()
+      {
+         mMenuCut = new TaggedImageMenuItem("Cut");
+         mMenuCut.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Manager.Cut-16.png"));
+         mMenuCut.Activated += OnCutActivated;
+         mMenuCut.Sensitive = false;
+         mMenuCut.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.x,      Gdk.ModifierType.ControlMask, AccelFlags.Visible));
+         mMenuCut.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Delete, Gdk.ModifierType.ShiftMask,   AccelFlags.Visible));
+         AppendMenu("Edit", mMenuCut);         
+
+         mMenuCopy = new TaggedImageMenuItem("Copy");
+         mMenuCopy.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Manager.Copy-16.png"));
+         mMenuCopy.Activated += OnCopyActivated;
+         mMenuCopy.Sensitive = false;
+         mMenuCopy.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.c,      Gdk.ModifierType.ControlMask, AccelFlags.Visible));
+         mMenuCopy.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Insert, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
+         AppendMenu("Edit", mMenuCopy);         
+
+         mMenuPaste = new TaggedImageMenuItem("Paste");
+         mMenuPaste.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Manager.Paste-16.png"));
+         mMenuPaste.Activated += OnPasteActivated;
+         mMenuPaste.Sensitive = false;
+         mMenuPaste.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.v,      Gdk.ModifierType.ControlMask, AccelFlags.Visible));
+         mMenuPaste.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Insert, Gdk.ModifierType.ShiftMask,   AccelFlags.Visible));
+         AppendMenu("Edit", mMenuPaste);         
+      }
+
+      protected void OnCutActivated(object sender, EventArgs e)
+      {
+         (this as ICut).Cut();
+      }
+
+      protected void OnCopyActivated(object sender, EventArgs e)
+      {
+         (this as ICopy).Copy();
+      }
+
+      protected void OnPasteActivated(object sender, EventArgs e)
+      {
+         (this as IPaste).Paste();
+      }
+
+      void ICut.Cut()
+      {
+         if(CurrentDockItem!=null && CurrentDockItem.Content!=null)
+         {
+            if(CurrentDockItem.Content is ICut)
+               (CurrentDockItem.Content as ICut).Cut();
+            else
+               MessageWriteLine("current component does not implement interface ICut");
+         }                                         
+      }
+
+      void ICopy.Copy()
+      {
+         if(CurrentDockItem!=null && CurrentDockItem.Content!=null)
+         {
+            if(CurrentDockItem.Content is ICopy)
+               (CurrentDockItem.Content as ICopy).Copy();
+            else
+               MessageWriteLine("current component does not implement interface ICopy");
+         }
+      }
+
+      void IPaste.Paste()
+      {
+         if(CurrentDockItem!=null && CurrentDockItem.Content!=null)
+         {
+            if(CurrentDockItem.Content is IPaste)
+               (CurrentDockItem.Content as IPaste).Paste();
+            else
+               MessageWriteLine("current component does not implement interface IPaste");
+         }
+      }
+      #endregion
+
       /// <summary>
       /// Add all component start/create menu entries
       /// </summary>
       protected void AddComponentMenus()
       {
-         InstallQuitMenu();
          InstallFileOpenMenu();
-         // InstallLanguageMenu("Options");
+         InstallQuitMenu();
+         InstallEditMenu();
 
          foreach (ComponentFactoryInformation cfi in ComponentFinder.ComponentInfos)
          {
@@ -356,7 +437,7 @@ namespace Docking.Components
             if (pb != null)
                item.Image = new Image(pb);
             item.Activated += ComponentHandleActivated;
-            InsertMenu(builder.ToString(), item);
+            AppendMenu(builder.ToString(), item);
          }
          MenuBar.ShowAll();
       }
@@ -405,7 +486,7 @@ namespace Docking.Components
             TaggedCheckedMenuItem item = new TaggedCheckedMenuItem(name) { IgnoreLocalization = true };
             item.Activated += OnLanguageActivated;
             item.Tag = code;
-            InsertMenu(string.Format("{0}\\Language", baseMenu, name), item);
+            AppendMenu(string.Format("{0}\\Language", baseMenu, name), item);
 
             if (mLanguageBaseMenu == null)
                mLanguageBaseMenu = item.Parent as Menu;
@@ -505,7 +586,7 @@ namespace Docking.Components
             if (filename != null)
                OpenFile(filename);
          };
-         InsertMenu("File", item);
+         AppendMenu("File", item);
       }
 
       public bool OpenFile(string filename)
@@ -911,7 +992,8 @@ namespace Docking.Components
                currentLoadSaveItem = item;
                (item.Content as IComponent).Loaded(item);
                w.Stop();
-               if (w.ElapsedMilliseconds > 25)
+               //if (w.ElapsedMilliseconds > 25)
+               if (w.ElapsedMilliseconds > 100)
                   MessageWriteLine("Invoking IComponent.Loaded() for component {0} took {1:0.00}s", item.Id, w.Elapsed.TotalSeconds);
             }
             if (item.Content is IComponentInteract)
@@ -1089,6 +1171,7 @@ namespace Docking.Components
       }
 
       // hexdump hex dump (copied from LittleHelper, need in also in other context) 
+      // TODO this code is misplaced in this class, move it to somewhere else, e.g. "Tools"
       public static String ToHexString(byte[] ar)
       {
          StringBuilder result = new StringBuilder();
@@ -1098,6 +1181,7 @@ namespace Docking.Components
       }
 
       // Byte array from hexdump string
+      // TODO this code is misplaced in this class, move it to somewhere else, e.g. "Tools"
       public static Byte[] FromHexString(String s)
       {
          if (s == null || (s.Length % 2) != 0)
@@ -1378,7 +1462,7 @@ namespace Docking.Components
             mPropertyInterfaces.Remove(item.Content as IProperty);
 
          // tell all other about current item changed if it the removed component
-         if (mCurrentDockItem == item)
+         if (CurrentDockItem == item)
          {
             // care all IProperty Widgets
             foreach (IProperty ip in mPropertyInterfaces)
@@ -1388,7 +1472,7 @@ namespace Docking.Components
             foreach (IScript isc in mScriptInterfaces)
                isc.SetScript(null, null);
 
-            mCurrentDockItem = null;
+            CurrentDockItem = null;
             foreach (DockItem other in DockFrame.GetItems())
             {
                if (other != item && other.Content is IComponentInteract)
@@ -1488,7 +1572,7 @@ namespace Docking.Components
       /// Objects are normally widgets and similar
       /// </summary>
       Dictionary<object, DockItem> mSelectRelation = new Dictionary<object, DockItem>();
-      DockItem mCurrentDockItem = null;
+      public DockItem CurrentDockItem { get; protected set; }
       DockVisualStyle mNormalStyle, mSelectedStyle;
       List<IProperty> mPropertyInterfaces = new List<IProperty>();
       List<IScript> mScriptInterfaces = new List<IScript>();
@@ -1542,33 +1626,37 @@ namespace Docking.Components
          DockItem select;
          if (mSelectRelation.TryGetValue(item, out select))
          {
-            if (mCurrentDockItem != select)
+            if (CurrentDockItem != select)
             {
-               if (mCurrentDockItem != null)
+               if (CurrentDockItem != null)
                {
-                  mCurrentDockItem.TitleTab.VisualStyle = mNormalStyle;
+                  CurrentDockItem.TitleTab.VisualStyle = mNormalStyle;
                }
-               mCurrentDockItem = select;
-               mCurrentDockItem.TitleTab.VisualStyle = mSelectedStyle;
+               CurrentDockItem = select;
+               CurrentDockItem.TitleTab.VisualStyle = mSelectedStyle;
 
-               // care all IProperty Widgets
-               if (!(mCurrentDockItem.Content is IProperty))
+               mMenuCut.Sensitive   = CurrentDockItem.Content is ICut;
+               mMenuCopy.Sensitive  = CurrentDockItem.Content is ICopy;
+               mMenuPaste.Sensitive = CurrentDockItem.Content is IPaste;
+
+               // notify all IProperty Widgets
+               if (!(CurrentDockItem.Content is IProperty))
                {
                   foreach (IProperty ip in mPropertyInterfaces)
                      ip.SetObject(null);
                }
-               // care all IScript Widgets
-               if (!(mCurrentDockItem.Content is IScript))
+               // notify all IScript Widgets
+               if (!(CurrentDockItem.Content is IScript))
                {
                   foreach (IScript isc in mScriptInterfaces)
                      isc.SetScript(null, null);
                }
 
-               // tell all other about current item changed
+               // notify all other components that the current item changed
                foreach (DockItem other in DockFrame.GetItems())
                {
                   if (other != item && other.Content is IComponentInteract)
-                     (other.Content as IComponentInteract).Current(mCurrentDockItem.Content);
+                     (other.Content as IComponentInteract).Current(CurrentDockItem.Content);
                }
             }
          }

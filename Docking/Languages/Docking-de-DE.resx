@@ -222,10 +222,10 @@
   <data name="Docking.Components.Status" xml:space="preserve">
     <value>Status</value>
   </data>
-  <data name="Docking.Components.Overwrite value with new translation ?" xml:space="preserve">
+  <data name="Docking.Components.Overwrite value with new translation?" xml:space="preserve">
     <value>Vorhandenen Wert mit neuer Übersetzung überschreiben?</value>
   </data>
-  <data name="Docking.Components.Sure to translate all empty recources ?" xml:space="preserve">
+  <data name="Docking.Components.Sure to translate all empty resources?" xml:space="preserve">
     <value>Alle leeren Lokalisierungen mit Übersetzungsvorschlag aus GoogleTranslate füllen?
 Es wird empfohlen, anschließend die Übersetzungen manuell zu überprüfen.</value>
   </data>

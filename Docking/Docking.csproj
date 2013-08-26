@@ -112,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Framework\Interfaces\ICutCopyPaste.cs" />
     <Compile Include="Framework\Interfaces\ILocalizable.cs" />
     <Compile Include="Framework\Interfaces\IMessageWriteLine.cs" />
     <Compile Include="Framework\Interfaces\IPersistable.cs" />
@@ -231,6 +232,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <EmbeddedResource Include="Framework\Manager\Copy-16.png" />
+    <EmbeddedResource Include="Framework\Manager\Cut-16.png" />
+    <EmbeddedResource Include="Framework\Manager\Paste-16.png" />
     <Content Include="Languages\Docking-en-US.resx">
       <LastGenOutput>Docking-default.Designer.cs</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -277,7 +281,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="IronPython\" />
-    <Folder Include="Xwt.Motion\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Framework\Manager\File-16.png" />
