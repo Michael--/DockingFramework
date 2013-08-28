@@ -687,41 +687,42 @@ namespace Docking.Components
          return result;
       }
 
-      public String SaveFileDialog(string prompt)
-      {
-         return SaveFileDialog(prompt, new List<FileFilter>());
-      }
-
-      public String SaveFileDialog(string prompt, FileFilter filefilter)
-      {
-         List<FileFilter> L = null;
-         if (filefilter != null)
-         {
-            L = new List<FileFilter>();
-            L.Add(filefilter);
-         }
-         return SaveFileDialog(prompt, L);
-      }
-
-      public String SaveFileDialog(string prompt, List<FileFilter> filefilters)
+      public String SaveFileDialog(string prompt, FileFilterExt[] filefilters = null)
       {
          String result = null;
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Save,
              "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
-             "Save".Localized("Docking.Components"),   ResponseType.Accept);
+             "Save".Localized("Docking.Components"), ResponseType.Accept);
 
          if (filefilters != null)
-            foreach (FileFilter filter in filefilters)
-               dlg.AddFilter(filter);
+            foreach (FileFilterExt filter in filefilters)
+               dlg.AddFilter(filter.Filter);
 
          if (dlg.Run() == (int)ResponseType.Accept)
          {
             result = dlg.Filename;
+
+            FileFilter selectedFilter = dlg.Filter;
+            if (selectedFilter != null)
+            {
+               foreach (FileFilterExt f in filefilters)
+               {
+                  if (f.Filter == selectedFilter)
+                  {
+                     string expectedExtension = f.Pattern.TrimStart(new char[] { '*' });
+                     String ext = System.IO.Path.GetExtension(result).ToLower();
+                     if (ext != expectedExtension)
+                        result += expectedExtension;
+                     break;
+                  }
+               }
+            }
          }
 
          dlg.Destroy();
          return result;
       }
+
 
       static bool PlatformIsWin32ish { get
       {
@@ -1934,6 +1935,20 @@ namespace Docking.Components
       }
       public string LocalizationKey { get; set; }
       public bool IgnoreLocalization { get; set; }
+   }
+
+   // used for SaveAs dialog, necessary to extent with correct file extension
+   public class FileFilterExt
+   {
+      public FileFilterExt(string pattern, string name)
+      {
+         Pattern = pattern;
+         Filter = new FileFilter();
+         Filter.AddPattern(pattern);
+         Filter.Name = name;
+      }
+      public FileFilter Filter { get; private set; }
+      public string Pattern { get; set; }
    }
 
 
