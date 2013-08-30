@@ -710,9 +710,11 @@ namespace Docking.Components
                   if (f.Filter == selectedFilter)
                   {
                      string expectedExtension = f.Pattern.TrimStart(new char[] { '*' });
-                     String ext = System.IO.Path.GetExtension(result).ToLower();
-                     if (ext != expectedExtension)
-                        result += expectedExtension;
+
+                     if (!result.EndsWith(expectedExtension, true, null))
+                     {
+                        result = System.IO.Path.GetDirectoryName(result) + System.IO.Path.DirectorySeparatorChar + System.IO.Path.GetFileName(result) + expectedExtension;
+                     }
                      break;
                   }
                }
