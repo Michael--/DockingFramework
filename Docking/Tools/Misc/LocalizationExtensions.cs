@@ -9,24 +9,26 @@ namespace Docking.Components
 {
    public partial class Localization
    {
-      public static string Format(string fmt, Gtk.Bin o, params object[] args)
+      public static string Format(Gtk.Bin o, string fmt, params object[] args)
       {
          return fmt.FormatLocalized(o, args);
       }
 
-      public static string Format(string fmt, IFormatLocalizedObject o, params object[] args)
+      // special case: no fmt string arguments
+      public static string Format(Gtk.Bin o, string fmt)
       {
-         return fmt.FormatLocalized(o, args);
-      }
-
-      public static string Format(string fmt, string prefix, params object[] args)
-      {
-         return fmt.FormatLocalized(prefix, args);
+         return fmt.FormatLocalized(o);
       }
 
       public static string Format(string fmt, params object[] args)
       {
          return fmt.FormatLocalized(args);
+      }
+
+      // special case: no fmt string arguments
+      public static string Format(string fmt)
+      {
+         return fmt.FormatLocalized();
       }
    }
 }
@@ -37,17 +39,12 @@ namespace Docking.Tools
    {
       public static string Localized(this string key, object o)
       {
-         return Localized(key, o.GetType().Namespace);
+         return key.Localized(o.GetType().Namespace);
       }
 
-      public static string Localized(this string key, string prefix)
+      public static string Localized(this string key, string namespc)
       {
-         if (prefix == null)
-            return Localized(key);
-         string result = Localization.GetString(prefix + "." + key);
-         if (result != null)
-            return result;
-         return key;
+         return (namespc+"."+key).Localized();
       }
 
       public static string Localized(this string key)
@@ -60,27 +57,13 @@ namespace Docking.Tools
 
       public static string FormatLocalized(this string key, Gtk.Bin o, params object[] args)
       {
-         return FormatLocalized(key, o.GetType().Namespace, args);
+         return (o.GetType().Namespace+"."+key).FormatLocalized(args);
       }
 
-      public static string FormatLocalized(this string key, IFormatLocalizedObject o, params object[] args)
+      // special case: no fmt string arguments
+      public static string FormatLocalized(this string key, Gtk.Bin o)
       {
-         return FormatLocalized(key, o.GetType().Namespace, args);
-      }
-
-
-      public static string FormatLocalized(this string key, string prefix, params object[] args)
-      {
-         try
-         {
-            return String.Format(System.Globalization.CultureInfo.InvariantCulture, Localized(key, prefix), args);
-         }
-         catch (FormatException)
-         {
-            if(Localization.mDbgOut!=null)
-                Localization.mDbgOut.MessageWriteLine("FormatLocalized Exception: key='{0}.{1}' fmt='{2}'", prefix, key, Localized(key, prefix));
-            return Localized(key, prefix);
-         }
+         return (o.GetType().Namespace+"."+key).FormatLocalized();
       }
 
       public static string FormatLocalized(this string key, params object[] args)
@@ -95,6 +78,12 @@ namespace Docking.Tools
                  Localization.mDbgOut.MessageWriteLine("FormatLocalized Exception: key='{0}' fmt='{1}'", key, Localized(key));
             return Localized(key);
          }
+      }
+
+      // special case: no fmt string arguments
+      public static string FormatLocalized(this string key)
+      {
+         return Localized(key);
       }
    }
 }
