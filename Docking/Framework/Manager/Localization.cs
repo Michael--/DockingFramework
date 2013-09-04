@@ -320,15 +320,17 @@ namespace Docking.Components
 
       public static string GetString(string key)
       {
+         string key2 = StringTools.StripSpecialCharacters(key);
+
          Node node = null;
-         if (mCurrentLanguage != null && mCurrentLanguage.Nodes.TryGetValue(key, out node) && (node.Value as String).Length > 0)
+         if (mCurrentLanguage != null && mCurrentLanguage.Nodes.TryGetValue(key2, out node) && (node.Value as String).Length > 0)
             return node.Value as string;
 
-         if (mDefaultLanguage != null && mDefaultLanguage.Nodes.TryGetValue(key, out node) && (node.Value as String).Length > 0)
+         if (mDefaultLanguage != null && mDefaultLanguage.Nodes.TryGetValue(key2, out node) && (node.Value as String).Length > 0)
             return node.Value as string;
 
          if (Localization.mDbgOut != null)
-             Localization.mDbgOut.MessageWriteLine("Missing localization key '{0}'", key);
+             Localization.mDbgOut.MessageWriteLine("Missing localization key '{0}'", key2);
 
          return null;
       }

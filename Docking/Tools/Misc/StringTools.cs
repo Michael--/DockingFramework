@@ -28,7 +28,7 @@ namespace Docking.Tools
              return null;
           if(s.Length<=0)
              return "";
-          return Regex.Replace(s, "\n", " ");
+          return Regex.Replace(s, "[\n\r]+", " ");
       }
    }
 }
