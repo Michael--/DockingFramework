@@ -72,10 +72,10 @@ namespace Docking.Tools
                 return m_Jobs.ToArray();
         }
         
-        // Occurs when a new job added to the list of all jobs
+        // Occurs when a new job is added to the list of all jobs
         public static event  JobInformationAddedEventHandler Added;
         
-        // Occurs when a job removed from the list of all jobs
+        // Occurs when a job is removed from the list of all jobs
         public static event  JobInformationRemovedEventHandler Removed;
         
         // Occurs when job progress changed

@@ -1,63 +1,62 @@
 using System;
+using System.Collections.Generic;
 using Docking.Components;
 using Docking.Tools;
-using System.Collections.Generic;
+using Gtk;
 
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
     public partial class Activities : Gtk.Bin, IComponent, ILocalizableComponent
     {
+        Gtk.ListStore listStore;
+
+        const int COLUMN_JOB_INFORMATION = 0;
+        const int COLUMN_NAME            = 1;
+        const int COLUMN_DESCRIPTION     = 2;
+        const int COLUMN_STATUS          = 3;
+
         public Activities ()
         {
             this.Build();
 
-            Gtk.TreeViewColumn activityColumn = new TreeViewColumnLocalized() { Title = "Activity", Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 100, Resizable = true };
-            Gtk.TreeViewColumn descriptionColumn = new TreeViewColumnLocalized() { Title = "Description", Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 200, Resizable = true };
-            Gtk.TreeViewColumn statusColumn = new TreeViewColumnLocalized() { Title = "Status", Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 100, Resizable = true };
+            Gtk.TreeViewColumn columnName   = new TreeViewColumnLocalized() { Title = "Activity",        Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 100, Resizable = true };
+            Gtk.TreeViewColumn columnDesc   = new TreeViewColumnLocalized() { Title = "Description", Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 200, Resizable = true };
+            Gtk.TreeViewColumn columnStatus = new TreeViewColumnLocalized() { Title = "Status",      Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 100, Resizable = true };
 
-            // Add the columns to the TreeView
-            treeview1.AppendColumn (activityColumn);
-            treeview1.AppendColumn (descriptionColumn);
-            treeview1.AppendColumn (statusColumn);
+            treeview1.AppendColumn(columnName);
+            treeview1.AppendColumn(columnDesc);
+            treeview1.AppendColumn(columnStatus);
 
-            // Create the text cells that will display the content
-            Gtk.CellRendererText componentsCell = new Gtk.CellRendererText ();
-            Gtk.CellRendererText descriptionCell = new Gtk.CellRendererText ();
-            Gtk.CellRendererProgress statusCell = new Gtk.CellRendererProgress ();
+            Gtk.CellRendererText     rendererName   = new Gtk.CellRendererText ();
+            Gtk.CellRendererText     rendererDesc   = new Gtk.CellRendererText ();
+            Gtk.CellRendererProgress rendererStatus = new Gtk.CellRendererProgress ();
 
-            activityColumn.PackStart (componentsCell, true);
-            descriptionColumn.PackStart (descriptionCell, true);
-            statusColumn.PackStart (statusCell, true);
+            columnName.PackStart(rendererName, true);
+            columnDesc.PackStart(rendererDesc, true);
+            columnStatus.PackStart(rendererStatus, true);
 
-            activityColumn.AddAttribute (componentsCell, "text", activityIndex);
-            descriptionColumn.AddAttribute (descriptionCell, "text", descriptionIndex);
-            statusColumn.AddAttribute (statusCell, "value", statusIndex);
+            columnName.AddAttribute(rendererName, "text", COLUMN_NAME);
+            columnDesc.AddAttribute(rendererDesc, "text", COLUMN_DESCRIPTION);
+            columnStatus.AddAttribute(rendererStatus, "value", COLUMN_STATUS);
 
-            // Create a model that will hold the content, assign the model to the TreeView
             listStore = new Gtk.ListStore (typeof(JobInformation), typeof (string), typeof (string), typeof (int));
             treeview1.Model = listStore;
+            treeview1.CursorChanged += HandleCursorChanged;
         }
-        Gtk.ListStore listStore;
-        const int jobInformationIndex = 0;
-        const int activityIndex = 1;
-        const int descriptionIndex = 2;
-        const int statusIndex = 3;
 
         #region IComponent
         public ComponentManager ComponentManager { get; set; }
 
         void IComponent.Loaded(DockItem item)
         {
-            // note: job events could be happen while initializing
             JobInformation.Added += HandleAdded;
             JobInformation.Removed += HandleRemoved;
             Initialize();
         }
 
         void IComponent.Save()
-        {
-        }
+        {}
         #endregion
 
         #region ILocalizable
@@ -65,35 +64,60 @@ namespace Docking.Components
         string ILocalizableComponent.Name { get { return "Activities"; } }
 
         void ILocalizableComponent.LocalizationChanged(Docking.DockItem item)
-        {}
+        {
+           Initialize();
+        }
         #endregion
 
 
         void Initialize()
         {
-            JobInformation[] jobs = JobInformation.GetJobs();
-            foreach(JobInformation job in jobs)
-                AddJob(job);
+           lock(listStore)
+           { 
+              listStore.Clear();
+               JobInformation[] jobs = JobInformation.GetJobs();
+               foreach(JobInformation job in jobs)
+                  AddJob(job);            
+           }
+        }
 
-            treeview1.CursorChanged += HandleCursorChanged;
+        TreeIter FindJob(JobInformation job)
+        {
+            TreeIter iter;
+            listStore.GetIterFirst(out iter);
+            while(!iter.Equals(TreeIter.Zero))
+            {
+               if(listStore.GetValue(iter, COLUMN_JOB_INFORMATION)==job)
+               {
+                  return iter;
+               }
+               listStore.IterNext(ref iter);
+            }
+            return TreeIter.Zero;
+        }
+
+        TreeIter FindJob(Gtk.TreeSelection selection)
+        {
+            Gtk.TreeModel model;
+            Gtk.TreeIter iter;
+            return (selection!=null && selection.GetSelected(out model, out iter)) ? iter : TreeIter.Zero;        
         }
 
         void HandleCursorChanged(object sender, EventArgs e)
         {
-            Gtk.TreeSelection selection = (sender as Gtk.TreeView).Selection;
-
-            Gtk.TreeModel model;
-            Gtk.TreeIter iter;
-            if (selection.GetSelected(out model, out iter))
-            {
-                lock (TreeIterHelper)
-                {
-                    JobInformation job = (JobInformation) listStore.GetValue(iter, jobInformationIndex);
-                    buttonCancel.Sensitive = job.CancelationSupported;
-                }
-            }
-            else
-                buttonCancel.Sensitive = false;
+           lock(listStore)
+           { 
+               Gtk.TreeIter iter = FindJob(treeview1.Selection);
+               if(!iter.Equals(TreeIter.Zero))
+               {
+                  JobInformation job = (JobInformation)listStore.GetValue(iter, COLUMN_JOB_INFORMATION);
+                  buttonCancel.Sensitive = job.CancelationSupported;
+               }
+               else
+               {
+                  buttonCancel.Sensitive = false;
+               }
+           }
         }
 
         void HandleAdded (object sender, JobInformationEventArgs e)
@@ -106,86 +130,53 @@ namespace Docking.Components
             Gtk.Application.Invoke(delegate { RemoveJob(e.JobInformation); });
         }
 
-        /// <summary>
-        /// Normally I would add a tag to each row, but as a GTK beginner I currently
-        /// don't know how.
-        /// I will refacture when I found the solution I looking for.
-        /// </summary>
-        Dictionary<JobInformation, Gtk.TreeIter> TreeIterHelper = new Dictionary<JobInformation, Gtk.TreeIter>();
-
         void AddJob(JobInformation job)
         {
-            Gtk.TreeIter iter = listStore.Append();
-            listStore.SetValue(iter, jobInformationIndex, job);
-            listStore.SetValue(iter, activityIndex, job.Name);
-            listStore.SetValue(iter, descriptionIndex, job.Description);
-            listStore.SetValue(iter, statusIndex, 0); 
-
-            // if (!job.ProgressSupported) ...
-            // -1 as ProgressValue will result in an empty progress bar display, but only if no other threads with active progress exist
-            // in that case the progress copied from any other and totally flickering
-            // also a lot of GLib-GObject-WARNING at runtime occur
-            // TODO instead of displaying an empty progress bar, make it invisible or show a text widget saying something like "continuous", telling the user that this thread is never finished but instead always-working
-            // unfortunately at statusIndex a CellRendererProgress is installed always in any row
-            // we would need a special CellRenderer which could display its content as Text or Progress 
-
-            lock (TreeIterHelper)
-            {
-                TreeIterHelper.Add(job, iter);
-            }
-            job.ProgressChanged += HandleProgressChanged;
+           lock(listStore)
+           {
+              Gtk.TreeIter iter = listStore.AppendValues(job, job.Name, job.Description, 0);
+              job.ProgressChanged += HandleProgressChanged; 
+           }
         }
 
         void RemoveJob(JobInformation job)
         {
-            lock (TreeIterHelper)
-            {
-                Gtk.TreeIter iter;
-                if (TreeIterHelper.TryGetValue(job, out iter))
-                {
-                    TreeIterHelper.Remove(job);
-                    listStore.Remove(ref iter);
-                }
-            }
-            HandleCursorChanged(treeview1, null);
+           lock(listStore)
+           { 
+               TreeIter iter = FindJob(job);
+               if(!iter.Equals(TreeIter.Zero))
+                  listStore.Remove(ref iter);
+           }
         }
 
         void HandleProgressChanged (object sender, JobInformationEventArgs e)
         {
             Gtk.Application.Invoke(delegate
             {
-                int progress = e.JobInformation.Progress;
-                lock(TreeIterHelper)
+                lock(listStore)
                 {
-                    Gtk.TreeIter iter;
-                    if (TreeIterHelper.TryGetValue(e.JobInformation, out iter))
-                    {
-                        listStore.SetValue(iter, statusIndex, progress);
-                        this.treeview1.QueueDraw(); // TODO don't know why this explicit call is necessary. without it, repainting of the progress bars is missing :((((
-                    }
+                   TreeIter iter = FindJob(e.JobInformation);
+                   if(!iter.Equals(TreeIter.Zero))
+                     listStore.SetValue(iter, COLUMN_STATUS, e.JobInformation.Progress);
                 }
             });
         }
 
         protected void OnButtonCancelClicked(object sender, EventArgs e)
         {
-            Gtk.TreeSelection selection = treeview1.Selection;
-            Gtk.TreeModel model;
-            Gtk.TreeIter iter;
-            if (selection.GetSelected(out model, out iter))
-            {
-                lock (TreeIterHelper)
-                {
-                    JobInformation job = (JobInformation) listStore.GetValue(iter, jobInformationIndex);
-                    job.Cancel();
-                }
+           lock(listStore)
+           { 
+              Gtk.TreeIter iter = FindJob(treeview1.Selection);
+              if(!iter.Equals(TreeIter.Zero))
+              {
+                 JobInformation job = listStore.GetValue(iter, COLUMN_JOB_INFORMATION) as JobInformation;
+                 job.Cancel();
+              }
             }
         }
     }
 
     #region Starter / Entry Point
-
-
     public class Factory : ComponentFactory
     {
         public override Type TypeOfInstance { get { return typeof(Activities); } }
