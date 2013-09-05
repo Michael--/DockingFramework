@@ -12,8 +12,10 @@ namespace Docking.Components
 		// For this reason, class ComponentManager contains an "Invoke" delegation in function "MessageWriteLine".
 		// It should be considered to move that delegation to here.
 		// I feel it misplaced in that class.
-       void IMessage.WriteLine(String format, params object[] args)
+      void IMessage.WriteLine(String format, params object[] args)
 		{
+         if (format == null)
+            return;
 			Gtk.TextIter iter = textview1.Buffer.EndIter;
          String str = String.Format(format, args);
 			textview1.Buffer.Insert(ref iter, str + "\r\n");

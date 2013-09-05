@@ -647,7 +647,7 @@ namespace Docking.Components
          }
 
          // TODO: consider all and let the user pick which one
-         MessageWriteLine("Opening file {0} as {1}".FormatLocalized("Docking.Components"), filename, openers[0].Value);
+         MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} as {1}"), filename, openers[0].Value);
          return openers[0].Key.OpenFile(filename);
       }
 
@@ -1735,6 +1735,9 @@ namespace Docking.Components
 
       public void MessageWriteLine(String format, params object[] args)
       {
+         if (format == null)
+            return;
+
          if (PowerDown)
             return;
 
@@ -1746,6 +1749,9 @@ namespace Docking.Components
 
       protected void MessageWriteLineWithoutInvoke(String format, params object[] args)
       {
+         if (format == null)
+            return;
+
          if (PowerDown)
             return;
 

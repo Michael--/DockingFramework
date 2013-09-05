@@ -73,7 +73,8 @@ namespace Docking.Tools
       {
          try
          {
-            return String.Format(System.Globalization.CultureInfo.InvariantCulture, Localized(key), args);
+            string localized = Localized(key) ?? key;
+            return String.Format(System.Globalization.CultureInfo.InvariantCulture, localized, args);
          }
          catch (FormatException)
          {
