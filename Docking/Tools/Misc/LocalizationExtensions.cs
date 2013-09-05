@@ -39,20 +39,23 @@ namespace Docking.Tools
    {
       public static string Localized(this string key, object o)
       {
-         return key.Localized(o.GetType().Namespace);
+         string result = key.Localized(o.GetType().Namespace);
+         if (result != null)
+            return result;
+         return key;
       }
 
       public static string Localized(this string key, string namespc)
       {
-         return (namespc+"."+key).Localized();
+         string result = (namespc + "." + key).Localized();
+         if (result != null)
+            return result;
+         return key;
       }
 
       public static string Localized(this string key)
       {
-         string result = Localization.GetString(key);
-         if (result != null)
-            return result;
-         return key;
+         return Localization.GetString(key);
       }
 
       public static string FormatLocalized(this string key, Gtk.Bin o, params object[] args)
