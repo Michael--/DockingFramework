@@ -49,6 +49,12 @@ namespace Docking
       // For this reason, this dummy, not implemented constructor has been added.
       // It currently has no implementation because we currently have no clue what the heck should be put into it.
       // We just want to be able to put a breakpoint here for debugging.
+      // A hint might be:
+      //    public class Gtk.Object
+      //    {
+      //       ...
+      //       protected override IntPtr Raw { get; set; }
+      //       ...
       public TabStrip(IntPtr raw) : base(raw)
       {
          throw new Exception("unimplemented IntPtr constructor");
