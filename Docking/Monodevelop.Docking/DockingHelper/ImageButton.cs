@@ -37,6 +37,18 @@ namespace Docking.Helper
 		bool hover;
 		bool pressed;
 
+      // Currently, GTK (sometimes) throws Exceptions a la
+      //    GLib.MissingIntPtrCtorException: GLib.Object subclass ImageButton must provide a protected or public IntPtr ctor to support wrapping of native object handles.
+      // We currently have no clue why it at runtime checks if such a constructor exists, and, if not, throws an exception.
+      // We need to shed more light into this problem.
+      // For this reason, this dummy, not implemented constructor has been added.
+      // It currently has no implementation because we currently have no clue what the heck should be put into it.
+      // We just want to be able to put a breakpoint here for debugging.
+      public ImageButton(IntPtr raw)
+      {
+         throw new Exception("unimplemented IntPtr constructor");
+      }
+
 		public ImageButton ()
 		{
 			Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask;
