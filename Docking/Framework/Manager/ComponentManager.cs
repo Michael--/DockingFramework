@@ -713,7 +713,8 @@ namespace Docking.Components
 
                      if (!result.EndsWith(expectedExtension, true, null))
                      {
-                        result = System.IO.Path.GetDirectoryName(result) + System.IO.Path.DirectorySeparatorChar + System.IO.Path.GetFileName(result) + expectedExtension;
+                        result = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(result),
+                                                        System.IO.Path.GetFileName(result)+expectedExtension);
                      }
                      break;
                   }
