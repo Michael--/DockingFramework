@@ -45,40 +45,51 @@ namespace Docking.Components
 
       public static void LocalizeControls(string namespc, Gtk.Container container)
       {
-         foreach (Gtk.Widget w in container.AllChildren) // strange GTK artefact: method .Children does _not_ return ALL children. .AllChildren does. So what should .Children be GOOD FOR???? WTF
+         try
          {
-            if (w is Gtk.Container)
-               LocalizeControls(namespc, (w as Gtk.Container));
 
-            if (w is TreeView)
+            foreach(Gtk.Widget w in container.AllChildren) // strange GTK artefact: method .Children does _not_ return ALL children. .AllChildren does. So what should .Children be GOOD FOR???? WTF
             {
-               foreach(TreeViewColumn c in (w as TreeView).Columns)
+               if(w is Gtk.Container)
+                  LocalizeControls(namespc, (w as Gtk.Container));
+
+               if(w is TreeView)
                {
-                  if (c is ILocalizableWidget)
-                     (c as ILocalizableWidget).Localize(namespc);
+                  foreach(TreeViewColumn c in (w as TreeView).Columns)
+                  {
+                     if(c is ILocalizableWidget)
+                        (c as ILocalizableWidget).Localize(namespc);
+                  }
                }
+
+               if(w is Gtk.FileChooserWidget)
+               {
+                  //w.DumpWidgetsHierarchy();
+                  Gtk.Label lbl_CreateFolder = w.GetChild(0, 0, 0, 0, 5, 0) as Gtk.Label;
+                  Gtk.Label lbl_Location     = w.GetChild(0, 0, 0, 1, 0) as Gtk.Label;
+                  /*
+                  Gtk.Label lbl_Places       = w.GetChild(0, 0, 1, 0, 0, 0, 0, 0, 0, 0) as Gtk.Label;    // TODO WHY DO WE GET null HERE??
+                  Gtk.Label lbl_Name         = w.GetChild(0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0) as Gtk.Label; // TODO WHY DO WE GET null HERE??
+                  Gtk.Label lbl_Size         = w.GetChild(0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0) as Gtk.Label; // TODO WHY DO WE GET null HERE??
+                  Gtk.Label lbl_Modified     = w.GetChild(0, 0, 1, 1, 0, 0, 0, 2, 0, 0, 0) as Gtk.Label; // TODO WHY DO WE GET null HERE??
+                  */
+                  if(lbl_CreateFolder!=null)
+                     lbl_CreateFolder.LabelProp = "Create Folder".Localized("Docking.Components");
+                  if(lbl_Location!=null)
+                     lbl_Location.LabelProp = "Path".Localized("Docking.Components");
+               }
+
+               if(w is ILocalizableWidget)
+                  (w as ILocalizableWidget).Localize(namespc);
             }
 
-            if (w is Gtk.FileChooserWidget)
-            {
-                //w.DumpWidgetsHierarchy();
-                Gtk.Label lbl_CreateFolder = w.GetChild(0, 0, 0, 0, 5, 0) as Gtk.Label;
-                Gtk.Label lbl_Location     = w.GetChild(0, 0, 0, 1, 0) as Gtk.Label;
-                /*
-                Gtk.Label lbl_Places       = w.GetChild(0, 0, 1, 0, 0, 0, 0, 0, 0, 0) as Gtk.Label;    // TODO WHY DO WE GET null HERE??
-                Gtk.Label lbl_Name         = w.GetChild(0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0) as Gtk.Label; // TODO WHY DO WE GET null HERE??
-                Gtk.Label lbl_Size         = w.GetChild(0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0) as Gtk.Label; // TODO WHY DO WE GET null HERE??
-                Gtk.Label lbl_Modified     = w.GetChild(0, 0, 1, 1, 0, 0, 0, 2, 0, 0, 0) as Gtk.Label; // TODO WHY DO WE GET null HERE??
-                */
-                if(lbl_CreateFolder!=null)
-                   lbl_CreateFolder.LabelProp = "Create Folder".Localized("Docking.Components");
-                if(lbl_Location!=null)
-                  lbl_Location.LabelProp = "Path".Localized("Docking.Components");
-            }
-
-            if (w is ILocalizableWidget)
-               (w as ILocalizableWidget).Localize(namespc);
          }
+         catch(GLib.MissingIntPtrCtorException)
+         {
+            // http://jira.nts.neusoft.local/browse/NENA-790
+            //throw new Exception("unimplemented IntPtr constructor");
+         }
+
       }
 
       public string[] AvailableLanguages()
@@ -332,7 +343,7 @@ namespace Docking.Components
          if (Localization.mDbgOut != null)
              Localization.mDbgOut.MessageWriteLine("Missing localization key '{0}'", key2);
 
-         return null;
+         return key;
       }
    }
 
