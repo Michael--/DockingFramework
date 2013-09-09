@@ -171,7 +171,11 @@ namespace Docking.Components
                m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != m_DefaultLayoutName);
             }
          };
-        
+
+         foreach (String s in DockFrame.Layouts)
+            AppendLayoutMenu(s, true);
+
+         AppendMenu(@"Options\Layout", new SeparatorMenuItem()); // TODO localization does not work correctly here
          AppendMenu(@"Options\Layout", newLayout); // TODO localization does not work correctly here
          AppendMenu(@"Options\Layout", m_DeleteLayout); // TODO localization does not work correctly here
          AppendMenu(@"Options\Layout", new SeparatorMenuItem()); // TODO localization does not work correctly here
@@ -692,7 +696,7 @@ namespace Docking.Components
          String result = null;
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Save,
              "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
-             "Save".Localized("Docking.Components"), ResponseType.Accept);
+             "Save".Localized("Docking.Components"),   ResponseType.Accept);
 
          if (filefilters != null)
             foreach (FileFilterExt filter in filefilters)
@@ -717,7 +721,7 @@ namespace Docking.Components
                                                         System.IO.Path.GetFileName(result)+expectedExtension);
                      }
                      break;
-                  }
+         }
                }
             }
          }

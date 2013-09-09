@@ -36,7 +36,7 @@ using Xwt.Motion;
 using Animations = Xwt.Motion.AnimationExtensions;
 
 namespace Docking
-{	
+{
 	class CrossfadeIcon: Gtk.Image, IAnimatable
 	{
 		// This class should be subclassed from Gtk.Misc, but there is no reasonable way to do that due to there being no bindings to gtk_widget_set_has_window
@@ -151,7 +151,7 @@ namespace Docking
 		MouseTracker tracker;
 		CrossfadeIcon crossfade;
 		double hoverProgress;
-
+		
       // http://jira.nts.neusoft.local/browse/NENA-790
       public DockBarItem(IntPtr raw) : base(raw)
       {
@@ -489,8 +489,8 @@ namespace Docking
 				}
 
 				using (lg) {
-					Cairo.Color primaryColor = Styles.DockBarPrelightColor;
-					primaryColor.A = hoverProgress;
+				Cairo.Color primaryColor = Styles.DockBarPrelightColor;
+				primaryColor.A = hoverProgress;
 
 				Cairo.Color transparent = primaryColor;
 				transparent.A = 0;
@@ -500,7 +500,7 @@ namespace Docking
 				lg.AddColorStop (0.65, primaryColor);
 				lg.AddColorStop (1.0, transparent);
 
-					context.Rectangle (alloc.ToCairoRect ());
+				context.Rectangle (alloc.ToCairoRect ());
 					context.SetSource (lg);
 				}
 				context.Fill ();

@@ -33,6 +33,7 @@ namespace Docking.Components
    }
 }
 
+
 namespace Docking.Tools
 {
    public static class LocalizationExtensions
@@ -61,13 +62,13 @@ namespace Docking.Tools
       public static string FormatLocalized(this string key, Gtk.Bin o, params object[] args)
       {
          return (o.GetType().Namespace+"."+key).FormatLocalized(args);
-      }
+         }
 
       // special case: no fmt string arguments
       public static string FormatLocalized(this string key, Gtk.Bin o)
-      {
+         {
          return (o.GetType().Namespace+"."+key).FormatLocalized();
-      }
+         }
 
       public static string FormatLocalized(this string key, params object[] args)
       {
