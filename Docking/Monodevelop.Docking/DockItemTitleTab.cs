@@ -71,6 +71,12 @@ namespace Docking
 			pixAutoHide = Gdk.Pixbuf.LoadFromResource ("stock-auto-hide.png");
 			pixDock = Gdk.Pixbuf.LoadFromResource ("stock-dock.png");
 		}
+
+      public DockItemTitleTab(IntPtr raw) : base(raw)
+      {
+         // http://jira.nts.neusoft.local/browse/NENA-790
+         throw new Exception("IntPtr constructor not implemented");
+      }
 		
 		public DockItemTitleTab (DockItem item, DockFrame frame)
 		{
