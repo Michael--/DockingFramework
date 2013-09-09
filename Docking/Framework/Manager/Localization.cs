@@ -48,7 +48,10 @@ namespace Docking.Components
          try
          {
 
-            foreach(Gtk.Widget w in container.AllChildren) // strange GTK artefact: method .Children does _not_ return ALL children. .AllChildren does. So what should .Children be GOOD FOR???? WTF
+            foreach(Gtk.Widget w in container.Children)
+                                          // .AllChildren) // strange GTK artefact: method .Children does _not_ return ALL children. .AllChildren does. So what should .Children be GOOD FOR???? WTF
+                                          // however, using ".AllChildren" instead of ".Children" here causes lots of
+                                          // GLib.MissingIntPtrCtorException: GLib.Object subclass TempoGiusto.MapViewer.MapStyleEditor must provide a protected or public IntPtr ctor to support wrapping of native object handles.
             {
                if(w is Gtk.Container)
                   LocalizeControls(namespc, (w as Gtk.Container));
@@ -87,7 +90,7 @@ namespace Docking.Components
          catch(GLib.MissingIntPtrCtorException)
          {
             // http://jira.nts.neusoft.local/browse/NENA-790
-            //throw new Exception("unimplemented IntPtr constructor");
+            throw new Exception("unimplemented IntPtr constructor");
          }
 
       }
