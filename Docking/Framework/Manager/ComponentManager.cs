@@ -526,7 +526,7 @@ namespace Docking.Components
          SetLanguage(code, false);
       }
 
-      protected void SetLanguage(string code, bool always)
+      protected void SetLanguage(string code, bool enforceLanguageChangedNotification)
       {
          if (recursionWorkaround)
             return;
@@ -535,11 +535,11 @@ namespace Docking.Components
          UncheckMenuChildren(mLanguageBaseMenu, null);
          CheckMenuItem(mLanguageBaseMenu, Localization.CurrentLanguageName);
 
-         if (result || always)
+         if (result || enforceLanguageChangedNotification)
             UpdateLanguage();
       }
 
-      public void UpdateLanguage()
+      public void UpdateLanguage(bool withGUIRedraw = true)
       {
          // tell all components about changed language
          foreach (DockItem item in DockFrame.GetItems())
@@ -561,9 +561,12 @@ namespace Docking.Components
          // todo: change menue and further language depending stuff
          Localization.LocalizeMenu(MenuBar);
 
-         // redraw workaround
-         this.Hide();
-         this.Show();
+         if(withGUIRedraw)
+         {
+            // trigger redraw - this is a brute-force workaround, we found no other way yet to properly trigger a full-redraw of everything         
+            this.Hide();
+            this.Show();
+         }
       }
       #endregion
 
