@@ -172,13 +172,9 @@ namespace Docking.Components
             }
          };
 
-         foreach (String s in DockFrame.Layouts)
-            AppendLayoutMenu(s, true);
-
-         AppendMenu(@"Options\Layout", new SeparatorMenuItem()); // TODO localization does not work correctly here
-         AppendMenu(@"Options\Layout", newLayout); // TODO localization does not work correctly here
-         AppendMenu(@"Options\Layout", m_DeleteLayout); // TODO localization does not work correctly here
-         AppendMenu(@"Options\Layout", new SeparatorMenuItem()); // TODO localization does not work correctly here
+         AppendMenu(@"Options\Layout", newLayout);
+         AppendMenu(@"Options\Layout", m_DeleteLayout);
+         AppendMenu(@"Options\Layout", new SeparatorMenuItem());
 
          foreach (String s in DockFrame.Layouts)
             AppendLayoutMenu(s, true);
@@ -290,7 +286,7 @@ namespace Docking.Components
                }
             }
          };
-         AppendMenu(@"Options\Layout", item); // TODO localization does not work correctly here
+         AppendMenu(@"Options\Layout", item);
          if (!init)
             UncheckMenuChildren(item.Parent, item);
          item.Active = (name == DockFrame.CurrentLayout);
