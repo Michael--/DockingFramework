@@ -85,7 +85,7 @@ namespace Docking.Components
                ComponentManager.Localization.AddNewCurrentNode(newNode);
             }
          }
-         ComponentManager.UpdateLanguage();
+         ComponentManager.UpdateLanguage(true);
          UpdateChangeCount();
       }
 
@@ -128,7 +128,7 @@ namespace Docking.Components
                Localization.Node newNode = new Localization.Node(usNode.Key, translation, "", usNode.Base, "", "");
                ComponentManager.Localization.AddNewCurrentNode(newNode);
             }
-            ComponentManager.UpdateLanguage();
+            ComponentManager.UpdateLanguage(true);
             UpdateChangeCount();
          }
       }
@@ -151,7 +151,7 @@ namespace Docking.Components
                Localization.Node newNode = new Localization.Node(node.Key, args.NewText, "", node.Base, "", "");
                ComponentManager.Localization.AddNewCurrentNode(newNode);
             }
-            ComponentManager.UpdateLanguage();
+            ComponentManager.UpdateLanguage(true);
             UpdateChangeCount();
          }
       }

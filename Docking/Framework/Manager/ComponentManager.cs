@@ -536,10 +536,10 @@ namespace Docking.Components
          CheckMenuItem(mLanguageBaseMenu, Localization.CurrentLanguageName);
 
          if (result || enforceLanguageChangedNotification)
-            UpdateLanguage();
+            UpdateLanguage(true);
       }
 
-      public void UpdateLanguage(bool withGUIRedraw = true)
+      public void UpdateLanguage(bool triggerRedraw)
       {
          // tell all components about changed language
          foreach (DockItem item in DockFrame.GetItems())
@@ -561,7 +561,7 @@ namespace Docking.Components
          // todo: change menue and further language depending stuff
          Localization.LocalizeMenu(MenuBar);
 
-         if(withGUIRedraw)
+         if(triggerRedraw)
          {
             // trigger redraw - this is a brute-force workaround, we found no other way yet to properly trigger a full-redraw of everything         
             this.Hide();
