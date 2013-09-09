@@ -62,13 +62,24 @@ namespace Docking.Tools
       public static string FormatLocalized(this string key, Gtk.Bin o, params object[] args)
       {
          return (o.GetType().Namespace+"."+key).FormatLocalized(args);
-         }
+      }
 
       // special case: no fmt string arguments
       public static string FormatLocalized(this string key, Gtk.Bin o)
-         {
+      {
          return (o.GetType().Namespace+"."+key).FormatLocalized();
-         }
+      }
+
+      public static string FormatLocalizedWithPrefix(this string key, string prefix, params object[] args)
+      {
+         return (prefix+"."+key).FormatLocalized(args);
+      }
+
+      // special case: no fmt string arguments
+      public static string FormatLocalizedWithPrefix(this string key, string prefix)
+      {
+         return (prefix+"."+key).FormatLocalized();
+      }
 
       public static string FormatLocalized(this string key, params object[] args)
       {
