@@ -45,18 +45,12 @@ namespace Docking.Tools
 
       public static string Localized(this string key, object o)
       {
-         string result = key.Localized(o.GetType().Namespace);
-         if (result != null)
-            return result;
-         return key;
+         return Localization.GetString(key, o.GetType().Namespace);
       }
 
-      public static string Localized(this string key, string namespc)
+      public static string Localized(this string key, string prefix)
       {
-         string result = (namespc + "." + key).Localized();
-         if (result != null)
-            return result;
-         return key;
+         return Localization.GetString(key, prefix);
       }
 
       public static string FormatLocalized(this string key, params object[] args)

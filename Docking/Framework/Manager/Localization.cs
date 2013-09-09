@@ -43,19 +43,19 @@ namespace Docking.Components
          }
       }
 
-      public static void LocalizeControls(string namespc, Gtk.Container container)
+      public static void LocalizeControls(string prefix, Gtk.Container container)
       {
          foreach(Gtk.Widget w in container) // http://jira.nts.neusoft.local/browse/NENA-790
          {
             if(w is Gtk.Container)
-               LocalizeControls(namespc, (w as Gtk.Container));
+               LocalizeControls(prefix, (w as Gtk.Container));
 
             if(w is TreeView)
             {
                foreach(TreeViewColumn c in (w as TreeView).Columns)
                {
                   if(c is ILocalizableWidget)
-                     (c as ILocalizableWidget).Localize(namespc);
+                     (c as ILocalizableWidget).Localize(prefix);
                }
             }
 
@@ -77,7 +77,7 @@ namespace Docking.Components
             }
 
             if(w is ILocalizableWidget)
-               (w as ILocalizableWidget).Localize(namespc);
+               (w as ILocalizableWidget).Localize(prefix);
          }
       }
 
@@ -318,9 +318,9 @@ namespace Docking.Components
          }
       }
 
-      public static string GetString(string key)
+      public static string GetString(string key, string prefix = null)
       {
-         string key2 = StringTools.StripSpecialCharacters(key);
+         string key2 = StringTools.StripSpecialCharacters((prefix==null ? "" : prefix)+key);
 
          Node node = null;
          if (mCurrentLanguage != null && mCurrentLanguage.Nodes.TryGetValue(key2, out node) && (node.Value as String).Length > 0)
