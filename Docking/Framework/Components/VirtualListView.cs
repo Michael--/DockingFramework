@@ -336,7 +336,8 @@ namespace Docking.Components
                vscrollbar1.Adjustment.PageIncrement = pageSize;
             }
             hscrollRange += (int)hscrollbar1.Value;
-            hscrollbar1.SetRange(0, hscrollRange);
+            if (hscrollRange > 0)
+               hscrollbar1.SetRange(0, hscrollRange);
 
             // position current row inside visible area
             // TODO: please think about, because of double redraw a more sophisticated solution could be possible
