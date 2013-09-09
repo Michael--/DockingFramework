@@ -51,13 +51,6 @@ namespace MonoDevelop.Components.PropertyGrid
 		
 		private PropertySort propertySort = PropertySort.Categorized;
 		
-      // http://jira.nts.neusoft.local/browse/NENA-790
-      public PropertyGridTree(IntPtr raw) // : base(raw)
-      {
-         throw new Exception("unimplemented IntPtr constructor");
-      }
-
-
 		public PropertyGridTree (EditorManager editorManager, PropertyGrid parentGrid)
 		{
 			this.editorManager = editorManager;

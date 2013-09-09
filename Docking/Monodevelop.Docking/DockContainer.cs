@@ -484,12 +484,6 @@ namespace Docking
 			DockGroup dockGroup;
 			int dockIndex;
 	
-         // http://jira.nts.neusoft.local/browse/NENA-790
-         public SplitterWidget(IntPtr raw) : base(raw)
-         {
-            throw new Exception("unimplemented IntPtr constructor");
-         }
-
 			public SplitterWidget ()
 			{
 				this.VisibleWindow = false;

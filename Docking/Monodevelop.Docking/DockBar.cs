@@ -45,12 +45,6 @@ namespace Docking
 		bool alwaysVisible;
 		bool showBorder = true;
 		
-      // http://jira.nts.neusoft.local/browse/NENA-790
-      public DockBar(IntPtr raw) : base(raw)
-      {
-         throw new Exception("unimplemented IntPtr constructor");
-      }
-
 		internal DockBar (DockFrame frame, Gtk.PositionType position)
 		{
 			VisibleWindow = false;

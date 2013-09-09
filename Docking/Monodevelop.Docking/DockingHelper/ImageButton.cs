@@ -37,12 +37,6 @@ namespace Docking.Helper
 		bool hover;
 		bool pressed;
 
-      // http://jira.nts.neusoft.local/browse/NENA-790
-      public ImageButton(IntPtr raw) : base(raw)
-      {
-         throw new Exception("unimplemented IntPtr constructor");
-      }
-
 		public ImageButton ()
 		{
 			Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask;

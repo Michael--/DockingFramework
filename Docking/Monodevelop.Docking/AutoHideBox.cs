@@ -349,14 +349,6 @@ namespace Docking
 	
 	class ScrollableContainer: EventBox
 	{
-      // http://jira.nts.neusoft.local/browse/NENA-790
-      public ScrollableContainer(IntPtr raw) : base(raw)
-      {
-         throw new Exception("unimplemented IntPtr constructor");
-      }
-
-      public ScrollableContainer() {}
-
 		PositionType expandPos;
 		bool scrollMode;
 		int targetSize;

@@ -22,7 +22,7 @@ namespace Docking.Tools
             if (c != null)
             {
                 int i = 0;
-                foreach (Gtk.Widget w2 in c.AllChildren)
+                foreach (Gtk.Widget w2 in c)
                 {
                     w2.DumpWidgetsHierarchy(prefix+"["+i+"]");
                     i++;

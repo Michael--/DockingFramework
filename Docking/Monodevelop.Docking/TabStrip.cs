@@ -42,12 +42,6 @@ namespace Docking
         Label bottomFiller = new Label ();
         DockVisualStyle visualStyle;
         
-      // http://jira.nts.neusoft.local/browse/NENA-790
-      public TabStrip(IntPtr raw) : base(raw)
-      {
-         throw new Exception("unimplemented IntPtr constructor");
-      }
-
         public TabStrip (DockFrame frame)
         {
             VBox vbox = new VBox ();

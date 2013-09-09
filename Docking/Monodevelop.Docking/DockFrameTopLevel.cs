@@ -37,14 +37,6 @@ namespace Docking
 {
 	class DockFrameTopLevel: EventBox
 	{
-      // http://jira.nts.neusoft.local/browse/NENA-790
-      public DockFrameTopLevel(IntPtr raw) : base(raw)
-      {
-         throw new Exception("unimplemented IntPtr constructor");
-      }
-
-      public DockFrameTopLevel() {}
-
 		int x, y;
 		
 		public int X {

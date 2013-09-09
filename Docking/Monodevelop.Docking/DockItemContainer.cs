@@ -43,12 +43,6 @@ namespace Docking
 		Box contentBox;
 		VBox mainBox;
 		
-      // http://jira.nts.neusoft.local/browse/NENA-790
-      public DockItemContainer(IntPtr raw) : base(raw)
-      {
-         throw new Exception("unimplemented IntPtr constructor");
-      }
-
 		public DockItemContainer (DockFrame frame, DockItem item)
 		{
 			this.item = item;
@@ -192,9 +186,11 @@ namespace Docking
 		bool backgroundColorSet;
 		
 		public CustomFrame ()
-		{
-		}
+		{}
 		
+		public CustomFrame (IntPtr raw) : base(raw)
+		{}
+
 		public CustomFrame (int topMargin, int bottomMargin, int leftMargin, int rightMargin)
 		{
 			SetMargins (topMargin, bottomMargin, leftMargin, rightMargin);

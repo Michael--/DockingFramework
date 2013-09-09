@@ -152,12 +152,6 @@ namespace Docking
 		CrossfadeIcon crossfade;
 		double hoverProgress;
 		
-      // http://jira.nts.neusoft.local/browse/NENA-790
-      public DockBarItem(IntPtr raw) : base(raw)
-      {
-         throw new Exception("unimplemented IntPtr constructor");
-      }
-
 		public DockBarItem (DockBar bar, DockItem it, int size)
 		{
 			Events = Events | Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;

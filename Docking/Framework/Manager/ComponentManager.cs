@@ -81,7 +81,7 @@ namespace Docking.Components
          for (int i = 0; i < m.Length; i++)
          {
             foundmenu = SearchOrCreateMenu(m[i], menuShell, children);
-            children = foundmenu.AllChildren;
+            children = foundmenu.Children; // http://jira.nts.neusoft.local/browse/NENA-790
             menuShell = foundmenu;
          }
 
@@ -189,7 +189,7 @@ namespace Docking.Components
          if (baseMenu is Menu)
          {
             Menu bm = baseMenu as Menu;
-            foreach (object obj in bm.AllChildren)
+            foreach (object obj in bm) // http://jira.nts.neusoft.local/browse/NENA-790
             {
                if (obj is CheckMenuItem)
                {
@@ -214,7 +214,7 @@ namespace Docking.Components
          if (baseMenu is Menu)
          {
             Menu bm = baseMenu as Menu;
-            foreach (object obj in bm.AllChildren)
+            foreach (object obj in bm) // http://jira.nts.neusoft.local/browse/NENA-790
             {
                if (obj is CheckMenuItem)
                {
@@ -238,7 +238,7 @@ namespace Docking.Components
          // uncheck all other
          if (baseMenu is Menu)
          {
-            foreach (object obj in ((Menu)baseMenu).AllChildren)
+            foreach (object obj in ((Menu)baseMenu)) // http://jira.nts.neusoft.local/browse/NENA-790
             {
                if (obj is CheckMenuItem && obj != except)
                {
@@ -1632,7 +1632,7 @@ namespace Docking.Components
 
          if (w is Gtk.Container)
          {
-            foreach (Widget xw in ((Gtk.Container)w).AllChildren)
+            foreach (Widget xw in ((Gtk.Container)w)) // http://jira.nts.neusoft.local/browse/NENA-790
             {
                AddSelectNotifier(item, xw);
             }
