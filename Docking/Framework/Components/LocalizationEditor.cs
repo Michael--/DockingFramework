@@ -58,7 +58,7 @@ namespace Docking.Components
       {
          if (ResponseType.Yes != MessageBox.Show(null, MessageType.Question,
                      ButtonsType.YesNo,
-                     "Sure to translate all empty resources?".FormatLocalized(this)))
+                     "Sure to translate all empty resources?".FormatLocalizedWithPrefix(this)))
             return;
 
          TreeIter iter;
@@ -113,7 +113,7 @@ namespace Docking.Components
             {
                if (ResponseType.Yes != MessageBox.Show(null, MessageType.Question,
                            ButtonsType.YesNo,
-                           "Overwrite value with new translation ?".FormatLocalized(this)))
+                           "Overwrite value with new translation ?".FormatLocalizedWithPrefix(this)))
                   return;
             }
 

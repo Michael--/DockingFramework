@@ -11,13 +11,13 @@ namespace Docking.Components
    {
       public static string Format(Gtk.Bin o, string fmt, params object[] args)
       {
-         return fmt.FormatLocalized(o, args);
+         return fmt.FormatLocalizedWithPrefix(o, args);
       }
 
       // special case: no fmt string arguments
       public static string Format(Gtk.Bin o, string fmt)
       {
-         return fmt.FormatLocalized(o);
+         return fmt.FormatLocalizedWithPrefix(o);
       }
 
       public static string Format(string fmt, params object[] args)
@@ -38,6 +38,11 @@ namespace Docking.Tools
 {
    public static class LocalizationExtensions
    {
+      public static string Localized(this string key)
+      {
+         return Localization.GetString(key);
+      }
+
       public static string Localized(this string key, object o)
       {
          string result = key.Localized(o.GetType().Namespace);
@@ -52,33 +57,6 @@ namespace Docking.Tools
          if (result != null)
             return result;
          return key;
-      }
-
-      public static string Localized(this string key)
-      {
-         return Localization.GetString(key);
-      }
-
-      public static string FormatLocalized(this string key, Gtk.Bin o, params object[] args)
-      {
-         return (o.GetType().Namespace+"."+key).FormatLocalized(args);
-      }
-
-      // special case: no fmt string arguments
-      public static string FormatLocalized(this string key, Gtk.Bin o)
-      {
-         return (o.GetType().Namespace+"."+key).FormatLocalized();
-      }
-
-      public static string FormatLocalizedWithPrefix(this string key, string prefix, params object[] args)
-      {
-         return (prefix+"."+key).FormatLocalized(args);
-      }
-
-      // special case: no fmt string arguments
-      public static string FormatLocalizedWithPrefix(this string key, string prefix)
-      {
-         return (prefix+"."+key).FormatLocalized();
       }
 
       public static string FormatLocalized(this string key, params object[] args)
@@ -100,6 +78,28 @@ namespace Docking.Tools
       public static string FormatLocalized(this string key)
       {
          return Localized(key);
+      }
+
+      public static string FormatLocalizedWithPrefix(this string key, Gtk.Bin o, params object[] args)
+      {
+         return (o.GetType().Namespace+"."+key).FormatLocalized(args);
+      }
+
+      // special case: no fmt string arguments
+      public static string FormatLocalizedWithPrefix(this string key, Gtk.Bin o)
+      {
+         return (o.GetType().Namespace+"."+key).FormatLocalized();
+      }
+
+      public static string FormatLocalizedWithPrefix(this string key, string prefix, params object[] args)
+      {
+         return (prefix+"."+key).FormatLocalized(args);
+      }
+
+      // special case: no fmt string arguments
+      public static string FormatLocalizedWithPrefix(this string key, string prefix)
+      {
+         return (prefix+"."+key).FormatLocalized();
       }
    }
 }

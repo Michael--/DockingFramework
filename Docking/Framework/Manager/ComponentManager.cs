@@ -618,13 +618,13 @@ namespace Docking.Components
       {
          if(Directory.Exists(filename))
          {
-             MessageWriteLine("Opening whole directories like {0} currently isn't implemented".FormatLocalized("Docking.Components", filename));
+             MessageWriteLine("Opening whole directories like {0} currently isn't implemented".FormatLocalizedWithPrefix("Docking.Components", filename));
             return false;
          }
 
          if(!File.Exists(filename))
          {
-             MessageWriteLine("File {0} does not exist".FormatLocalized("Docking.Components", filename));
+             MessageWriteLine("File {0} does not exist".FormatLocalizedWithPrefix("Docking.Components", filename));
             return false;
          }
 
@@ -646,7 +646,7 @@ namespace Docking.Components
             // TODO now search all classes implementing IFileOpen by calling their method IFileOpen.SupportedFileTypes()
             // and let the user instantiate them to handle this file.
             // That's not implemented yet. For now we fail with despair:
-             MessageWriteLine("No component is instantiated which can handle file {0}".FormatLocalized("Docking.Components"), filename);
+             MessageWriteLine("No component is instantiated which can handle file {0}".FormatLocalizedWithPrefix("Docking.Components"), filename);
             return false;
          }
 
