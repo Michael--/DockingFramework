@@ -37,6 +37,15 @@ namespace Docking.Helper
 		bool hover;
 		bool pressed;
 
+      public ImageButton(IntPtr raw) : base(raw)
+      {
+			Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask;
+			VisibleWindow = false;
+			imageWidget = new Gtk.Image ();
+			imageWidget.Show ();
+			Add (imageWidget);
+      }
+
 		public ImageButton ()
 		{
 			Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask | Gdk.EventMask.ButtonReleaseMask;
