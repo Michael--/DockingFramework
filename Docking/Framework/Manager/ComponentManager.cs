@@ -1915,7 +1915,8 @@ namespace Docking.Components
 
    public class TaggedLocalizedImageMenuItem : ImageMenuItem, ILocalizableWidget
    {
-      public TaggedLocalizedImageMenuItem(String name) : base(name) { }
+      public TaggedLocalizedImageMenuItem(IntPtr raw)  : base(raw)  {}
+      public TaggedLocalizedImageMenuItem(String name) : base(name) {}
 
       public System.Object Tag { get; set; }
 
@@ -1931,6 +1932,8 @@ namespace Docking.Components
 
    public class TaggedLocalizedCheckedMenuItem : CheckMenuItem, ILocalizableWidget
    {
+      public TaggedLocalizedCheckedMenuItem(IntPtr raw) : base(raw) { IgnoreLocalization = false; }
+
       public TaggedLocalizedCheckedMenuItem(String name) : base(name) { IgnoreLocalization = false; }
 
       public System.Object Tag { get; set; }
