@@ -9,7 +9,7 @@ using Docking.Helper;
 namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(true)]
-   public partial class VirtualListView : Gtk.Bin, ILocalizableWidget
+   public partial class VirtualListView : Component, ILocalizableWidget
    {
       public ComponentManager ComponentManager
       {

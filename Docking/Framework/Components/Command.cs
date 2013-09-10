@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(false)]
-   public partial class Command : Gtk.Bin, IComponent, IComponentInteract, ILocalizableComponent
+   public partial class Command : Component, IComponent, IComponentInteract, ILocalizableComponent
    {
       #region implement IComponent
       public ComponentManager ComponentManager { get; set; }

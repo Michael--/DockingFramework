@@ -7,7 +7,7 @@ using Gtk;
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-    public partial class Activities : Gtk.Bin, IComponent, ILocalizableComponent
+    public partial class Activities : Component, IComponent, ILocalizableComponent
     {
         Gtk.ListStore listStore;
 

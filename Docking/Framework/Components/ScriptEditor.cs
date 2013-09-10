@@ -5,7 +5,7 @@ using Microsoft.Scripting;
 namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(false)]
-   public partial class ScriptEditor : Gtk.Bin, IScript, IComponent, ILocalizableComponent
+   public partial class ScriptEditor : Component, IScript, IComponent, ILocalizableComponent
    {
       #region MAIN
 

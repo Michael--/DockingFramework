@@ -75,7 +75,7 @@ namespace Docking
       public DockItemTitleTab(IntPtr raw) : base(raw)
       {
          // http://jira.nts.neusoft.local/browse/NENA-790
-         throw new Exception("IntPtr constructor not implemented");
+         // throw new Exception("IntPtr constructor not implemented");
       }
 		
 		public DockItemTitleTab (DockItem item, DockFrame frame)

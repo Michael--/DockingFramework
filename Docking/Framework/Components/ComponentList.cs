@@ -9,7 +9,7 @@ namespace Docking.Components
    //       - Display also information about existing instances
    //       - Add actions, like create/hide/show/erase
    [System.ComponentModel.ToolboxItem(false)]
-   public partial class ComponentList : Gtk.Bin, IComponent, IComponentInteract, ILocalizableComponent
+   public partial class ComponentList : Component, IComponent, IComponentInteract, ILocalizableComponent
    {
       #region implement IComponent
       public ComponentManager ComponentManager { get; set; }

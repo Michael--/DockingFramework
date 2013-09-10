@@ -3,7 +3,7 @@ using System;
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-   public partial class Messages : Gtk.Bin, IMessage, IComponent, ILocalizableComponent
+   public partial class Messages : Component, IMessage, IComponent, ILocalizableComponent
     {
         #region Implement IMessage
         // FIXME SLohse: This function currently may ONLY be called from the main GUI thread!

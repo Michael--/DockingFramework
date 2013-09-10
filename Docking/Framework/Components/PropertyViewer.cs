@@ -3,7 +3,7 @@ using System;
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-    public partial class PropertyViewer : Gtk.Bin, IProperty, ILocalizableComponent
+    public partial class PropertyViewer : Component, IProperty, ILocalizableComponent
     {
         public PropertyViewer ()
         {
