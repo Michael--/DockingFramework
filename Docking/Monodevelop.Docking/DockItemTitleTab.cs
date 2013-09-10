@@ -177,12 +177,7 @@ namespace Docking
 			btnClose.CanFocus = false;
 //			btnClose.WidthRequest = btnClose.HeightRequest = 17;
 			btnClose.WidthRequest = btnDock.SizeRequest ().Width;
-			btnClose.Clicked += delegate
-            {
-				item.Visible = false;
-                if ((item.Behavior & DockItemBehavior.CloseOnHide) != 0)
-                    this.frame.RemoveItemIfHiddenInAnyLayout(item);
-            };
+			btnClose.Clicked += delegate { item.Close(); };
 			btnClose.ButtonPressEvent += (o, args) => args.RetVal = true;
 
 			Gtk.Alignment al = new Alignment (0, 0, 1, 1);
