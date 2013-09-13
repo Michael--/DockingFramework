@@ -44,6 +44,11 @@ namespace MonoDevelop.Components
 }");
 		}
 		
+      public CompactScrolledWindow(IntPtr raw) : base(raw) // http://jira.nts.neusoft.local/browse/NENA-790
+      {
+         throw new Exception("IntPtr constructor not implemented");
+      }
+
 		public CompactScrolledWindow () : base ()
 		{
 			//HACK to hide the useless padding that many themes have inside the ScrolledWindow - GTK default is 3
