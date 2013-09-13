@@ -1284,6 +1284,17 @@ namespace Docking.Components
          return N.InnerText;
       }
 
+      public List<string> LoadSetting(string instance, string key, List<string> defaultval)
+      {         
+         int count = LoadSetting(instance, key+".Count", -1);
+         if(count<0)
+            return defaultval;
+         List<string> result = new List<string>();
+         for(int i = 0; i<count; i++)
+            result.Add(LoadSetting(instance, key+"."+i, ""));
+         return result;
+      }
+
       public UInt32 LoadSetting(string instance, string key, UInt32 defaultval)
       {
          string s = LoadSetting(instance, key, "");
@@ -1350,6 +1361,16 @@ namespace Docking.Components
             parent = N;
          }
          N.InnerText = val;
+      }
+
+      public void SaveSetting(string instance, string key, List<string> val)
+      {
+         int count = val==null ? 0 : val.Count;
+         SaveSetting(instance, key+".Count", count);
+         for(int i = 0; i<count; i++)
+         {
+            SaveSetting(instance, key+"."+i, val[i]);
+         }
       }
 
       public void SaveSetting(string instance, string key, UInt32 val)
@@ -1898,7 +1919,8 @@ namespace Docking.Components
 
    public class TaggedLocalizedMenuItem : MenuItem, ILocalizableWidget
    {
-      public TaggedLocalizedMenuItem(String name) : base(name) { }
+      public TaggedLocalizedMenuItem(IntPtr raw)  : base(raw)  {} // http://jira.nts.neusoft.local/browse/NENA-790
+      public TaggedLocalizedMenuItem(String name) : base(name) {}
 
       public System.Object Tag { get; set; }
 
