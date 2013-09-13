@@ -11,7 +11,7 @@ namespace Docking.Components
    public class LabelLocalized : Gtk.Label, ILocalizableWidget
    {
       public LabelLocalized()           : base()    {}
-      public LabelLocalized(IntPtr raw) : base(raw) {}
+      public LabelLocalized(IntPtr raw) : base(raw) {} // http://jira.nts.neusoft.local/browse/NENA-790
       public LabelLocalized(string s)   : base(s)   {}      
 
       void ILocalizableWidget.Localize(string namespc)
@@ -27,7 +27,7 @@ namespace Docking.Components
    public class ButtonLocalized : Gtk.Button, ILocalizableWidget
    {
       public ButtonLocalized()                  : base()         {}
-      public ButtonLocalized(IntPtr raw)        : base(raw)      {}
+      public ButtonLocalized(IntPtr raw)        : base(raw)      {} // http://jira.nts.neusoft.local/browse/NENA-790
       public ButtonLocalized(string stock_id)   : base(stock_id) {}
       public ButtonLocalized(Gtk.Widget widget) : base(widget)   {}
 
@@ -44,7 +44,7 @@ namespace Docking.Components
    public class TreeViewColumnLocalized : Gtk.TreeViewColumn, ILocalizableWidget
    {
       public TreeViewColumnLocalized()                                                           : base()                   {}
-      public TreeViewColumnLocalized(IntPtr raw)                                                 : base(raw)                {}
+      public TreeViewColumnLocalized(IntPtr raw)                                                 : base(raw)                {} // http://jira.nts.neusoft.local/browse/NENA-790
       public TreeViewColumnLocalized(string title, Gtk.CellRenderer cell, Array attrs)           : base(title, cell, attrs) {}
       public TreeViewColumnLocalized(string title, Gtk.CellRenderer cell, params object[] attrs) : base(title, cell, attrs) {}
 
@@ -61,7 +61,7 @@ namespace Docking.Components
    public class CheckButtonLocalized : Gtk.CheckButton, ILocalizableWidget
    {
       public CheckButtonLocalized()             : base()      {}
-      public CheckButtonLocalized(IntPtr raw)   : base(raw)   {}
+      public CheckButtonLocalized(IntPtr raw)   : base(raw)   {} // http://jira.nts.neusoft.local/browse/NENA-790
       public CheckButtonLocalized(string label) : base(label) {}
 
       void ILocalizableWidget.Localize(string namespc)
@@ -76,7 +76,7 @@ namespace Docking.Components
    [System.ComponentModel.ToolboxItem(true)]
    public class RadioButtonLocalized : Gtk.RadioButton, ILocalizableWidget
    {      
-      public RadioButtonLocalized(IntPtr raw)                                       : base(raw)                       {}
+      public RadioButtonLocalized(IntPtr raw)                                       : base(raw)                       {} // http://jira.nts.neusoft.local/browse/NENA-790
       public RadioButtonLocalized(Gtk.RadioButton radio_group_member)               : base(radio_group_member)        {}
       public RadioButtonLocalized(string label)                                     : base(label)                     {}
       public RadioButtonLocalized()                                                 : base("")                        {}
@@ -97,7 +97,7 @@ namespace Docking.Components
       : base() 
       { (this as ILocalizableWidget).Localize(this.GetType().Namespace); }
 
-       public FileChooserDialogLocalized(IntPtr raw)
+       public FileChooserDialogLocalized(IntPtr raw) // http://jira.nts.neusoft.local/browse/NENA-790
        : base(raw)
        { (this as ILocalizableWidget).Localize(this.GetType().Namespace); }
 

@@ -58,8 +58,9 @@ namespace Docking.Components
         {}
         #endregion
 
-
-        public Messages()
+        public Messages(IntPtr raw) : base(raw) { Constructor(); } // http://jira.nts.neusoft.local/browse/NENA-790        
+        public Messages()                       { Constructor(); }        
+        private void Constructor()
         {
             this.Build ();
             m_Scroll2EndMark = textview1.Buffer.CreateMark("Scroll2End", textview1.Buffer.EndIter, true);

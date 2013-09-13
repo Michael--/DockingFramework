@@ -72,9 +72,8 @@ namespace Docking
 			pixDock = Gdk.Pixbuf.LoadFromResource ("stock-dock.png");
 		}
 
-      public DockItemTitleTab(IntPtr raw) : base(raw)
+      public DockItemTitleTab(IntPtr raw) : base(raw) // http://jira.nts.neusoft.local/browse/NENA-790
       {
-         // http://jira.nts.neusoft.local/browse/NENA-790
          throw new Exception("IntPtr constructor not implemented");
       }
 		

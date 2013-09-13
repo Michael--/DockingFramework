@@ -1915,7 +1915,7 @@ namespace Docking.Components
 
    public class TaggedLocalizedImageMenuItem : ImageMenuItem, ILocalizableWidget
    {
-      public TaggedLocalizedImageMenuItem(IntPtr raw)  : base(raw)  {}
+      public TaggedLocalizedImageMenuItem(IntPtr raw)  : base(raw)  {} // http://jira.nts.neusoft.local/browse/NENA-790
       public TaggedLocalizedImageMenuItem(String name) : base(name) {}
 
       public System.Object Tag { get; set; }
@@ -1932,7 +1932,7 @@ namespace Docking.Components
 
    public class TaggedLocalizedCheckedMenuItem : CheckMenuItem, ILocalizableWidget
    {
-      public TaggedLocalizedCheckedMenuItem(IntPtr raw) : base(raw) { IgnoreLocalization = false; }
+      public TaggedLocalizedCheckedMenuItem(IntPtr raw) : base(raw) { IgnoreLocalization = false; } // http://jira.nts.neusoft.local/browse/NENA-790
 
       public TaggedLocalizedCheckedMenuItem(String name) : base(name) { IgnoreLocalization = false; }
 

@@ -188,7 +188,7 @@ namespace Docking
 		public CustomFrame ()
 		{}
 		
-		public CustomFrame (IntPtr raw) : base(raw)
+		public CustomFrame (IntPtr raw) : base(raw) // http://jira.nts.neusoft.local/browse/NENA-790
 		{}
 
 		public CustomFrame (int topMargin, int bottomMargin, int leftMargin, int rightMargin)
