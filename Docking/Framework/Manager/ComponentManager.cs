@@ -1295,6 +1295,17 @@ namespace Docking.Components
          return result;
       }
 
+      public List<bool> LoadSetting(string instance, string key, List<bool> defaultval)
+      {         
+         int count = LoadSetting(instance, key+".Count", -1);
+         if(count<0)
+            return defaultval;
+         List<bool> result = new List<bool>();
+         for(int i = 0; i<count; i++)
+            result.Add(LoadSetting(instance, key+"."+i, false));
+         return result;
+      }
+
       public UInt32 LoadSetting(string instance, string key, UInt32 defaultval)
       {
          string s = LoadSetting(instance, key, "");
@@ -1364,6 +1375,16 @@ namespace Docking.Components
       }
 
       public void SaveSetting(string instance, string key, List<string> val)
+      {
+         int count = val==null ? 0 : val.Count;
+         SaveSetting(instance, key+".Count", count);
+         for(int i = 0; i<count; i++)
+         {
+            SaveSetting(instance, key+"."+i, val[i]);
+         }
+      }
+
+      public void SaveSetting(string instance, string key, List<bool> val)
       {
          int count = val==null ? 0 : val.Count;
          SaveSetting(instance, key+".Count", count);

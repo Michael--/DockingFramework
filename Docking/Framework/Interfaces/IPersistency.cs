@@ -14,6 +14,7 @@ namespace Docking.Components
              bool  LoadSetting(string instance, string key,        bool  defaultval);
            string  LoadSetting(string instance, string key,      string  defaultval);      
       List<string> LoadSetting(string instance, string key, List<string> defaultval);
+      List<bool>   LoadSetting(string instance, string key, List<bool>   defaultval);
 
       void         SaveSetting(string instance, string key,      UInt32  val);
       void         SaveSetting(string instance, string key,       Int32  val);
@@ -21,5 +22,6 @@ namespace Docking.Components
       void         SaveSetting(string instance, string key,        bool  val);
       void         SaveSetting(string instance, string key,      string  val);      
       void         SaveSetting(string instance, string key, List<string> val);       
+      void         SaveSetting(string instance, string key, List<bool>   val);       
    }
 }
