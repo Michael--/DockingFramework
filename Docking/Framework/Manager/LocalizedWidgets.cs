@@ -14,13 +14,22 @@ namespace Docking.Components
       public LabelLocalized(IntPtr raw) : base(raw) {} // http://jira.nts.neusoft.local/browse/NENA-790
       public LabelLocalized(string s)   : base(s)   {}      
 
+      private string mLocalizationKey;
+      public string LocalizationKey
+      {
+         set { mLocalizationKey = value; }
+         get
+         {
+            if(mLocalizationKey==null || mLocalizationKey.Length<=0)
+               mLocalizationKey = StringTools.StripSpecialCharacters(LabelProp);
+            return mLocalizationKey;
+         }
+      }
+
       void ILocalizableWidget.Localize(string namespc)
       {
-          if (LocalizationKey == null || LocalizationKey.Length <= 0)
-              LocalizationKey = StringTools.StripSpecialCharacters(LabelProp);
          LabelProp = LocalizationKey.Localized(namespc);
       }
-      public string LocalizationKey { get; set; }
    }
 
    [System.ComponentModel.ToolboxItem(true)]
@@ -31,13 +40,22 @@ namespace Docking.Components
       public ButtonLocalized(string stock_id)   : base(stock_id) {}
       public ButtonLocalized(Gtk.Widget widget) : base(widget)   {}
 
+      private string mLocalizationKey;
+      public string LocalizationKey
+      {
+         set { mLocalizationKey = value; }
+         get
+         {
+            if(mLocalizationKey==null || mLocalizationKey.Length<=0)
+               mLocalizationKey = StringTools.StripSpecialCharacters(Label);
+            return mLocalizationKey;
+         }
+      }
+
       void ILocalizableWidget.Localize(string namespc)
       {
-		if (LocalizationKey == null || LocalizationKey.Length<=0)
-            LocalizationKey = StringTools.StripSpecialCharacters(Label);
          Label = LocalizationKey.Localized(namespc);
       }
-      public string LocalizationKey { get; set; }
    }
 
    // [System.ComponentModel.ToolboxItem(true)] // ?? is this really necessary as a Toolbox item ??
@@ -48,21 +66,21 @@ namespace Docking.Components
       public TreeViewColumnLocalized(string title, Gtk.CellRenderer cell, Array attrs)           : base(title, cell, attrs) {}
       public TreeViewColumnLocalized(string title, Gtk.CellRenderer cell, params object[] attrs) : base(title, cell, attrs) {}
 
-      void ILocalizableWidget.Localize(string namespc)
-      {
-         Title = LocalizationKey.Localized(namespc);
-      }
- 
       private string mLocalizationKey;
       public string LocalizationKey
       {
          set { mLocalizationKey = value; }
          get
          {
-		      if(mLocalizationKey == null || mLocalizationKey.Length<=0)
+            if(mLocalizationKey == null || mLocalizationKey.Length<=0)
                mLocalizationKey = StringTools.StripSpecialCharacters(Title);
             return mLocalizationKey;
          }
+      }
+
+      void ILocalizableWidget.Localize(string namespc)
+      {
+         Title = LocalizationKey.Localized(namespc);
       }
    }
 
@@ -73,13 +91,22 @@ namespace Docking.Components
       public CheckButtonLocalized(IntPtr raw)   : base(raw)   {} // http://jira.nts.neusoft.local/browse/NENA-790
       public CheckButtonLocalized(string label) : base(label) {}
 
+      private string mLocalizationKey;
+      public string LocalizationKey
+      {
+         set { mLocalizationKey = value; }
+         get
+         {
+            if(mLocalizationKey==null || mLocalizationKey.Length<=0)
+               mLocalizationKey = StringTools.StripSpecialCharacters(Label);
+            return mLocalizationKey;
+         }
+      }
+
       void ILocalizableWidget.Localize(string namespc)
       {
-		if (LocalizationKey == null  || LocalizationKey.Length<=0)
-            LocalizationKey = StringTools.StripSpecialCharacters(Label);
          Label = LocalizationKey.Localized(namespc);
       }
-      public string LocalizationKey { get; set; }
    }
 
    [System.ComponentModel.ToolboxItem(true)]
@@ -91,13 +118,22 @@ namespace Docking.Components
       public RadioButtonLocalized()                                                 : base("")                        {}
       public RadioButtonLocalized(Gtk.RadioButton radio_group_member, string label) : base(radio_group_member, label) {}
 
+      private string mLocalizationKey;
+      public string LocalizationKey
+      {
+         set { mLocalizationKey = value; }
+         get
+         {
+            if(mLocalizationKey == null || mLocalizationKey.Length<=0)
+               mLocalizationKey = StringTools.StripSpecialCharacters(Label);
+            return mLocalizationKey;
+         }
+      }
+
       void ILocalizableWidget.Localize(string namespc)
       {
-			if (LocalizationKey == null  || LocalizationKey.Length<=0)
-            LocalizationKey = StringTools.StripSpecialCharacters(Label);
          Label = LocalizationKey.Localized(namespc);
       }
-      public string LocalizationKey { get; set; }
    }
 
    public class FileChooserDialogLocalized : Gtk.FileChooserDialog, ILocalizableWidget
