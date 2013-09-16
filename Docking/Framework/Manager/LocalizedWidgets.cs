@@ -50,11 +50,20 @@ namespace Docking.Components
 
       void ILocalizableWidget.Localize(string namespc)
       {
-		if (LocalizationKey == null  || LocalizationKey.Length<=0)
-            LocalizationKey = StringTools.StripSpecialCharacters(Title);
          Title = LocalizationKey.Localized(namespc);
       }
-      public string LocalizationKey { get; set; }
+ 
+      private string mLocalizationKey;
+      public string LocalizationKey
+      {
+         set { mLocalizationKey = value; }
+         get
+         {
+		      if(mLocalizationKey == null || mLocalizationKey.Length<=0)
+               mLocalizationKey = StringTools.StripSpecialCharacters(Title);
+            return mLocalizationKey;
+         }
+      }
    }
 
    [System.ComponentModel.ToolboxItem(true)]

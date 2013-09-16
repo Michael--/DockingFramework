@@ -1340,10 +1340,13 @@ namespace Docking.Components
          StringBuilder widths = new StringBuilder();
          foreach(TreeViewColumn col in treeview.Columns)
          {
+
             int w = col.Width;
             if(widths.Length>0)
                widths.Append(";");
-            widths.Append(Regex.Replace(col.Title, "[=;]", "")).Append("=").Append(col.Width);
+            string title = (col is TreeViewColumnLocalized) ? (col as TreeViewColumnLocalized).LocalizationKey : col.Title;
+            title = Regex.Replace(title, "[=;]", "");
+            widths.Append(title).Append("=").Append(col.Width);
          }
          SaveSetting(instance, treeview.Name+".ColumnWidths", widths.ToString());
       }
@@ -1448,12 +1451,18 @@ namespace Docking.Components
             string[] one = s.Split('=');
             if(one.Length==2)
             {
-               one[0] = one[0].ToLower();
+               one[0] = one[0].ToLowerInvariant();
                int width;
                if(Int32.TryParse(one[1], out width))
+               { 
                   foreach(TreeViewColumn col in treeview.Columns)
-                     if(col.Title.ToLower()==one[0])
+                  { 
+                     string title = (col is TreeViewColumnLocalized) ? (col as TreeViewColumnLocalized).LocalizationKey : col.Title;
+                     title = title.ToLowerInvariant();
+                     if(title==one[0])
                         col.SetWidth(width);
+                  }
+               }
             }
          }        
       }
