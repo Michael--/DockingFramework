@@ -95,14 +95,14 @@ namespace Docking
 
 			// Sticky items currently selected in notebooks will remain
 			// selected after switching the layout
-			List<DockItem> sickyOnTop = new List<DockItem> ();
+			List<DockItem> stickyOnTop = new List<DockItem> ();
 			foreach (DockItem it in items) 
-            {
+         {
 				if ((it.Behavior & DockItemBehavior.Sticky) != 0) 
-                {
+            {
 					DockGroupItem gitem = FindDockGroupItem (it.Id);
 					if (gitem != null && gitem.ParentGroup.IsSelectedPage (it))
-						sickyOnTop.Add (it);
+						stickyOnTop.Add (it);
 				}
 			}			
 			
@@ -129,7 +129,7 @@ namespace Docking
 			
 			RelayoutWidgets ();
 
-			foreach (DockItem it in sickyOnTop)
+			foreach (DockItem it in stickyOnTop)
 				it.Present (false);
 		}
 		
