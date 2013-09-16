@@ -73,10 +73,14 @@ namespace MonoDevelop.Components.PropertyGrid
 
       const string PROP_HELP_KEY = "MonoDevelop.PropertyPad.ShowHelp";
 
-      public PropertyGrid()
-         : this(new EditorManager())
+      public PropertyGrid(IntPtr raw) : base(raw) // http://jira.nts.neusoft.local/browse/NENA-790
       {
+         throw new Exception("IntPtr constructor not implemented");         
       }
+
+      public PropertyGrid()
+      : this(new EditorManager())
+      {}
 
       internal PropertyGrid(EditorManager editorManager)
       {

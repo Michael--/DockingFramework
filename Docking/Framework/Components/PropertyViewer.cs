@@ -5,14 +5,20 @@ namespace Docking.Components
     [System.ComponentModel.ToolboxItem(false)]
     public partial class PropertyViewer : Component, IProperty, ILocalizableComponent
     {
+       public PropertyViewer(IntPtr raw) : base(raw)
+       {
+           // http://jira.nts.neusoft.local/browse/NENA-790
+           throw new Exception("IntPtr constructor not implemented");
+       }
+
         public PropertyViewer ()
         {
             this.Build();
             this.propertygrid1.Changed += (sender, e) => 
-			{
+         {
                 if (PropertyChangedHandler != null)
                     PropertyChangedHandler(new PropertyChangedEventArgs(this.propertygrid1.CurrentObject));
-			};
+         };
         }
 
         // set the displayed name of the widget
@@ -105,7 +111,7 @@ namespace Docking.Components
         public override String MenuPath { get { return @"View\Infrastructure\Properties"; } }
         public override String Comment { get { return "Show selected Properties"; } }
         public override Mode Options { get { return Mode.CloseOnHide; } }
-		public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Resources.PropertyViewer-16.png"); } }
+        public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Resources.PropertyViewer-16.png"); } }
     }
     #endregion
 }
