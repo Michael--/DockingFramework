@@ -87,9 +87,9 @@ namespace Docking.Components
          this.Build();
          this.Name = "Component List";
 
-         Gtk.TreeViewColumn componentColumn = new TreeViewColumnLocalized() { Title = "Component", Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 200, Resizable = true };
-         Gtk.TreeViewColumn instanceCountColumn = new TreeViewColumnLocalized() { Title = "Instances", Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 50, Resizable = true };
-         Gtk.TreeViewColumn descriptionColumn = new TreeViewColumnLocalized() { Title = "Description", Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 300, Resizable = true };
+         Gtk.TreeViewColumn componentColumn     = new TreeViewColumnLocalized() { Title = "Component",   Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 200 };
+         Gtk.TreeViewColumn instanceCountColumn = new TreeViewColumnLocalized() { Title = "Instances",   Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth =  50 };
+         Gtk.TreeViewColumn descriptionColumn   = new TreeViewColumnLocalized() { Title = "Description", Sizing = Gtk.TreeViewColumnSizing.Fixed, FixedWidth = 300 };
 
          // Add the columns to the TreeView
          treeview1.AppendColumn(instanceCountColumn);

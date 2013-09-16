@@ -61,10 +61,17 @@ namespace Docking.Components
    // [System.ComponentModel.ToolboxItem(true)] // ?? is this really necessary as a Toolbox item ??
    public class TreeViewColumnLocalized : Gtk.TreeViewColumn, ILocalizableWidget
    {
-      public TreeViewColumnLocalized()                                                           : base()                   {}
-      public TreeViewColumnLocalized(IntPtr raw)                                                 : base(raw)                {} // http://jira.nts.neusoft.local/browse/NENA-790
-      public TreeViewColumnLocalized(string title, Gtk.CellRenderer cell, Array attrs)           : base(title, cell, attrs) {}
-      public TreeViewColumnLocalized(string title, Gtk.CellRenderer cell, params object[] attrs) : base(title, cell, attrs) {}
+      public TreeViewColumnLocalized()                                                           : base()                   { Constructor(); }
+      public TreeViewColumnLocalized(IntPtr raw)                                                 : base(raw)                { Constructor(); } // http://jira.nts.neusoft.local/browse/NENA-790
+      public TreeViewColumnLocalized(string title, Gtk.CellRenderer cell, Array attrs)           : base(title, cell, attrs) { Constructor(); }
+      public TreeViewColumnLocalized(string title, Gtk.CellRenderer cell, params object[] attrs) : base(title, cell, attrs) { Constructor(); }
+
+      // By default, THIS class makes the columns resizable (different than parent class Gtk.TreeViewColumn).
+      // If you explicitly want NON-resizable columns, you manually have to set .Resizable = false AFTER the constructor.
+      void Constructor()
+      {
+         Resizable = true;
+      }
 
       private string mLocalizationKey;
       public string LocalizationKey

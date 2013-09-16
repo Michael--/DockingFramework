@@ -16,9 +16,9 @@ namespace Docking.Components
       {
          this.Build();
 
-         TreeViewColumn keyColumn = new TreeViewColumnLocalized() { Title = "Key", Sizing = TreeViewColumnSizing.Fixed, FixedWidth = 150, Resizable = true, SortColumnId = keyIndex };
-         TreeViewColumn usValueColumn = new TreeViewColumnLocalized() { Title = "US name", Sizing = TreeViewColumnSizing.Fixed, FixedWidth = 150, Resizable = true, SortColumnId = usValueIndex };
-         TreeViewColumn localValueColumn = new TreeViewColumnLocalized() { Title = "Current name", Sizing = TreeViewColumnSizing.Autosize, Resizable = true, SortColumnId = localValueIndex };
+         TreeViewColumn keyColumn        = new TreeViewColumnLocalized() { Title = "Key",          Sizing = TreeViewColumnSizing.Fixed, FixedWidth = 150, SortColumnId = keyIndex };
+         TreeViewColumn usValueColumn    = new TreeViewColumnLocalized() { Title = "US name",      Sizing = TreeViewColumnSizing.Fixed, FixedWidth = 150, SortColumnId = usValueIndex };
+         TreeViewColumn localValueColumn = new TreeViewColumnLocalized() { Title = "Current name", Sizing = TreeViewColumnSizing.Autosize, SortColumnId = localValueIndex };
 
          treeview1.AppendColumn(keyColumn);
          treeview1.AppendColumn(usValueColumn);
