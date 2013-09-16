@@ -1335,7 +1335,7 @@ namespace Docking.Components
          SaveSetting(instance, key, ColorConverter.Color_to_RGBAString(val));
       }
 
-      public void SaveColumnWidths(string instance, string key, Gtk.TreeView treeview)
+      public void SaveColumnWidths(string instance, Gtk.TreeView treeview)
       {
          StringBuilder widths = new StringBuilder();
          foreach(TreeViewColumn col in treeview.Columns)
@@ -1345,7 +1345,7 @@ namespace Docking.Components
                widths.Append(";");
             widths.Append(Regex.Replace(col.Title, "[=;]", "")).Append("=").Append(col.Width);
          }
-         SaveSetting(instance, key, widths.ToString());
+         SaveSetting(instance, treeview.Name+".ColumnWidths", widths.ToString());
       }
 
       #endregion
@@ -1439,9 +1439,9 @@ namespace Docking.Components
                 ? result : defaultval;
       }
 
-      public void LoadColumnWidths(string instance, string key, ref Gtk.TreeView treeview)
+      public void LoadColumnWidths(string instance, ref Gtk.TreeView treeview)
       {
-         string columnwidths = LoadSetting(instance, key, "");
+         string columnwidths = LoadSetting(instance, treeview.Name+".ColumnWidths", "");
          string[] all = columnwidths.Split(';');
          foreach(string s in all)
          {

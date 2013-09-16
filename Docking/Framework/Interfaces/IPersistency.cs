@@ -15,7 +15,6 @@ namespace Docking.Components
               void SaveSetting     (string instance, string key,      string  val       );      
               void SaveSetting     (string instance, string key, List<string> val       );       
               void SaveSetting     (string instance, string key, List<bool>   val       );       
-              void SaveColumnWidths(string instance, string key, Gtk.TreeView treeview  );
 
             UInt32 LoadSetting     (string instance, string key,      UInt32  defaultval);
              Int32 LoadSetting     (string instance, string key,       Int32  defaultval);
@@ -24,6 +23,8 @@ namespace Docking.Components
             string LoadSetting     (string instance, string key,      string  defaultval);      
       List<string> LoadSetting     (string instance, string key, List<string> defaultval);
       List<bool>   LoadSetting     (string instance, string key, List<bool>   defaultval);
-              void LoadColumnWidths(string instance, string key, ref Gtk.TreeView treeview);
+
+              void SaveColumnWidths(string instance,     Gtk.TreeView treeview); // key is automatically computed from treeview.Name
+              void LoadColumnWidths(string instance, ref Gtk.TreeView treeview); // key is automatically computed from treeview.Name
    }
 }
