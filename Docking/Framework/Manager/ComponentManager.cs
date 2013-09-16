@@ -17,6 +17,7 @@ using System.Net;
 using System.Globalization;
 using Docking.Tools;
 using Docking.Framework;
+using System.Text.RegularExpressions;
 
 namespace Docking.Components
 {
@@ -1262,6 +1263,95 @@ namespace Docking.Components
 
       #region IPersistency
 
+      #region save
+
+      public void SaveSetting(string instance, string key, string val)
+      {
+         if(XmlConfiguration==null)
+            return;
+
+         List<string> portions = new List<string>(instance.Split('/'));
+         portions.Add(key);
+         if(portions.Count<=0)
+            return;
+
+         XmlNode N = null;
+         XmlNode parent = XmlConfiguration;
+         foreach(string p in portions)
+         {
+            N = parent.SelectSingleNode(p);
+            if(N==null)
+            {
+               N = XmlDocument.CreateElement(p);
+               parent.AppendChild(N);
+            }
+            parent = N;
+         }
+         N.InnerText = val;
+      }
+
+      public void SaveSetting(string instance, string key, List<string> val)
+      {
+         int count = val==null ? 0 : val.Count;
+         SaveSetting(instance, key+".Count", count);
+         for(int i = 0; i<count; i++)
+         {
+            SaveSetting(instance, key+"."+i, val[i]);
+         }
+      }
+
+      public void SaveSetting(string instance, string key, List<bool> val)
+      {
+         int count = val==null ? 0 : val.Count;
+         SaveSetting(instance, key+".Count", count);
+         for(int i = 0; i<count; i++)
+         {
+            SaveSetting(instance, key+"."+i, val[i]);
+         }
+      }
+
+      public void SaveSetting(string instance, string key, UInt32 val)
+      {
+         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
+      }
+
+      public void SaveSetting(string instance, string key, Int32 val)
+      {
+         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
+      }
+
+      public void SaveSetting(string instance, string key, double val)
+      {
+         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
+      }
+
+      public void SaveSetting(string instance, string key, bool val)
+      {
+         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
+      }
+
+      public void SaveSetting(string instance, string key, System.Drawing.Color val)
+      {
+         SaveSetting(instance, key, ColorConverter.Color_to_RGBAString(val));
+      }
+
+      public void SaveColumnWidths(string instance, string key, Gtk.TreeView treeview)
+      {
+         StringBuilder widths = new StringBuilder();
+         foreach(TreeViewColumn col in treeview.Columns)
+         {
+            int w = col.Width;
+            if(widths.Length>0)
+               widths.Append(";");
+            widths.Append(Regex.Replace(col.Title, "[=;]", "")).Append("=").Append(col.Width);
+         }
+         SaveSetting(instance, key, widths.ToString());
+      }
+
+      #endregion
+
+      #region load
+
       public string LoadSetting(string instance, string key, string defaultval)
       {
          if(XmlConfiguration==null)
@@ -1349,75 +1439,27 @@ namespace Docking.Components
                 ? result : defaultval;
       }
 
-      public void SaveSetting(string instance, string key, string val)
+      public void LoadColumnWidths(string instance, string key, ref Gtk.TreeView treeview)
       {
-         if(XmlConfiguration==null)
-            return;
-
-         List<string> portions = new List<string>(instance.Split('/'));
-         portions.Add(key);
-         if(portions.Count<=0)
-            return;
-
-         XmlNode N = null;
-         XmlNode parent = XmlConfiguration;
-         foreach(string p in portions)
+         string columnwidths = LoadSetting(instance, key, "");
+         string[] all = columnwidths.Split(';');
+         foreach(string s in all)
          {
-            N = parent.SelectSingleNode(p);
-            if(N==null)
+            string[] one = s.Split('=');
+            if(one.Length==2)
             {
-               N = XmlDocument.CreateElement(p);
-               parent.AppendChild(N);
+               one[0] = one[0].ToLower();
+               int width;
+               if(Int32.TryParse(one[1], out width))
+                  foreach(TreeViewColumn col in treeview.Columns)
+                     if(col.Title.ToLower()==one[0])
+                        col.SetWidth(width);
             }
-            parent = N;
-         }
-         N.InnerText = val;
+         }        
       }
 
-      public void SaveSetting(string instance, string key, List<string> val)
-      {
-         int count = val==null ? 0 : val.Count;
-         SaveSetting(instance, key+".Count", count);
-         for(int i = 0; i<count; i++)
-         {
-            SaveSetting(instance, key+"."+i, val[i]);
-         }
-      }
+      #endregion
 
-      public void SaveSetting(string instance, string key, List<bool> val)
-      {
-         int count = val==null ? 0 : val.Count;
-         SaveSetting(instance, key+".Count", count);
-         for(int i = 0; i<count; i++)
-         {
-            SaveSetting(instance, key+"."+i, val[i]);
-         }
-      }
-
-      public void SaveSetting(string instance, string key, UInt32 val)
-      {
-         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
-      }
-
-      public void SaveSetting(string instance, string key, Int32 val)
-      {
-         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
-      }
-
-      public void SaveSetting(string instance, string key, double val)
-      {
-         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
-      }
-
-      public void SaveSetting(string instance, string key, bool val)
-      {
-         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
-      }
-
-      public void SaveSetting(string instance, string key, System.Drawing.Color val)
-      {
-         SaveSetting(instance, key, ColorConverter.Color_to_RGBAString(val));
-      }
       #endregion
 
       #region Docking
