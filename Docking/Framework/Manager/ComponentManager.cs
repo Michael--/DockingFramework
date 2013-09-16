@@ -38,6 +38,14 @@ namespace Docking.Components
          InitPythonEngine();
         
          MakeWidgetReceiveDropEvents(Toplevel, OnDragDataReceived);
+
+         this.WindowStateEvent += OnWindowStateChanged;
+      }
+
+      public Gdk.WindowState WindowState { get; protected set; }
+      private void OnWindowStateChanged(object sender, WindowStateEventArgs args)
+      {
+         WindowState = args.Event.NewWindowState;   
       }
 
       public void SetDockFrame(DockFrame df)
@@ -1073,7 +1081,6 @@ namespace Docking.Components
          }
       }
 
-
       MainWindowPersistence m_LoadedPersistence = null;
 
       protected virtual void LoadPersistence()
@@ -1084,6 +1091,8 @@ namespace Docking.Components
          {
             this.Resize(p.Width, p.Height);
             this.Move(p.WindowX, p.WindowY);
+            if((p.WindowState&(int)Gdk.WindowState.Maximized)!=0)
+               this.Maximize();
          }
          m_LoadedPersistence = p;
       }
@@ -1100,6 +1109,7 @@ namespace Docking.Components
          p.Width = width;
          p.Height = height;
          p.Layout = DockFrame.CurrentLayout;
+         p.WindowState = (int)WindowState;
 
          currentLoadSaveItem = null;
          SaveObject("MainWindow", p);
@@ -2069,6 +2079,7 @@ namespace Docking.Components
       public int Width { get; set; }
       public int Height { get; set; }
       public string Layout { get; set; }
+      public int WindowState { get; set; }
    }
 }
 
