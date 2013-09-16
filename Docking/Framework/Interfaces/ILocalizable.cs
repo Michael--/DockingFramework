@@ -8,7 +8,7 @@ namespace Docking.Components
    // TODO SLohse: We should consider merging these 2 interfaces into just one ILocalizable.
    // Currently, the 2 exist separately because
    // - components need to be notified _after_ the localization has happened ("LocalizationChanged()")
-   // - widgets to the localization on their own ("Localize()")
+   // - widgets do the localization on their own ("Localize()")
    // Maybe there is an elegant way to merge the 2 principles.
 
     /// <summary>
@@ -27,14 +27,5 @@ namespace Docking.Components
    public interface ILocalizableWidget
    {
       void Localize(string namespc);
-   }
-
-   /// <summary>
-   /// Helper interface declaration without content
-   /// Use as replacement for an object like declarion object but not object itself...
-   /// Don't ask for deeper explanation and try and see yourself
-   /// </summary>
-   public interface IFormatLocalizedObject
-   {
    }
 }
