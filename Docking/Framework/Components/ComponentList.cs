@@ -16,7 +16,7 @@ namespace Docking.Components
 
       void IComponent.Loaded(DockItem item)
       {
-         item.Label = "Component List";
+         item.Title = "Component List";
 
          foreach (ComponentFactoryInformation cfi in ComponentManager.ComponentFinder.ComponentInfos)
          {

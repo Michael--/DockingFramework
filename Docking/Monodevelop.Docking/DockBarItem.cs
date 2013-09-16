@@ -261,8 +261,8 @@ namespace Docking
 					desat.Dispose ();
 				}
 					
-				if (!string.IsNullOrEmpty (it.Label)) {
-					label = new Gtk.Label (it.Label);
+				if (!string.IsNullOrEmpty (it.Title)) {
+					label = new Gtk.Label (it.Title);
 					label.UseMarkup = true;
 					if (bar.Orientation == Gtk.Orientation.Vertical)
 						label.Angle = 270;

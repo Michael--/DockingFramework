@@ -686,7 +686,7 @@ namespace Docking
 		internal void UpdateTitle (DockItem it)
 		{
 			if (it.Visible && type == DockGroupType.Tabbed && boundTabStrip != null)
-				boundTabStrip.SetTabLabel (it.Widget, it.Icon, it.Label);
+				boundTabStrip.SetTabLabel (it.Widget, it.Icon, it.Title);
 		}
 				
 		internal void UpdateStyle (DockItem it)

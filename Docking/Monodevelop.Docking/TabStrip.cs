@@ -102,7 +102,7 @@ namespace Docking
         {
             foreach (DockItemTitleTab tab in box.Children) {
                 if (tab.Page == page) {
-                    tab.SetLabel (page, icon, label);
+                    tab.SetTitle (page, icon, label);
                     UpdateEllipsize (Allocation);
                     break;
                 }

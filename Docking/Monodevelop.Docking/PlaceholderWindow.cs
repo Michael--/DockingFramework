@@ -183,7 +183,7 @@ namespace Docking
 				box.PackStart (img, false, false, 0);
 			}
 			Gtk.Label la = new Label ();
-			la.Markup = draggedItem.Label;
+			la.Markup = draggedItem.Title;
 			box.PackStart (la, false, false, 0);
 
 			mainBox.PackStart (box, false, false, 0);

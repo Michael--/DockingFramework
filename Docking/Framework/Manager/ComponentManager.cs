@@ -555,7 +555,7 @@ namespace Docking.Components
                   item.Content.Name = il.Name.Localized(item.Content);
                }
             }
-            item.UpdateLabel();
+            item.UpdateTitle();
          }
 
          // todo: change menue and further language depending stuff
@@ -1597,7 +1597,7 @@ namespace Docking.Components
          item.Content = w;
          if (item.Content is ILocalizableComponent)
             item.Content.Name = (item.Content as ILocalizableComponent).Name.Localized(item.Content);
-         item.UpdateLabel();
+         item.UpdateTitle();
          item.Icon = cfi.Icon;
          item.DefaultVisible = false;
          item.VisibleChanged += HandleVisibleChanged;

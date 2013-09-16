@@ -32,6 +32,8 @@ using System;
 using System.Xml;
 using Gtk;
 using Mono.Unix;
+using Docking.Tools;
+using Docking.Components;
 
 namespace Docking
 {
@@ -46,7 +48,7 @@ namespace Docking
       DockFrame frame;
       int defaultWidth = -1;
       int defaultHeight = -1;
-      string label;
+      string title;  
       Gdk.Pixbuf icon;
       bool expand;
       DockItemBehavior behavior;
@@ -87,7 +89,8 @@ namespace Docking
          content = w;
       }
 
-      public string Id {
+      public string Id
+      {
          get { return id; }
       }
 
@@ -111,22 +114,28 @@ namespace Docking
          set { stickyVisible = value; }
       }
 
-      public string Label {
-         get { return label ?? string.Empty; }
+      public string Title {
+         get { return title ?? string.Empty; }
          set {
-            label = value;
+            title = value;
             if (titleTab != null)
-               titleTab.SetLabel (widget, icon, label);
+               titleTab.SetTitle (widget, icon, title);
             frame.UpdateTitle (this);
             if (floatingWindow != null)
-               floatingWindow.Title = GetWindowTitle ();
+               floatingWindow.Title = GetTitle ();
          }
       }
 
-      public void UpdateLabel()
+      public void UpdateTitle()
       {
-         if (this.Content != null)
-            this.Label = InstanceIndex <= 1 ? this.Content.Name : (this.Content.Name + " " + InstanceIndex);
+         if(this.Content==null)
+            return;
+         string newtitle = (this.Content is ILocalizableComponent)
+                         ? (this.Content as ILocalizableComponent).Name.Localized(this.Content)
+                         :  this.Content.Name;
+         if(InstanceIndex>=2)
+            newtitle += " "+InstanceIndex;
+         this.Title = newtitle;
       }
 
       public bool Visible {
@@ -150,7 +159,7 @@ namespace Docking
             if (titleTab == null) {
                titleTab = new DockItemTitleTab (this, frame);
                titleTab.VisualStyle = currentVisualStyle;
-               titleTab.SetLabel (Widget, icon, label);
+               titleTab.SetTitle (Widget, icon, title);
                titleTab.ShowAll ();
             }
             return titleTab;
@@ -311,7 +320,7 @@ namespace Docking
          set {
             icon = value;
             if (titleTab != null)
-               titleTab.SetLabel (widget, icon, label);
+               titleTab.SetTitle (widget, icon, title);
          }
       }
 
@@ -439,7 +448,7 @@ namespace Docking
             ResetMode ();
             SetRegionStyle (frame.GetRegionStyleForItem (this));
 
-            floatingWindow = new DockFloatingWindow ((Window)frame.Toplevel, GetWindowTitle ());
+            floatingWindow = new DockFloatingWindow ((Window)frame.Toplevel, GetTitle ());
 
             VBox box = new VBox ();
             box.Show ();
@@ -546,16 +555,16 @@ namespace Docking
          }
       }
 
-      string GetWindowTitle ()
+      string GetTitle ()
       {
-         if (Label.IndexOf ('<') == -1)
-            return Label;
+         if (Title.IndexOf ('<') == -1)
+            return Title;
          try {
             XmlDocument doc = new XmlDocument ();
-            doc.LoadXml ("<a>" + Label + "</a>");
+            doc.LoadXml ("<a>" + Title + "</a>");
             return doc.InnerText;
          } catch {
-            return label;
+            return title;
          }
       }
 

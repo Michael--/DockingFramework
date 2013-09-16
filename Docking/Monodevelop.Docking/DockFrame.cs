@@ -466,19 +466,19 @@ namespace Docking
 		
 		public DockItem AddItem (string id)
 		{
-			foreach (DockItem dit in container.Items) {
-				if (dit.Id == id) {
-					if (dit.IsPositionMarker) {
-						dit.IsPositionMarker = false;
-						return dit;
+			foreach (DockItem item in container.Items) {
+				if (item.Id == id) {
+					if (item.IsPositionMarker) {
+						item.IsPositionMarker = false;
+						return item;
 					}
 					throw new InvalidOperationException ("An item with id '" + id + "' already exists.");
 				}
 			}
 			
-			DockItem it = new DockItem (this, id);
-			container.Items.Add (it);
-			return it;
+			DockItem newitem = new DockItem (this, id);
+			container.Items.Add(newitem);
+			return newitem;
 		}
 
         public delegate void DockItemRemovedEvent (DockItem it);
