@@ -28,7 +28,7 @@ namespace Docking.Components
 
       public static void LocalizeMenu(Gtk.Container container)
       {
-         foreach (Gtk.Widget w in container) // http://jira.nts.neusoft.local/browse/NENA-790
+         foreach(Gtk.Widget w in container.AllChildren) // .AllChildren here really is necessary, otherwise e.g. Gtk.Notebook will not properly recursed
          {
             MenuItem item = w as MenuItem;
 
@@ -45,7 +45,7 @@ namespace Docking.Components
 
       public static void LocalizeControls(string prefix, Gtk.Container container)
       {
-         foreach(Gtk.Widget w in container) // http://jira.nts.neusoft.local/browse/NENA-790
+         foreach(Gtk.Widget w in container.AllChildren) // .AllChildren here really is necessary, otherwise e.g. Gtk.Notebook will not properly recursed
          {
             if(w is Gtk.Container)
                LocalizeControls(prefix, (w as Gtk.Container));
