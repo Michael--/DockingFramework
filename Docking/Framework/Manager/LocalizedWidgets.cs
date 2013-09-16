@@ -17,7 +17,7 @@ namespace Docking.Components
       void ILocalizableWidget.Localize(string namespc)
       {
           if (LocalizationKey == null || LocalizationKey.Length <= 0)
-              LocalizationKey = StringTools.StripSpecialCharacters(UseMarkup ? StringTools.StripGTKMarkupTags(LabelProp) : LabelProp);
+              LocalizationKey = StringTools.StripSpecialCharacters(LabelProp);
          LabelProp = LocalizationKey.Localized(namespc);
       }
       public string LocalizationKey { get; set; }
