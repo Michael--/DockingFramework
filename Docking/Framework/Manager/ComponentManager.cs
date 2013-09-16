@@ -532,10 +532,10 @@ namespace Docking.Components
 
          TaggedLocalizedCheckedMenuItem nitem = sender as TaggedLocalizedCheckedMenuItem;
          string code = nitem.Tag as string;
-         SetLanguage(code, false);
+         SetLanguage(code, false, true);
       }
 
-      protected void SetLanguage(string code, bool enforceLanguageChangedNotification)
+      protected void SetLanguage(string code, bool enforceLanguageChangedNotification, bool triggerRedraw)
       {
          if (recursionWorkaround)
             return;
@@ -545,7 +545,7 @@ namespace Docking.Components
          CheckMenuItem(mLanguageBaseMenu, Localization.CurrentLanguageName);
 
          if (result || enforceLanguageChangedNotification)
-            UpdateLanguage(true);
+            UpdateLanguage(triggerRedraw);
       }
 
       public void UpdateLanguage(bool triggerRedraw)
