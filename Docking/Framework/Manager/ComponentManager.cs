@@ -1452,7 +1452,7 @@ namespace Docking.Components
                 ? result : defaultval;
       }
 
-      public void LoadColumnWidths(string instance, ref Gtk.TreeView treeview)
+      public void LoadColumnWidths(string instance, Gtk.TreeView treeview)
       {
          string columnwidths = LoadSetting(instance, treeview.Name+".ColumnWidths", "");
          string[] all = columnwidths.Split(';');
