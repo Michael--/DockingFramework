@@ -107,9 +107,11 @@ namespace Docking
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			base.OnSizeRequested (ref requisition);
-
-			requisition.Width += primarySurface.Width;
-			requisition.Height += primarySurface.Height;
+         if (primarySurface != null)
+         {
+            requisition.Width += primarySurface.Width;
+            requisition.Height += primarySurface.Height;
+         }
 		}
 
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
