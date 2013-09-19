@@ -398,11 +398,10 @@ namespace Docking.Components
 
       protected override bool OnButtonPressEvent(Gdk.EventButton evnt)
       {
-         if (GtkWorkarounds.TriggersContextMenu(evnt))
+         if(evnt.TriggersContextMenu())
          {
             ShowDockPopupMenu(evnt.Time);
          }
-
          else if (evnt.Button == 1 && evnt.Type == Gdk.EventType.ButtonPress)
          {
             int row = (int)evnt.Y / ConstantHeight + (int)vscrollbar1.Value;
