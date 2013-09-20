@@ -370,10 +370,10 @@ namespace Docking.Components
          return base.OnScrollEvent(evnt);
       }
 
+      // TODO throw away this function, use ShowContextMenu() from class TreeViewExtensions
       internal void ShowDockPopupMenu (uint time)
       {
          Menu menu = new Menu ();
-
 
          ColumnControl.Column[] columns = mColumnControl.GetColumns();
          foreach(ColumnControl.Column c in columns)
