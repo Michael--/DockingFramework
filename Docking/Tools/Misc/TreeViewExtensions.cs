@@ -1,12 +1,116 @@
 ﻿using System;
+using System.Collections.Generic;
 using Docking.Components;
 using Gtk;
+using Gdk;
 
 
 namespace Docking.Tools
 {
+    #region IEnumerable<TreeIter>
+
+    public class TreeIterEnumerator : IEnumerator<TreeIter>
+    {
+       protected TreeModel mModel;
+       protected TreeIter mIter;
+
+       public TreeIterEnumerator(TreeModel model)
+       {
+          mModel = model;
+          mIter = TreeIter.Zero;
+       }
+
+       #region IEnumerator
+
+       void IDisposable.Dispose()
+       {
+          mModel = null;
+          mIter = TreeIter.Zero;
+       }
+
+       TreeIter IEnumerator<TreeIter>.Current          { get { return mIter; } }
+       object   System.Collections.IEnumerator.Current { get { return mIter; } }
+
+       void System.Collections.IEnumerator.Reset()
+       {
+          mIter = TreeIter.Zero;
+       }      
+
+       bool System.Collections.IEnumerator.MoveNext()
+       {
+          if(mModel==null)
+             return false;
+          return mIter.Equals(TreeIter.Zero)
+               ? mModel.GetIterFirst(out mIter)
+               : mModel.IterNext(ref mIter);
+       }
+
+       #endregion
+    }
+
+    public class RowEnumerator : IEnumerable<TreeIter>
+    {
+       TreeModel mModel;
+       public RowEnumerator(TreeModel model) { mModel = model; }
+       IEnumerator<TreeIter> IEnumerable<TreeIter>.GetEnumerator() { return new TreeIterEnumerator(mModel); }
+       System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return new TreeIterEnumerator(mModel); }
+    }
+
+    #endregion
+
+    public static class TreeModelExtensions
+    {                                         
+        // allows you to write:
+        //   foreach(TreeIter iter in model.Rows())
+        //   {
+        //      ...
+        //   }
+        public static RowEnumerator Rows(this TreeModel model) { return new RowEnumerator(model); }
+        // Sadly, we cannot write
+        //    public static RowEnumerator Rows { get { return new RowEnumerator(model); } }
+        // , because currently only extension methods are syntactically possible, not extension properties.
+
+        // opposite of .IterNext() - expensive linear search :(
+        public static bool IterPrev(this TreeModel model, ref TreeIter iter)
+        {
+           TreeIter prev = TreeIter.Zero;
+           foreach(TreeIter i in model.Rows())
+           {
+              if(i.Equals(iter))
+              {
+                 iter = prev;
+                 return !iter.Equals(TreeIter.Zero);
+              }
+              prev = i;
+           }         
+           iter = TreeIter.Zero;
+           return false;
+        } 
+
+        public static bool GetIterLast(this TreeModel model, out TreeIter iter)
+        {
+            iter = TreeIter.Zero;
+            TreeIter result;
+            if(!model.GetIterFirst(out result))
+                return false;
+            iter = result;
+            while(model.IterNext(ref result))
+                iter = result;
+            return true;
+        }
+
+        public static List<TreeIter> Find(this TreeModel model, int column, object searchfor)
+        {
+           List<TreeIter> result = new List<TreeIter>();
+           foreach(TreeIter iter in model.Rows())
+              if(model.GetValue(iter, column).Equals(searchfor))
+                 result.Add(iter);
+           return result;
+        }
+   }
+
    public static class TreeViewExtensions
-   {
+   {                                         
       static public TreeViewColumnLocalized AppendColumn(this TreeView treeview, TreeViewColumnLocalized column, CellRenderer renderer, string attr, int modelcolumn)
       {
          treeview.AppendColumn(column);
@@ -63,5 +167,48 @@ namespace Docking.Tools
          menu.Popup(null, null, null, 3, time);
       }
 
-   }
+       public static List<TreeViewColumn> VisibleColumns(this TreeView treeview)
+       {
+          List<TreeViewColumn> result = new List<TreeViewColumn>();
+          foreach(TreeViewColumn col in treeview.Columns)
+             if(col.Visible)
+                result.Add(col);
+          return result;
+       }
+
+       public static void RemoveAllColumns(this TreeView treeview)
+       {
+          List<TreeViewColumn> columns = new List<TreeViewColumn>();
+          foreach(TreeViewColumn col in treeview.Columns)
+             columns.Add(col);
+          foreach(TreeViewColumn col in columns)
+             treeview.RemoveColumn(col);
+       }
+
+       // TODO remove this function again. It is redundant to the existing ExpandToPath() function which does exactly the same, see http://wrapl.sourceforge.net/doc/Gtk/Gtk/TreeView.html
+       public static void ExpandRowWithParents(this TreeView treeView, TreeIter iter)
+       {
+          Stack<TreePath> stack = new Stack<TreePath>();
+          TreeStore treeStore = treeView.Model as TreeStore;
+          TreePath tp = treeStore.GetPath(iter);
+          do stack.Push(new TreePath(tp.ToString())); // clone
+          while (tp.Up());
+          while (stack.Count > 0)
+             treeView.ExpandRow(stack.Pop(), false);
+       }
+    }
+
+    public static class TreeSelectionExtensions
+    {
+       // class TreeSelection has a method ".SelectAll()" - we need the opposite, ".SelectNone()"
+       public static void SelectNone(this TreeSelection selection)
+       {
+          // this does not work:
+          //    selection.SelectIter(TreeIter.Zero);
+          // workaround:
+          TreePath[] selected = selection.GetSelectedRows();
+          foreach(TreePath p in selected)
+             selection.UnselectPath(p);          
+       }
+    }
 }

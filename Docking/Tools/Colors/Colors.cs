@@ -162,10 +162,23 @@ namespace Docking.Tools
            a = (byte) (button.Alpha      >>8);
         }
 
+        public static System.Drawing.Color ToSystemDrawingColor(this Gtk.ColorButton button)
+        {
+           byte r, g, b, a;
+           button.ToRGBA(out r, out g, out b, out a);
+           return System.Drawing.Color.FromArgb(a, r, g, b);
+        }
+
         public static void FromRGBA(this Gtk.ColorButton button, byte r, byte g, byte b, byte a)
         {
            button.Color = new Gdk.Color(r, g, b);
            button.Alpha = (ushort)(a<<8);
+        }
+
+        public static void FromSystemDrawingColor(this Gtk.ColorButton button, System.Drawing.Color color)
+        {
+           button.Color = color.ToGdk();
+           button.Alpha = (ushort)(color.A<<8);
         }
 
 		public static void FromUInt32(this Gtk.ColorButton button, UInt32 rgba)
@@ -196,7 +209,7 @@ namespace Docking.Tools
             return new Gdk.Color((byte)(color.R*255), (byte)(color.G*255), (byte)(color.B*255));
         }
 
-        public static int ToAbgr(this System.Drawing.Color color)
+        public static int ToABGR(this System.Drawing.Color color)
         {
            return color.A << 24 | color.B << 16 | color.G << 8 | color.R;
         }
