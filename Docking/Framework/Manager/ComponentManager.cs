@@ -1465,6 +1465,8 @@ namespace Docking.Components
                int width;
                if(Int32.TryParse(one[1], out width))
                { 
+                  if(width<5) // quickfix: make sure no columns become invisible
+                     width = 5; 
                   foreach(TreeViewColumn col in treeview.Columns)
                   { 
                      string title = (col is TreeViewColumnLocalized) ? (col as TreeViewColumnLocalized).LocalizationKey : col.Title;
