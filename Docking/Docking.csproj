@@ -230,6 +230,7 @@
     <Compile Include="Xwt.Motion\ObjectTransforms.cs" />
     <Compile Include="Xwt.Motion\Tweener.cs" />
     <Compile Include="Framework\Components\Component.cs" />
+    <Compile Include="Monodevelop.Docking\DockingHelper\MonoWorkarounds.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
