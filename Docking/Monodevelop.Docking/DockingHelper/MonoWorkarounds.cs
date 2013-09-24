@@ -19,14 +19,12 @@ namespace Docking
 
 		public static void SetSource(this Context context, Pattern pattern)
         {
-           // Not implemented. Calling this function will have no effect. The pattern will not be applied.
+           throw new Exception("implement me");           
         }
 
         public static void Dispose(this Context context)
         {
-           // this implementation has been copied+pasted from more recent GtkSharp implementation gtk-sharp\cairo\Context.cs
-           context.Dispose(true);
-		   GC.SuppressFinalize(context);
+           throw new Exception("implement me");           
         }
 	}
 }
