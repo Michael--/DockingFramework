@@ -1,3 +1,25 @@
+#if true
+
+
+namespace Docking.Components
+{
+   [System.ComponentModel.ToolboxItem(false)]
+   public partial class ScriptEditor : Component, IScript
+   {
+      public ScriptEditor() {}
+
+      public ScriptChangedEventHandler ScriptChanged { get; set; }
+
+      void IScript.SetScript(object reference, string script) {}
+      void IScript.RemoveScript(object reference)             {}
+      void IScript.SetMessage(object reference, string msg)   {}
+   }
+}
+
+
+#else
+
+
 using System;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting;
@@ -196,46 +218,6 @@ namespace Docking.Components
       int m_VPaned_Position;
    }
 
-   public class ScriptChangedEventArgs : EventArgs
-   {
-      public ScriptChangedEventArgs(object reference, string script, CompiledCode code)
-      {
-         Reference = reference;
-         Script = script;
-         Code = code;
-      }
-      public object Reference { get; private set; }
-      public string Script { get; private set; }
-      public CompiledCode Code { get; private set; }
-   }
-
-
-   public delegate void ScriptChangedEventHandler(ScriptChangedEventArgs e);
-
-   public interface IScript
-   {
-      /// <summary>
-      /// Sets the current script to display and edit
-      /// </summary>
-      void SetScript(object reference, string script);
-
-      /// <summary>
-      /// Remove script if currently displayed by given reference
-      /// </summary>
-      void RemoveScript(object reference);
-
-      /// <summary>
-      /// Show a message in the script editor message window
-      /// </summary>
-      void SetMessage(object reference, string msg);
-
-      /// <summary>
-      /// Get an event on any property changes
-      /// </summary>
-      ScriptChangedEventHandler ScriptChanged { get; set; }
-   }
-
-
    #region Starter / Entry Point
 
    public class ScriptEditorFactory : ComponentFactory
@@ -250,3 +232,5 @@ namespace Docking.Components
 
 }
 
+
+#endif
