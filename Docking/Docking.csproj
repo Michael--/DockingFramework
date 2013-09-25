@@ -117,6 +117,7 @@
     <Compile Include="Framework\Interfaces\IMessageWriteLine.cs" />
     <Compile Include="Framework\Interfaces\IPersistable.cs" />
     <Compile Include="Framework\Interfaces\IPersistency.cs" />
+    <Compile Include="Framework\Interfaces\IScript.cs" />
     <Compile Include="Framework\Manager\Localization.cs" />
     <Compile Include="Framework\Manager\LocalizedWidgets.cs" />
     <Compile Include="gtk-gui\generated.cs" />
