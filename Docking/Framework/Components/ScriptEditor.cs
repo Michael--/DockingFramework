@@ -1,8 +1,16 @@
-#if true
+#if false
 
 
 namespace Docking.Components
 {
+ 
+   // This is a dummy placeholder class in case you cannot use the real one below.
+   // 
+   // One of the usecases where you need to use this dummy placeholder is when you want
+   // to debug against an own-built gtk-sharp (instead of using the system-wide one),
+   // because this class uses Mono.TextEditor.dll, which hardcodedly refers to the system-wide gtk-sharp,
+   // and we found no way yet to make it use the own-built one.
+   // So in the usecase that you want to use your own-built gtk-sharp, activate this dummy class.
    [System.ComponentModel.ToolboxItem(false)]
    public partial class ScriptEditor : Component, IScript
    {
