@@ -31,9 +31,9 @@ namespace Docking.Helper
 	{
 		bool dropShadowVisible;
 
-      public ExtendedLabel(IntPtr raw) : base(raw) {}
 		public ExtendedLabel() {}
-		public ExtendedLabel(string text) : base (text) {}
+		public ExtendedLabel(IntPtr raw ) : base(raw)  {}
+		public ExtendedLabel(string text) : base(text) {}
 
 		public bool DropShadowVisible {
 			get { return dropShadowVisible; }
