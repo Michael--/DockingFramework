@@ -1,23 +1,28 @@
 using System;
 using System.Diagnostics;
-using Gtk;
 using System.Xml;
 using System.IO;
 using System.Xml.Serialization;
 using System.Text;
 using System.Collections.Generic;
-using Docking.Helper;
-using Microsoft.Scripting.Hosting;
-using IronPython.Hosting;
-using Microsoft.Scripting;
-using IronPython.Runtime;
+using System.Text.RegularExpressions;
+using System.Threading;
 using System.Reflection;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Net;
 using System.Globalization;
+
+using Microsoft.Scripting;
+using Microsoft.Scripting.Hosting;
+
+using IronPython.Hosting;
+using IronPython.Runtime;
+
+using Docking.Helper;
 using Docking.Tools;
 using Docking.Framework;
-using System.Text.RegularExpressions;
+
+using Gtk;
+
 
 namespace Docking.Components
 {
@@ -25,11 +30,20 @@ namespace Docking.Components
    {
       #region Initialization
 
-      public ComponentManager(WindowType wt)
-         : base(wt)
+      private static int mMainThreadID;
+      public bool IsMainThread
       {
+         get { return Thread.CurrentThread.ManagedThreadId==mMainThreadID; }
+      }
+
+      // make sure that you construct this class from the main thread!      
+      public ComponentManager(WindowType wt)
+      : base(wt)
+      {
+         mMainThreadID = Thread.CurrentThread.ManagedThreadId; // make sure that you construct this class from the main thread!
+
          Localization = new Components.Localization(this);
-         Localization.SearchForResources(@"./Languages/*.resx");
+         Localization.SearchForResources(System.IO.Path.Combine(".", "Languages", "*.resx"));
          AccelGroup = new AccelGroup();
          AddAccelGroup(AccelGroup);
          ComponentFinder = new Docking.Components.ComponentFinder();
