@@ -54,11 +54,6 @@ namespace Docking
 		PlaceholderWindow placeholderWindow;
 		PadTitleWindow padTitleWindow;
 		
-      public DockContainer (IntPtr raw) : base(raw) // http://jira.nts.neusoft.local/browse/NENA-790
-      {
-         throw new Exception("IntPtr constructor not implemented");
-      }
-
 		public DockContainer (DockFrame frame)
 		{
 			Docking.Helper.GtkWorkarounds.FixContainerLeak (this);

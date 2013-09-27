@@ -5,12 +5,6 @@ namespace Docking.Components
     [System.ComponentModel.ToolboxItem(false)]
     public partial class PropertyViewer : Component, IProperty, ILocalizableComponent
     {
-       public PropertyViewer(IntPtr raw) : base(raw)
-       {
-           // http://jira.nts.neusoft.local/browse/NENA-790
-           throw new Exception("IntPtr constructor not implemented");
-       }
-
         public PropertyViewer ()
         {
             this.Build();

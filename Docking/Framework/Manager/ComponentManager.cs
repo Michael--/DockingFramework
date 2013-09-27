@@ -90,7 +90,7 @@ namespace Docking.Components
          for (int i = 0; i < m.Length; i++)
          {
             foundmenu = SearchOrCreateMenu(m[i], menuShell, children);
-            children = foundmenu.Children; // http://jira.nts.neusoft.local/browse/NENA-790
+            children = foundmenu.Children;
             menuShell = foundmenu;
          }
 
@@ -198,7 +198,7 @@ namespace Docking.Components
          if (baseMenu is Menu)
          {
             Menu bm = baseMenu as Menu;
-            foreach (object obj in bm) // http://jira.nts.neusoft.local/browse/NENA-790
+            foreach (object obj in bm)
             {
                if (obj is CheckMenuItem)
                {
@@ -223,7 +223,7 @@ namespace Docking.Components
          if (baseMenu is Menu)
          {
             Menu bm = baseMenu as Menu;
-            foreach (object obj in bm) // http://jira.nts.neusoft.local/browse/NENA-790
+            foreach (object obj in bm)
             {
                if (obj is CheckMenuItem)
                {
@@ -247,7 +247,7 @@ namespace Docking.Components
          // uncheck all other
          if (baseMenu is Menu)
          {
-            foreach (object obj in ((Menu)baseMenu)) // http://jira.nts.neusoft.local/browse/NENA-790
+            foreach (object obj in ((Menu)baseMenu))
             {
                if (obj is CheckMenuItem && obj != except)
                {
@@ -1737,7 +1737,7 @@ namespace Docking.Components
 
          if (w is Gtk.Container)
          {
-            foreach (Widget xw in ((Gtk.Container)w)) // http://jira.nts.neusoft.local/browse/NENA-790
+            foreach (Widget xw in ((Gtk.Container)w))
             {
                AddSelectNotifier(item, xw);
             }
@@ -2003,7 +2003,7 @@ namespace Docking.Components
 
    public class TaggedLocalizedMenuItem : MenuItem, ILocalizableWidget
    {
-      public TaggedLocalizedMenuItem(IntPtr raw)  : base(raw)  {} // http://jira.nts.neusoft.local/browse/NENA-790
+      public TaggedLocalizedMenuItem(IntPtr raw)  : base(raw)  {}
       public TaggedLocalizedMenuItem(String name) : base(name) {}
 
       public System.Object Tag { get; set; }
@@ -2021,7 +2021,7 @@ namespace Docking.Components
 
    public class TaggedLocalizedImageMenuItem : ImageMenuItem, ILocalizableWidget
    {
-      public TaggedLocalizedImageMenuItem(IntPtr raw)  : base(raw)  {} // http://jira.nts.neusoft.local/browse/NENA-790
+      public TaggedLocalizedImageMenuItem(IntPtr raw)  : base(raw)  {}
       public TaggedLocalizedImageMenuItem(String name) : base(name) {}
 
       public System.Object Tag { get; set; }
@@ -2038,8 +2038,7 @@ namespace Docking.Components
 
    public class TaggedLocalizedCheckedMenuItem : CheckMenuItem, ILocalizableWidget
    {
-      public TaggedLocalizedCheckedMenuItem(IntPtr raw) : base(raw) { IgnoreLocalization = false; } // http://jira.nts.neusoft.local/browse/NENA-790
-
+      public TaggedLocalizedCheckedMenuItem(IntPtr raw)  : base(raw)  { IgnoreLocalization = false; }
       public TaggedLocalizedCheckedMenuItem(String name) : base(name) { IgnoreLocalization = false; }
 
       public System.Object Tag { get; set; }

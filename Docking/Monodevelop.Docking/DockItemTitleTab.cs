@@ -72,11 +72,6 @@ namespace Docking
          pixDock = Gdk.Pixbuf.LoadFromResource ("stock-dock.png");
       }
 
-      public DockItemTitleTab(IntPtr raw) : base(raw) // http://jira.nts.neusoft.local/browse/NENA-790
-      {
-         throw new Exception("IntPtr constructor not implemented");
-      }
-
       public DockItemTitleTab (DockItem item, DockFrame frame)
       {
          this.item = item;
@@ -141,10 +136,8 @@ namespace Docking
             Gtk.Widget oc = Child; // keep a handle to the Child widget to prevent it from being garbage collected
             Remove(oc);            // remove Child from parent. After this, Child==null
 
-#if true // set this to false to TEMPORARILY turn off the child widget destruction, this seems to workaround http://jira.nts.neusoft.local/browse/NENA-790
             oc.Destroy();          // now that no reference from the parent points to the child anymore, destroy it.
           //oc.Dispose();          // not sure if this is additionally needed to .Destroy()
-#endif
          }
 
          Gtk.HBox box = new HBox ();
