@@ -207,6 +207,13 @@ namespace Docking.Components
          mPersistence.VPanedPosition = vpaned1.Position;
          ComponentManager.SaveObject("ScriptEditor", mPersistence);
       }
+
+      bool IComponent.Closed()
+      {
+         // TODO if the current script is unsaved, prompt the user here to save it and offer him a "Cancel" button.
+         // When the user presses "Cancel", return false from this function to prevent the closing from happening.
+         return true;
+      }
       #endregion
 
       #region ILocalizable

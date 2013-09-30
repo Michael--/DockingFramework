@@ -39,6 +39,8 @@ namespace Docking.Components
          p.SaveColumnWidth(treeview1.Columns);
          ComponentManager.SaveObject("ComponentList", p);
       }
+
+      bool IComponent.Closed() { return true; }
       #endregion
 
       #region implement IComponentInteract

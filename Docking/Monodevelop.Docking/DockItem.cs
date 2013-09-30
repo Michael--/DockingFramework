@@ -437,6 +437,9 @@ namespace Docking
 
       public void Close()
       {
+         if(this is IComponent)
+            if(!((this as IComponent).Closed()))
+               return; // closing has been canceled!
          Visible = false;
          if((Behavior & DockItemBehavior.CloseOnHide)!=0)
             frame.RemoveItemIfHiddenInAnyLayout(this);

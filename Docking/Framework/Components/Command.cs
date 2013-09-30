@@ -45,6 +45,8 @@ namespace Docking.Components
          ComponentManager.SaveObject("Command", mPersistence);
       }
 
+      bool IComponent.Closed() { return true; }
+
       #endregion
 
       #region implement IComponentInteract

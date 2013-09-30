@@ -57,6 +57,8 @@ namespace Docking.Components
 
         void IComponent.Save()
         {}
+
+        bool IComponent.Closed() { return true; }
         #endregion
 
         #region ILocalizable
