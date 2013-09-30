@@ -110,7 +110,7 @@ namespace Docking.Components
 
       #endregion
 
-      #region implement IScript
+      #region IScript
 
       void IScript.SetScript(object reference, string script)
       {
@@ -162,7 +162,7 @@ namespace Docking.Components
 
       #endregion
 
-      #region implement IComponent
+      #region IComponent
       public ComponentManager ComponentManager { get; set; }
 
       void IComponent.Loaded(DockItem item)

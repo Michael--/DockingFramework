@@ -175,7 +175,7 @@ namespace Docking.Components
       }
       #endregion
 
-      #region implement IComponent
+      #region IComponent
       public ComponentManager ComponentManager { get; set; }
 
       void IComponent.Loaded(DockItem item)

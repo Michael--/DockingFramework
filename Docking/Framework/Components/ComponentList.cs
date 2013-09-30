@@ -11,7 +11,7 @@ namespace Docking.Components
    [System.ComponentModel.ToolboxItem(false)]
    public partial class ComponentList : Component, IComponent, IComponentInteract, ILocalizableComponent
    {
-      #region implement IComponent
+      #region IComponent
       public ComponentManager ComponentManager { get; set; }
 
       void IComponent.Loaded(DockItem item)
@@ -43,7 +43,7 @@ namespace Docking.Components
       bool IComponent.Closed() { return true; }
       #endregion
 
-      #region implement IComponentInteract
+      #region IComponentInteract
       void IComponentInteract.Added(object item)
       {
          if (item is IProperty)

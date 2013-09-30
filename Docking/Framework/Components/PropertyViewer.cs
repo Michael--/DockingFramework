@@ -27,7 +27,7 @@ namespace Docking.Components
            this.propertygrid1.QueueDraw(); 
         }
 
-        #region implement IProperty
+        #region IProperty
 
         void IProperty.SetObject(Object obj)
         {

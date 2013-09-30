@@ -5,7 +5,7 @@ namespace Docking.Components
     [System.ComponentModel.ToolboxItem(false)]
    public partial class Messages : Component, IMessage, IComponent, ILocalizableComponent
     {
-        #region Implement IMessage
+        #region IMessage
         // FIXME SLohse: This function currently may ONLY be called from the main GUI thread!
 		// If you're calling it from a different thread context, it will crash the application
 		// when it for example is currently resizing itself or painting.
@@ -38,7 +38,7 @@ namespace Docking.Components
 
         #endregion
 
-        #region implement IComponent
+        #region IComponent
         public ComponentManager ComponentManager { get; set; }
 
         void IComponent.Loaded(DockItem item)

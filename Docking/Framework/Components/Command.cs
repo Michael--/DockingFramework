@@ -10,7 +10,7 @@ namespace Docking.Components
    [System.ComponentModel.ToolboxItem(false)]
    public partial class Command : Component, IComponent, IComponentInteract, ILocalizableComponent
    {
-      #region implement IComponent
+      #region IComponent
       public ComponentManager ComponentManager { get; set; }
 
       void IComponent.Loaded(DockItem item)
@@ -49,7 +49,7 @@ namespace Docking.Components
 
       #endregion
 
-      #region implement IComponentInteract
+      #region IComponentInteract
 
       List<IScript> m_ScriptInterface = new List<IScript>();
       void IComponentInteract.Added(object item)
