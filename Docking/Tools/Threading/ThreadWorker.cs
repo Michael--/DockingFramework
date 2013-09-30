@@ -7,15 +7,7 @@ using System.Diagnostics;
 
 namespace Docking.Tools
 {
-    /**
-     * Use the ThreadWorker as an alternate to the BackgroundWorker.
-     * The interface is near the same.
-     * Is is obligatory to choise a thread priority (not possible with BW)
-     * This worker are explicitly for long processing time.
-     * For short calculation time use the BW instead.
-     * Basic difference to BackgroundWorker is that the ThreadWorker use an own thread.
-     */ 
-    public class ThreadWorker : Object
+    public class WorkerThread : Object
     {
         internal enum WorkState
         {
@@ -36,7 +28,7 @@ namespace Docking.Tools
         }
             
         private WorkState State { get; set; }
-        JobInformation m_JobInformation;
+        JobInfo m_JobInformation;
             
         public bool CancellationPending
         {
@@ -74,12 +66,12 @@ namespace Docking.Tools
                 ProgressChanged(percent, new ProgressChangedEventArgs(percent, this));
         }
             
-        public ThreadWorker (String name, String description)
+        public WorkerThread (String name, String description)
         {
             State = WorkState.NotStarted;
             mThread = new Thread(ThreadHull);
 
-            m_JobInformation = ThreadWorkerInformation.Create(this, name, description);
+            m_JobInformation = WorkerThreadInfo.Create(this, name, description);
         }
             
         /// <summary>
@@ -90,8 +82,6 @@ namespace Docking.Tools
                     
         internal void ThreadHull(object sender)
         {
-            // ThreadWorker thread = sender as ThreadWorker;
-                
             if (DoWork != null)
             {
                 // the class Background worker use DoWork.BeginInvoke()
@@ -156,7 +146,7 @@ namespace Docking.Tools
             
         public event DoWorkEventHandler DoWork;
             
-        // Occurs when System.ComponentModel.ThreadWorker.ReportProgress(System.Int32) is called.
+        // Occurs when System.ComponentModel.WorkerThread.ReportProgress(System.Int32) is called.
         public event ProgressChangedEventHandler ProgressChanged;
             
         // Occurs when the background operation has completed/canceled

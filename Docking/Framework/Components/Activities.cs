@@ -40,7 +40,7 @@ namespace Docking.Components
             columnDesc.AddAttribute(rendererDesc, "text", COLUMN_DESCRIPTION);
             columnStatus.AddAttribute(rendererStatus, "value", COLUMN_STATUS);
 
-            listStore = new Gtk.ListStore (typeof(JobInformation), typeof (string), typeof (string), typeof (int));
+            listStore = new Gtk.ListStore (typeof(JobInfo), typeof (string), typeof (string), typeof (int));
             treeview1.Model = listStore;
             treeview1.CursorChanged += HandleCursorChanged;
         }
@@ -50,8 +50,8 @@ namespace Docking.Components
 
         void IComponent.Loaded(DockItem item)
         {
-            JobInformation.Added += HandleAdded;
-            JobInformation.Removed += HandleRemoved;
+            JobInfo.Added += HandleAdded;
+            JobInfo.Removed += HandleRemoved;
             Initialize();
         }
 
@@ -75,13 +75,13 @@ namespace Docking.Components
            lock(listStore)
            { 
               listStore.Clear();
-               JobInformation[] jobs = JobInformation.GetJobs();
-               foreach(JobInformation job in jobs)
+               JobInfo[] jobs = JobInfo.GetJobs();
+               foreach(JobInfo job in jobs)
                   AddJob(job);            
            }
         }
 
-        TreeIter FindJob(JobInformation job)
+        TreeIter FindJob(JobInfo job)
         {
             TreeIter iter;
             listStore.GetIterFirst(out iter);
@@ -110,7 +110,7 @@ namespace Docking.Components
                Gtk.TreeIter iter = FindJob(treeview1.Selection);
                if(!iter.Equals(TreeIter.Zero))
                {
-                  JobInformation job = (JobInformation)listStore.GetValue(iter, COLUMN_JOB_INFORMATION);
+                  JobInfo job = (JobInfo)listStore.GetValue(iter, COLUMN_JOB_INFORMATION);
                   buttonCancel.Sensitive = job.CancelationSupported;
                }
                else
@@ -130,7 +130,7 @@ namespace Docking.Components
             Gtk.Application.Invoke(delegate { RemoveJob(e.JobInformation); });
         }
 
-        void AddJob(JobInformation job)
+        void AddJob(JobInfo job)
         {
            lock(listStore)
            {
@@ -139,7 +139,7 @@ namespace Docking.Components
            }
         }
 
-        void RemoveJob(JobInformation job)
+        void RemoveJob(JobInfo job)
         {
            lock(listStore)
            { 
@@ -169,7 +169,7 @@ namespace Docking.Components
               Gtk.TreeIter iter = FindJob(treeview1.Selection);
               if(!iter.Equals(TreeIter.Zero))
               {
-                 JobInformation job = listStore.GetValue(iter, COLUMN_JOB_INFORMATION) as JobInformation;
+                 JobInfo job = listStore.GetValue(iter, COLUMN_JOB_INFORMATION) as JobInfo;
                  job.Cancel();
               }
             }

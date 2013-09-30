@@ -10,9 +10,9 @@ namespace Docking.Tools
     /// Additionally information about progress if available
     /// and steering possibilities like pause and abort if supported.
     /// </summary>
-    public abstract class JobInformation
+    public abstract class JobInfo
     {
-        public JobInformation (String name, String description)
+        public JobInfo (String name, String description)
         {
             Name = name;
             Description = description;
@@ -22,7 +22,7 @@ namespace Docking.Tools
         
         public void Destroy()
         {
-            JobInformation.RemoveJob(this);
+            JobInfo.RemoveJob(this);
         }
         
         public String Name { get; private set; }
@@ -48,7 +48,7 @@ namespace Docking.Tools
         
         public virtual void Cancel() {}
         
-        protected static void AddJob(JobInformation job)
+        protected static void AddJob(JobInfo job)
         {
             lock(m_Jobs)
                 m_Jobs.Add(job);
@@ -56,7 +56,7 @@ namespace Docking.Tools
                 Added(null, new JobInformationEventArgs(job));
         }
         
-        private static void RemoveJob(JobInformation job)
+        private static void RemoveJob(JobInfo job)
         {
             lock(m_Jobs)
                 m_Jobs.Remove(job);
@@ -65,8 +65,8 @@ namespace Docking.Tools
         }
         
         // the list of all existing jobs
-        static List<JobInformation> m_Jobs = new List<JobInformation>();
-        public static JobInformation[] GetJobs()
+        static List<JobInfo> m_Jobs = new List<JobInfo>();
+        public static JobInfo[] GetJobs()
         { 
             lock(m_Jobs)
                 return m_Jobs.ToArray();
@@ -84,11 +84,11 @@ namespace Docking.Tools
 
     public class JobInformationEventArgs : EventArgs
     {
-        public JobInformationEventArgs (JobInformation job)
+        public JobInformationEventArgs (JobInfo job)
         {
             JobInformation = job;
         }
-        public JobInformation JobInformation { get; private set; }
+        public JobInfo JobInformation { get; private set; }
     }
     
     public delegate void JobInformationAddedEventHandler (object sender, JobInformationEventArgs e);

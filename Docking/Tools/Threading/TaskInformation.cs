@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace Docking.Tools
 {
-    public class TaskInformation : JobInformation
+    public class TaskInformation : JobInfo
     {
         private TaskInformation (CancellationTokenSource token, String name, String description)
             : base(name, description)
@@ -16,7 +16,7 @@ namespace Docking.Tools
         public static TaskInformation Create(CancellationTokenSource token, String name, String description)
         {
             TaskInformation job = new TaskInformation(token, name, description);
-            JobInformation.AddJob(job);
+            JobInfo.AddJob(job);
             return job;
         }
         

@@ -2,22 +2,22 @@ using System;
 
 namespace Docking.Tools
 {
-    public class ThreadWorkerInformation : JobInformation
+    public class WorkerThreadInfo : JobInfo
     {
-        private ThreadWorkerInformation (String name, String description)
+        private WorkerThreadInfo (String name, String description)
             : base(name, description)
         {
         }
         
-        public static ThreadWorkerInformation Create(ThreadWorker worker, String name, String description)
+        public static WorkerThreadInfo Create(WorkerThread worker, String name, String description)
         {
-            ThreadWorkerInformation job = new ThreadWorkerInformation(name, description);
+            WorkerThreadInfo job = new WorkerThreadInfo(name, description);
             job.m_Worker = worker;
-            JobInformation.AddJob(job);
+            JobInfo.AddJob(job);
             return job;
         }
         
-        ThreadWorker m_Worker;
+        WorkerThread m_Worker;
         
         public override bool CancelationSupported
         {
