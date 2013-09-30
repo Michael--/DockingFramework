@@ -418,6 +418,11 @@ namespace Docking
 
       internal void ShowWidget ()
       {
+         if(this.Content is IComponent)
+         {
+            (this.Content as IComponent).Loaded(this);
+         }
+
          if (floatingWindow != null)
             floatingWindow.Show ();
          if (dockBarItem != null)
@@ -437,9 +442,15 @@ namespace Docking
 
       public void Close()
       {
-         if(this is IComponent)
-            if(!((this as IComponent).Closed()))
+         if(this.Content is IComponent)
+         {
+            // it is important here that the Save() occurs _before_ the Closed(),
+            // because the Closed() already will cleanup/empty internally all stuff,
+            // so Save() would save that empty, cleaned up state which is not desired
+            (this.Content as IComponent).Save();
+            if(!((this.Content as IComponent).Closed()))
                return; // closing has been canceled!
+         }
          Visible = false;
          if((Behavior & DockItemBehavior.CloseOnHide)!=0)
             frame.RemoveItemIfHiddenInAnyLayout(this);
