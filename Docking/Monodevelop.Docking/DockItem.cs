@@ -440,7 +440,8 @@ namespace Docking
             widget.Hide ();
       }
 
-      public void Close()
+      // returns true if the closing happened, false when it has been canceled
+      public bool Close()
       {
          if(this.Content is IComponent)
          {
@@ -449,11 +450,12 @@ namespace Docking
             // so Save() would save that empty, cleaned up state which is not desired
             (this.Content as IComponent).Save();
             if(!((this.Content as IComponent).Closed()))
-               return; // closing has been canceled!
+               return false; // closing has been canceled!
          }
          Visible = false;
          if((Behavior & DockItemBehavior.CloseOnHide)!=0)
             frame.RemoveItemIfHiddenInAnyLayout(this);
+         return true;
       }
 
       internal void SetFloatMode (Gdk.Rectangle rect)
