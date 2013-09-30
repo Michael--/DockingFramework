@@ -139,8 +139,8 @@
     <Compile Include="Tools\Misc\WidgetExtensions.cs" />
     <Compile Include="Tools\Threading\JobInformation.cs" />
     <Compile Include="Tools\Threading\TaskInformation.cs" />
-    <Compile Include="Tools\Threading\ThreadWorker.cs" />
-    <Compile Include="Tools\Threading\ThreadWorkerInformation.cs" />
+    <Compile Include="Tools\Threading\WorkerThread.cs" />
+    <Compile Include="Tools\Threading\WorkerThreadInfo.cs" />
     <Compile Include="Framework\Interfaces\IFileOpen.cs" />
     <Compile Include="Framework\Components\PropertyViewer.cs" />
     <Compile Include="gtk-gui\Docking.Components.PropertyViewer.cs" />
