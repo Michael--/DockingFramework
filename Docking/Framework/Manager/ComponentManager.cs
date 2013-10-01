@@ -1303,7 +1303,14 @@ namespace Docking.Components
          XmlNode parent = XmlConfiguration;
          foreach(string p in portions)
          {
-            N = parent.SelectSingleNode(p);
+            try
+            {
+               N = parent.SelectSingleNode(p);
+            }
+            catch
+            {
+               N = null;
+            }
             if(N==null)
             {
                N = XmlDocument.CreateElement(p);
