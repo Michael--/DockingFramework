@@ -1044,7 +1044,7 @@ namespace Docking.Components
                (item.Content as IComponent).Loaded(item);
                w.Stop();
                //if (w.ElapsedMilliseconds > 25)
-               if (w.ElapsedMilliseconds > 250)
+               if (w.ElapsedMilliseconds > 300) // raise the limit to get rid of annoying output we currently cannot change anyway
                   MessageWriteLine("Invoking IComponent.Loaded() for component {0} took {1:0.00}s", item.Id, w.Elapsed.TotalSeconds);
             }
             if (item.Content is IComponentInteract)
