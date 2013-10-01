@@ -496,33 +496,41 @@ namespace Docking.Components
                return true;
 
             case Gdk.Key.Up:
+            case Gdk.Key.KP_Up:
                OffsetCursor(-1);
                return true;
 
             case Gdk.Key.Page_Up:
+            case Gdk.Key.KP_Page_Up:
                OffsetCursor(-(BottomVisibleRow - TopVisibleRow));
                return true;
 
             case Gdk.Key.Down:
+            case Gdk.Key.KP_Down:
                OffsetCursor(+1);
                return true;
 
             case Gdk.Key.Page_Down:
+            case Gdk.Key.KP_Page_Down:
                OffsetCursor(BottomVisibleRow - TopVisibleRow);
                return true;
 
             case Gdk.Key.Home:
+            case Gdk.Key.KP_Home:
                OffsetCursor(int.MinValue / 2);
                return true;
 
             case Gdk.Key.End:
+            case Gdk.Key.KP_End:
                OffsetCursor(int.MaxValue / 2);
                return true;
 
             case Gdk.Key.Left:
+            case Gdk.Key.KP_Left:
                return true;
 
             case Gdk.Key.Right:
+            case Gdk.Key.KP_Right:
                return true;
          }
 

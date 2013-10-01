@@ -106,7 +106,8 @@ namespace MonoDevelop.Components
 		{
 			// Short circuit to avoid getting moved back to the input line
 			// when paging up and down in the shell output
-			if (ev.Key == Gdk.Key.Page_Up || ev.Key == Gdk.Key.Page_Down)
+			if (   ev.Key == Gdk.Key.Page_Up   || ev.Key == Gdk.Key.KP_Page_Up
+             || ev.Key == Gdk.Key.Page_Down || ev.Key == Gdk.Key.KP_Page_Down)
 				return false;
 			
 			// Needed so people can copy and paste, but always end up
@@ -119,7 +120,7 @@ namespace MonoDevelop.Components
 //			if (ev.State == Gdk.ModifierType.ControlMask && ev.Key == Gdk.Key.space)
 //				TriggerCodeCompletion ();
 	
-			if (ev.Key == Gdk.Key.Return) {
+			if (ev.Key == Gdk.Key.Return || ev.Key == Gdk.Key.KP_Enter) {
 				if (inBlock) {
 					if (InputLine == "") {
 						ProcessInput (blockText);
@@ -176,7 +177,7 @@ namespace MonoDevelop.Components
 			}
 	
 			// The next two cases handle command history	
-			else if (ev.Key == Gdk.Key.Up) {
+			else if (ev.Key == Gdk.Key.Up || ev.Key == Gdk.Key.KP_Up) {
 				if (!inBlock && commandHistoryPast.Count > 0) {
 					if (commandHistoryFuture.Count == 0)
 						commandHistoryFuture.Push (InputLine);
@@ -189,7 +190,7 @@ namespace MonoDevelop.Components
 				}
 				return true;
 			}
-			else if (ev.Key == Gdk.Key.Down) {
+			else if (ev.Key == Gdk.Key.Down || ev.Key == Gdk.Key.KP_Down) {
 				if (!inBlock && commandHistoryFuture.Count > 0) {
 					if (commandHistoryFuture.Count == 1)
 						InputLine = commandHistoryFuture.Pop();
@@ -200,12 +201,12 @@ namespace MonoDevelop.Components
 				}
 				return true;
 			}	
-			else if (ev.Key == Gdk.Key.Left) {
+			else if (ev.Key==Gdk.Key.Left || ev.Key == Gdk.Key.KP_Left) {
 				// Keep our cursor inside the prompt area
 				if (Cursor.Compare (InputLineBegin) <= 0)
 					return true;
 			}
-			else if (ev.Key == Gdk.Key.Home) {
+			else if (ev.Key == Gdk.Key.Home || ev.Key==Gdk.Key.KP_Home) {
 				Buffer.MoveMark (Buffer.InsertMark, InputLineBegin);
 				// Move the selection mark too, if shift isn't held
 				if ((ev.State & Gdk.ModifierType.ShiftMask) == ev.State)
@@ -218,7 +219,8 @@ namespace MonoDevelop.Components
 	
 			// Short circuit to avoid getting moved back to the input line
 			// when paging up and down in the shell output
-			else if (ev.Key == Gdk.Key.Page_Up || ev.Key == Gdk.Key.Page_Down) {
+			else if (   ev.Key == Gdk.Key.Page_Up   || ev.Key == Gdk.Key.KP_Page_Up
+                  || ev.Key == Gdk.Key.Page_Down || ev.Key == Gdk.Key.KP_Page_Down) {
 				return false;
 			}
 			
