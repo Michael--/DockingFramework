@@ -1389,16 +1389,23 @@ namespace Docking.Components
          if(portions.Count<=0)
             return defaultval;
 
-         XmlNode N = null;
-         XmlNode parent = XmlConfiguration;
-         foreach(string p in portions)
+         try     
          {
-            N = parent.SelectSingleNode(p);
-            if(N==null)
-               return defaultval;
-            parent = N;
+            XmlNode N = null;
+            XmlNode parent = XmlConfiguration;
+            foreach(string p in portions)
+            {
+               N = parent.SelectSingleNode(p);
+               if(N==null)
+                  return defaultval;
+               parent = N;
+            }
+            return N.InnerText;
          }
-         return N.InnerText;
+         catch
+         {
+            return defaultval;
+         }
       }
 
       public List<string> LoadSetting(string instance, string key, List<string> defaultval)
