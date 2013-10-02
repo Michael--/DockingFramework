@@ -209,6 +209,11 @@ namespace Docking.Tools
             return new Gdk.Color((byte)(color.R*255), (byte)(color.G*255), (byte)(color.B*255));
         }
 
+        public static System.Drawing.Color ToSystemDrawingColor(this Cairo.Color color)
+        {
+            return System.Drawing.Color.FromArgb((byte)(color.A*255), (byte)(color.R*255), (byte)(color.G*255), (byte)(color.B*255));
+        }
+
         public static int ToABGR(this System.Drawing.Color color)
         {
            return color.A << 24 | color.B << 16 | color.G << 8 | color.R;
