@@ -19,14 +19,12 @@ namespace Docking
 
       public static void SetSource(this Context context, Pattern pattern)
       {
-         throw new Exception("implement me");
+         //throw new Exception("implement me");
       }
 
       public static void Dispose(this Context context)
       {
-         //(context as IDisposable).Dispose(true);
-         //GC.SuppressFinalize(context);
-         throw new Exception("implement me");
+         //throw new Exception("implement me");
       }
    }
 }
