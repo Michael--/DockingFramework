@@ -155,6 +155,7 @@ namespace Docking.Components
             catch(BadImageFormatException)     {} // cheap
             catch(ReflectionTypeLoadException) {} // cheap
             catch(MissingMethodException)      {} // cheap
+            catch(TypeLoadException)           {} // cheap
             catch(FileLoadException e) // runtime expensive! avoid getting here to have a speedy start!
             {
                 Console.WriteLine(e.ToString());
