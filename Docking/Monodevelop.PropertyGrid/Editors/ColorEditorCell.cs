@@ -60,32 +60,34 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		
 		public override void Render (Gdk.Drawable window, Gdk.Rectangle bounds, Gtk.StateType state)
 		{
-	   		int yd = (bounds.Height - ColorBoxSize) * 4 / 5;
-            int width = ColorBoxSize * 2 - 1;
-            int heigth = ColorBoxSize - 1;
+	   	int yd = (bounds.Height - ColorBoxSize) * 4 / 5;
+         int width = ColorBoxSize * 2 - 1;
+         int heigth = ColorBoxSize - 1;
 
-            Cairo.Context cr = Gdk.CairoHelper.Create(window);
+         Cairo.Context cr = Gdk.CairoHelper.Create(window);
 
-            // black cross to show alpha
-            cr.LineWidth = 2;
-            cr.SetSourceColor(new Cairo.Color(0, 0, 0));
-            cr.MoveTo(bounds.X, bounds.Y + yd);
-            cr.LineTo(bounds.X + width, bounds.Y + heigth);
-            cr.MoveTo(bounds.X, bounds.Y + yd + heigth);
-            cr.LineTo(bounds.X + width, bounds.Y);
-            cr.Stroke();
+         // black cross to show alpha
+         cr.LineWidth = 2;
+         cr.SetSourceColor(new Cairo.Color(0, 0, 0));
+         cr.MoveTo(bounds.X, bounds.Y + yd);
+         cr.LineTo(bounds.X + width, bounds.Y + heigth);
+         cr.MoveTo(bounds.X, bounds.Y + yd + heigth);
+         cr.LineTo(bounds.X + width, bounds.Y);
+         cr.Stroke();
 
-            // rect around, also only visible with alpha
-            cr.Rectangle(bounds.X, bounds.Y + yd, width, heigth);
-            cr.Stroke();
+         // rect around, also only visible with alpha
+         cr.Rectangle(bounds.X, bounds.Y + yd, width, heigth);
+         cr.Stroke();
 
-            // fill with color
-            cr.SetSourceColor(GetCairoColor());
-            cr.Rectangle(bounds.X, bounds.Y + yd, width, heigth);
-            cr.Fill();
+         // fill with color
+         cr.SetSourceColor(GetCairoColor());
+         cr.Rectangle(bounds.X, bounds.Y + yd, width, heigth);
+         cr.Fill();
 
-            bounds.X += width + ColorBoxSpacing;
-            bounds.Width -= heigth + ColorBoxSpacing;
+         cr.Dispose();
+
+         bounds.X += width + ColorBoxSpacing;
+         bounds.Width -= heigth + ColorBoxSpacing;
 
 			base.Render (window, bounds, state);
 		}

@@ -263,7 +263,8 @@ namespace Docking
          int right = rect.X + rect.Width, bottom = rect.Y + rect.Height;
          
          var bcolor = backgroundColorSet ? BackgroundColor : Style.Background (Gtk.StateType.Normal);
-            using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
+
+         using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
          
             if (GradientBackround) {
                cr.NewPath ();
@@ -289,10 +290,12 @@ namespace Docking
                   gc.RgbFgColor = bcolor;
                   evnt.Window.DrawRectangle (gc, true, rect.X, rect.Y, rect.Width, rect.Height);
                   gc.Dispose ();
+               }
             }
-         }
          
-         }
+            cr.Dispose();
+         } // using
+
          base.OnExposeEvent (evnt);
          
          using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
@@ -318,6 +321,8 @@ namespace Docking
             cr.Line (x, rect.Y, x, bottom);
             cr.Stroke ();
          
+            cr.Dispose();
+
             return false;
          }
       }

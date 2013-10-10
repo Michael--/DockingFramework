@@ -630,6 +630,8 @@ namespace Docking.Helper
 
       public SurfaceWrapper (Cairo.Context similar, Gdk.Pixbuf source)
       {
+         // IMPORTANT: do not store parameter "similar" here inside! it will be disposed after this call!
+
          Cairo.Surface surface;
          // There is a bug in Cairo for OSX right now that prevents creating additional accellerated surfaces.
          if (Platform.IsMac) {

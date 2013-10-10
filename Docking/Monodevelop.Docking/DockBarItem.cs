@@ -74,6 +74,7 @@ namespace Docking
 			using (Cairo.Context context = Gdk.CairoHelper.Create (GdkWindow)) {
 				primarySurface = new SurfaceWrapper (context, primary);
 				secondarySurface = new SurfaceWrapper (context, secondary);
+            context.Dispose();
 			}
 
 			primary.Dispose ();
@@ -122,6 +123,8 @@ namespace Docking
 
 				if (secondaryOpacity > 0.0f)
 					RenderIcon (context, secondarySurface, secondaryOpacity);
+           
+            context.Dispose();
 			}
 
 			return false;
