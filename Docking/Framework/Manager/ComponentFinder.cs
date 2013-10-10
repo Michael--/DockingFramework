@@ -156,7 +156,7 @@ namespace Docking.Components
             catch(ReflectionTypeLoadException) {} // cheap
             catch(MissingMethodException)      {} // cheap
             catch(TypeLoadException)           {} // cheap
-            catch(FileLoadException e) // runtime expensive! avoid getting here to have a speedy start!
+            catch(Exception e) // runtime expensive! avoid getting here to have a speedy start!
             {
                 Console.WriteLine(e.ToString());
             }
