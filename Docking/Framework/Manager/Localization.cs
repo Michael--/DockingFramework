@@ -320,6 +320,9 @@ namespace Docking.Components
 
       public static string GetString(string key, string prefix = null)
       {
+         if(key==null || key.Length<=0)
+            return "";
+
          string key2 = StringTools.StripSpecialCharacters((prefix==null ? "" : prefix+".")+key);
 
          Node node = null;
