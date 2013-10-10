@@ -30,17 +30,17 @@ namespace Docking.Components
    {
       #region Initialization
 
-      private static int sMainThreadID;
-      public static bool IsMainThread
+      private static int mMainThreadID;
+      public bool IsMainThread
       {
-         get { return Thread.CurrentThread.ManagedThreadId==sMainThreadID; }
+         get { return Thread.CurrentThread.ManagedThreadId==mMainThreadID; }
       }
 
       // make sure that you construct this class from the main thread!      
       public ComponentManager(WindowType wt)
       : base(wt)
       {
-         sMainThreadID = Thread.CurrentThread.ManagedThreadId; // make sure that you construct this class from the main thread!
+         mMainThreadID = Thread.CurrentThread.ManagedThreadId; // make sure that you construct this class from the main thread!
 
          Localization = new Components.Localization(this);
          Localization.SearchForResources(System.IO.Path.Combine(".", "Languages", "*.resx"));
