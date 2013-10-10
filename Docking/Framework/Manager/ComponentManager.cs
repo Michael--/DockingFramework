@@ -1022,6 +1022,7 @@ namespace Docking.Components
 
       // contains the current component while load/save persistence
       // note: because of this load/save is not thread safe, load/save have to use threads carefully
+      // TODO This is an ugly quickhack - get rid of this variable!
       private DockItem currentLoadSaveItem;
 
       protected void ComponentsLoaded()
