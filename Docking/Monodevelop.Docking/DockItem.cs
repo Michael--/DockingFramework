@@ -418,11 +418,6 @@ namespace Docking
 
       internal void ShowWidget ()
       {
-         if(this.Content is IComponent)
-         {
-            (this.Content as IComponent).Loaded(this);
-         }
-
          if (floatingWindow != null)
             floatingWindow.Show ();
          if (dockBarItem != null)

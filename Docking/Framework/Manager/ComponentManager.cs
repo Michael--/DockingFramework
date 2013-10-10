@@ -1600,18 +1600,17 @@ namespace Docking.Components
          if (item.Content is IComponent)
             (item.Content as IComponent).Loaded(item);
 
-         // tell all other about new component
+         // tell all other components about new one
          foreach (DockItem other in DockFrame.GetItems())
-         {
-            if (other != item && other.Content is IComponentInteract)
+            if(other!=item && other.Content is IComponentInteract)
                (other.Content as IComponentInteract).Added(item.Content);
-         }
 
-         // tell new component about all other components
-         if (item.Content is IComponentInteract)
+         // tell new component about all others
+         if(item.Content is IComponentInteract)
             foreach (DockItem other in DockFrame.GetItems())
-               (item.Content as IComponentInteract).Added(other.Content);
-
+               if(other!=item)
+                  (item.Content as IComponentInteract).Added(other.Content);
+   
          if (item.Content is IProperty)
             mPropertyInterfaces.Add(item.Content as IProperty);
 
