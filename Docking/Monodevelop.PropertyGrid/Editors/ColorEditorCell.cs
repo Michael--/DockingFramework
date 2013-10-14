@@ -30,6 +30,7 @@
 using System;
 using System.ComponentModel;
 using Docking.Helper;
+using Docking;
 
 namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 {
