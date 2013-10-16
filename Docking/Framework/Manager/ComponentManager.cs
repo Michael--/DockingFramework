@@ -1064,7 +1064,7 @@ namespace Docking.Components
             if (item.Content is IComponentInteract)
             {
                foreach (DockItem other in DockFrame.GetItems())
-                  if (item != other)
+                  if(item!=other && other.Content!=null && (other.Content is Component))
                      (item.Content as IComponentInteract).Added(other.Content);
             }
          }
