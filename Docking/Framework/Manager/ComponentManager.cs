@@ -43,7 +43,7 @@ namespace Docking.Components
          mMainThreadID = Thread.CurrentThread.ManagedThreadId; // make sure that you construct this class from the main thread!
 
          Localization = new Components.Localization(this);
-         Localization.SearchForResources(System.IO.Path.Combine(".", "Languages", "*.resx"));
+         Localization.SearchForResources(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Languages", "*.resx"));
          AccelGroup = new AccelGroup();
          AddAccelGroup(AccelGroup);
          ComponentFinder = new Docking.Components.ComponentFinder();
