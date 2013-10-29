@@ -1609,7 +1609,7 @@ namespace Docking.Components
          // tell new component about all others
          if(item.Content is IComponentInteract)
             foreach (DockItem other in DockFrame.GetItems())
-               if(other!=item)
+               if(other!=item && other.Content!=null) // TODO WHY can other.Content be NULL here???? IT SHOULDN'T!
                   (item.Content as IComponentInteract).Added(other.Content);
    
          if (item.Content is IProperty)
