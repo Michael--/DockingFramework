@@ -999,14 +999,13 @@ namespace Docking.Components
          else
             XmlConfiguration.AppendChild(newLayouts);
 
-         // save all components data
          ComponentsSave();
 
-         // save resources if necessary
          Localization.WriteChangedResourceFiles();
 
-         // at least save complete persistence to file
          SaveConfiguration(filename);
+
+         ComponentsRemove();
       }
 
       private void LoadConfiguration(String filename)
@@ -1123,17 +1122,15 @@ namespace Docking.Components
                (item.Content as IComponent).Save();
             }
          }
+      }
 
-         // tell any component about all other component
+      private void ComponentsRemove()
+      {
          foreach (DockItem item in DockFrame.GetItems())
-         {
             if (item.Content is Component)
-            {
                foreach (DockItem other in DockFrame.GetItems())
-                  if (item != other)
+                  if(other!=item)
                      (item.Content as Component).ComponentRemoved(other);
-            }
-         }
       }
 
       MainWindowPersistence m_LoadedPersistence = null;
