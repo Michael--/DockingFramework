@@ -43,7 +43,7 @@ namespace Docking.Components
       bool IComponent.Closed() { return true; }
       #endregion
 
-      #region IComponentInteract
+      #region Component - Interaction
 
       public override void ComponentAdded(object item)
       {

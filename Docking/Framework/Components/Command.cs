@@ -49,7 +49,8 @@ namespace Docking.Components
 
       #endregion
 
-      #region IComponentInteract
+      #region Component - Interaction
+
 
       List<IScript> m_ScriptInterface = new List<IScript>();
       public override void ComponentAdded(object item)
