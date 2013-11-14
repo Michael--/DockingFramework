@@ -9,7 +9,7 @@ namespace Docking.Components
    //       - Display also information about existing instances
    //       - Add actions, like create/hide/show/erase
    [System.ComponentModel.ToolboxItem(false)]
-   public partial class ComponentList : Component, IComponent, IComponentInteract, ILocalizableComponent
+   public partial class ComponentList : Component, IComponent, ILocalizableComponent
    {
       #region IComponent
       public ComponentManager ComponentManager { get; set; }
@@ -44,7 +44,8 @@ namespace Docking.Components
       #endregion
 
       #region IComponentInteract
-      void IComponentInteract.Added(object item)
+
+      public override void ComponentAdded(object item)
       {
          if (item is IProperty)
             mPropertyInterfaces.Add(item as IProperty);
@@ -52,25 +53,12 @@ namespace Docking.Components
          ChangeInstanceCount(item, 1);
       }
 
-      void IComponentInteract.Removed(object item)
+      public override void ComponentRemoved(object item)
       {
          if (item is IProperty)
             mPropertyInterfaces.Remove(item as IProperty);
 
          ChangeInstanceCount(item, -1);
-      }
-
-      void IComponentInteract.Visible(object item, bool visible)
-      {
-      }
-
-      void IComponentInteract.Current(object item)
-      {
-         if (this == item)
-         {
-            //foreach(IProperty it in mPropertyInterfaces)
-            //    it.SetObject(the property object);
-         }
       }
 
       #endregion

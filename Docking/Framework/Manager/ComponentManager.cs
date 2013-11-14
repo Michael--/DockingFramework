@@ -1048,8 +1048,8 @@ namespace Docking.Components
                if (w.ElapsedMilliseconds > 300) // raise the limit to get rid of annoying output we currently cannot change anyway
                   MessageWriteLine("Invoking IComponent.Loaded() for component {0} took {1:0.00}s", item.Id, w.Elapsed.TotalSeconds);
             }
-            if (item.Content is IComponentInteract)
-               (item.Content as IComponentInteract).Visible(item.Content, item.Visible);
+            if (item.Content is Component)
+               (item.Content as Component).VisibilityChanged(item.Content, item.Visible);
 
             if (item.Content is IProperty)
                mPropertyInterfaces.Add(item.Content as IProperty);
@@ -1061,11 +1061,11 @@ namespace Docking.Components
          // tell every component about all other components
          foreach (DockItem item in DockFrame.GetItems())
          {
-            if (item.Content is IComponentInteract)
+            if (item.Content is Component)
             {
                foreach (DockItem other in DockFrame.GetItems())
                   if(item!=other && other.Content!=null && (other.Content is Component))
-                     (item.Content as IComponentInteract).Added(other.Content);
+                     (item.Content as Component).ComponentAdded(other.Content);
             }
          }
          total.Stop();
@@ -1087,11 +1087,11 @@ namespace Docking.Components
          // tell any component about all other component
          foreach (DockItem item in DockFrame.GetItems())
          {
-            if (item is IComponentInteract)
+            if (item.Content is Component)
             {
                foreach (DockItem other in DockFrame.GetItems())
                   if (item != other)
-                     (item.Content as IComponentInteract).Removed(other);
+                     (item.Content as Component).ComponentRemoved(other);
             }
          }
       }
@@ -1603,14 +1603,14 @@ namespace Docking.Components
 
          // tell all other components about new one
          foreach (DockItem other in DockFrame.GetItems())
-            if(other!=item && other.Content is IComponentInteract)
-               (other.Content as IComponentInteract).Added(item.Content);
+            if(other!=item && other.Content is Component)
+               (other.Content as Component).ComponentAdded(item.Content);
 
          // tell new component about all others
-         if(item.Content is IComponentInteract)
+         if(item.Content is Component)
             foreach (DockItem other in DockFrame.GetItems())
                if(other!=item && other.Content!=null) // TODO WHY can other.Content be NULL here???? IT SHOULDN'T!
-                  (item.Content as IComponentInteract).Added(other.Content);
+                  (item.Content as Component).ComponentAdded(other.Content);
    
          if (item.Content is IProperty)
             mPropertyInterfaces.Add(item.Content as IProperty);
@@ -1638,16 +1638,16 @@ namespace Docking.Components
             CurrentDockItem = null;
             foreach (DockItem other in DockFrame.GetItems())
             {
-               if (other != item && other.Content is IComponentInteract)
-                  (other.Content as IComponentInteract).Current(null);
+               if (other != item && other.Content is Component)
+                  (other.Content as Component).FocusChanged(null);
             }
          }
 
          // tell all other about removed component
          foreach (DockItem other in DockFrame.GetItems())
          {
-            if (other != item && other.Content is IComponentInteract)
-               (other.Content as IComponentInteract).Removed(item.Content);
+            if (other != item && other.Content is Component)
+               (other.Content as Component).ComponentRemoved(item.Content);
          }
 
          // remove from message dictionary
@@ -1655,8 +1655,8 @@ namespace Docking.Components
             mMessage.Remove(item.Id);
 
          // tell component about it instance itself has been removed from dock container
-         if (item.Content is IComponentInteract)
-            (item.Content as IComponentInteract).Removed(item.Content);
+         if (item.Content is Component)
+            (item.Content as Component).ComponentRemoved(item.Content);
 
          item.Widget.Destroy();
       }
@@ -1667,8 +1667,8 @@ namespace Docking.Components
          if (!m_LockHandleVisibleChanged)
          {
             DockItem item = sender as DockItem;
-            if (item.Content is IComponentInteract)
-               (item.Content as IComponentInteract).Visible(item, item.Visible);
+            if (item.Content is Component)
+               (item.Content as Component).VisibilityChanged(item, item.Visible);
          }
       }
 
@@ -1818,8 +1818,8 @@ namespace Docking.Components
                // notify all other components that the current item changed
                foreach (DockItem other in DockFrame.GetItems())
                {
-                  if (other != item && other.Content is IComponentInteract)
-                     (other.Content as IComponentInteract).Current(CurrentDockItem.Content);
+                  if (other != item && other.Content is Component)
+                     (other.Content as Component).FocusChanged(CurrentDockItem.Content);
                }
             }
          }
