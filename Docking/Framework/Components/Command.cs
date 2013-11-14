@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(false)]
-   public partial class Command : Component, IComponent, IComponentInteract, ILocalizableComponent
+   public partial class Command : Component, IComponent, ILocalizableComponent
    {
       #region IComponent
       public ComponentManager ComponentManager { get; set; }
@@ -49,10 +49,11 @@ namespace Docking.Components
 
       #endregion
 
-      #region IComponentInteract
+      #region Component - Interaction
+
 
       List<IScript> m_ScriptInterface = new List<IScript>();
-      void IComponentInteract.Added(object item)
+      public override void ComponentAdded(object item)
       {
          if (item is IScript)
          {
@@ -64,17 +65,13 @@ namespace Docking.Components
          }
       }
 
-      void IComponentInteract.Removed(object item)
+      public override void ComponentRemoved(object item)
       {
          if (item is IScript)
             m_ScriptInterface.Remove(item as IScript);
       }
 
-      void IComponentInteract.Visible(object item, bool visible)
-      {
-      }
-
-      void IComponentInteract.Current(object item)
+      public override void FocusChanged(object item)
       {
          if (this == item)
          {

@@ -122,7 +122,6 @@
     <Compile Include="Framework\Manager\ComponentManager.cs" />
     <Compile Include="Framework\Interfaces\IComponent.cs" />
     <Compile Include="Framework\Interfaces\IComponentFactory.cs" />
-    <Compile Include="Framework\Interfaces\IComponentInteract.cs" />
     <Compile Include="Framework\Interfaces\IMessage.cs" />
     <Compile Include="Tools\Colors\Colors.cs" />
     <Compile Include="Tools\Misc\StringTools.cs" />
