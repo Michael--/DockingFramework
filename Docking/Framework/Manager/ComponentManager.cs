@@ -1127,7 +1127,7 @@ namespace Docking.Components
          // tell any component about all other component
          foreach (DockItem item in DockFrame.GetItems())
          {
-            if (item is Component)
+            if (item.Content is Component)
             {
                foreach (DockItem other in DockFrame.GetItems())
                   if (item != other)
