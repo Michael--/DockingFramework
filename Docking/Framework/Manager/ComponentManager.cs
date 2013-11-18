@@ -1024,6 +1024,39 @@ namespace Docking.Components
       // TODO This is an ugly quickhack - get rid of this variable!
       private DockItem currentLoadSaveItem;
 
+
+      private bool mInitialLoadOfComponentsCompleted = false;
+      private List<object> mComponents = new List<object>();
+
+      public void AddComponent(object o)
+      {
+         Debug.Assert(!mComponents.Contains(o));
+         mComponents.Add(o);            
+         if(mInitialLoadOfComponentsCompleted)
+         {
+            foreach(object item in mComponents)
+            {
+               if(item is Component)
+                  (item as Component).ComponentAdded(o); 
+               if(o is Component)
+                  (o as Component).ComponentAdded(item);
+            }          
+         }
+      }
+
+      public void RemoveComponent(object o)
+      {
+         Debug.Assert(mComponents.Contains(o));
+         mComponents.Remove(o);
+         Debug.Assert(!mComponents.Contains(o));
+         if(mInitialLoadOfComponentsCompleted)
+         {
+            foreach(object item in mComponents)
+               if(item is Component)
+                  (item as Component).ComponentRemoved(o); 
+         }
+      }
+
       protected void ComponentsLoaded()
       {
          m_LockHandleVisibleChanged = false; // unlock visible change notices
@@ -1055,62 +1088,21 @@ namespace Docking.Components
 
             if (item.Content is IScript)
                mScriptInterfaces.Add(item.Content as IScript);
+
+            if(item.Content is Component)
+               AddComponent(item.Content as Component);
          }
 
-         // tell every component about all other components
-         foreach (DockItem item in DockFrame.GetItems())
-         {
-            if (item.Content == null)
-               continue;
+         mInitialLoadOfComponentsCompleted = true;
+         List<object> components = mComponents;
+         mComponents = new List<object>();
+         foreach(object o in components)
+            AddComponent(o);
 
-#if false   // get all methods with name "Interconnection" and call any if parameter are available
-            bool reflectionUsed = false;
-            MemberInfo[] mi = item.Content.GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance);
-            foreach (MethodInfo i in mi)
-            {
-               if (i.Name == "Interconnection")
-               {
-                  ParameterInfo[] pi = i.GetParameters();
-                  if (pi.Length == 2 && i.ReturnType == typeof(void) && pi[1].ParameterType == typeof(bool))
-                  {
-                     Type iface = pi[0].ParameterType;
-                     foreach (DockItem other in DockFrame.GetItems())
-                     {
-                        if (item != other && other.Content != null && other.Content.GetType().GetInterface(iface.FullName) != null)
-                        {
-                           i.Invoke(item.Content, new object[] { other.Content, true });
-                        }
-                     }
-                  }
-                  reflectionUsed = true;
-               }
-            }
-
-            if (!reflectionUsed && item.Content is IComponentInteract)
-            {
-               foreach (DockItem other in DockFrame.GetItems())
-                  if(item!=other && other.Content!=null && (other.Content is Component))
-                     (item.Content as IComponentInteract).Added(other.Content);
-            }
-
-#else
-
-            if (item.Content is Component)
-            {
-               foreach (DockItem other in DockFrame.GetItems())
-                  if (item != other && other.Content != null && (other.Content is Component))
-                     (item.Content as Component).ComponentAdded(other.Content);
-            }
-
-#endif
-
-         }
          total.Stop();
          if (total.ElapsedMilliseconds > 100)
             MessageWriteLine("ComponentsLoaded() total time = {0}s", total.Elapsed.TotalSeconds);
       }
-
-
 
       private void ComponentsSave()
       {
@@ -1638,16 +1630,8 @@ namespace Docking.Components
          if (item.Content is IComponent)
             (item.Content as IComponent).Loaded(item);
 
-         // tell all other components about new one
-         foreach (DockItem other in DockFrame.GetItems())
-            if(other!=item && other.Content is Component)
-               (other.Content as Component).ComponentAdded(item.Content);
-
-         // tell new component about all others
          if(item.Content is Component)
-            foreach (DockItem other in DockFrame.GetItems())
-               if(other!=item && other.Content!=null) // TODO WHY can other.Content be NULL here???? IT SHOULDN'T!
-                  (item.Content as Component).ComponentAdded(other.Content);
+            AddComponent(item.Content);
    
          if (item.Content is IProperty)
             mPropertyInterfaces.Add(item.Content as IProperty);
