@@ -10,6 +10,8 @@ namespace Docking.Components
       public virtual ComponentManager ComponentManager { get; set; } // TODO REMOVE THE VIRTUAL!
  
       // The parent DockItem inside the ComponentManager (if any) which hosts this component.
+      // Gets set by the docking framework.
+      // Your component derived from this class will only do read access, if any.
       public DockItem DockItem { get; set; }
 
       #region Component Lifecycle
