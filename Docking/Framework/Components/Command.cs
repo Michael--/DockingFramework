@@ -8,13 +8,12 @@ using System.Threading.Tasks;
 namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(false)]
-   public partial class Command : Component, IComponent, ILocalizableComponent
+   public partial class Command : Component, ILocalizableComponent
    {
-      #region IComponent
-      public ComponentManager ComponentManager { get; set; }
-
-      void IComponent.Loaded(DockItem item)
+      public override void Loaded(DockItem item)
       {
+         base.Loaded(item);
+
          mPersistence = (CommandPersistence)ComponentManager.LoadObject("Command", typeof(CommandPersistence), item);
 
          Task.Factory.StartNew(() =>
@@ -40,14 +39,12 @@ namespace Docking.Components
       }
       CommandPersistence mPersistence;
 
-      void IComponent.Save()
+      public override void Save()
       {
+         base.Save();
+
          ComponentManager.SaveObject("Command", mPersistence);
       }
-
-      bool IComponent.Closed() { return true; }
-
-      #endregion
 
       #region Component - Interaction
 

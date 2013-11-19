@@ -3,7 +3,7 @@ using System;
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-   public partial class Messages : Component, IMessage, IComponent, ILocalizableComponent
+   public partial class Messages : Component, IMessage, ILocalizableComponent
     {
         #region IMessage
         // FIXME SLohse: This function currently may ONLY be called from the main GUI thread!
@@ -36,18 +36,6 @@ namespace Docking.Components
 
         Gtk.TextMark m_Scroll2EndMark;
 
-        #endregion
-
-        #region IComponent
-        public ComponentManager ComponentManager { get; set; }
-
-        void IComponent.Loaded(DockItem item)
-        {}
-
-        void IComponent.Save()
-        {}
-
-        bool IComponent.Closed() { return true; }
         #endregion
 
         #region ILocalizable

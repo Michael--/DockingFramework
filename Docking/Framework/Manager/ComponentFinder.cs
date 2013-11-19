@@ -237,8 +237,8 @@ namespace Docking.Components
             try
             {
                 widget = (Widget)Activator.CreateInstance (ComponentType);
-                if (widget is IComponent)
-                    (widget as IComponent).ComponentManager = cm;
+                if (widget is Component)
+                    (widget as Component).ComponentManager = cm;
             }
             catch (Exception e)
             {

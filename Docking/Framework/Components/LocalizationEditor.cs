@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(true)]
-   public partial class LocalizationEditor : Component, ILocalizableComponent, IComponent
+   public partial class LocalizationEditor : Component, ILocalizableComponent
    {
       public LocalizationEditor()
       {
@@ -175,25 +175,20 @@ namespace Docking.Components
       }
       #endregion
 
-      #region IComponent
-      public ComponentManager ComponentManager { get; set; }
-
-      void IComponent.Loaded(DockItem item)
+      public override void Loaded(DockItem item)
       {
+         base.Loaded(item);
+
          UpdateList();
          UpdateChangeCount();
       }
 
-      void IComponent.Save()
-      {}
-
-      bool IComponent.Closed()
+      public override bool Closed()
       {
          // TODO if the current script is unsaved, prompt the user here to save it and offer him a "Cancel" button.
          // When the user presses "Cancel", return false from this function to prevent the closing from happening.
-         return true;
+         return base.Closed();
       }
-      #endregion
 
       void UpdateChangeCount()
       {

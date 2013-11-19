@@ -9,13 +9,12 @@ namespace Docking.Components
    //       - Display also information about existing instances
    //       - Add actions, like create/hide/show/erase
    [System.ComponentModel.ToolboxItem(false)]
-   public partial class ComponentList : Component, IComponent, ILocalizableComponent
+   public partial class ComponentList : Component, ILocalizableComponent
    {
-      #region IComponent
-      public ComponentManager ComponentManager { get; set; }
-
-      void IComponent.Loaded(DockItem item)
+      public override void Loaded(DockItem item)
       {
+         base.Loaded(item);
+
          item.Title = "Component List";
 
          foreach (ComponentFactoryInformation cfi in ComponentManager.ComponentFinder.ComponentInfos)
@@ -33,15 +32,14 @@ namespace Docking.Components
             p.LoadColumnWidth(treeview1.Columns);
       }
 
-      void IComponent.Save()
+      public override void Save()
       {
+         base.Save();
+
          Persistence p = new Persistence();
          p.SaveColumnWidth(treeview1.Columns);
          ComponentManager.SaveObject("ComponentList", p);
       }
-
-      bool IComponent.Closed() { return true; }
-      #endregion
 
       #region Component - Interaction
 

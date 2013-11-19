@@ -7,7 +7,7 @@ using Gtk;
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-    public partial class Activities : Component, IComponent, ILocalizableComponent
+    public partial class Activities : Component, ILocalizableComponent
     {
         Gtk.ListStore listStore;
 
@@ -45,21 +45,14 @@ namespace Docking.Components
             treeview1.CursorChanged += HandleCursorChanged;
         }
 
-        #region IComponent
-        public ComponentManager ComponentManager { get; set; }
-
-        void IComponent.Loaded(DockItem item)
+        public override void Loaded(DockItem item)
         {
+            base.Loaded(item);
+
             JobInfo.Added += HandleAdded;
             JobInfo.Removed += HandleRemoved;
             Initialize();
         }
-
-        void IComponent.Save()
-        {}
-
-        bool IComponent.Closed() { return true; }
-        #endregion
 
         #region ILocalizable
 

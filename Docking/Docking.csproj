@@ -120,7 +120,6 @@
     <Compile Include="Framework\Components\Activities.cs" />
     <Compile Include="Framework\Manager\ComponentFinder.cs" />
     <Compile Include="Framework\Manager\ComponentManager.cs" />
-    <Compile Include="Framework\Interfaces\IComponent.cs" />
     <Compile Include="Framework\Interfaces\IComponentFactory.cs" />
     <Compile Include="Framework\Interfaces\IMessage.cs" />
     <Compile Include="Tools\Colors\Colors.cs" />

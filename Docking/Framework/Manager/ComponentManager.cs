@@ -1069,12 +1069,12 @@ namespace Docking.Components
          // time for late initialization and/or loading persistence
          foreach (DockItem item in DockFrame.GetItems())
          {
-            if (item.Content is IComponent)
+            if (item.Content is Component)
             {
                System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
                w.Start();
                currentLoadSaveItem = item;
-               (item.Content as IComponent).Loaded(item);
+               (item.Content as Component).Loaded(item);
                w.Stop();
                //if (w.ElapsedMilliseconds > 25)
                if (w.ElapsedMilliseconds > 300) // raise the limit to get rid of annoying output we currently cannot change anyway
@@ -1108,10 +1108,10 @@ namespace Docking.Components
       {
          foreach (DockItem item in DockFrame.GetItems())
          {
-            if (item.Content is IComponent)
+            if (item.Content is Component)
             {
                currentLoadSaveItem = item;
-               (item.Content as IComponent).Save();
+               (item.Content as Component).Save();
             }
          }
       }
@@ -1627,8 +1627,8 @@ namespace Docking.Components
          item.Visible = true;
 
          // call initialization of new created component
-         if (item.Content is IComponent)
-            (item.Content as IComponent).Loaded(item);
+         if (item.Content is Component)
+            (item.Content as Component).Loaded(item);
 
          if(item.Content is Component)
             AddComponent(item.Content);

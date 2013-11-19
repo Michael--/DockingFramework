@@ -11,7 +11,8 @@ namespace Docking.Components
    [System.ComponentModel.ToolboxItem(true)]
    public partial class VirtualListView : Component, ILocalizableWidget
    {
-      public ComponentManager ComponentManager
+      // TODO get rid of this. simply use the ComponentManager instance of the parent class "Component"
+      public override ComponentManager ComponentManager
       {
          get { return mColumnControl.ComponentManager; }
          set { mColumnControl.ComponentManager = value; }

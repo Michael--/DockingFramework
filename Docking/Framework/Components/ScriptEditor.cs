@@ -35,7 +35,7 @@ using Microsoft.Scripting;
 namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(false)]
-   public partial class ScriptEditor : Component, IScript, IComponent, ILocalizableComponent
+   public partial class ScriptEditor : Component, IScript, ILocalizableComponent
    {
       #region MAIN
 
@@ -162,11 +162,10 @@ namespace Docking.Components
 
       #endregion
 
-      #region IComponent
-      public ComponentManager ComponentManager { get; set; }
-
-      void IComponent.Loaded(DockItem item)
+      public override void Loaded(DockItem item)
       {
+         base.Loaded(item);
+
          mPersistence = (ScriptPersistence)ComponentManager.LoadObject("ScriptEditor", typeof(ScriptPersistence));
          if (mPersistence == null)
             mPersistence = new ScriptPersistence();
@@ -202,19 +201,20 @@ namespace Docking.Components
          }
       }
 
-      void IComponent.Save()
+      public override void Save()
       {
+         base.Save();
+
          mPersistence.VPanedPosition = vpaned1.Position;
          ComponentManager.SaveObject("ScriptEditor", mPersistence);
       }
 
-      bool IComponent.Closed()
+      public override bool Closed()
       {
          // TODO if the current script is unsaved, prompt the user here to save it and offer him a "Cancel" button.
          // When the user presses "Cancel", return false from this function to prevent the closing from happening.
-         return true;
+         return base.Closed();
       }
-      #endregion
 
       #region ILocalizable
 
