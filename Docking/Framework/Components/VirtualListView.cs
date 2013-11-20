@@ -437,6 +437,9 @@ namespace Docking.Components
 
       private void OffsetCursor(int offset)
       {
+         if (offset == 0)
+            return;
+
          int oldRow = CurrentRow;
          CurrentRow += offset;
          if (CurrentRow < 0)
