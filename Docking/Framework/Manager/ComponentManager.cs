@@ -26,19 +26,19 @@ using Gtk;
 
 namespace Docking.Components
 {
-    public class ComponentManager : Gtk.Window, IPersistency, IMessageWriteLine, ICut, ICopy, IPaste
+   public class ComponentManager : Gtk.Window, IPersistency, IMessageWriteLine, ICut, ICopy, IPaste
    {
       #region Initialization
 
       private static int mMainThreadID;
       public bool IsMainThread
       {
-         get { return Thread.CurrentThread.ManagedThreadId==mMainThreadID; }
+         get { return Thread.CurrentThread.ManagedThreadId == mMainThreadID; }
       }
 
       // make sure that you construct this class from the main thread!      
-      public ComponentManager(WindowType wt)
-      : base(wt)
+      public ComponentManager(WindowType wt, string pythonBaseVariableName = "cm")
+         : base(wt)
       {
          mMainThreadID = Thread.CurrentThread.ManagedThreadId; // make sure that you construct this class from the main thread!
 
@@ -49,8 +49,8 @@ namespace Docking.Components
          ComponentFinder = new Docking.Components.ComponentFinder();
          XmlDocument = new XmlDocument();
          PowerDown = false;
-         InitPythonEngine();
-        
+         InitPythonEngine(pythonBaseVariableName);
+
          MakeWidgetReceiveDropEvents(Toplevel, OnDragDataReceived);
 
          this.WindowStateEvent += OnWindowStateChanged;
@@ -59,7 +59,7 @@ namespace Docking.Components
       public Gdk.WindowState WindowState { get; protected set; }
       private void OnWindowStateChanged(object sender, WindowStateEventArgs args)
       {
-         WindowState = args.Event.NewWindowState;   
+         WindowState = args.Event.NewWindowState;
       }
 
       public void SetDockFrame(DockFrame df)
@@ -356,25 +356,25 @@ namespace Docking.Components
          mMenuCut.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Cut-16.png"));
          mMenuCut.Activated += OnCutActivated;
          mMenuCut.Sensitive = false;
-         mMenuCut.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.x,      Gdk.ModifierType.ControlMask, AccelFlags.Visible));
-         mMenuCut.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Delete, Gdk.ModifierType.ShiftMask,   AccelFlags.Visible));
-         AppendMenu("Edit", mMenuCut);         
+         mMenuCut.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.x, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
+         mMenuCut.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Delete, Gdk.ModifierType.ShiftMask, AccelFlags.Visible));
+         AppendMenu("Edit", mMenuCut);
 
          mMenuCopy = new TaggedLocalizedImageMenuItem("Copy");
          mMenuCopy.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Copy-16.png"));
          mMenuCopy.Activated += OnCopyActivated;
          mMenuCopy.Sensitive = false;
-         mMenuCopy.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.c,      Gdk.ModifierType.ControlMask, AccelFlags.Visible));
+         mMenuCopy.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.c, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          mMenuCopy.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Insert, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
-         AppendMenu("Edit", mMenuCopy);         
+         AppendMenu("Edit", mMenuCopy);
 
          mMenuPaste = new TaggedLocalizedImageMenuItem("Paste");
          mMenuPaste.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Paste-16.png"));
          mMenuPaste.Activated += OnPasteActivated;
          mMenuPaste.Sensitive = false;
-         mMenuPaste.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.v,      Gdk.ModifierType.ControlMask, AccelFlags.Visible));
-         mMenuPaste.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Insert, Gdk.ModifierType.ShiftMask,   AccelFlags.Visible));
-         AppendMenu("Edit", mMenuPaste);         
+         mMenuPaste.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.v, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
+         mMenuPaste.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Insert, Gdk.ModifierType.ShiftMask, AccelFlags.Visible));
+         AppendMenu("Edit", mMenuPaste);
       }
 
       protected void OnCutActivated(object sender, EventArgs e)
@@ -394,20 +394,20 @@ namespace Docking.Components
 
       void ICut.Cut()
       {
-         if(CurrentDockItem!=null && CurrentDockItem.Content!=null)
+         if (CurrentDockItem != null && CurrentDockItem.Content != null)
          {
-            if(CurrentDockItem.Content is ICut)
+            if (CurrentDockItem.Content is ICut)
                (CurrentDockItem.Content as ICut).Cut();
             else
                MessageWriteLine("current component does not implement interface ICut");
-         }                                         
+         }
       }
 
       void ICopy.Copy()
       {
-         if(CurrentDockItem!=null && CurrentDockItem.Content!=null)
+         if (CurrentDockItem != null && CurrentDockItem.Content != null)
          {
-            if(CurrentDockItem.Content is ICopy)
+            if (CurrentDockItem.Content is ICopy)
                (CurrentDockItem.Content as ICopy).Copy();
             else
                MessageWriteLine("current component does not implement interface ICopy");
@@ -416,9 +416,9 @@ namespace Docking.Components
 
       void IPaste.Paste()
       {
-         if(CurrentDockItem!=null && CurrentDockItem.Content!=null)
+         if (CurrentDockItem != null && CurrentDockItem.Content != null)
          {
-            if(CurrentDockItem.Content is IPaste)
+            if (CurrentDockItem.Content is IPaste)
                (CurrentDockItem.Content as IPaste).Paste();
             else
                MessageWriteLine("current component does not implement interface IPaste");
@@ -470,19 +470,19 @@ namespace Docking.Components
          // 1st search menu & return if existing
          foreach (MenuItem mi in children)
          {
-            if(mi is TaggedLocalizedMenuItem)
+            if (mi is TaggedLocalizedMenuItem)
             {
-               if((mi as TaggedLocalizedMenuItem).LocalizationKey!=null && (mi as TaggedLocalizedMenuItem).LocalizationKey==name)
-                     return mi.Submenu as Menu;
-            }
-            else if(mi is TaggedLocalizedImageMenuItem)
-            {
-               if((mi as TaggedLocalizedImageMenuItem).LocalizationKey!=null && (mi as TaggedLocalizedImageMenuItem).LocalizationKey==name)
+               if ((mi as TaggedLocalizedMenuItem).LocalizationKey != null && (mi as TaggedLocalizedMenuItem).LocalizationKey == name)
                   return mi.Submenu as Menu;
             }
-            else if(mi is TaggedLocalizedCheckedMenuItem)
+            else if (mi is TaggedLocalizedImageMenuItem)
             {
-               if((mi as TaggedLocalizedCheckedMenuItem).LocalizationKey!=null && !(mi as TaggedLocalizedCheckedMenuItem).IgnoreLocalization && (mi as TaggedLocalizedCheckedMenuItem).LocalizationKey==name)
+               if ((mi as TaggedLocalizedImageMenuItem).LocalizationKey != null && (mi as TaggedLocalizedImageMenuItem).LocalizationKey == name)
+                  return mi.Submenu as Menu;
+            }
+            else if (mi is TaggedLocalizedCheckedMenuItem)
+            {
+               if ((mi as TaggedLocalizedCheckedMenuItem).LocalizationKey != null && !(mi as TaggedLocalizedCheckedMenuItem).IgnoreLocalization && (mi as TaggedLocalizedCheckedMenuItem).LocalizationKey == name)
                   return mi.Submenu as Menu;
             }
 
@@ -570,7 +570,7 @@ namespace Docking.Components
             if (item.Content != null)
             {
                Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
-               
+
                if (item.Content is ILocalizableComponent)
                {
                   ILocalizableComponent il = item.Content as ILocalizableComponent;
@@ -584,7 +584,7 @@ namespace Docking.Components
          // todo: change menue and further language depending stuff
          Localization.LocalizeMenu(MenuBar);
 
-         if(triggerRedraw)
+         if (triggerRedraw)
          {
             // trigger redraw - this is a brute-force workaround, we found no other way yet to properly trigger a full-redraw of everything         
             this.Hide();
@@ -638,15 +638,15 @@ namespace Docking.Components
 
       public bool OpenFile(string filename)
       {
-         if(Directory.Exists(filename))
+         if (Directory.Exists(filename))
          {
-             MessageWriteLine("Opening whole directories like {0} currently isn't implemented".FormatLocalizedWithPrefix("Docking.Components", filename));
+            MessageWriteLine("Opening whole directories like {0} currently isn't implemented".FormatLocalizedWithPrefix("Docking.Components", filename));
             return false;
          }
 
-         if(!File.Exists(filename))
+         if (!File.Exists(filename))
          {
-             MessageWriteLine("File {0} does not exist".FormatLocalizedWithPrefix("Docking.Components", filename));
+            MessageWriteLine("File {0} does not exist".FormatLocalizedWithPrefix("Docking.Components", filename));
             return false;
          }
 
@@ -668,7 +668,7 @@ namespace Docking.Components
             // TODO now search all classes implementing IFileOpen by calling their method IFileOpen.SupportedFileTypes()
             // and let the user instantiate them to handle this file.
             // That's not implemented yet. For now we fail with despair:
-             MessageWriteLine("No component is instantiated which can handle file {0}".FormatLocalizedWithPrefix("Docking.Components"), filename);
+            MessageWriteLine("No component is instantiated which can handle file {0}".FormatLocalizedWithPrefix("Docking.Components"), filename);
             return false;
          }
 
@@ -698,7 +698,7 @@ namespace Docking.Components
          String result = null;
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Open,
              "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
-             "Open".Localized("Docking.Components"),   ResponseType.Accept);
+             "Open".Localized("Docking.Components"), ResponseType.Accept);
 
          if (filefilters != null)
             foreach (FileFilter filter in filefilters)
@@ -718,7 +718,7 @@ namespace Docking.Components
          String result = null;
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Save,
              "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
-             "Save".Localized("Docking.Components"),   ResponseType.Accept);
+             "Save".Localized("Docking.Components"), ResponseType.Accept);
 
          if (filefilters != null)
             foreach (FileFilterExt filter in filefilters)
@@ -740,10 +740,10 @@ namespace Docking.Components
                      if (!result.EndsWith(expectedExtension, true, null))
                      {
                         result = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(result),
-                                                        System.IO.Path.GetFileName(result)+expectedExtension);
+                                                        System.IO.Path.GetFileName(result) + expectedExtension);
                      }
                      break;
-         }
+                  }
                }
             }
          }
@@ -753,68 +753,71 @@ namespace Docking.Components
       }
 
 
-      static bool PlatformIsWin32ish { get
+      static bool PlatformIsWin32ish
       {
-         switch(Environment.OSVersion.Platform)
+         get
          {
-         case PlatformID.Win32S:       return true;
-         case PlatformID.Win32Windows: return true;
-         case PlatformID.Win32NT:      return true;
-         case PlatformID.WinCE:        return false; // note this. WinCE is very different than Win32
-         case PlatformID.Unix:         return false;
-         case PlatformID.Xbox:         return false; // or should we return true here better???
-         case PlatformID.MacOSX:       return false;
-         default:                      return false;
+            switch (Environment.OSVersion.Platform)
+            {
+               case PlatformID.Win32S: return true;
+               case PlatformID.Win32Windows: return true;
+               case PlatformID.Win32NT: return true;
+               case PlatformID.WinCE: return false; // note this. WinCE is very different than Win32
+               case PlatformID.Unix: return false;
+               case PlatformID.Xbox: return false; // or should we return true here better???
+               case PlatformID.MacOSX: return false;
+               default: return false;
+            }
          }
-      }}
+      }
 
-      const string URL_PREFIX_FILE  = "file://";
-      const string URL_PREFIX_HTTP  = "http://";
+      const string URL_PREFIX_FILE = "file://";
+      const string URL_PREFIX_HTTP = "http://";
       const string URL_PREFIX_HTTPS = "https://";
 
       public bool OpenURL(string url_)
       {
          string url = System.Uri.UnescapeDataString(url_);
-         if(url.StartsWith(URL_PREFIX_FILE))
-         { 
+         if (url.StartsWith(URL_PREFIX_FILE))
+         {
             string filename = url.Substring(URL_PREFIX_FILE.Length);
-            if(PlatformIsWin32ish)
+            if (PlatformIsWin32ish)
             {
                // treat how local filenames are encoded on Windows. Example: file:///D:/some/folder/myfile.txt
-               if(  filename.Length>=3 && 
-                     filename[0]=='/' &&
+               if (filename.Length >= 3 &&
+                     filename[0] == '/' &&
                   //filename[1]=='C' && // drive letter
-                     filename[2]==':')
+                     filename[2] == ':')
                {
                   filename = filename.Substring(1);
-               }                    
+               }
                filename = filename.Replace('/', System.IO.Path.DirectorySeparatorChar);
             }
-            return OpenFile(filename); 
+            return OpenFile(filename);
          }
-         else if(url.StartsWith(URL_PREFIX_HTTP) || url.StartsWith(URL_PREFIX_HTTPS))
+         else if (url.StartsWith(URL_PREFIX_HTTP) || url.StartsWith(URL_PREFIX_HTTPS))
          {
             string filename;
-            if(url.StartsWith(URL_PREFIX_HTTP))
+            if (url.StartsWith(URL_PREFIX_HTTP))
                filename = url.Substring(URL_PREFIX_HTTP.Length);
-            else if(url.StartsWith(URL_PREFIX_HTTPS))
+            else if (url.StartsWith(URL_PREFIX_HTTPS))
                filename = url.Substring(URL_PREFIX_HTTPS.Length);
             else
                return false;
             string[] portions = filename.Split('/');
-            if(portions.Length<1)
+            if (portions.Length < 1)
                return false;
-            filename = portions[portions.Length-1];
-            if(!filename.Contains("."))
-               filename = System.IO.Path.GetFileNameWithoutExtension(System.AppDomain.CurrentDomain.FriendlyName)+" TempFile.tmp";               
+            filename = portions[portions.Length - 1];
+            if (!filename.Contains("."))
+               filename = System.IO.Path.GetFileNameWithoutExtension(System.AppDomain.CurrentDomain.FriendlyName) + " TempFile.tmp";
             filename = System.IO.Path.Combine(System.IO.Path.GetTempPath(), filename);
-            if(File.Exists(filename))
+            if (File.Exists(filename))
             {
                int i = 2;
                string newfilename = filename;
-               while(File.Exists(newfilename))
-               {                      
-                  newfilename = System.IO.Path.GetFileNameWithoutExtension(filename)+" ("+i+")"+System.IO.Path.GetExtension(filename);
+               while (File.Exists(newfilename))
+               {
+                  newfilename = System.IO.Path.GetFileNameWithoutExtension(filename) + " (" + i + ")" + System.IO.Path.GetExtension(filename);
                   newfilename = System.IO.Path.Combine(System.IO.Path.GetTempPath(), newfilename);
                   i++;
                }
@@ -822,16 +825,16 @@ namespace Docking.Components
             }
             WebClient2 www = new WebClient2();
             FileStream file = null;
-            try 
-            {                     
+            try
+            {
                file = File.Create(filename, 10000, FileOptions.DeleteOnClose);
                www.OpenRead(url).CopyTo(file);
             }
-            catch(Exception)
+            catch (Exception)
             {
                file = null;
-            }                  
-            if(file!=null)
+            }
+            if (file != null)
             {
                bool result = OpenFile(filename);
                file.Close(); // will implicitly delete the file, see FileOptions.DeleteOnClose above 
@@ -879,16 +882,16 @@ namespace Docking.Components
         widget.DragLeave += (sender, args) => { return; };
         widget.DragMotion += (sender, args) => { return; };
 #endif
-        
-        widget.DragDataReceived += callback;
-        Gtk.Drag.DestSet(widget, DestDefaults.All, sMapMIMEtoEnum,
-                         Gdk.DragAction.Default |
-                         Gdk.DragAction.Copy    |
-                       //Gdk.DragAction.Move    
-                         Gdk.DragAction.Link     
-                       //Gdk.DragAction.Private  
-                       //Gdk.DragAction.Ask
-                        );        
+
+         widget.DragDataReceived += callback;
+         Gtk.Drag.DestSet(widget, DestDefaults.All, sMapMIMEtoEnum,
+                          Gdk.DragAction.Default |
+                          Gdk.DragAction.Copy |
+            //Gdk.DragAction.Move    
+                          Gdk.DragAction.Link
+            //Gdk.DragAction.Private  
+            //Gdk.DragAction.Ask
+                         );
       }
 
       // parse text/uri-list byte stream as specified in RFC 2483, see http://www.rfc-editor.org/rfc/rfc2483.txt
@@ -896,12 +899,12 @@ namespace Docking.Components
       {
          List<string> result = new List<string>();
          string[] lines = Encoding.UTF8.GetString(input).Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-         foreach(string line in lines)
-         {       
-            if(line.StartsWith("#"))
+         foreach (string line in lines)
+         {
+            if (line.StartsWith("#"))
                continue;
             string s = line.Trim();
-            if(s=="\0")
+            if (s == "\0")
                continue;
             result.Add(s);
          }
@@ -911,31 +914,31 @@ namespace Docking.Components
       void OnDragDataReceived(object sender, DragDataReceivedArgs args)
       {
          bool success = false;
-         if(args!=null && args.SelectionData!=null)
+         if (args != null && args.SelectionData != null)
          {
-            switch((DragDropDataType) args.Info)
+            switch ((DragDropDataType)args.Info)
             {
                case DragDropDataType.Text:
                   // we currently have no usecase for this
                   break;
                case DragDropDataType.URL:
-               {  
-                  // untested:
-                  // string url = Encoding.UTF8.GetString(args.SelectionData.Data).Trim(); 
-                  // success = OpenURL(url);
-                  success = false;
-                  break;
-               }
+                  {
+                     // untested:
+                     // string url = Encoding.UTF8.GetString(args.SelectionData.Data).Trim(); 
+                     // success = OpenURL(url);
+                     success = false;
+                     break;
+                  }
                case DragDropDataType.URLList:
-               {
-                  List<string> uris = ParseURLListRFC2483(args.SelectionData.Data);            
-                  foreach(string uri in uris)
-                     success |= OpenURL(uri);
-                  break;
-               }
+                  {
+                     List<string> uris = ParseURLListRFC2483(args.SelectionData.Data);
+                     foreach (string uri in uris)
+                        success |= OpenURL(uri);
+                     break;
+                  }
             }
          }
-         if(success)
+         if (success)
             Gtk.Drag.Finish(args.Context, success, false, args.Time);
       }
 
@@ -1031,16 +1034,16 @@ namespace Docking.Components
       public void AddComponent(object o)
       {
          Debug.Assert(!mComponents.Contains(o));
-         mComponents.Add(o);            
-         if(mInitialLoadOfComponentsCompleted)
+         mComponents.Add(o);
+         if (mInitialLoadOfComponentsCompleted)
          {
-            foreach(object item in mComponents)
+            foreach (object item in mComponents)
             {
-               if(item is Component)
-                  (item as Component).ComponentAdded(o); 
-               if(o is Component)
+               if (item is Component)
+                  (item as Component).ComponentAdded(o);
+               if (o is Component)
                   (o as Component).ComponentAdded(item);
-            }          
+            }
          }
       }
 
@@ -1049,11 +1052,11 @@ namespace Docking.Components
          Debug.Assert(mComponents.Contains(o));
          mComponents.Remove(o);
          Debug.Assert(!mComponents.Contains(o));
-         if(mInitialLoadOfComponentsCompleted)
+         if (mInitialLoadOfComponentsCompleted)
          {
-            foreach(object item in mComponents)
-               if(item is Component)
-                  (item as Component).ComponentRemoved(o); 
+            foreach (object item in mComponents)
+               if (item is Component)
+                  (item as Component).ComponentRemoved(o);
          }
       }
 
@@ -1075,6 +1078,7 @@ namespace Docking.Components
                w.Start();
                currentLoadSaveItem = item;
                (item.Content as Component).Loaded(item);
+               currentLoadSaveItem = null;
                w.Stop();
                //if (w.ElapsedMilliseconds > 25)
                if (w.ElapsedMilliseconds > 300) // raise the limit to get rid of annoying output we currently cannot change anyway
@@ -1089,14 +1093,14 @@ namespace Docking.Components
             if (item.Content is IScript)
                mScriptInterfaces.Add(item.Content as IScript);
 
-            if(item.Content is Component)
+            if (item.Content is Component)
                AddComponent(item.Content as Component);
          }
 
          mInitialLoadOfComponentsCompleted = true;
          List<object> components = mComponents;
          mComponents = new List<object>();
-         foreach(object o in components)
+         foreach (object o in components)
             AddComponent(o);
 
          total.Stop();
@@ -1112,6 +1116,7 @@ namespace Docking.Components
             {
                currentLoadSaveItem = item;
                (item.Content as Component).Save();
+               currentLoadSaveItem = null;
             }
          }
       }
@@ -1121,7 +1126,7 @@ namespace Docking.Components
          foreach (DockItem item in DockFrame.GetItems())
             if (item.Content is Component)
                foreach (DockItem other in DockFrame.GetItems())
-                  if(other!=item)
+                  if (other != item)
                      (item.Content as Component).ComponentRemoved(other);
       }
 
@@ -1135,7 +1140,7 @@ namespace Docking.Components
          {
             this.Resize(p.Width, p.Height);
             this.Move(p.WindowX, p.WindowY);
-            if((p.WindowState&(int)Gdk.WindowState.Maximized)!=0)
+            if ((p.WindowState & (int)Gdk.WindowState.Maximized) != 0)
                this.Maximize();
          }
          m_LoadedPersistence = p;
@@ -1184,7 +1189,7 @@ namespace Docking.Components
 
 
       #endregion
-                     
+
       #region Binary Persistency
       // TODO It does not really make sense to but binary blobs into XML... this way the file is not really editable/parsable anymore. Suggestion: Prefer using IPersistency.
 
@@ -1299,7 +1304,7 @@ namespace Docking.Components
          string serializedAsHex = ToHexString(formattedStream.GetBuffer());
          XmlNode importNode = XmlDocument.CreateElement(obj.GetType().Name + "_FMT");
          importNode.InnerText = serializedAsHex;
-         newNode.AppendChild(importNode); 
+         newNode.AppendChild(importNode);
 
          // need new base node if started without old config
          if (XmlConfiguration == null)
@@ -1321,17 +1326,17 @@ namespace Docking.Components
 
       public void SaveSetting(string instance, string key, string val)
       {
-         if(XmlConfiguration==null)
+         if (XmlConfiguration == null)
             return;
 
          List<string> portions = new List<string>(instance.Split('/'));
          portions.Add(key);
-         if(portions.Count<=0)
+         if (portions.Count <= 0)
             return;
 
          XmlNode N = null;
          XmlNode parent = XmlConfiguration;
-         foreach(string p in portions)
+         foreach (string p in portions)
          {
             try
             {
@@ -1341,7 +1346,7 @@ namespace Docking.Components
             {
                N = null;
             }
-            if(N==null)
+            if (N == null)
             {
                N = XmlDocument.CreateElement(p);
                parent.AppendChild(N);
@@ -1353,21 +1358,21 @@ namespace Docking.Components
 
       public void SaveSetting(string instance, string key, List<string> val)
       {
-         int count = val==null ? 0 : val.Count;
-         SaveSetting(instance, key+".Count", count);
-         for(int i = 0; i<count; i++)
+         int count = val == null ? 0 : val.Count;
+         SaveSetting(instance, key + ".Count", count);
+         for (int i = 0; i < count; i++)
          {
-            SaveSetting(instance, key+"."+i, val[i]);
+            SaveSetting(instance, key + "." + i, val[i]);
          }
       }
 
       public void SaveSetting(string instance, string key, List<bool> val)
       {
-         int count = val==null ? 0 : val.Count;
-         SaveSetting(instance, key+".Count", count);
-         for(int i = 0; i<count; i++)
+         int count = val == null ? 0 : val.Count;
+         SaveSetting(instance, key + ".Count", count);
+         for (int i = 0; i < count; i++)
          {
-            SaveSetting(instance, key+"."+i, val[i]);
+            SaveSetting(instance, key + "." + i, val[i]);
          }
       }
 
@@ -1399,17 +1404,17 @@ namespace Docking.Components
       public void SaveColumnWidths(string instance, Gtk.TreeView treeview)
       {
          StringBuilder widths = new StringBuilder();
-         foreach(TreeViewColumn col in treeview.Columns)
+         foreach (TreeViewColumn col in treeview.Columns)
          {
 
             int w = col.Width;
-            if(widths.Length>0)
+            if (widths.Length > 0)
                widths.Append(";");
             string title = (col is TreeViewColumnLocalized) ? (col as TreeViewColumnLocalized).LocalizationKey : col.Title;
             title = Regex.Replace(title, "[=;]", "");
             widths.Append(title).Append("=").Append(col.Width);
          }
-         SaveSetting(instance, treeview.Name+".ColumnWidths", widths.ToString());
+         SaveSetting(instance, treeview.Name + ".ColumnWidths", widths.ToString());
       }
 
       #endregion
@@ -1418,22 +1423,22 @@ namespace Docking.Components
 
       public string LoadSetting(string instance, string key, string defaultval)
       {
-         if(XmlConfiguration==null)
+         if (XmlConfiguration == null)
             return defaultval;
 
          List<string> portions = new List<string>(instance.Split('/'));
          portions.Add(key);
-         if(portions.Count<=0)
+         if (portions.Count <= 0)
             return defaultval;
 
-         try     
+         try
          {
             XmlNode N = null;
             XmlNode parent = XmlConfiguration;
-            foreach(string p in portions)
+            foreach (string p in portions)
             {
                N = parent.SelectSingleNode(p);
-               if(N==null)
+               if (N == null)
                   return defaultval;
                parent = N;
             }
@@ -1446,24 +1451,24 @@ namespace Docking.Components
       }
 
       public List<string> LoadSetting(string instance, string key, List<string> defaultval)
-      {         
-         int count = LoadSetting(instance, key+".Count", -1);
-         if(count<0)
+      {
+         int count = LoadSetting(instance, key + ".Count", -1);
+         if (count < 0)
             return defaultval;
          List<string> result = new List<string>();
-         for(int i = 0; i<count; i++)
-            result.Add(LoadSetting(instance, key+"."+i, ""));
+         for (int i = 0; i < count; i++)
+            result.Add(LoadSetting(instance, key + "." + i, ""));
          return result;
       }
 
       public List<bool> LoadSetting(string instance, string key, List<bool> defaultval)
-      {         
-         int count = LoadSetting(instance, key+".Count", -1);
-         if(count<0)
+      {
+         int count = LoadSetting(instance, key + ".Count", -1);
+         if (count < 0)
             return defaultval;
          List<bool> result = new List<bool>();
-         for(int i = 0; i<count; i++)
-            result.Add(LoadSetting(instance, key+"."+i, false));
+         for (int i = 0; i < count; i++)
+            result.Add(LoadSetting(instance, key + "." + i, false));
          return result;
       }
 
@@ -1471,7 +1476,7 @@ namespace Docking.Components
       {
          string s = LoadSetting(instance, key, "");
          UInt32 result;
-         return (s!="" && UInt32.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
+         return (s != "" && UInt32.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
                 ? result : defaultval;
       }
 
@@ -1479,7 +1484,7 @@ namespace Docking.Components
       {
          string s = LoadSetting(instance, key, "");
          Int32 result;
-         return (s!="" && Int32.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
+         return (s != "" && Int32.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
                 ? result : defaultval;
       }
 
@@ -1487,18 +1492,18 @@ namespace Docking.Components
       {
          string s = LoadSetting(instance, key, "");
          double result;
-         return (s!="" && Double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out result))
+         return (s != "" && Double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out result))
                 ? result : defaultval;
       }
 
       public bool LoadSetting(string instance, string key, bool defaultval)
       {
          string s = LoadSetting(instance, key, "").ToLowerInvariant();
-         if(s=="true")
+         if (s == "true")
             return true;
-         else if(s=="false")
+         else if (s == "false")
             return false;
-         else        
+         else
             return defaultval;
       }
 
@@ -1506,35 +1511,35 @@ namespace Docking.Components
       {
          string s = LoadSetting(instance, key, "");
          System.Drawing.Color result;
-         return (s!="" && ColorConverter.RGBAString_to_Color(s, out result))
+         return (s != "" && ColorConverter.RGBAString_to_Color(s, out result))
                 ? result : defaultval;
       }
 
       public void LoadColumnWidths(string instance, Gtk.TreeView treeview)
       {
-         string columnwidths = LoadSetting(instance, treeview.Name+".ColumnWidths", "");
+         string columnwidths = LoadSetting(instance, treeview.Name + ".ColumnWidths", "");
          string[] all = columnwidths.Split(';');
-         foreach(string s in all)
+         foreach (string s in all)
          {
             string[] one = s.Split('=');
-            if(one.Length==2)
+            if (one.Length == 2)
             {
                one[0] = one[0].ToLowerInvariant();
                int width;
-               if(Int32.TryParse(one[1], out width))
-               { 
-                  if(width<5) // quickfix: make sure no columns become invisible
-                     width = 5; 
-                  foreach(TreeViewColumn col in treeview.Columns)
-                  { 
+               if (Int32.TryParse(one[1], out width))
+               {
+                  if (width < 5) // quickfix: make sure no columns become invisible
+                     width = 5;
+                  foreach (TreeViewColumn col in treeview.Columns)
+                  {
                      string title = (col is TreeViewColumnLocalized) ? (col as TreeViewColumnLocalized).LocalizationKey : col.Title;
                      title = title.ToLowerInvariant();
-                     if(title==one[0])
+                     if (title == one[0])
                         col.SetWidth(width);
                   }
                }
             }
-         }        
+         }
       }
 
       #endregion
@@ -1611,9 +1616,9 @@ namespace Docking.Components
 
          // add new instance of desired component
          DockItem item = CreateItem(cfi, name);
-         if(item==null)
+         if (item == null)
          {
-            MessageWriteLine("ERROR: cannot instantiate component "+name);
+            MessageWriteLine("ERROR: cannot instantiate component " + name);
             return;
          }
          item.Behavior = DockItemBehavior.Normal;
@@ -1627,18 +1632,21 @@ namespace Docking.Components
          item.Visible = true;
 
          // call initialization of new created component
+         currentLoadSaveItem = item;
          if (item.Content is Component)
             (item.Content as Component).Loaded(item);
+         currentLoadSaveItem = null;
 
-         if(item.Content is Component)
+         if (item.Content is Component)
             AddComponent(item.Content);
-   
+
          if (item.Content is IProperty)
             mPropertyInterfaces.Add(item.Content as IProperty);
 
          if (item.Content is IScript)
             mScriptInterfaces.Add(item.Content as IScript);
       }
+
 
       private void HandleDockItemRemoved(DockItem item)
       {
@@ -1819,8 +1827,8 @@ namespace Docking.Components
                CurrentDockItem = select;
                CurrentDockItem.TitleTab.VisualStyle = mSelectedStyle;
 
-               mMenuCut.Sensitive   = CurrentDockItem.Content is ICut;
-               mMenuCopy.Sensitive  = CurrentDockItem.Content is ICopy;
+               mMenuCut.Sensitive = CurrentDockItem.Content is ICut;
+               mMenuCopy.Sensitive = CurrentDockItem.Content is ICopy;
                mMenuPaste.Sensitive = CurrentDockItem.Content is IPaste;
 
                // notify all IProperty Widgets
@@ -1926,9 +1934,17 @@ namespace Docking.Components
 
       #region Python
       public ScriptEngine ScriptEngine { get; private set; }
-      public ScriptScope ScriptScope { get; private set; }
 
-      private void InitPythonEngine()
+
+      // [Obsolete("Deprecated: use AddInstanceVariable(), RemoveInstanceVariable() instead")]
+      // TODO: will be changed to private next
+      public ScriptScope ScriptScope
+      {
+         get; 
+         private set;
+      }
+
+      private void InitPythonEngine(string pythonBaseVariableName)
       {
          ScriptEngine = Python.CreateEngine();
          ScriptScope = ScriptEngine.CreateScope();
@@ -1939,10 +1955,10 @@ namespace Docking.Components
 
          // access to this using "ComponentManager"
          manager = new _ComponentManager(this);
-         ScriptScope.SetVariable("cm", manager);
+         ScriptScope.SetVariable(pythonBaseVariableName, manager);
 
          // add Python commands like "message(...)" 
-         Execute(ReadResource("cm.py"));
+         Execute(ReadResource("cm.py").Replace("[INSTANCE]", pythonBaseVariableName));
       }
 
       delegate object ImportDelegate(CodeContext context, string moduleName, PythonDictionary globals, PythonDictionary locals, PythonTuple tuple);
@@ -2046,14 +2062,42 @@ namespace Docking.Components
          {
             return ComponentManager.OpenFileDialog(prompt);
          }
+
+         /// <summary>
+         /// Get the python scripting instance of a special component
+         /// </summary>
+         public object GetInstance(string componentTitleName)
+         {
+            foreach (DockItem item in ComponentManager.DockFrame.GetItems())
+            {
+               if (item.Title == componentTitleName && item.Content is Component)
+                  return (item.Content as Component).GetScriptingInstance();
+            }
+            return null;
+         }
+
+         /// <summary>
+         /// Get an array with the names of all available python scripting objects
+         /// </summary>
+         /// <returns></returns>
+         public string[] GetInstances()
+         {
+            List<string> result = new List<string>();
+            foreach (DockItem item in ComponentManager.DockFrame.GetItems())
+            {
+               if (item.Content is Component && (item.Content as Component).GetScriptingInstance() != null)
+                  result.Add(item.Title);
+            }
+            return result.ToArray();
+         }
       }
       #endregion
    }
 
    public class TaggedLocalizedMenuItem : MenuItem, ILocalizableWidget
    {
-      public TaggedLocalizedMenuItem(IntPtr raw)  : base(raw)  {}
-      public TaggedLocalizedMenuItem(String name) : base(name) {}
+      public TaggedLocalizedMenuItem(IntPtr raw) : base(raw) { }
+      public TaggedLocalizedMenuItem(String name) : base(name) { }
 
       public System.Object Tag { get; set; }
 
@@ -2070,8 +2114,8 @@ namespace Docking.Components
 
    public class TaggedLocalizedImageMenuItem : ImageMenuItem, ILocalizableWidget
    {
-      public TaggedLocalizedImageMenuItem(IntPtr raw)  : base(raw)  {}
-      public TaggedLocalizedImageMenuItem(String name) : base(name) {}
+      public TaggedLocalizedImageMenuItem(IntPtr raw) : base(raw) { }
+      public TaggedLocalizedImageMenuItem(String name) : base(name) { }
 
       public System.Object Tag { get; set; }
 
@@ -2087,7 +2131,7 @@ namespace Docking.Components
 
    public class TaggedLocalizedCheckedMenuItem : CheckMenuItem, ILocalizableWidget
    {
-      public TaggedLocalizedCheckedMenuItem(IntPtr raw)  : base(raw)  { IgnoreLocalization = false; }
+      public TaggedLocalizedCheckedMenuItem(IntPtr raw) : base(raw) { IgnoreLocalization = false; }
       public TaggedLocalizedCheckedMenuItem(String name) : base(name) { IgnoreLocalization = false; }
 
       public System.Object Tag { get; set; }

@@ -14,6 +14,15 @@ namespace Docking.Components
       // Your component derived from this class will only do read access, if any.
       public DockItem DockItem { get; set; }
 
+      #region Python scripting
+      /// <summary>
+      /// Get an instance containing methods/getter/setter which will be available for python at runtime
+      /// This can be the component itself, but to avoid overall and deep access normally a specilized object.
+      /// All public access to this object can be used inside python script.
+      /// </summary>
+      public virtual object GetScriptingInstance() { return null; }
+      #endregion
+
       #region Component Lifecycle
 
       /// <summary>
