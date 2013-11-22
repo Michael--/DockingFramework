@@ -32,8 +32,7 @@ namespace Docking.Components
             }
 
             // redirect print message and access to this using "command"
-            command = new _Command(this, consoleview, ComponentManager);
-            ComponentManager.ScriptScope.SetVariable("cmd", command);
+            m_ScriptingInstance = new CommandScript(this, consoleview, ComponentManager);
             ComponentManager.Execute(String.Join("\r\n", pyPrint));
          });
       }
@@ -84,17 +83,24 @@ namespace Docking.Components
         { 
             "#output can be redirected to any object which implement method write and property softspace",
             "import sys",
+            "cmd=app().GetInstance(\"Command\")",
             "sys.stderr=cmd",
             "sys.stdout=cmd"
         };
 
-      _Command command;
+      CommandScript m_ScriptingInstance;
+
+      public override object GetScriptingInstance()
+      {
+         return m_ScriptingInstance;
+      }
+
       public bool DisableInvoke { get; set; }
 
       // encapsulate python access to c#, reduce access to well known methods
-      public class _Command
+      public class CommandScript
       {
-         public _Command(Command cmd, ConsoleView cv, ComponentManager cm)
+         public CommandScript(Command cmd, ConsoleView cv, ComponentManager cm)
          {
             Command = cmd;
             ConsoleView = cv;
