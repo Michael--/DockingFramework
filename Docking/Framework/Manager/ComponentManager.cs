@@ -1933,16 +1933,8 @@ namespace Docking.Components
       #endregion
 
       #region Python
-      public ScriptEngine ScriptEngine { get; private set; }
-
-
-      // [Obsolete("Deprecated: use AddInstanceVariable(), RemoveInstanceVariable() instead")]
-      // TODO: will be changed to private next
-      public ScriptScope ScriptScope
-      {
-         get; 
-         private set;
-      }
+      private ScriptEngine ScriptEngine { get; set; }
+      private ScriptScope ScriptScope { get; set; }
 
       private void InitPythonEngine(string pythonBaseVariableName)
       {
@@ -1954,8 +1946,8 @@ namespace Docking.Components
          scope.SetVariable("__import__", new ImportDelegate(DoPythonModuleImport));
 
          // access to this using "ComponentManager"
-         manager = new _ComponentManager(this);
-         ScriptScope.SetVariable(pythonBaseVariableName, manager);
+         m_ScriptingInstance = new ComponentManagerScripting(this);
+         ScriptScope.SetVariable(pythonBaseVariableName, m_ScriptingInstance);
 
          // add Python commands like "message(...)" 
          Execute(ReadResource("cm.py").Replace("[INSTANCE]", pythonBaseVariableName));
@@ -2017,14 +2009,14 @@ namespace Docking.Components
          return compiled.Execute(ScriptScope);
       }
 
-      _ComponentManager manager;
+      ComponentManagerScripting m_ScriptingInstance;
 
       /// <summary>
       /// Adapter class encapsulate access to Docking.Components.ComponentManager
       /// </summary>
-      public class _ComponentManager
+      public class ComponentManagerScripting
       {
-         public _ComponentManager(ComponentManager cm)
+         public ComponentManagerScripting(ComponentManager cm)
          {
             ComponentManager = cm;
          }
