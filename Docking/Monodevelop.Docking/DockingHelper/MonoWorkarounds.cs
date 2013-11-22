@@ -14,7 +14,7 @@ namespace Docking
 
       public static Surface GetTarget(this Context context)
       {
-         return context.Target;
+         return context.GetTarget();
       }
 
       public static void SetSource(this Context context, Pattern pattern)
