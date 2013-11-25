@@ -1,36 +1,7 @@
-#if false
-
-
-namespace Docking.Components
-{
- 
-   // This is a dummy placeholder class in case you cannot use the real one below.
-   // 
-   // One of the usecases where you need to use this dummy placeholder is when you want
-   // to debug against an own-built gtk-sharp (instead of using the system-wide one),
-   // because this class uses Mono.TextEditor.dll, which hardcodedly refers to the system-wide gtk-sharp,
-   // and we found no way yet to make it use the own-built one.
-   // So in the usecase that you want to use your own-built gtk-sharp, activate this dummy class.
-   [System.ComponentModel.ToolboxItem(false)]
-   public partial class ScriptEditor : Component, IScript
-   {
-      public ScriptEditor() {}
-
-      public ScriptChangedEventHandler ScriptChanged { get; set; }
-
-      void IScript.SetScript(object reference, string script) {}
-      void IScript.RemoveScript(object reference)             {}
-      void IScript.SetMessage(object reference, string msg)   {}
-   }
-}
-
-
-#else
-
-
 using System;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting;
+using System.Threading.Tasks;
 
 namespace Docking.Components
 {
@@ -39,65 +10,76 @@ namespace Docking.Components
    {
       #region MAIN
 
-      Mono.TextEditor.TextEditor textEditor;
-      System.Timers.Timer m_TextChangedTimer;
-
       public ScriptEditor()
       {
          this.Build();
-         textEditor = new Mono.TextEditor.TextEditor();
-         scrolledwindow4.Child = textEditor;
-
-         // use a timer to catch multiple LineChange events in very short time 
-         m_TextChangedTimer = new System.Timers.Timer();
-         m_TextChangedTimer.Elapsed += ContentChanged;
-         m_TextChangedTimer.Interval = 50;
-         m_TextChangedTimer.Enabled = false;
+         m_TextEditor = new Mono.TextEditor.TextEditor();
+         scrolledwindow4.Child = m_TextEditor;
 
          // see also http://monodevelop.com/Developers/Articles/Language_Addins
          // to enable code completion, smart indent and such like this additional code is necessary
-         textEditor.Document.MimeType = "text/x-python";
-         textEditor.Options.ColorScheme = "Tango"; //  TODO: user could select one
-         textEditor.Options.DrawIndentationMarkers = true;
-         textEditor.Options.EnableSyntaxHighlighting = true;
-         textEditor.Options.HighlightCaretLine = true;
-         textEditor.Options.HighlightMatchingBracket = true;
-         textEditor.Options.IndentStyle = Mono.TextEditor.IndentStyle.Auto;
-         textEditor.Options.ShowFoldMargin = true;
-         textEditor.Options.ShowRuler = true;
-         textEditor.Sensitive = false; // will be enabled on request
-         textEditor.Text = "# input disabled ...";
+         m_TextEditor.Document.MimeType = "text/x-python";
+         m_TextEditor.Options.ColorScheme = "Tango"; //  TODO: user could select one
+         m_TextEditor.Options.DrawIndentationMarkers = true;
+         m_TextEditor.Options.EnableSyntaxHighlighting = true;
+         m_TextEditor.Options.HighlightCaretLine = true;
+         m_TextEditor.Options.HighlightMatchingBracket = true;
+         m_TextEditor.Options.IndentStyle = Mono.TextEditor.IndentStyle.Auto;
+         m_TextEditor.Options.ShowFoldMargin = true;
+         m_TextEditor.Options.ShowRuler = true;
+         m_TextEditor.Sensitive = false; // will be enabled on request
+         m_TextEditor.Text = "# input disabled ...";
 
-         textEditor.Document.LineChanged += (object sender, Mono.TextEditor.LineEventArgs e) =>
+         m_TextEditor.Document.LineChanged += (object sender, Mono.TextEditor.LineEventArgs e) =>
          {
-            if (!m_TextChangedTimer.Enabled)
-               m_TextChangedTimer.Enabled = true;
+            CompileScript();
          };
       }
 
-      void ContentChanged(object sender, System.Timers.ElapsedEventArgs e)
-      {
-         string script = textEditor.Text;
-         m_TextChangedTimer.Enabled = false;
+      Mono.TextEditor.TextEditor m_TextEditor;
+      Task m_CompileTask = null;
+      bool m_PendingRequest = false;
 
-         CompiledCode code = null;
-         try
+      void CompileScript()
+      {
+         // try start compiling current edited script
+         if (m_CompileTask == null || m_CompileTask.IsCompleted)
          {
-            code = ComponentManager.Compile(script);
-            Message("");
+            string script = m_TextEditor.Text;
+            m_CompileTask = Task.Factory.StartNew(() =>
+            {
+               CompiledCode code = null;
+               try
+               {
+                  code = ComponentManager.Compile(script);
+                  Message("");
+               }
+               catch (SyntaxErrorException ex)
+               {
+                  Message(string.Format("Line {0}/{1}: {2}", ex.Line, ex.Column, ex.Message));
+               }
+               catch (Exception ex)
+               {
+                  Message(ex.Message);
+               }
+               finally
+               {
+                  if (ScriptChangedHandler != null)
+                     ScriptChangedHandler(new ScriptChangedEventArgs(m_Reference, script, code));
+               }
+
+               // if any last requested frame exist, start loading of this frame at least
+               if (m_PendingRequest)
+               {
+                  m_PendingRequest = false;
+                  CompileScript();
+               }
+            });
          }
-         catch (SyntaxErrorException ex)
+         // because compiling is in progress, save last request
+         else
          {
-            Message(string.Format("Line {0}/{1}: {2}", ex.Line, ex.Column, ex.Message));
-         }
-         catch (Exception ex)
-         {
-            Message(ex.Message);
-         }
-         finally
-         {
-            if (ScriptChangedHandler != null)
-               ScriptChangedHandler(new ScriptChangedEventArgs(m_Reference, script, code));
+            m_PendingRequest = true;
          }
       }
 
@@ -120,13 +102,13 @@ namespace Docking.Components
          m_Reference = reference;
          if (script != null)
          {
-            textEditor.Sensitive = true;
-            textEditor.Text = script;
+            m_TextEditor.Sensitive = true;
+            m_TextEditor.Text = script;
          }
          else
          {
-            textEditor.Sensitive = false;
-            textEditor.Text = "# input disabled ...";
+            m_TextEditor.Sensitive = false;
+            m_TextEditor.Text = "# input disabled ...";
          }
       }
 
@@ -136,8 +118,8 @@ namespace Docking.Components
             return;
 
          m_Reference = null;
-         textEditor.Sensitive = false;
-         textEditor.Text = "# input disabled ...";
+         m_TextEditor.Sensitive = false;
+         m_TextEditor.Text = "# input disabled ...";
       }
 
       void IScript.SetMessage(object reference, string msg)
@@ -246,6 +228,3 @@ namespace Docking.Components
    #endregion
 
 }
-
-
-#endif
