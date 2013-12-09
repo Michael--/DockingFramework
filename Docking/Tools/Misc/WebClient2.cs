@@ -9,13 +9,13 @@ namespace Docking.Tools
 {
    public class WebClient2 : System.Net.WebClient
    {
-      public static string UserAgent = null;
+      public static string UserAgent              = null;
 
-      public static bool UseSystemProxySettings = false;
-
-      public static string ProxyServer = null;
-      public static int ProxyPort = 0;
-      public static string ProxyUsername = null;
+      public static bool   UseProxy               = false;
+      public static bool   UseSystemProxySettings = false;
+      public static string ProxyServer            = null;
+      public static int    ProxyPort              = 0;
+      public static string ProxyUsername          = null;
 
       // An array of random numbers used to encrypt the password for file storage (in the config).
       // TODO This is still not an ideal solution as everybody knowing these numbers can decrypt the password.
@@ -34,19 +34,22 @@ namespace Docking.Tools
          if (withUserAgent && UserAgent != null && UserAgent.Length > 0)
             Headers.Add(System.Net.HttpRequestHeader.UserAgent, UserAgent);
 
-         if (UseSystemProxySettings)
+         if(UseProxy)
          {
-            // TODO not yet implemented
-            // TODO retrieve proxy settings e.g. from Windows Control Panel
-            // TODO use that data here
-         }
-         else
-         {
-            if (ProxyServer != null && ProxyServer.Length > 0)
+            if (UseSystemProxySettings)
             {
-               Proxy = new System.Net.WebProxy(ProxyServer, ProxyPort);
-               if (ProxyUsername != null && ProxyUsername.Length > 0)
-                  Proxy.Credentials = new System.Net.NetworkCredential(ProxyUsername, ProxyPassword ?? "");
+               // TODO not yet implemented
+               // TODO retrieve proxy settings e.g. from Windows Control Panel
+               // TODO use that data here
+            }
+            else
+            {
+               if (ProxyServer != null && ProxyServer.Length > 0)
+               {
+                  Proxy = new System.Net.WebProxy(ProxyServer, ProxyPort);
+                  if (ProxyUsername != null && ProxyUsername.Length > 0)
+                     Proxy.Credentials = new System.Net.NetworkCredential(ProxyUsername, ProxyPassword ?? "");
+               }
             }
          }
       }
