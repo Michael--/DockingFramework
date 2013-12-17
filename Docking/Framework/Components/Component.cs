@@ -84,6 +84,12 @@ namespace Docking.Components
       /// </summary>
       public virtual void FocusChanged(object component) {}
 
+
+      /// <summary>
+      /// Called after any call for any component ( Loaded() and ComponentAdded() )
+      /// </summary>
+      public virtual void InitComplete() { }
+
       #endregion
 	}
 }

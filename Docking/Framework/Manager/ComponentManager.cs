@@ -1121,6 +1121,15 @@ namespace Docking.Components
             foreach (object o in components)
                 AddComponent(o);
 
+
+            foreach (DockItem item in DockFrame.GetItems())
+            {
+                if (item.Content is Component)
+                {
+                    (item.Content as Component).InitComplete();
+                }
+            }
+
             total.Stop();
             if (total.ElapsedMilliseconds > 100)
                 MessageWriteLine("ComponentsLoaded() total time = {0}s", total.Elapsed.TotalSeconds);
