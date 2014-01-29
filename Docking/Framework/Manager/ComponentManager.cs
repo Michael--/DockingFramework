@@ -1275,7 +1275,7 @@ namespace Docking.Components
 
             try
             {
-                // TODO: contruction of XmlSerializer(type) needs a lot of time totally unexpected, an optimization rergarding persistence could be necessary ...
+                // TODO: construction of XmlSerializer(type) needs a lot of time totally unexpected, an optimization rergarding persistence could be necessary ...
                 XmlSerializer serializer = new XmlSerializer(t);
                 return serializer.Deserialize(xmlReader);
             }

@@ -26,7 +26,7 @@ namespace Docking.Components
 
 		/// <summary>
 		/// The type of the instance to create. Needable to check existing instances and creating new instances.
-		/// The class must derived from 'DockContent' and support a contructor with 'IFrame' paramater
+		/// The class must derived from 'DockContent' and support a constructor with 'IFrame' paramater
 		/// Example:
 		///     public class MainPanel : DockContent
 		///     {
