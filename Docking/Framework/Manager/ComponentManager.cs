@@ -691,6 +691,21 @@ namespace Docking.Components
             return openers[0].Key.OpenFile(filename);
         }
 
+        public String OpenFolderDialog(string prompt)
+        {
+            String result = null;
+            FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.SelectFolder,
+                                                 "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
+                                                 "Select".Localized("Docking.Components"), ResponseType.Accept);
+            if (dlg.Run() == (int)ResponseType.Accept)
+            {
+                result = dlg.Filename;
+            }
+
+            dlg.Destroy();
+            return result;
+        }
+
         public String OpenFileDialog(string prompt)
         {
             return OpenFileDialog(prompt, new List<FileFilter>());
