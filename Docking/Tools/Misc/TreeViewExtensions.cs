@@ -210,5 +210,20 @@ namespace Docking.Tools
           foreach(TreePath p in selected)
              selection.UnselectPath(p);          
        }
+
+       // this function is the same as GetSelectedRows(), but returns List<TreeIter> instead of List<TreePath>
+       // or
+       // this function is the same as GetSelected(), but does not return just 1 TreeItem, but a list of them
+       public static List<TreeIter> GetSelectedRows_TreeIter(this TreeSelection selection)
+       {
+          List<TreeIter> result = new List<TreeIter>();
+          foreach(TreePath path in selection.GetSelectedRows())
+          {
+             TreeIter iter;
+             selection.TreeView.Model.GetIter(out iter, path);
+             result.Add(iter);
+          }
+          return result;
+       }
     }
 }
