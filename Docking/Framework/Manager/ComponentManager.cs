@@ -990,12 +990,12 @@ namespace Docking.Components
             if (File.Exists(filename))
             {
                 // the manager holds the persistence in memory all the time
-                LoadConfiguration(filename);
+                XmlDocument.Load(filename);
+                XmlConfiguration = XmlDocument.SelectSingleNode("DockingConfiguration");
 
                 // load XML node "layouts" in a memory file
                 // we should let the implementation of the Mono Develop Docking as it is
                 // to make it easier to update with newest version
-
                 XmlNode layouts = XmlConfiguration.SelectSingleNode("layouts");
                 if (layouts != null)
                 {
@@ -1042,21 +1042,11 @@ namespace Docking.Components
 
             Localization.WriteChangedResourceFiles();
 
-            SaveConfiguration(filename);
+            XmlDocument.Save(filename);
 
             ComponentsRemove();
         }
 
-        private void LoadConfiguration(String filename)
-        {
-            XmlDocument.Load(filename);
-            XmlConfiguration = XmlDocument.SelectSingleNode("DockingConfiguration");
-        }
-
-        private void SaveConfiguration(String filename)
-        {
-            XmlDocument.Save(filename);
-        }
         // contains the current component while load/save persistence
         // note: because of this load/save is not thread safe, load/save have to use threads carefully
         // TODO This is an ugly quickhack - get rid of this variable!
