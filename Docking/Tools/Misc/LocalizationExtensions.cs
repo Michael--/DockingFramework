@@ -62,8 +62,8 @@ namespace Docking.Tools
          }
          catch (FormatException)
          {
-             if (Localization.mDbgOut != null)
-                 Localization.mDbgOut.MessageWriteLine("FormatLocalized Exception: key='{0}' fmt='{1}'", key, Localized(key));
+             if (Localization.DbgOut != null)
+                 Localization.DbgOut.MessageWriteLine("FormatLocalized Exception: key='{0}' fmt='{1}'", key, Localized(key));
             return Localized(key);
          }
       }

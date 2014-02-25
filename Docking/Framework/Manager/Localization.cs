@@ -16,14 +16,15 @@ namespace Docking.Components
 {
    public partial class Localization
    {
-       public static IMessageWriteLine mDbgOut;
+       public static bool ComplainAboutMissingLocalizations;
+       public static IMessageWriteLine DbgOut;
 
        public Localization()
        {}
 
        public Localization(IMessageWriteLine dbgout)
        {
-          mDbgOut = dbgout;
+          DbgOut = dbgout;
        }
 
       public static void LocalizeMenu(Gtk.Container container)
@@ -172,8 +173,8 @@ namespace Docking.Components
             if (!lang.Nodes.ContainsKey(key))
                lang.Nodes.Add(key, n);
             else
-                if (Localization.mDbgOut != null)
-                    Localization.mDbgOut.MessageWriteLine("Localization: Key '{0}' already exists", key);
+                if (Localization.DbgOut != null)
+                    Localization.DbgOut.MessageWriteLine("Localization: Key '{0}' already exists", key);
          }
       }
 
@@ -332,8 +333,8 @@ namespace Docking.Components
          if (mDefaultLanguage != null && mDefaultLanguage.Nodes.TryGetValue(key2, out node) && (node.Value as String).Length > 0)
             return node.Value as string;
 
-         if (Localization.mDbgOut != null)
-             Localization.mDbgOut.MessageWriteLine("Missing localization key '{0}'", key2);
+         if(Localization.DbgOut!=null && ComplainAboutMissingLocalizations)
+             Localization.DbgOut.MessageWriteLine("Missing localization key '{0}'", key2);
 
          return key;
       }
