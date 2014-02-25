@@ -7,9 +7,10 @@ using System.Diagnostics;
 
 namespace Docking.Tools
 {
+    // [Obsolete("use Task.Factory.StartNew() instead", false)]
     public class WorkerThread : Object
     {
-        internal enum WorkState
+        public enum WorkState
         {
             /// The work item is in the queue.
             NotStarted,
@@ -27,7 +28,7 @@ namespace Docking.Tools
             Canceled,
         }
             
-        private WorkState State { get; set; }
+        public WorkState State { get; protected set; }
         JobInfo m_JobInformation;
             
         public bool CancellationPending
@@ -82,6 +83,8 @@ namespace Docking.Tools
                     
         internal void ThreadHull(object sender)
         {
+            State = WorkState.InProgress;
+
             if (DoWork != null)
             {
                 // the class Background worker use DoWork.BeginInvoke()
@@ -96,15 +99,15 @@ namespace Docking.Tools
                 
             if (RunWorkerCompleted != null)
                 RunWorkerCompleted(this, new RunWorkerCompletedEventArgs(theArgs.Result, null, theArgs.Cancel));
+
             m_JobInformation.Destroy();
         }
             
         public void RunWorkerAsync(ThreadPriority priority, object args)
-        {
+        {            
             theArgs = new DoWorkEventArgs(args);
-                
-            /// note: following next 2 code lines in opposite order can cause a "ThreadStateException" (Remember "Thread is dead ...")
-            mThread.Priority = priority;
+
+            mThread.Priority = priority; // priority must be set _before_ .Start(), otherwise of course the thread might be finished when that assignment is tried, and that will result in an exception
             mThread.Start(this);
         }
             
@@ -120,10 +123,10 @@ namespace Docking.Tools
             
         public bool IsBusy
         {
-            get {
-                if (State == WorkState.Completed || State == WorkState.Canceled)
-                    return false;
-                return true;
+            get
+            {
+               return State==WorkState.InProgress
+                   || State==WorkState.CancelationPending;
             }
         }
             
@@ -135,8 +138,7 @@ namespace Docking.Tools
             Thread.Sleep(20);
                 
             if (!this.mThread.Join(msec))
-                this.mThread.Abort();
-                
+                  this.mThread.Abort();
         }
             
         public void CancelAsync()
