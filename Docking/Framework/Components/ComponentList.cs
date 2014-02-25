@@ -126,22 +126,25 @@ namespace Docking.Components
 
       void HandleCursorChanged(object sender, EventArgs e)
       {
-         Gtk.TreeSelection selection = (sender as Gtk.TreeView).Selection;
-
-         Gtk.TreeModel model;
-         Gtk.TreeIter iter;
-
-         // THE ITER WILL POINT TO THE SELECTED ROW
-         if (selection.GetSelected(out model, out iter))
+         if (sender is Gtk.TreeView)
          {
-            /*
-                   String msg = String.Format ("Selected Value:[{0}] {1} {2}",
-                       model.GetValue(iter, InstanceCountIndex),
-                       model.GetValue(iter, TypenameIndex).ToString(),
-                       model.GetValue(iter, DescriptionIndex).ToString());
-                   Console.WriteLine(msg);
-                   ComponentManager.MessageWriteLine(msg);
-               */
+            Gtk.TreeSelection selection = (sender as Gtk.TreeView).Selection;
+
+            Gtk.TreeModel model;
+            Gtk.TreeIter iter;
+
+            // THE ITER WILL POINT TO THE SELECTED ROW
+            if (selection.GetSelected(out model, out iter))
+            {
+               /*
+                      String msg = String.Format ("Selected Value:[{0}] {1} {2}",
+                          model.GetValue(iter, InstanceCountIndex),
+                          model.GetValue(iter, TypenameIndex).ToString(),
+                          model.GetValue(iter, DescriptionIndex).ToString());
+                      Console.WriteLine(msg);
+                      ComponentManager.MessageWriteLine(msg);
+                  */
+            }
          }
       }
 

@@ -435,6 +435,9 @@ namespace Docking.Components
 
             foreach (ComponentFactoryInformation cfi in ComponentFinder.ComponentInfos)
             {
+            if (cfi.MenuPath == null)
+               continue;
+
                 // the last name is the menu name, all others are menu/sub-menu names
                 String[] m = cfi.MenuPath.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -1091,6 +1094,28 @@ namespace Docking.Components
             System.Diagnostics.Stopwatch total = new System.Diagnostics.Stopwatch();
             total.Start();
 
+         // check all components for auto open, create any component not yet existing
+         var mustExists = ComponentFinder.GetMustExistList(this);
+         foreach (var cfi in mustExists)
+         {
+            bool exist = false;
+            foreach (var item in DockFrame.GetItems())
+            {
+               if (item.Content != null && item.Content.GetType() == cfi.ComponentType)
+               {
+                  exist = true;
+                  break;
+               }
+            }
+            if (!exist)
+            {
+               DockItem item = CreateComponent(cfi, false);
+               if (cfi.HideOnCreate && item != null)
+                  item.Visible = false;
+            }
+         }
+
+
             // tell all components about load state
             // time for late initialization and/or loading persistence
             foreach (DockItem item in DockFrame.GetItems())
@@ -1592,7 +1617,11 @@ namespace Docking.Components
         {
             TaggedLocalizedImageMenuItem menuitem = sender as TaggedLocalizedImageMenuItem;
             ComponentFactoryInformation cfi = menuitem.Tag as ComponentFactoryInformation;
+         CreateComponent(cfi, true);
+      }
 
+      private DockItem CreateComponent(ComponentFactoryInformation cfi, bool initCalls)
+      {
             String name;
 
             if (cfi.IsSingleInstance)
@@ -1606,7 +1635,7 @@ namespace Docking.Components
                     // make object visible, leave already visible single instance object as it is
                     if (!di.Visible)
                         di.Visible = true;
-                    return;
+               return di;
                 }
                 // no instance exist, need to create a new instance
             }
@@ -1631,7 +1660,7 @@ namespace Docking.Components
                     if (!it.Visible)
                     {
                         it.Visible = true;
-                        return;
+                  return it;
                     }
                 }
 
@@ -1651,7 +1680,7 @@ namespace Docking.Components
             if (item == null)
             {
                 MessageWriteLine("ERROR: cannot instantiate component " + name);
-                return;
+            return null;
             }
             item.Behavior = DockItemBehavior.Normal;
             if (!cfi.IsSingleInstance)
@@ -1664,6 +1693,8 @@ namespace Docking.Components
             item.Visible = true;
 
             // call initialization of new created component
+         if (initCalls)
+         {
             currentLoadSaveItem = item;
             if (item.Content is Component)
                 (item.Content as Component).Loaded(item);
@@ -1678,6 +1709,8 @@ namespace Docking.Components
             if (item.Content is IScript)
                 mScriptInterfaces.Add(item.Content as IScript);
         }
+         return item;
+      }
 
         private void HandleDockItemRemoved(DockItem item)
         {
@@ -2166,11 +2199,13 @@ namespace Docking.Components
 
     public class TaggedLocalizedMenuItem : MenuItem, ILocalizableWidget
     {
-        public TaggedLocalizedMenuItem(IntPtr raw) : base(raw)
+      public TaggedLocalizedMenuItem(IntPtr raw)
+         : base(raw)
         {
         }
 
-        public TaggedLocalizedMenuItem(String name) : base(name)
+      public TaggedLocalizedMenuItem(String name)
+         : base(name)
         {
         }
 
@@ -2189,11 +2224,13 @@ namespace Docking.Components
 
     public class TaggedLocalizedImageMenuItem : ImageMenuItem, ILocalizableWidget
     {
-        public TaggedLocalizedImageMenuItem(IntPtr raw) : base(raw)
+      public TaggedLocalizedImageMenuItem(IntPtr raw)
+         : base(raw)
         {
         }
 
-        public TaggedLocalizedImageMenuItem(String name) : base(name)
+      public TaggedLocalizedImageMenuItem(String name)
+         : base(name)
         {
         }
 
@@ -2212,12 +2249,14 @@ namespace Docking.Components
 
     public class TaggedLocalizedCheckedMenuItem : CheckMenuItem, ILocalizableWidget
     {
-        public TaggedLocalizedCheckedMenuItem(IntPtr raw) : base(raw)
+      public TaggedLocalizedCheckedMenuItem(IntPtr raw)
+         : base(raw)
         {
             IgnoreLocalization = false;
         }
 
-        public TaggedLocalizedCheckedMenuItem(String name) : base(name)
+      public TaggedLocalizedCheckedMenuItem(String name)
+         : base(name)
         {
             IgnoreLocalization = false;
         }
