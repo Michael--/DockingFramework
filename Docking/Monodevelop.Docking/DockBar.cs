@@ -165,12 +165,21 @@ namespace Docking
       
       internal void UpdateTitle (DockItem item)
       {
-         foreach (Widget w in box.Children) {
-            DockBarItem it = w as DockBarItem;
-            if (it != null && it.DockItem == item) {
-               it.UpdateTab ();
-               break;
+         try
+         {
+            foreach (Widget w in box.Children)
+            {
+               DockBarItem it = w as DockBarItem;
+               if (it != null && it.DockItem == item)
+               {
+                  it.UpdateTab();
+                  break;
+               }
             }
+         }
+         catch (GLib.MissingIntPtrCtorException)
+         {
+            Console.WriteLine("DockBar.UpdateTitle() catch GLib.MissingIntPtrCtorException!");
          }
       }
       
