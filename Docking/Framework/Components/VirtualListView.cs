@@ -313,7 +313,7 @@ namespace Docking.Components
                if (c == columns.Length - 1)
                   rect.Width = Math.Max(rect.Width, exposeRect.Right - rect.Left + 1);
                String content = GetContentDelegate(row, columnIndex);
-               LineLayout.SetMarkup(content);
+               LineLayout.SetText(content);
                win.DrawRectangle(backgound, true, rect);
                dx += 2;
                win.DrawLayout(text, dx, dy, LineLayout);
