@@ -958,14 +958,10 @@ namespace Docking.Components
                 switch((DragDropDataType)args.Info)
                 {
                     case DragDropDataType.Text:
-                  // we currently have no usecase for this
-                        break;
                     case DragDropDataType.URL:
                         {
-                            // untested:
-                            // string url = Encoding.UTF8.GetString(args.SelectionData.Data).Trim(); 
-                            // success = OpenURL(url);
-                            success = false;
+                            string url = Encoding.UTF8.GetString(args.SelectionData.Data).Trim(); 
+                            success = OpenURL(url);
                             break;
                         }
                     case DragDropDataType.URLList:
