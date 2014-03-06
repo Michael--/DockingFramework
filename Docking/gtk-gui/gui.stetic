@@ -153,7 +153,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="Docking.Components.VirtualListView" design-size="300 300">
+  <widget class="Gtk.Bin" id="Docking.Widgets.VirtualListView" design-size="300 300">
     <property name="MemberName" />
     <property name="Visible">False</property>
     <child>

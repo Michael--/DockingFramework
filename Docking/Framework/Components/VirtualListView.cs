@@ -6,7 +6,7 @@ using Docking.Components;
 using Docking;
 using Docking.Helper;
 
-namespace Docking.Components
+namespace Docking.Widgets
 {
    [System.ComponentModel.ToolboxItem(true)]
    public partial class VirtualListView : Component, ILocalizableWidget
