@@ -8,7 +8,7 @@ namespace Docking.Components
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView treeview1;
 		private global::Gtk.HBox hbox4;
-		private global::Docking.Components.ButtonLocalized buttonCancel;
+		private global::Docking.Widgets.ButtonLocalized buttonCancel;
 
 		protected virtual void Build ()
 		{
@@ -37,7 +37,7 @@ namespace Docking.Components
 			this.hbox4.Name = "hbox4";
 			this.hbox4.Spacing = 6;
 			// Container child hbox4.Gtk.Box+BoxChild
-			this.buttonCancel = new global::Docking.Components.ButtonLocalized ();
+			this.buttonCancel = new global::Docking.Widgets.ButtonLocalized ();
 			this.buttonCancel.Sensitive = false;
 			this.buttonCancel.CanFocus = true;
 			this.buttonCancel.Name = "buttonCancel";

@@ -106,7 +106,7 @@
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>
-              <widget class="Docking.Components.ButtonLocalized" id="buttonCancel">
+              <widget class="Docking.Widgets.ButtonLocalized" id="buttonCancel">
                 <property name="MemberName" />
                 <property name="Sensitive">False</property>
                 <property name="CanFocus">True</property>
@@ -476,7 +476,7 @@
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>
-              <widget class="Docking.Components.ButtonLocalized" id="button1">
+              <widget class="Docking.Widgets.ButtonLocalized" id="button1">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
@@ -503,7 +503,7 @@
               </packing>
             </child>
             <child>
-              <widget class="Docking.Components.ButtonLocalized" id="buttonTranslate">
+              <widget class="Docking.Widgets.ButtonLocalized" id="buttonTranslate">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
@@ -518,7 +518,7 @@
               </packing>
             </child>
             <child>
-              <widget class="Docking.Components.ButtonLocalized" id="buttonTranslateAll">
+              <widget class="Docking.Widgets.ButtonLocalized" id="buttonTranslateAll">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>

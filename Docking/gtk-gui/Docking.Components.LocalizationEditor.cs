@@ -8,10 +8,10 @@ namespace Docking.Components
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView treeview1;
 		private global::Gtk.HBox hbox1;
-		private global::Docking.Components.ButtonLocalized button1;
+		private global::Docking.Widgets.ButtonLocalized button1;
 		private global::Gtk.Label labelChanges;
-		private global::Docking.Components.ButtonLocalized buttonTranslate;
-		private global::Docking.Components.ButtonLocalized buttonTranslateAll;
+		private global::Docking.Widgets.ButtonLocalized buttonTranslate;
+		private global::Docking.Widgets.ButtonLocalized buttonTranslateAll;
 
 		protected virtual void Build ()
 		{
@@ -40,7 +40,7 @@ namespace Docking.Components
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.button1 = new global::Docking.Components.ButtonLocalized ();
+			this.button1 = new global::Docking.Widgets.ButtonLocalized ();
 			this.button1.CanFocus = true;
 			this.button1.Name = "button1";
 			this.button1.UseUnderline = true;
@@ -60,7 +60,7 @@ namespace Docking.Components
 			w4.Expand = false;
 			w4.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.buttonTranslate = new global::Docking.Components.ButtonLocalized ();
+			this.buttonTranslate = new global::Docking.Widgets.ButtonLocalized ();
 			this.buttonTranslate.CanFocus = true;
 			this.buttonTranslate.Name = "buttonTranslate";
 			this.buttonTranslate.UseUnderline = true;
@@ -71,7 +71,7 @@ namespace Docking.Components
 			w5.Expand = false;
 			w5.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.buttonTranslateAll = new global::Docking.Components.ButtonLocalized ();
+			this.buttonTranslateAll = new global::Docking.Widgets.ButtonLocalized ();
 			this.buttonTranslateAll.CanFocus = true;
 			this.buttonTranslateAll.Name = "buttonTranslateAll";
 			this.buttonTranslateAll.UseUnderline = true;

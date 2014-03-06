@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Docking.Components;
+using Docking.Widgets;
 using Docking.Tools;
 using Gtk;
 

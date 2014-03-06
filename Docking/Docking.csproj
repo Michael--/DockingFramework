@@ -115,7 +115,7 @@
     <Compile Include="Framework\Interfaces\IPersistency.cs" />
     <Compile Include="Framework\Interfaces\IScript.cs" />
     <Compile Include="Framework\Manager\Localization.cs" />
-    <Compile Include="Framework\Manager\LocalizedWidgets.cs" />
+    <Compile Include="Framework\Widgets\LocalizedWidgets.cs" />
     <Compile Include="Framework\Widgets\Sheet.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="gtk-gui\Docking.Components.Activities.cs" />

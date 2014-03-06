@@ -1,11 +1,13 @@
 using System;
-using Gtk;
-using Docking.Components;
-using Docking.Tools;
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
+using Docking.Components;
+using Docking.Tools;
+using Docking.Widgets;
+using Gtk;
+
 
 namespace Docking.Components
 {

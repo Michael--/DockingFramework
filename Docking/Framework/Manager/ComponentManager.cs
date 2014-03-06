@@ -16,6 +16,7 @@ using IronPython.Hosting;
 using IronPython.Runtime;
 using Docking.Helper;
 using Docking.Tools;
+using Docking.Widgets;
 using Docking.Framework;
 using Gtk;
 
