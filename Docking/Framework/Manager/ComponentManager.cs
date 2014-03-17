@@ -33,10 +33,16 @@ namespace Docking.Components
         {
             get { return Thread.CurrentThread.ManagedThreadId == mMainThreadID; }
         }
-        // make sure that you construct this class from the main thread!
+
+        public readonly Stopwatch Clock; // A global clock. Useful for many purposes. This way you don't need to create own clocks to just measure time intervals.
+
+         // make sure that you construct this class from the main thread!
         public ComponentManager(WindowType wt, string pythonBaseVariableName = "cm")
          : base(wt)
         {
+            Clock = new Stopwatch();
+            Clock.Start();
+
             mMainThreadID = Thread.CurrentThread.ManagedThreadId; // make sure that you construct this class from the main thread!
 
             Localization = new Components.Localization(this);
