@@ -211,7 +211,7 @@ namespace Docking.Components
 
          foreach (ComponentFactoryInformation info in mComponents)
          {
-            if (info.InstanceMustExist)
+            if (info.AutoCreate)
                ac.Add(info);
          }
          return ac;
@@ -244,28 +244,16 @@ namespace Docking.Components
          return widget;
       }
 
-      public Type FactoryType { get { return ComponentFactory.GetType(); } }
+      public Type   FactoryType   { get { return ComponentFactory.GetType(); } }
+      public Type   ComponentType { get { return ComponentFactory.TypeOfInstance; } }
+      public String Comment       { get { return ComponentFactory.Comment; } }
+      public String MenuPath      { get { return ComponentFactory.MenuPath; } }
 
-      public Type ComponentType { get { return ComponentFactory.TypeOfInstance; } }
-
-      public String Comment { get { return ComponentFactory.Comment; } }
-
-      public String MenuPath { get { return ComponentFactory.MenuPath; } }
-
-      public bool IsSingleInstance { get { return (ComponentFactory.Options & ComponentFactory.Mode.MultipleInstance) != ComponentFactory.Mode.MultipleInstance; } }
-
-      public bool InstanceMustExist { get { return (ComponentFactory.Options & ComponentFactory.Mode.AutoCreate) == ComponentFactory.Mode.AutoCreate; } }
-
-      public bool HideOnCreate { get { return (ComponentFactory.Options & ComponentFactory.Mode.Hidden) == ComponentFactory.Mode.Hidden; } }
-
-      public bool CloseOnHide
-      {
-         get
-         {
-            return (ComponentFactory.Options & ComponentFactory.Mode.CloseOnHide) == ComponentFactory.Mode.CloseOnHide
-                || !IsSingleInstance;
-         }
-      }
+      public bool   MultiInstance { get { return (ComponentFactory.Options & ComponentFactory.Mode.MultiInstance)!=0; } }
+      public bool   AutoCreate    { get { return (ComponentFactory.Options & ComponentFactory.Mode.AutoCreate   )!=0; } }
+      public bool   HideOnCreate  { get { return (ComponentFactory.Options & ComponentFactory.Mode.HideOnCreate )!=0; } }
+      public bool   CloseOnHide   { get { return (ComponentFactory.Options & ComponentFactory.Mode.CloseOnHide  )!=0
+                                              || MultiInstance; /* TODO remove this extra condition! it is utterly confusing! */ } }
 
       public Gdk.Pixbuf Icon { get { return ComponentFactory.Icon; } }
 

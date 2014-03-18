@@ -58,7 +58,7 @@ namespace Docking.Components
          /// For some components, it makes sense to allow multi-instance mode,
          /// for example, multiple log file viewer instances can be used to show different parts of one log.
          /// </summary>
-         MultipleInstance = 0x01,
+         MultiInstance = 0x01,
 
          /// <summary>
          /// Normally, new component instances will only be created when the user instantiates them.
@@ -73,7 +73,7 @@ namespace Docking.Components
          /// Normally, a component is visible by default.
          /// This flag exists to allow the creation of hidden "background worker" components (together with "AutoCreate").
          /// </summary>
-         Hidden = 0x04,
+         HideOnCreate = 0x04,
 
          /// <summary>
          /// Close on hide option.
