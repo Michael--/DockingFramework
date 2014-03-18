@@ -1625,12 +1625,12 @@ namespace Docking.Components
 
       private DockItem CreateComponent(ComponentFactoryInformation cfi, bool initCalls)
       {
-         String name;
+         String name = cfi.ComponentType.ToString();
 
+         // Find already existing - potentially invisible - instances for activation.
+         // We'll only create a new instance if no such is found.
          if(!cfi.MultiInstance)
          {
-            // try to find an already existing instance
-            name = cfi.ComponentType.ToString();
             DockItem di = DockFrame.GetItem(name);
             if(di!=null)
             {
@@ -1638,48 +1638,37 @@ namespace Docking.Components
                   di.Visible = true;
                return di;
             }
-            // no instance exists, need to create a new one
          }
          else
          {
-            // behaviour of multiple instances is different:
-            // search for invisible instances. if we find one, we make it visible.
-            // only if we do not find such, we create a new one
-            name = cfi.ComponentType.ToString();
-            DockItem[] some = DockFrame.GetItemsContainingSubstring(name);
-            foreach(DockItem it in some)
+            DockItem[] dis = DockFrame.GetItemsContainingSubstring(name); // TODO make a better, more precise match, see TODO there
+            foreach(DockItem di in dis)
             {
-               // make object visible if possible
-               // ignore already visible items
-               if(!it.Visible)
+               if(!di.Visible)
                {
-                  it.Visible = true;
-                  return it;
+                  di.Visible = true;
+                  return di;
                }
             }
 
-            // no item found which can be visible again
-            // need to create a new instance with a unique name
-            int instance = 1;
+            // adjust the name string so it becomes a new, unique instance we'll create below
+            int instance = 0;
             do
             {
-               name = cfi.ComponentType.ToString() + "-" + instance.ToString();
                instance++;
+               name = cfi.ComponentType.ToString() + "-" + instance.ToString();               
             }
-            while(DockFrame.GetItem(name) != null);
+            while(DockFrame.GetItem(name)!=null);
          }
 
-         // add new instance of desired component
+         // when we get here, a new instance of the desired component needs to be created
+
          DockItem item = CreateItem(cfi, name);
-         if(item == null)
+         if(item==null)
          {
             MessageWriteLine("ERROR: cannot instantiate component " + name);
             return null;
          }
-
-         item.Behavior = DockItemBehavior.Normal;
-         if(cfi.CloseOnHide)
-            item.Behavior |= DockItemBehavior.CloseOnHide;
 
          Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
 
@@ -1766,9 +1755,8 @@ namespace Docking.Components
       /// </summary>
       private DockItem CreateItem(ComponentFactoryInformation cfi, String name)
       {
-         // add new instance of desired component
          Widget w = cfi.CreateInstance(this);
-         if(w == null)
+         if(w==null)
             return null;
 
          DockItem item = DockFrame.AddItem(name);
@@ -1782,6 +1770,7 @@ namespace Docking.Components
          item.DefaultVisible = false;
          item.VisibleChanged += HandleVisibleChanged;
 
+         item.Behavior = DockItemBehavior.Normal;
          if(cfi.CloseOnHide)
             item.Behavior |= DockItemBehavior.CloseOnHide;
 
