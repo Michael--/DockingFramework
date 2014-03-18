@@ -526,8 +526,13 @@ namespace Docking
 			return null;
 		}
 
-        // get all items contains search string (e.g. a part of the ID)
-        public DockItem[] GetItemsContainsId (string id)
+        // get all items containing a given search string (e.g. a part of the ID)
+        //
+        // TODO This is quite unsafe. We need a better, more precise item finding, for example by explicitly leaving away namespaces
+        // and then checking the string prefix. For example:
+        // Some.Cool.Namespace.MyItemName-1
+        // should be matched by MyItemName
+        public DockItem[] GetItemsContainingSubstring(string id)
         {
             List<DockItem> result = new List<DockItem>();
             foreach (DockItem it in container.Items) {

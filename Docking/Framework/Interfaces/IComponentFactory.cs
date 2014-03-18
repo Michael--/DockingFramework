@@ -84,7 +84,7 @@ namespace Docking.Components
          /// Hidden windows are only hidden, content existing and persistent.
          /// 
          /// TODO This concept needs refacturing. The different default behaviours for "Close"/"Hide" of "single instance"
-         /// vs "multiple instance" are very confusing. Additionally, on "Close", a persistency saving should occur, which is currently missing.
+         /// vs "multiple instance" are very confusing. On "Close", a persistency saving should occur.
          /// </summary>
          CloseOnHide = 0x08
       }

@@ -1629,33 +1629,24 @@ namespace Docking.Components
 
          if(!cfi.MultiInstance)
          {
-            // show existing components instance
-            // do nothing if exist and already visible
+            // try to find an already existing instance
             name = cfi.ComponentType.ToString();
             DockItem di = DockFrame.GetItem(name);
-            if(di != null)
+            if(di!=null)
             {
-               // make object visible, leave already visible single instance object as it is
                if(!di.Visible)
                   di.Visible = true;
                return di;
             }
-            // no instance exist, need to create a new instance
+            // no instance exists, need to create a new one
          }
          else
          {
-            // behaviour of multiple instance is different
-            // because we could create multilple object, it is
-            // necessary to create a new one despite another object exist
-            // so far so good, but ...
-            // also a multiple instance object could be hidden in current layout
-            // and exist in another layout as a visible object
-            // as a solution we search for hidden multiple objects of requested type
-            // and show it in current layout
-            // create only a new instance if only visible instances found
-
+            // behaviour of multiple instances is different:
+            // search for invisible instances. if we find one, we make it visible.
+            // only if we do not find such, we create a new one
             name = cfi.ComponentType.ToString();
-            DockItem[] some = DockFrame.GetItemsContainsId(name);
+            DockItem[] some = DockFrame.GetItemsContainingSubstring(name);
             foreach(DockItem it in some)
             {
                // make object visible if possible
