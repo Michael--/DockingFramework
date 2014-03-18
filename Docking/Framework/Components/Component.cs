@@ -40,7 +40,7 @@ namespace Docking.Components
 
       /// <summary>
       /// Will get called to save the persistency (if any).
-      /// Main usecase is immediately before application shutdown.
+      /// Will be called when a component is closed by the user and on application shutdown.
       /// </summary>
       public virtual void Save()
       {
@@ -54,8 +54,8 @@ namespace Docking.Components
       // Return true if your object is fine with being closed.
       // Return false if you want to prevent the closing from happening.
       // This for example can happen if your component is an editor, and it knows that the currently edited document is unsaved yet,
-      // and it asks the user with a MessageBox "do you want to save document XYZ?", offering a "Cancel" button,
-      // and the user presses "Cancel" then to continue working.
+      // and it asks the user with a MessageBox "Do you want to save document XYZ?", offering a "Cancel" button,
+      // and the user presses "Cancel". Then your component wants to simply live on and cancel the closing.
       public virtual bool Closed() { return true; }
 
       #endregion

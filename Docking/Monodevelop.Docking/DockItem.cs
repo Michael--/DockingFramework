@@ -444,12 +444,16 @@ namespace Docking
             // because the Closed() already will cleanup/empty internally all stuff,
             // so Save() would save that empty, cleaned up state which is not desired
             (this.Content as Component).Save();
+
             if(!((this.Content as Component).Closed()))
                return false; // closing has been canceled!
          }
+
          Visible = false;
+
          if((Behavior & DockItemBehavior.CloseOnHide)!=0)
-            frame.RemoveItemIfHiddenInAnyLayout(this);
+            frame.RemoveItemIfInvisibleInAllLayouts(this);
+
          return true;
       }
 

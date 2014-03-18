@@ -1771,7 +1771,8 @@ namespace Docking.Components
          item.VisibleChanged += HandleVisibleChanged;
 
          item.Behavior = DockItemBehavior.Normal;
-         if(cfi.CloseOnHide)
+         /*if(cfi.CloseOnHide)*/ // No "if CloseOnHide" here anymore. "CloseOnHide" is now the implicit, implemented default UNLESS the user has explicitly set "PreventClosing" (see there).
+         if(!cfi.PreventClosing)
             item.Behavior |= DockItemBehavior.CloseOnHide;
 
          if(item.Content is IMessage)

@@ -481,32 +481,32 @@ namespace Docking
 			return newitem;
 		}
 
-        public delegate void DockItemRemovedEvent (DockItem it);
+        public delegate void DockItemRemovedEvent(DockItem it);
         public event DockItemRemovedEvent DockItemRemoved;
-		
-		public void RemoveItemIfHiddenInAnyLayout (DockItem it)
-		{
-            // perform remove item only if hidden in any layout else return
-            // therefore search item in any layout and check if visible anywhere
-            // if so return nothing to do
-            foreach (DockGroup grp in layouts.Values) 
-            {
-                DockGroupItem dgi = grp.FindDockGroupItem(it.Id);
-                if (dgi != null && dgi.Visible)
-                    return;
-            }
 
-            // item is unused anywhere, remove it complete from memory
+        public void RemoveItemIfInvisibleInAllLayouts(DockItem it)
+        {
+           // perform remove item only if hidden in any layout else return
+           // therefore search item in any layout and check if visible anywhere
+           // if so return nothing to do
+           foreach(DockGroup grp in layouts.Values)
+           {
+              DockGroupItem dgi = grp.FindDockGroupItem(it.Id);
+              if(dgi!=null && dgi.Visible)
+                 return;
+           }
 
-			if (container.Layout != null)
-				container.Layout.RemoveItemRec (it);
-			foreach (DockGroup grp in layouts.Values)
-				grp.RemoveItemRec (it);
-			container.Items.Remove (it);
-                       
-            if (DockItemRemoved != null)
-                DockItemRemoved(it);
-		}
+           // item is unused anywhere, remove it completely from memory
+
+           if(container.Layout!=null)
+              container.Layout.RemoveItemRec(it);
+           foreach(DockGroup grp in layouts.Values)
+              grp.RemoveItemRec(it);
+           container.Items.Remove(it);
+
+           if(DockItemRemoved!=null)
+              DockItemRemoved(it);
+        }
 
        
         public delegate DockItem CreateItemDelegate(string id);

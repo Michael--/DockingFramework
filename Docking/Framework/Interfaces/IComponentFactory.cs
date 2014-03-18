@@ -75,18 +75,14 @@ namespace Docking.Components
          /// </summary>
          HideOnCreate = 0x04,
 
+         // Obsolete. Do not re-use this bit. (For the curious: it used to be "CloseOnHide" in the past.)
+         Reserved0x08 = 0x08,
+
          /// <summary>
-         /// Close on hide option.
-         /// Components with MultipleInstance option are automatically
-         /// closed on hide, SingleInstance components only optionally
-         /// with this option.
-         /// Closed windows are removed from memory.
-         /// Hidden windows are only hidden, content existing and persistent.
-         /// 
-         /// TODO This concept needs refacturing. The different default behaviours for "Close"/"Hide" of "single instance"
-         /// vs "multiple instance" are very confusing. On "Close", a persistency saving should occur.
+         /// When this flag is set, each try to "close" the component just hides it. It stays alive hidden, invisible.
+         /// This is necessary for infrastructure windows like the message logger etc.
          /// </summary>
-         CloseOnHide = 0x08
+         PreventClosing = 0x10
       }
    }
 }

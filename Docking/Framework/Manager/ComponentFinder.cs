@@ -244,16 +244,15 @@ namespace Docking.Components
          return widget;
       }
 
-      public Type   FactoryType   { get { return ComponentFactory.GetType(); } }
-      public Type   ComponentType { get { return ComponentFactory.TypeOfInstance; } }
-      public String Comment       { get { return ComponentFactory.Comment; } }
-      public String MenuPath      { get { return ComponentFactory.MenuPath; } }
+      public Type   FactoryType    { get { return ComponentFactory.GetType(); } }
+      public Type   ComponentType  { get { return ComponentFactory.TypeOfInstance; } }
+      public String Comment        { get { return ComponentFactory.Comment; } }
+      public String MenuPath       { get { return ComponentFactory.MenuPath; } }
 
-      public bool   MultiInstance { get { return (ComponentFactory.Options & ComponentFactory.Mode.MultiInstance)!=0; } }
-      public bool   AutoCreate    { get { return (ComponentFactory.Options & ComponentFactory.Mode.AutoCreate   )!=0; } }
-      public bool   HideOnCreate  { get { return (ComponentFactory.Options & ComponentFactory.Mode.HideOnCreate )!=0; } }
-      public bool   CloseOnHide   { get { return (ComponentFactory.Options & ComponentFactory.Mode.CloseOnHide  )!=0
-                                              || MultiInstance; /* TODO remove this extra condition! it is utterly confusing! */ } }
+      public bool   MultiInstance  { get { return (ComponentFactory.Options & ComponentFactory.Mode.MultiInstance )!=0; } }
+      public bool   AutoCreate     { get { return (ComponentFactory.Options & ComponentFactory.Mode.AutoCreate    )!=0; } }
+      public bool   HideOnCreate   { get { return (ComponentFactory.Options & ComponentFactory.Mode.HideOnCreate  )!=0; } }
+      public bool   PreventClosing { get { return (ComponentFactory.Options & ComponentFactory.Mode.PreventClosing)!=0; } }
 
       public Gdk.Pixbuf Icon { get { return ComponentFactory.Icon; } }
 
