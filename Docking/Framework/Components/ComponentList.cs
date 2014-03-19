@@ -109,8 +109,10 @@ namespace Docking.Components
       void ChangeInstanceCount(object item, int dcount)
       {
          Gtk.TreeIter iter;
-         if (item == null || !treeview1.Model.GetIterFirst(out iter))
+
+         if (item == null || treeview1==null || treeview1.Model==null || !treeview1.Model.GetIterFirst(out iter))
             return;
+
          do
          {
             ComponentFactoryInformation cfi = treeview1.Model.GetValue(iter, CFIIndex) as ComponentFactoryInformation;
