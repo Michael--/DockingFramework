@@ -131,14 +131,14 @@ namespace Docking.Components
             Read(f);
 
          mDefaultLanguageCode = mDefaultLanguageName = "en-US";
-         Languages.TryGetValue(mDefaultLanguageCode, out mDefaultLanguage); // last alternative
+         Languages.TryGetValue(mDefaultLanguageCode, out mDefaultLanguage);
          if (mDefaultLanguage != null)
          {
             Node node;
             if (mDefaultLanguage.Nodes.TryGetValue("LANGUAGE_NAME", out node))
                mDefaultLanguageName = node.Value as string;
          }
-         SetLanguage("en-US"); // could be switched by user
+         SetLanguage(mDefaultLanguageCode);
       }
 
       void Read(string filename)
