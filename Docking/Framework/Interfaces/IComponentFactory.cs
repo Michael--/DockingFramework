@@ -6,6 +6,11 @@ namespace Docking.Components
    /// The framework will search for this interface inside DLLs.
    /// When found, it can instantiate it and this way construct addin components at runtime.
    /// Just some abstract methods must be overwritten to define a new AddIn.
+   /// 
+   /// This interface is empty for 2 reasons:
+   /// 1. function SearchForTypes(), which searches for it, is faster for interfaces than for abstract classes (TODO really? measure the time in experiments)
+   /// 2. In future, totally different child classes might inherit from this, not having anything in common except for the name.
+   ///    We want to be able to totally refacture this and still keep the name IComponentFactory to support old DLLs.
    /// </summary>
    public interface IComponentFactory {}
 

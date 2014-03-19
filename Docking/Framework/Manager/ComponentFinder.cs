@@ -95,26 +95,31 @@ namespace Docking.Components
 
       void SearchComponents()
       {
-         // find all real classes which implement interface 'IComponentFactory'
-         // and create an inctance of such
+         // find all non-abstract classes which inherit from interface 'IComponentFactory'
          Type[] factories = SearchForTypes(typeof(IComponentFactory));
 
          foreach (Type t in factories)
          {
             try
             {
-               ComponentFactory cf = (ComponentFactory)Activator.CreateInstance(t);
+               ComponentFactory cf = Activator.CreateInstance(t) as ComponentFactory;
+               if(cf==null)
+                  continue;
                mComponents.Add(new ComponentFactoryInformation(cf, true));
             }
-            catch (InvalidCastException)
+            catch(InvalidCastException /*e*/)
             {
                // Console.WriteLine("{0}", e.ToString());
             }
-            catch (MissingMethodException)
+            catch(MissingMethodException /*e*/)
             {
                // Console.WriteLine("{0}", e.ToString());
             }
-            catch (ReflectionTypeLoadException)
+            catch(ReflectionTypeLoadException /*e*/)
+            {
+               // Console.WriteLine("{0}", e.ToString());
+            }
+            catch(Exception /*e*/)
             {
                // Console.WriteLine("{0}", e.ToString());
             }
