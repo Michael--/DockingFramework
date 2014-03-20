@@ -133,7 +133,7 @@ namespace Docking.Components
          /// </summary>
          public void quit()
          {
-            ComponentManager.quit();
+            ComponentManager.Quit(true);
          }
       }
 

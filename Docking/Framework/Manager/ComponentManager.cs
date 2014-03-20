@@ -20,6 +20,7 @@ using Docking.Widgets;
 using Docking.Framework;
 using Gtk;
 
+
 namespace Docking.Components
 {
    public class ComponentManager : Gtk.Window, IPersistency, IMessageWriteLine, ICut, ICopy, IPaste
@@ -36,14 +37,18 @@ namespace Docking.Components
 
       public readonly Stopwatch Clock; // A global clock. Useful for many purposes. This way you don't need to create own clocks to just measure time intervals.
 
+      public string[] CommandLineArguments;
+
       // make sure that you construct this class from the main thread!
-      public ComponentManager(WindowType wt, string pythonBaseVariableName = "cm")
+      public ComponentManager(string[] args, WindowType wt, string pythonBaseVariableName = "cm")
       : base(wt)
       {
          Clock = new Stopwatch();
          Clock.Start();
 
          mMainThreadID = Thread.CurrentThread.ManagedThreadId; // make sure that you construct this class from the main thread!
+
+         CommandLineArguments = args;
 
          Localization = new Components.Localization(this);
          Localization.SearchForResources(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Languages", "*.resx"));
@@ -347,7 +352,7 @@ namespace Docking.Components
 
       protected void OnQuitActionActivated(object sender, EventArgs e)
       {
-         PrepareExit();
+         Quit(true);
       }
 
       #region cut, copy, paste
@@ -624,7 +629,7 @@ namespace Docking.Components
 
       public ComponentFinder ComponentFinder { get; private set; }
 
-      public bool PowerDown { get; set; }
+      public bool PowerDown { get; private set; }
 
       public String ConfigurationFile { get; set; }
 
@@ -1206,7 +1211,7 @@ namespace Docking.Components
          m_LoadedPersistence = p;
       }
 
-      protected virtual void SavePersistence()
+      protected virtual void SavePersistency()
       {
          int wx, wy, width, height;
          this.GetPosition(out wx, out wy);
@@ -1224,26 +1229,24 @@ namespace Docking.Components
          SaveObject("MainWindow", p);
       }
 
-      /// <summary>
-      /// exit application
-      /// </summary>
-      public void quit()
-      {
-         PrepareExit();
-      }
-
-      protected void PrepareExit()
+      public void Quit(bool save_persistency)
       {
          PowerDown = true;
-         // update own persistence before save configuration
-         SavePersistence();
-         SaveConfigurationFile(ConfigurationFile);
+
+         if(save_persistency)
+         {
+            // update own persistency before saving configuration
+            SavePersistency();
+
+            SaveConfigurationFile(ConfigurationFile);
+         }
+
          Application.Quit();
       }
 
       protected void OnDeleteEvent(object sender, DeleteEventArgs a)
       {
-         PrepareExit();
+         Quit(true);
          a.RetVal = true;
       }
 
@@ -1948,6 +1951,14 @@ namespace Docking.Components
 
       #endregion
 
+      TextWriter LogFile = null;
+
+      protected void SetLogFile(string filename, bool clobber)
+      {
+         if(filename!=null && filename.Length>=0)
+            LogFile = new StreamWriter(filename, clobber, Encoding.UTF8);         
+      }
+
       #region IMessageWriteLine
 
       public void MessageWriteLine(String format, params object[] args)
@@ -1971,6 +1982,12 @@ namespace Docking.Components
 
          if(PowerDown)
             return;
+
+         if(LogFile!=null)
+         {
+            LogFile.WriteLine(format, args);
+            LogFile.Flush();
+         }
 
          foreach(KeyValuePair<string, IMessage> kvp in mMessage)
             kvp.Value.WriteLine(format, args);
@@ -2081,9 +2098,9 @@ namespace Docking.Components
          /// <summary>
          /// exit application immediately
          /// </summary>
-         public void quit()
+         public void Quit()
          {
-            ComponentManager.quit();
+            ComponentManager.Quit(true);
          }
 
          /// <summary>

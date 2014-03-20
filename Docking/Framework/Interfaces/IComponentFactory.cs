@@ -80,8 +80,10 @@ namespace Docking.Components
          /// </summary>
          HideOnCreate = 0x04,
 
+#if false
          // Obsolete. Do not re-use this bit. (For the curious: it used to be "CloseOnHide" in the past.)
          Reserved0x08 = 0x08,
+#endif
 
          /// <summary>
          /// When this flag is set, each try to "close" the component just hides it. It stays alive hidden, invisible.
