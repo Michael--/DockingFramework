@@ -2081,6 +2081,12 @@ namespace Docking.Components
          return compiled.Execute(ScriptScope);
       }
 
+      public dynamic ExecuteFile(String filename)
+      {
+         string code = File.ReadAllText(filename, Encoding.UTF8);
+         return Execute(code);
+      }
+
       ComponentManagerScripting m_ScriptingInstance;
 
       /// <summary>

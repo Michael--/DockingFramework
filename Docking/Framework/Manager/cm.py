@@ -6,8 +6,8 @@ def app():
 
 def message(*arg):
     '''
-    this is a convinience method using ComponentManager.MessageWriteLine
-    can be used istead of print, output done with IMessage if the message window exist
+    This is a convenience method using ComponentManager.MessageWriteLine.
+    It can be used instead of print. In that case, output is done via IMessage.
     '''
     asString = ''.join(str(i) for i in arg)
     app().MessageWriteLine(asString)
