@@ -62,7 +62,7 @@
                 <property name="CanFocus">True</property>
                 <property name="ShowScrollbars">True</property>
                 <property name="Editable">False</property>
-                <property name="Text" translatable="yes" />
+                <property name="Text" />
               </widget>
             </child>
           </widget>
@@ -111,7 +111,7 @@
                 <property name="Sensitive">False</property>
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
-                <property name="Label" translatable="yes">Cancel Activity</property>
+                <property name="Label">Cancel Activity</property>
                 <property name="UseUnderline">True</property>
                 <signal name="Clicked" handler="OnButtonCancelClicked" />
               </widget>
@@ -241,7 +241,7 @@
                 <child>
                   <widget class="Gtk.Label" id="label1">
                     <property name="MemberName" />
-                    <property name="LabelProp" translatable="yes">Layout Name:</property>
+                    <property name="LabelProp">Layout Name:</property>
                   </widget>
                   <packing>
                     <property name="Position">0</property>
@@ -276,7 +276,7 @@
               <widget class="Gtk.RadioButton" id="radiobuttonCopy">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Label" translatable="yes">Copy from current layout</property>
+                <property name="Label">Copy from current layout</property>
                 <property name="Active">True</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
@@ -294,7 +294,7 @@
               <widget class="Gtk.RadioButton" id="radiobuttonEmpty">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Label" translatable="yes">Empty layout</property>
+                <property name="Label">Empty layout</property>
                 <property name="DrawIndicator">True</property>
                 <property name="HasLabel">True</property>
                 <property name="UseUnderline">True</property>
@@ -429,7 +429,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Editable">False</property>
-                <property name="Text" translatable="yes" />
+                <property name="Text" />
               </widget>
             </child>
           </widget>
@@ -480,7 +480,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
-                <property name="Label" translatable="yes">Save</property>
+                <property name="Label">Save</property>
                 <property name="UseUnderline">True</property>
               </widget>
               <packing>
@@ -493,7 +493,7 @@
             <child>
               <widget class="Gtk.Label" id="labelChanges">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">Changes: 0</property>
+                <property name="LabelProp">Changes: 0</property>
               </widget>
               <packing>
                 <property name="Position">1</property>
@@ -507,7 +507,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
-                <property name="Label" translatable="yes">Translate</property>
+                <property name="Label">Translate</property>
                 <property name="UseUnderline">True</property>
               </widget>
               <packing>
@@ -522,7 +522,7 @@
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Type">TextOnly</property>
-                <property name="Label" translatable="yes">Translate All</property>
+                <property name="Label">Translate All</property>
                 <property name="UseUnderline">True</property>
               </widget>
               <packing>
