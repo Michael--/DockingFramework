@@ -1170,7 +1170,7 @@ namespace Docking.Components
 
          total.Stop();
          if(total.ElapsedMilliseconds > 100)
-            MessageWriteLine("ComponentsLoaded() total time = {0}s", total.Elapsed.TotalSeconds);
+            MessageWriteLine("ComponentsLoaded() total time = {0}s", total.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture));
       }
 
       private void ComponentsSave()
@@ -1227,6 +1227,8 @@ namespace Docking.Components
 
          currentLoadSaveItem = null;
          SaveObject("MainWindow", p);
+
+         SaveConfigurationFile(ConfigurationFile);
       }
 
       public void Quit(bool save_persistency)
@@ -1234,12 +1236,7 @@ namespace Docking.Components
          PowerDown = true;
 
          if(save_persistency)
-         {
-            // update own persistency before saving configuration
             SavePersistency();
-
-            SaveConfigurationFile(ConfigurationFile);
-         }
 
          Application.Quit();
       }
@@ -1956,7 +1953,11 @@ namespace Docking.Components
       protected void SetLogFile(string filename, bool clobber)
       {
          if(filename!=null && filename.Length>=0)
-            LogFile = new StreamWriter(filename, clobber, Encoding.UTF8);         
+         {
+            LogFile = new StreamWriter(filename, clobber, new UTF8Encoding(false));         
+            MessageWriteLine("=== {0} === {1} ===============================================================================",
+                             DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), this.Title);
+         }
       }
 
       #region IMessageWriteLine
@@ -2021,8 +2022,15 @@ namespace Docking.Components
          m_ScriptingInstance = new ComponentManagerScripting(this);
          ScriptScope.SetVariable(pythonBaseVariableName, m_ScriptingInstance);
 
-         // add Python commands like "message(...)" 
-         Execute(ReadResource("cm.py").Replace("[INSTANCE]", pythonBaseVariableName));
+         try 
+         {
+            // add Python commands like "message(...)" 
+            Execute(ReadResource("cm.py").Replace("[INSTANCE]", pythonBaseVariableName));
+         }
+         catch(Exception e)
+         {
+            MessageWriteLine("Error in cm.py:\n"+e.ToString());
+         }
       }
 
       delegate object ImportDelegate(CodeContext context, string moduleName, PythonDictionary globals, PythonDictionary locals, PythonTuple tuple);
@@ -2107,6 +2115,15 @@ namespace Docking.Components
          public void Quit()
          {
             ComponentManager.Quit(true);
+         }
+
+         /// <summary>
+         /// set the visibility of the main window
+         /// </summary>
+         public bool Visible
+         {
+            get { return ComponentManager.Visible;  }
+            set { ComponentManager.Visible = value; }
          }
 
          /// <summary>

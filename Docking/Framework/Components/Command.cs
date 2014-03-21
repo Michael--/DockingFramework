@@ -167,25 +167,44 @@ namespace Docking.Components
       void HandleConsoleInput(object sender, MonoDevelop.Components.ConsoleInputEventArgs e)
       {
          string input = e.Text;
-         if (input != null)
+         if(input==null)
          {
-            try
-            {
-               DisableInvoke = true;
-               ComponentManager.Execute(input);
-               DisableInvoke = true;
-               consoleview.Prompt(false);
-            }
-            catch (Exception ex)
-            {
-               consoleview.WriteOutput("Error: " + ex.Message);
-               consoleview.Prompt(true);
-            }
+            consoleview.Prompt(true);
+            return;
          }
-         else
+
+         string inputL = input.Trim().ToLowerInvariant();
+         if(inputL=="help"   || 
+            inputL=="help()" ||
+            inputL.StartsWith("?")) 
          {
+            // treat this input specially to help the user. we do not pass this line to the python interpreter.
+
+            consoleview.WriteOutput("Congratulations, you have found the help function :)"                   + "\n" +
+                                    "To get more help, use the help() function, which takes 1 parameter."    + "\n" + 
+                                    "It will show help for that, including for example all its methods etc." + "\n" + 
+                                    "To get a list of all available such parameters, you can use"            + "\n" +
+                                    "   print dir()"                                                      
+                                   );
+            consoleview.Prompt(true);
+            return;
+         }
+
+         bool ok = true;
+
+         DisableInvoke = true;
+         try { ComponentManager.Execute(input); }
+         catch(Exception ex)
+         {
+            consoleview.WriteOutput("Error: " + ex.Message);               
+            ok = false;
+         }
+         DisableInvoke = false;
+
+         if(ok)
             consoleview.Prompt(false);
-         }
+         else
+            consoleview.Prompt(true);
       }
       #endregion
 

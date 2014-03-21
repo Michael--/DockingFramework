@@ -1,19 +1,20 @@
 def app():
 	'''
-	get the root instance name
+	Returns the main application object instance.
 	'''
 	return [INSTANCE];
 
-def message(*arg):
-    '''
-    This is a convenience method using ComponentManager.MessageWriteLine.
-    It can be used instead of print. In that case, output is done via IMessage.
-    '''
-    asString = ''.join(str(i) for i in arg)
-    app().MessageWriteLine(asString)
-    
 def concat(*arg):
     '''
-	concatenates the given arguments to a single string
+	Concatenates the given arguments into a single string.
     '''
     return ''.join(str(i) for i in arg)
+	
+def message(*arg):
+    '''
+    This function behaves the same way as print(),
+	but additionally outputs its parameter(s) via IMessage to the message log.
+    '''
+    msg = concat(arg)
+    app().MessageWriteLine(msg)
+    print(msg)
