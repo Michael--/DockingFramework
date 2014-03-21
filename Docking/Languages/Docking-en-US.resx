@@ -135,8 +135,8 @@
   <data name="Docking.Components.Choose a file to open..." xml:space="preserve">
     <value>Choose a file to open...</value>
   </data>
-  <data name="Docking.Components.Command" xml:space="preserve">
-    <value>Command</value>
+  <data name="Docking.Components.CommandLine" xml:space="preserve">
+    <value>Command Line</value>
   </data>
   <data name="Docking.Components.Component" xml:space="preserve">
     <value>Component</value>
@@ -217,8 +217,8 @@ It is recommended to manually check the translations afterwards.</value>
   <data name="MENU.Activities" xml:space="preserve">
     <value>Threads</value>
   </data>
-  <data name="MENU.Command" xml:space="preserve">
-    <value>Command</value>
+  <data name="MENU.Command Line" xml:space="preserve">
+    <value>Command Line</value>
   </data>
   <data name="MENU.Component List" xml:space="preserve">
     <value>Component List</value>

@@ -171,7 +171,7 @@
   <data name="MENU.Component List" xml:space="preserve">
     <value>Komponentenliste</value>
   </data>
-  <data name="MENU.Command" xml:space="preserve">
+  <data name="MENU.Command Line" xml:space="preserve">
     <value>Kommandozeile</value>
   </data>
   <data name="MENU.Activities" xml:space="preserve">
@@ -198,8 +198,8 @@
   <data name="Docking.Components.Cancel Activity" xml:space="preserve">
     <value>Abbrechen</value>
   </data>
-  <data name="Docking.Components.Command" xml:space="preserve">
-    <value>Kommando</value>
+  <data name="Docking.Components.CommandLine" xml:space="preserve">
+    <value>Kommandozeile</value>
   </data>
   <data name="Docking.Components.Activity" xml:space="preserve">
     <value>Thread</value>

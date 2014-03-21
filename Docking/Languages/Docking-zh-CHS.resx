@@ -123,7 +123,7 @@
   <data name="MENU.Activities" xml:space="preserve">
     <value>处理器线程</value>
   </data>
-  <data name="MENU.Command" xml:space="preserve">
+  <data name="MENU.Command Line" xml:space="preserve">
     <value>命令</value>
   </data>
   <data name="MENU.Component List" xml:space="preserve">
@@ -210,7 +210,7 @@
   <data name="Docking.Components.Component" xml:space="preserve">
     <value>元件</value>
   </data>
-  <data name="Docking.Components.Command" xml:space="preserve">
+  <data name="Docking.Components.CommandLine" xml:space="preserve">
     <value>命令</value>
   </data>
   <data name="Docking.Components.Changes: {0}" xml:space="preserve">
