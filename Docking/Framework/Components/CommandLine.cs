@@ -81,7 +81,7 @@ namespace Docking.Components
       #region Python command extensions e.g. print
       string[] pyPrint = new string[] 
         { 
-            "#output can be redirected to any object which implement method write and property softspace",
+            "# output can be redirected to any object which implements method write and property softspace",
             "import sys",
             "cmd=app().GetInstance(\"CommandLine\")",
             "sys.stderr=cmd",
@@ -95,7 +95,7 @@ namespace Docking.Components
          return m_ScriptingInstance;
       }
 
-      public bool DisableInvoke { get; set; }
+      public bool DisableInvokeOnAccessingConsoleView { get; set; }
 
       // encapsulate python access to c#, reduce access to well known methods
       public class CommandScript
@@ -113,7 +113,7 @@ namespace Docking.Components
 
          public void write(string s)
          {
-            if (CommandLine.DisableInvoke)
+            if (CommandLine.DisableInvokeOnAccessingConsoleView)
             {
                ConsoleView.WriteOutput(s);
             }
@@ -192,14 +192,14 @@ namespace Docking.Components
 
          bool ok = true;
 
-         DisableInvoke = true;
+         DisableInvokeOnAccessingConsoleView = true;
          try { ComponentManager.Execute(input); }
          catch(Exception ex)
          {
             consoleview.WriteOutput("Error: " + ex.Message);               
             ok = false;
          }
-         DisableInvoke = false;
+         DisableInvokeOnAccessingConsoleView = false;
 
          if(ok)
             consoleview.Prompt(false);
