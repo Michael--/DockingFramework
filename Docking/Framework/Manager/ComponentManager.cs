@@ -1751,7 +1751,10 @@ namespace Docking.Components
       }
 
       /// <summary>
-      /// Create new item, called from menu choice or persistence
+      /// Create new item. This may be triggered by
+      /// - a user interaction via the "View" menu
+      /// - loading a persistence
+      /// - running a Python script
       /// </summary>
       private DockItem CreateItem(ComponentFactoryInformation cfi, String name)
       {
@@ -2151,32 +2154,54 @@ namespace Docking.Components
          }
 
          /// <summary>
-         /// Gets the component identifier based on the component name and id
-         /// The identifier should be unique for all localizations and
-         /// very simliar to the component title name (english title name)
+         /// Gets a simple component instance identification string.
+         /// This normally is identical to the component window title.
+         /// For non-multi-instance components, this normally is a human-readable text like "Map Viewer".
+         /// For multi-instance components, this at the end has a number, for example "Map Viewer 2".
          /// </summary>
          private string GetComponentIdentifier(DockItem item)
          {
-            Component component = item.Content as Component;
-            if(component == null)
+            if(item==null)
+               return null;
+            Component comp = item.Content as Component;
+            if(comp==null)
                return null;
 
-            // localized items must use its unlocalized name for identification
-            if(component is ILocalizableComponent)
-            {
-               ILocalizableComponent lc = component as ILocalizableComponent;
-               // consider instance index in same way as used for title name calculation
-               if(item.InstanceIndex >= 2)
-                  return lc.Name + " " + item.InstanceIndex;
-               return lc.Name;
-            }
+            string name = comp is ILocalizableComponent 
+                        ? (comp as ILocalizableComponent).Name
+                        : item.Content.Name;
 
-            // not localized items can use their name
-            return item.Content.Name;
+            return item.InstanceIndex>1
+                 ? (name + " " + item.InstanceIndex)
+                 : name;
+         }
+
+         /// lists all available component types which you can instantiate using CreateComponent()
+         public List<string> ListComponentTypes()
+         {
+            List<string> result = new List<string>();
+            foreach(ComponentFactoryInformation info in ComponentManager.ComponentFinder.ComponentInfos)
+               result.Add(info.ComponentType.ToString());
+            return result;
+         }
+
+         /// Creates a new component instance. The given parameter must be one of the available types returned by ListAvailableComponentTypes().
+         /// Returned is the unique instance identification string.
+         public string CreateComponent(string s)
+         {
+            foreach(ComponentFactoryInformation info in ComponentManager.ComponentFinder.ComponentInfos)
+            {
+               if(info.ComponentType.ToString()==s)
+               {
+                  DockItem item = ComponentManager.CreateComponent(info, true);
+                  return GetComponentIdentifier(item);
+               }
+            }
+            return null;
          }
 
          /// <summary>
-         /// List all available scripting instances (get access to them using GetInstance())
+         /// Returns a list of all currently instantiated components (including hidden ones).
          /// </summary>
          public List<string> ListInstances()
          {
@@ -2197,7 +2222,7 @@ namespace Docking.Components
          }
 
          /// <summary>
-         /// Get the python scripting instance of a special component
+         /// Returns a specific component instance, identified by its brief, unique instance identifier string.
          /// </summary>
          public object GetInstance(string identifier)
          {

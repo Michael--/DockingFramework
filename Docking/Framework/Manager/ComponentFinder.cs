@@ -16,12 +16,6 @@ namespace Docking.Components
 
       public ComponentFactoryInformation[] ComponentInfos { get { return mComponents.ToArray(); } }
 
-      Widget CreateInstance(ComponentFactoryInformation info, ComponentManager cm)
-      {
-         Widget widget = info.CreateInstance(cm);
-         return widget;
-      }
-
       public ComponentFactoryInformation FindEntryPoint(Type t)
       {
          foreach (ComponentFactoryInformation info in mComponents)
@@ -42,27 +36,10 @@ namespace Docking.Components
          return null;
       }
 
-      public Widget CreateInstance(Type type, ComponentManager cm)
+      Widget CreateInstance(ComponentFactoryInformation info, ComponentManager cm)
       {
-         foreach (ComponentFactoryInformation info in mComponents)
-         {
-            Type t = info.ComponentType;
-            if (t != null)
-            {
-               if (t == type)
-               {
-                  info.DockWidget = CreateInstance(info, cm);
-                  return info.DockWidget;
-               }
-               Type[] myInterfaces = t.FindInterfaces(mTypeFilter, type);
-               if (myInterfaces.Length > 0)
-               {
-                  info.DockWidget = CreateInstance(info, cm);
-                  return info.DockWidget;
-               }
-            }
-         }
-         return null;
+         Widget widget = info.CreateInstance(cm);
+         return widget;
       }
 
       public Widget FindInstance(Type type)
@@ -235,17 +212,14 @@ namespace Docking.Components
       public Widget CreateInstance(ComponentManager cm)
       {
          Widget widget;
-         try
-         {
-            widget = (Widget)Activator.CreateInstance(ComponentType);
-            if (widget is Component)
-               (widget as Component).ComponentManager = cm;
-         }
+         try { widget = (Widget)Activator.CreateInstance(ComponentType); }
          catch (Exception e)
          {
             Console.WriteLine(e.ToString());
             return null;
          }
+         if (widget is Component)
+            (widget as Component).ComponentManager = cm;
          return widget;
       }
 

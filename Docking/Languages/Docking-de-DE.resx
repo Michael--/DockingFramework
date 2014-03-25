@@ -198,7 +198,7 @@
   <data name="Docking.Components.Cancel Activity" xml:space="preserve">
     <value>Abbrechen</value>
   </data>
-  <data name="Docking.Components.CommandLine" xml:space="preserve">
+  <data name="Docking.Components.Command Line" xml:space="preserve">
     <value>Kommandozeile</value>
   </data>
   <data name="Docking.Components.Activity" xml:space="preserve">

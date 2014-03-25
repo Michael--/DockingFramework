@@ -210,7 +210,7 @@
   <data name="Docking.Components.Component" xml:space="preserve">
     <value>元件</value>
   </data>
-  <data name="Docking.Components.CommandLine" xml:space="preserve">
+  <data name="Docking.Components.Command Line" xml:space="preserve">
     <value>命令</value>
   </data>
   <data name="Docking.Components.Changes: {0}" xml:space="preserve">

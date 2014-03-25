@@ -31,9 +31,18 @@ namespace Docking.Components
                consoleview.Prompt(true);
             }
 
-            // redirect print message and access to this using "command"
             m_ScriptingInstance = new CommandScript(this, consoleview, ComponentManager);
-            ComponentManager.Execute(String.Join("\r\n", pyPrint));
+
+            // output can be redirected to any object which implements method write and property softspace
+            string[] phython_script_for_redirecting_stdout_and_stderr = new string[] 
+            { 
+               "import sys",
+               "cmd=app().GetInstance(\""+(this as ILocalizableComponent).Name+"\")",
+               "sys.stderr=cmd",
+               "sys.stdout=cmd"
+            };
+
+            ComponentManager.Execute(String.Join("\r\n", phython_script_for_redirecting_stdout_and_stderr));
          });
       }
       CommandLinePersistence mPersistence;
@@ -79,14 +88,6 @@ namespace Docking.Components
       #endregion
 
       #region Python command extensions e.g. print
-      string[] pyPrint = new string[] 
-        { 
-            "# output can be redirected to any object which implements method write and property softspace",
-            "import sys",
-            "cmd=app().GetInstance(\"CommandLine\")",
-            "sys.stderr=cmd",
-            "sys.stdout=cmd"
-        };
 
       CommandScript m_ScriptingInstance;
 
@@ -100,16 +101,16 @@ namespace Docking.Components
       // encapsulate python access to c#, reduce access to well known methods
       public class CommandScript
       {
+         private CommandLine      CommandLine      { get; set; }
+         private ConsoleView      ConsoleView      { get; set; }
+         private ComponentManager ComponentManager { get; set; }
+
          public CommandScript(CommandLine cmdline, ConsoleView cv, ComponentManager cm)
          {
             CommandLine = cmdline;
             ConsoleView = cv;
             ComponentManager = cm;
          }
-
-         private CommandLine CommandLine { get; set; }
-         private ConsoleView ConsoleView { get; set; }
-         private ComponentManager ComponentManager { get; set; }
 
          public void write(string s)
          {
@@ -128,13 +129,16 @@ namespace Docking.Components
 
          public int softspace { get; set; }
 
-         /// <summary>
-         /// exit application
-         /// </summary>
          public void quit()
+         {
+            Quit();
+         }
+
+         public void Quit()
          {
             ComponentManager.Quit(true);
          }
+
       }
 
       #endregion
@@ -181,17 +185,27 @@ namespace Docking.Components
             // treat this input specially to help the user. we do not pass this line to the python interpreter.
 
             consoleview.WriteOutput("Congratulations, you have found the help function :)"                             + "\n" +
+                                    "This window is an interactive Python command line. You can input Python commands" + "\n" + 
+                                    "and will see their outputs directly." + "\n" + 
                                     "To get more help, use the help() function, taking 1 parameter."                   + "\n" + 
                                     "It will show help for that parameter, including for example all its methods etc." + "\n" + 
                                     "To get a list of all available such parameters, you can use"                      + "\n" +
                                     "   print dir()"                                                                   + "\n" +
-                                    "One usecase for example is to get help on all available methods which the main application object offers. See them by" + "\n" +
+                                    "That command returns a list of all available global objects. The most interesting one in there is" + "\n" +
+                                    "app(), which is the invocation of a getter for the main application object." + "\n" + 
+                                    "To see which methods that object offers, run" + "\n" +
                                     "   help(app())"+ "\n" +
-                                    "It will show you that the main app() object has a method ListInstances() which will return all current component instances ready for scripting:" + "\n" +
+                                    "Especially, this object has 4 interesting methods:" + "\n" +
                                     "   print app().ListInstances()"+ "\n" +
-                                    "To access one specific of these instances, use" + "\n" +
+                                    "prints a list of all currently instantiated components." + "\n" +
+                                    "Each of them can be accessed by" + "\n" +
                                     "   app().GetInstance(\"xyz\")" + "\n" +
-                                    "and invoke its methods."                                      
+                                    ", for example" + "\n" +
+                                    "   app().GetInstance(\"Map Viewer 2\")" + "\n" +
+                                    "You can also instantiate new components: To get a list of the available ones, run" + "\n" +
+                                    "   print app().ListComponentTypes()" + "\n" +
+                                    "Creation then works like this:" + "\n" +
+                                    "   print app().CreateComponent(\"xyz\")"
                                    );
             consoleview.Prompt(true);
             return;
@@ -217,7 +231,7 @@ namespace Docking.Components
 
       #region ILocalizable
 
-      string ILocalizableComponent.Name { get { return "CommandLine"; } }
+      string ILocalizableComponent.Name { get { return "Command Line"; } }
 
       void ILocalizableComponent.LocalizationChanged(Docking.DockItem item)
       {}

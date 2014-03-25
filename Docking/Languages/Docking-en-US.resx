@@ -135,7 +135,7 @@
   <data name="Docking.Components.Choose a file to open..." xml:space="preserve">
     <value>Choose a file to open...</value>
   </data>
-  <data name="Docking.Components.CommandLine" xml:space="preserve">
+  <data name="Docking.Components.Command Line" xml:space="preserve">
     <value>Command Line</value>
   </data>
   <data name="Docking.Components.Component" xml:space="preserve">
