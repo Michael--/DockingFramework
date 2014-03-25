@@ -54,7 +54,8 @@ namespace Docking.Widgets
 
       void ILocalizableWidget.Localize(string namespc)
       {
-         Label = LocalizationKey.Localized(namespc);
+         if(LocalizationKey!=null)
+            Label = LocalizationKey.Localized(namespc);
       }
    }
 
