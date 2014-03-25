@@ -180,11 +180,18 @@ namespace Docking.Components
          {
             // treat this input specially to help the user. we do not pass this line to the python interpreter.
 
-            consoleview.WriteOutput("Congratulations, you have found the help function :)"                   + "\n" +
-                                    "To get more help, use the help() function, which takes 1 parameter."    + "\n" + 
-                                    "It will show help for that, including for example all its methods etc." + "\n" + 
-                                    "To get a list of all available such parameters, you can use"            + "\n" +
-                                    "   print dir()"                                                      
+            consoleview.WriteOutput("Congratulations, you have found the help function :)"                             + "\n" +
+                                    "To get more help, use the help() function, taking 1 parameter."                   + "\n" + 
+                                    "It will show help for that parameter, including for example all its methods etc." + "\n" + 
+                                    "To get a list of all available such parameters, you can use"                      + "\n" +
+                                    "   print dir()"                                                                   + "\n" +
+                                    "One usecase for example is to get help on all available methods which the main application object offers. See them by" + "\n" +
+                                    "   help(app())"+ "\n" +
+                                    "It will show you that the main app() object has a method ListInstances() which will return all current component instances ready for scripting:" + "\n" +
+                                    "   print app().ListInstances()"+ "\n" +
+                                    "To access one specific of these instances, use" + "\n" +
+                                    "   app().GetInstance(\"xyz\")" + "\n" +
+                                    "and invoke its methods."                                      
                                    );
             consoleview.Prompt(true);
             return;

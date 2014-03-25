@@ -2176,16 +2176,37 @@ namespace Docking.Components
          }
 
          /// <summary>
+         /// List all available scripting instances (get access to them using GetInstance())
+         /// </summary>
+         public List<string> ListInstances()
+         {
+            List<string> result = new List<string>();
+            foreach(DockItem item in ComponentManager.DockFrame.GetItems())
+            {
+               if(item.Content==null)
+                  continue;
+               Component component = item.Content as Component;
+               if(component==null || component.GetScriptingInstance()==null)
+                  continue;
+
+               string cid = GetComponentIdentifier(item);
+               if(cid!=null)
+                  result.Add(cid);
+            }
+            return result;
+         }
+
+         /// <summary>
          /// Get the python scripting instance of a special component
          /// </summary>
          public object GetInstance(string identifier)
          {
             foreach(DockItem item in ComponentManager.DockFrame.GetItems())
             {
-               if(item.Content == null)
+               if(item.Content==null)
                   continue;
                Component component = item.Content as Component;
-               if(component.GetScriptingInstance() == null)
+               if(component==null || component.GetScriptingInstance()==null)
                   continue;
 
                string cid = GetComponentIdentifier(item);
