@@ -2266,6 +2266,11 @@ namespace Docking.Components
 
       #endregion
 
+      // TODO this currently lacks the OS's window decoration (icon, window title text, buttons) 
+      public Gdk.Pixbuf Screenshot()
+      {
+         return Gdk.Pixbuf.FromDrawable(GdkWindow, GdkWindow.Colormap, 0, 0, 0, 0, (this as Gtk.Widget).Allocation.Width, (this as Gtk.Widget).Allocation.Height);
+      }
    }
 
    public class TaggedLocalizedMenuItem : MenuItem, ILocalizableWidget
