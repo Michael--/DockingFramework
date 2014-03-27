@@ -1953,14 +1953,27 @@ namespace Docking.Components
 
       TextWriter LogFile = null;
 
-      protected void SetLogFile(string filename, bool clobber)
+      protected bool SetLogFile(string filename, bool clobber)
       {
          if(filename!=null && filename.Length>=0)
          {
-            LogFile = new StreamWriter(filename, clobber, new UTF8Encoding(false));         
+            try
+            {
+               LogFile = new StreamWriter(filename, clobber, new UTF8Encoding(false));         
+            }
+            catch(Exception e)
+            {
+               string msg = String.Format("cannot open log file '{0}' for writing: {1}", filename, e);
+               System.Console.Error.WriteLine(msg);
+               System.Console.Error.Flush();
+               MessageWriteLine(msg);
+               LogFile = null;
+               return false;
+            }
             MessageWriteLine("=== {0} === {1} ===============================================================================",
                              DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), this.Title);
          }
+         return true;
       }
 
       #region IMessageWriteLine
