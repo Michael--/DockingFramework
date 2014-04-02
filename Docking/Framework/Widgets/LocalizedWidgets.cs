@@ -90,6 +90,13 @@ namespace Docking.Widgets
       {
          Title = LocalizationKey.Localized(namespc);
       }
+
+      // workaround for the strange problem that property Width is READONLY
+      public int Width_
+      { 
+         get { return Width;                             }
+         set { (this as Gtk.TreeViewColumn).SetWidth(value); } // note that this does not necessarily PRECISELY set this width. it just tries to.
+      }
    }
 
    [System.ComponentModel.ToolboxItem(true)]
