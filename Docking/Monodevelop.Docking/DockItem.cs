@@ -436,6 +436,7 @@ namespace Docking
       }
 
       // returns true if the closing happened, false when it has been canceled
+      // TODO refacture this into 2 functions, one ASKING if closing is OK, and another which INFORMS about the actual closure
       public bool Close()
       {
          if(this.Content is Component)

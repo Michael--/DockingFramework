@@ -1233,6 +1233,11 @@ namespace Docking.Components
 
       public void Quit(bool save_persistency)
       {
+         foreach(DockItem item in DockFrame.GetItems())
+            if((item.Content!=null) && (item.Content is Component))
+               if(!(item.Content as Component).Closed())
+                  return; // close has been canceled, for example by a dialog prompt which asks for saving an edited document
+
          PowerDown = true;
 
          if(save_persistency)
