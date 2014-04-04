@@ -1052,8 +1052,11 @@ namespace Docking.Components
          ComponentsSave();
 
          Localization.WriteChangedResourceFiles();
-
-         XmlDocument.Save(filename);
+         
+         XmlDocument.Save(new FileStream(
+            filename, FileMode.Create, FileAccess.ReadWrite,
+            FileShare.None // open the config file exclusively for writing, i.e., prevent other TempoGiusto instances from interfering with us
+         ));
 
          ComponentsRemove();
       }

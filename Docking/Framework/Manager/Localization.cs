@@ -193,7 +193,10 @@ namespace Docking.Components
                if (resourceWriter.ContainsKey(filename)) // already considered
                   continue;
 
-               ResXResourceWriter rw = new ResXResourceWriter(filename);
+               ResXResourceWriter rw = new ResXResourceWriter(new FileStream(
+                  filename, FileMode.Create, FileAccess.ReadWrite,
+                  FileShare.None // open the config file exclusively for writing, i.e., prevent other TempoGiusto instances from interfering with us
+               ));
                resourceWriter.Add(filename, rw);
             }
          }
