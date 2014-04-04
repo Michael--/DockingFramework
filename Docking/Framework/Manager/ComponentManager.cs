@@ -1055,7 +1055,7 @@ namespace Docking.Components
          
          XmlDocument.Save(new FileStream(
             filename, FileMode.Create, FileAccess.ReadWrite,
-            FileShare.None // open the config file exclusively for writing, i.e., prevent other instances of us from interfering
+            FileShare.None // open the file exclusively for writing, i.e., prevent other instances of us from interfering
          ));
 
          ComponentsRemove();
