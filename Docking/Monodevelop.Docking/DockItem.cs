@@ -435,19 +435,15 @@ namespace Docking
             widget.Hide ();
       }
 
-      // returns true if the closing happened, false when it has been canceled
-      // TODO refacture this into 2 functions, one ASKING if closing is OK, and another which INFORMS about the actual closure
       public bool Close()
       {
-         if(this.Content is Component)
+         Component component = this.Content as Component;
+         if(component!=null)
          {
-            // it is important here that the Save() occurs _before_ the Closed(),
-            // because the Closed() already will cleanup/empty internally all stuff,
-            // so Save() would save that empty, cleaned up state which is not desired
-            (this.Content as Component).Save();
-
-            if(!((this.Content as Component).Closed()))
+            if(!component.IsCloseOK())
                return false; // closing has been canceled!
+            component.Save();
+            component.Closed();
          }
 
          Visible = false;

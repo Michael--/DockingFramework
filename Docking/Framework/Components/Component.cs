@@ -38,6 +38,15 @@ namespace Docking.Components
             (this as IPersistable).LoadFrom(ComponentManager as IPersistency);
       }
 
+      // Will get called when this component is about to be closed (for example by the user or on application shutdown).
+      // The component shall return true when it agrees to the closure and false if not.
+      // For example, if the component is an editor with unsaved changes,
+      // this function is the one to prompt the user for saving with a message box YES/NO/CANCEL,
+      // and on CANCEL return false here.
+      // Note that the component should NOT YET shutdown itself. That must happen in the "Close" call
+      // which will occur subsesquently.
+      public virtual bool IsCloseOK() { return true; }
+
       /// <summary>
       /// Will get called to save the persistency (if any).
       /// Will be called when a component is closed by the user and on application shutdown.
@@ -49,14 +58,10 @@ namespace Docking.Components
       }
 
       // Will get called immediately before this component will be destroyed.
-      // One thing you should do here for example is to un-register from any events you are listening to,
-      // otherwise, this object instance will be be garbage-collected.
-      // Return true if your object is fine with being closed.
-      // Return false if you want to prevent the closing from happening.
-      // This for example can happen if your component is an editor, and it knows that the currently edited document is unsaved yet,
-      // and it asks the user with a MessageBox "Do you want to save document XYZ?", offering a "Cancel" button,
-      // and the user presses "Cancel". Then your component wants to simply live on and cancel the closing.
-      public virtual bool Closed() { return true; }
+      // Inside this function, please cleanup everything you want to do before your destructor runs,
+      // for example, stopping threads, etc.
+      // You do not have to save persistency here. That only needs to be done in the Save() function, see above.
+      public virtual void Closed() {}
 
       #endregion
 

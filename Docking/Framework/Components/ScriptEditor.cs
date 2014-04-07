@@ -191,11 +191,11 @@ namespace Docking.Components
          ComponentManager.SaveObject("ScriptEditor", mPersistence);
       }
 
-      public override bool Closed()
+      public override bool IsCloseOK()
       {
          // TODO if the current script is unsaved, prompt the user here to save it and offer him a "Cancel" button.
          // When the user presses "Cancel", return false from this function to prevent the closing from happening.
-         return base.Closed();
+         return true;
       }
 
       #region ILocalizable
