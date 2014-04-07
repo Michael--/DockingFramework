@@ -71,6 +71,13 @@ namespace Docking.Tools
         //    public static RowEnumerator Rows { get { return new RowEnumerator(model); } }
         // , because currently only extension methods are syntactically possible, not extension properties.
 
+        // returns true if the model contains no rows
+        public static bool IsEmpty(this TreeModel model)
+        {
+           TreeIter iter;
+           return !model.GetIterFirst(out iter) || iter.Equals(TreeIter.Zero);
+        }
+
         // opposite of .IterNext() - expensive linear search :(
         public static bool IterPrev(this TreeModel model, ref TreeIter iter)
         {
