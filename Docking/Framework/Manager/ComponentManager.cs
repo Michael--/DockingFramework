@@ -2043,8 +2043,8 @@ namespace Docking.Components
          ScriptScope = ScriptEngine.CreateScope();
 
          // override import
-         ScriptScope scope = IronPython.Hosting.Python.GetBuiltinModule(ScriptEngine);
-         scope.SetVariable("__import__", new ImportDelegate(DoPythonModuleImport));
+         //ScriptScope scope = IronPython.Hosting.Python.GetBuiltinModule(ScriptEngine);
+         //scope.SetVariable("__import__", new ImportDelegate(DoPythonModuleImport));
 
          // access to this using "ComponentManager"
          m_ScriptingInstance = new ComponentManagerScripting(this);
