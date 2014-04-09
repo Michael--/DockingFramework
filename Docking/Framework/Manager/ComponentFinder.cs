@@ -79,7 +79,7 @@ namespace Docking.Components
          {
             try
             {
-               ComponentFactory cf = Activator.CreateInstance(t) as ComponentFactory;
+               IComponentFactory cf = Activator.CreateInstance(t) as IComponentFactory;
                if(cf==null)
                   continue;
                mComponents.Add(new ComponentFactoryInformation(cf, true));
@@ -202,7 +202,7 @@ namespace Docking.Components
 
    public class ComponentFactoryInformation
    {
-      public ComponentFactoryInformation(ComponentFactory factory, bool active)
+      public ComponentFactoryInformation(IComponentFactory factory, bool active)
       {
          Debug.Assert(factory != null);
          ComponentFactory = factory;
@@ -228,18 +228,17 @@ namespace Docking.Components
       public String Comment        { get { return ComponentFactory.Comment; } }
       public String MenuPath       { get { return ComponentFactory.MenuPath; } }
 
-      public bool   MultiInstance  { get { return (ComponentFactory.Options & ComponentFactory.Mode.MultiInstance )!=0; } }
-      public bool   AutoCreate     { get { return (ComponentFactory.Options & ComponentFactory.Mode.AutoCreate    )!=0; } }
-      public bool   HideOnCreate   { get { return (ComponentFactory.Options & ComponentFactory.Mode.HideOnCreate  )!=0; } }
-      public bool   PreventClosing { get { return (ComponentFactory.Options & ComponentFactory.Mode.PreventClosing)!=0; } }
+      public bool   MultiInstance  { get { return (ComponentFactory.Options & Mode.MultiInstance )!=0; } }
+      public bool   AutoCreate     { get { return (ComponentFactory.Options & Mode.AutoCreate    )!=0; } }
+      public bool   HideOnCreate   { get { return (ComponentFactory.Options & Mode.HideOnCreate  )!=0; } }
+      public bool   PreventClosing { get { return (ComponentFactory.Options & Mode.PreventClosing)!=0; } }
 
       public Gdk.Pixbuf Icon { get { return ComponentFactory.Icon; } }
 
-      public ComponentFactory ComponentFactory { get; set; }
+      public IComponentFactory ComponentFactory { get; set; }
 
       public bool Active { get; set; }
 
       public Widget DockWidget { get; set; }
    }
 }
-
