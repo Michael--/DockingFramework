@@ -29,10 +29,8 @@ namespace Docking.Components
       public ComponentFactoryInformation FindComponent(String typename)
       {
          foreach (ComponentFactoryInformation info in mComponents)
-         {
             if (typename == info.ComponentType.ToString())
                return info;
-         }
          return null;
       }
 
@@ -138,9 +136,9 @@ namespace Docking.Components
          catch (ReflectionTypeLoadException) { } // cheap
          catch (MissingMethodException) { } // cheap
          catch (TypeLoadException) { } // cheap
-         catch (Exception e) // runtime expensive! avoid getting here to have a speedy start!
+         catch (Exception) // runtime expensive! avoid getting here to have a speedy start!
          {
-            Console.WriteLine(e.ToString());
+            //Console.WriteLine(e.ToString());
          }
       }
 
@@ -187,7 +185,7 @@ namespace Docking.Components
       }
 
 
-      public List<ComponentFactoryInformation> GetMustExistList(ComponentManager cm)
+      public List<ComponentFactoryInformation> GetAutoCreateList(ComponentManager cm)
       {
          List<ComponentFactoryInformation> ac = new List<ComponentFactoryInformation>();
 
@@ -211,11 +209,13 @@ namespace Docking.Components
 
       public Widget CreateInstance(ComponentManager cm)
       {
+         if(cm==null)
+            return null;
          Widget widget;
          try { widget = (Widget)Activator.CreateInstance(ComponentType); }
          catch (Exception e)
          {
-            Console.WriteLine(e.ToString());
+            cm.MessageWriteLine(e.ToString());
             return null;
          }
          if (widget is Component)

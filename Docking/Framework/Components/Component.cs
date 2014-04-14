@@ -1,13 +1,10 @@
-using System;
-using Gtk;
-
 namespace Docking.Components
 {
 	public class Component : Gtk.Bin
 	{
       // The component manager is the main host application.
       // By operating with this instance, you can get access to it.
-      public virtual ComponentManager ComponentManager { get; set; } // TODO REMOVE THE VIRTUAL!
+      public ComponentManager ComponentManager { get; set; }
  
       // The parent DockItem inside the ComponentManager (if any) which hosts this component.
       // Gets set by the docking framework.

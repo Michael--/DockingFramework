@@ -309,7 +309,7 @@ namespace Docking.Components
                   DockFrame.CurrentLayout = label;
                   if(!nitem.Active)
                      nitem.Active = true;
-                  Console.WriteLine(String.Format("CurrentLayout={0}", label));
+                  MessageWriteLine(String.Format("CurrentLayout={0}", label));
                   m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != m_DefaultLayoutName);
                }
                else
@@ -1106,7 +1106,7 @@ namespace Docking.Components
          total.Start();
 
          // check all components for auto open, create any component not yet existing
-         var mustExists = ComponentFinder.GetMustExistList(this);
+         var mustExists = ComponentFinder.GetAutoCreateList(this);
          foreach(var cfi in mustExists)
          {
             bool exist = false;
@@ -1635,7 +1635,13 @@ namespace Docking.Components
          CreateComponent(cfi, true);
       }
 
-      private DockItem CreateComponent(ComponentFactoryInformation cfi, bool initCalls)
+      public DockItem CreateComponent(string typename, bool initCalls)
+      {
+         ComponentFactoryInformation cfi = ComponentFinder.FindComponent(typename);
+         return cfi==null ? null : CreateComponent(cfi, initCalls);
+      }
+
+      public DockItem CreateComponent(ComponentFactoryInformation cfi, bool initCalls)
       {
          String name = cfi.ComponentType.ToString();
 
@@ -1767,6 +1773,8 @@ namespace Docking.Components
       /// - a user interaction via the "View" menu
       /// - loading a persistence
       /// - running a Python script
+      /// DO NOT INVOKE THIS METHOD from outside the component manager.
+      /// If you want to create a component from outside, use ComponentManager.CreateComponent() instead!
       /// </summary>
       private DockItem CreateItem(ComponentFactoryInformation cfi, String name)
       {
@@ -1804,6 +1812,8 @@ namespace Docking.Components
 
       /// <summary>
       /// Create new item, called from persistence
+      /// DO NOT INVOKE THIS METHOD from outside the component manager.
+      /// If you want to create a component from outside, use ComponentManager.CreateComponent() instead!
       /// </summary>
       private DockItem CreateItem(string id)
       {
@@ -1865,7 +1875,7 @@ namespace Docking.Components
             {
                AddSelectNotifier(item, xw);
             }
-         }
+         }              
 #if false // TODO: could be needed
             if (w is TreeView)
             {
@@ -1873,7 +1883,7 @@ namespace Docking.Components
                 {
                     twc.Clicked += (object sender, EventArgs e) => 
                     {
-                        Console.WriteLine ("{0} Test TreeViewColumn.Clicked {1}", qwe++, sender);
+                        MessageWriteLine("{0} Test TreeViewColumn.Clicked {1}", qwe++, sender);
                     };
                 }
             }

@@ -1,9 +1,8 @@
 using System;
+using System.Collections.Generic;
 using Gtk;
 using GLib;
-using System.Collections.Generic;
 using Docking.Components;
-using Docking;
 using Docking.Helper;
 
 namespace Docking.Widgets
@@ -11,13 +10,6 @@ namespace Docking.Widgets
    [System.ComponentModel.ToolboxItem(true)]
    public partial class VirtualListView : Component, ILocalizableWidget
    {
-      // TODO get rid of this. simply use the ComponentManager instance of the parent class "Component"
-      public override ComponentManager ComponentManager
-      {
-         get { return mColumnControl.ComponentManager; }
-         set { mColumnControl.ComponentManager = value; }
-      }
-
       public VirtualListView()
       {
          this.Build();
@@ -276,7 +268,7 @@ namespace Docking.Widgets
          Gdk.GC backgound = new Gdk.GC((Gdk.Drawable)base.GdkWindow);
          Gdk.GC text = new Gdk.GC((Gdk.Drawable)base.GdkWindow);
 
-         ColumnControl.Column[] columns = mColumnControl.GetVisbleColumnsInDrawOrder();
+         ColumnControl.Column[] columns = mColumnControl.GetVisibleColumnsInDrawOrder();
 
          for (int row = offset; row < RowCount; row++)
          {
@@ -682,7 +674,6 @@ namespace Docking.Widgets
          }
       }
 
-      public ComponentManager ComponentManager { get; set; }
       public Gtk.EventBox EventBox;
 
       Dictionary<Widget, Column> mColumns = new Dictionary<Widget, Column>();
@@ -811,7 +802,7 @@ namespace Docking.Widgets
             }
          }
 
-         public Column[] GetVisbleColumnsInDrawOrder()
+         public Column[] GetVisibleColumnsInDrawOrder()
          {
             // TODO: could be initialzed on any change only and not an any method call
             List<Column> c = new List<Column>();
