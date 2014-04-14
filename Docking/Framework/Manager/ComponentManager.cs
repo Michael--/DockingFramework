@@ -702,8 +702,10 @@ namespace Docking.Components
          }
 
          // TODO: consider all and let the user pick which one
-         MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} as {1}"), filename, openers[0].Value);
-         return openers[0].Key.OpenFile(filename);
+         MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} as {1}..."), filename, openers[0].Value);
+         bool success = openers[0].Key.OpenFile(filename);
+         MessageWriteLine(success ? "File opened successfully" : "File opening failed");
+         return success;
       }
 
       public String OpenFolderDialog(string prompt)
