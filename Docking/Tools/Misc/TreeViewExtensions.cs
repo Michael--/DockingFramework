@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Docking.Components;
 using Docking.Widgets;
 using Gtk;
@@ -115,6 +116,20 @@ namespace Docking.Tools
                  result.Add(iter);
            return result;
         }
+
+         public static string RowToString(this TreeModel model, Gtk.TreeIter iter, List<int> columnids)
+         {
+            StringBuilder result = new StringBuilder();
+            foreach(int i in columnids)
+            {            
+               if(result.Length>0)
+                  result.Append("\t");
+               object o = model.GetValue(iter, i);
+               if(o!=null)
+                  result.Append(o.ToString());
+            }
+            return result.ToString();
+         }
    }
 
    public static class TreeViewExtensions
@@ -204,6 +219,21 @@ namespace Docking.Tools
           while (stack.Count > 0)
              treeView.ExpandRow(stack.Pop(), false);
        }
+
+      public static void CopySelectedRowsToClipboard(this TreeView treeView, List<int> columnids)
+      {
+         Gtk.TreePath[] rows = treeView.Selection.GetSelectedRows();
+         StringBuilder result = new StringBuilder();
+         foreach(Gtk.TreeIter iter in treeView.Selection.GetSelectedRows_TreeIter())
+         {
+            if(result.Length>0)
+               result.AppendLine("");
+            result.Append(treeView.Model.RowToString(iter, columnids));
+         }
+         if(result.Length>0)
+            treeView.GetClipboard(Gdk.Selection.Clipboard).Text = result.ToString();
+      }
+
     }
 
     public static class TreeSelectionExtensions
