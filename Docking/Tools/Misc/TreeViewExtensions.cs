@@ -67,10 +67,22 @@ namespace Docking.Tools
         //   {
         //      ...
         //   }
-        public static RowEnumerator Rows(this TreeModel model) { return new RowEnumerator(model); }
         // Sadly, we cannot write
         //    public static RowEnumerator Rows { get { return new RowEnumerator(model); } }
-        // , because currently only extension methods are syntactically possible, not extension properties.
+        // , because currently only extension FUNCTIONS are syntactically possible, not extension PROPERTIES.
+        public static RowEnumerator Rows(this TreeModel model) { return new RowEnumerator(model); }
+
+        // Analogous function to NColumns by GTK. It is strange that this function is missing there.
+        // Sadly, we cannot write
+        //    public static int NRows { get { return ... } }
+        // , because currently only extension FUNCTIONS are syntactically possible, not extension PROPERTIES.
+        public static int NRows(this TreeModel model)
+        {
+           int result = 0;
+           foreach(TreeIter iter in model.Rows())
+              result++;
+           return result;
+        }
 
         // returns true if the model contains no rows
         public static bool IsEmpty(this TreeModel model)
