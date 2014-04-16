@@ -1426,7 +1426,7 @@ namespace Docking.Components
             }
             parent = N;
          }
-         N.InnerText = val;
+         N.InnerText = val ?? "";
       }
 
       public void SaveSetting(string instance, string key, List<string> val)
