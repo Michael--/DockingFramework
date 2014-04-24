@@ -143,16 +143,19 @@ namespace Docking.Components
       /// The main layout is not removeable.
       /// If the main layout name is empty or null "Default" will be used as name.
       /// </summary>
-      public void InstallLayoutMenu(String defaultLayoutName)
+      public void InstallLayoutMenu(string currentlayout, string defaultlayout)
       {
-         if(defaultLayoutName == null || defaultLayoutName.Length == 0)
-            defaultLayoutName = "Default"; // TODO can we localize this string? Careful, the name is persisted...
-         AddLayout(defaultLayoutName, false);
-         if(m_LoadedPersistence != null && m_LoadedPersistence.Layout != null)
-            DockFrame.CurrentLayout = m_LoadedPersistence.Layout;
+         if(defaultlayout == null || defaultlayout.Length == 0)
+            defaultlayout = "Default"; // TODO can we localize this string? Careful, the name is persisted...
+
+         AddLayout(defaultlayout, false);
+
+         if(currentlayout!=null && currentlayout.Length>0)
+            DockFrame.CurrentLayout = currentlayout;
          else
-            DockFrame.CurrentLayout = defaultLayoutName;
-         m_DefaultLayoutName = defaultLayoutName;
+            DockFrame.CurrentLayout = defaultlayout;
+
+         m_DefaultLayoutName = defaultlayout;
 
          m_DeleteLayout = new TaggedLocalizedImageMenuItem("Delete Current Layout");
          m_DeleteLayout.Activated += (object sender, EventArgs e) =>
@@ -1067,6 +1070,7 @@ namespace Docking.Components
       // note: because of this load/save is not thread safe, load/save have to use threads carefully
       // TODO This is an ugly quickhack - get rid of this variable!
       private DockItem currentLoadSaveItem;
+
       private bool mInitialLoadOfComponentsCompleted = false;
       private List<object> mComponents = new List<object>();
 
@@ -1200,40 +1204,48 @@ namespace Docking.Components
                      (item.Content as Component).ComponentRemoved(other);
       }
 
-      MainWindowPersistence m_LoadedPersistence = null;
-
-      protected virtual void LoadPersistence()
+      protected virtual void LoadPersistency() // TODO abolish, replace by implementing IPersistable
       {
-         currentLoadSaveItem = null;
-         MainWindowPersistence p = (MainWindowPersistence) LoadObject("MainWindow", typeof(MainWindowPersistence));
-         if(p != null)
+         currentLoadSaveItem = null; // WTF is this? get rid of it!
+
+         string instance = "MainWindow";        
+         IPersistency persistency = this as IPersistency;
+
+         int    x           = persistency.LoadSetting(instance, "x",           -9999999);
+         int    y           = persistency.LoadSetting(instance, "y",           -9999999);
+         int    w           = persistency.LoadSetting(instance, "w",           -9999999);
+         int    h           = persistency.LoadSetting(instance, "h",           -9999999);
+         string layout      = persistency.LoadSetting(instance, "layout",      "");
+         int    windowstate = persistency.LoadSetting(instance, "windowstate", 0); 
+
+         if(x!=-9999999 && y!=-9999999 && w!=-9999999 && h!=-9999999)
          {
-            this.Resize(p.Width, p.Height);
-            this.Move(p.WindowX, p.WindowY);
-            if((p.WindowState & (int) Gdk.WindowState.Maximized) != 0)
+            this.Resize(w, h);
+            this.Move(x, y);
+            if((windowstate & (int)Gdk.WindowState.Maximized)!=0)
                this.Maximize();
          }
-         m_LoadedPersistence = p;
+
+         InstallLayoutMenu(layout, "Default"); // TODO can we localize the string "Default"? Careful, the name is persisted...
       }
 
-      protected virtual void SavePersistency()
+      protected virtual void SavePersistency() // TODO abolish, replace by implementing IPersistable
       {
-         int wx, wy, width, height;
-         this.GetPosition(out wx, out wy);
-         this.GetSize(out width, out height);
+         string instance = "MainWindow";        
+         IPersistency persistency = this as IPersistency;
 
-         MainWindowPersistence p = new MainWindowPersistence();
-         p.WindowX = wx;
-         p.WindowY = wy;
-         p.Width = width;
-         p.Height = height;
-         p.Layout = DockFrame.CurrentLayout;
-         p.WindowState = (int) WindowState;
+         int x, y, w, h;
+         GetPosition(out x, out y);
+         GetSize(out w, out h);
 
-         currentLoadSaveItem = null;
-         SaveObject("MainWindow", p);
+         persistency.SaveSetting(instance, "x",           x);
+         persistency.SaveSetting(instance, "y",           y);
+         persistency.SaveSetting(instance, "w",           w);
+         persistency.SaveSetting(instance, "h",           h);
+         persistency.SaveSetting(instance, "layout",      DockFrame.CurrentLayout);
+         persistency.SaveSetting(instance, "windowstate", (int)WindowState);
 
-         SaveConfigurationFile(ConfigurationFile);
+         currentLoadSaveItem = null; // WTF is this? get rid of it!
       }
 
       public void Quit(bool save_persistency)
@@ -1244,7 +1256,10 @@ namespace Docking.Components
                   return; // close has been canceled, for example by a dialog prompt which asks for saving an edited document
 
          if(save_persistency)
+         {
             SavePersistency();
+            SaveConfigurationFile(ConfigurationFile);
+         }
 
          foreach(DockItem item in DockFrame.GetItems())
             if((item.Content!=null) && (item.Content is Component))
@@ -2404,17 +2419,6 @@ namespace Docking.Components
       public FileFilter Filter { get; private set; }
 
       public string Pattern { get; set; }
-   }
-
-   [Serializable]
-   public class MainWindowPersistence
-   {
-      public int    WindowX     { get; set; }
-      public int    WindowY     { get; set; }
-      public int    Width       { get; set; }
-      public int    Height      { get; set; }
-      public string Layout      { get; set; }
-      public int    WindowState { get; set; }
    }
 }
 
