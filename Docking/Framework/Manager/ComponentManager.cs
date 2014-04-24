@@ -143,19 +143,12 @@ namespace Docking.Components
       /// The main layout is not removeable.
       /// If the main layout name is empty or null "Default" will be used as name.
       /// </summary>
-      public void InstallLayoutMenu(string currentlayout, string defaultlayout)
+      public void InstallLayoutMenu(string currentlayout)
       {
-         if(defaultlayout == null || defaultlayout.Length == 0)
-            defaultlayout = "Default"; // TODO can we localize this string? Careful, the name is persisted...
+         m_DefaultLayoutName = "Default"; // TODO can we localize this string? Careful, the name is persisted...
+         AddLayout(m_DefaultLayoutName, false);
 
-         AddLayout(defaultlayout, false);
-
-         if(currentlayout!=null && currentlayout.Length>0)
-            DockFrame.CurrentLayout = currentlayout;
-         else
-            DockFrame.CurrentLayout = defaultlayout;
-
-         m_DefaultLayoutName = defaultlayout;
+         DockFrame.CurrentLayout = !String.IsNullOrEmpty(currentlayout) ? currentlayout : m_DefaultLayoutName;
 
          m_DeleteLayout = new TaggedLocalizedImageMenuItem("Delete Current Layout");
          m_DeleteLayout.Activated += (object sender, EventArgs e) =>
@@ -1226,7 +1219,7 @@ namespace Docking.Components
                this.Maximize();
          }
 
-         InstallLayoutMenu(layout, "Default"); // TODO can we localize the string "Default"? Careful, the name is persisted...
+         InstallLayoutMenu(layout);
       }
 
       protected virtual void SavePersistency() // TODO abolish, replace by implementing IPersistable
