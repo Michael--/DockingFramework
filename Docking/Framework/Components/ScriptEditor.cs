@@ -161,7 +161,8 @@ namespace Docking.Components
       }
 
       bool mSetPositionOnlyOnce = true;
-      ScriptPersistence mPersistence;
+
+      ScriptPersistence mPersistence; // TODO early prototype - abolish, implement IPersistable instead!
 
       void vpaned1_ExposeEvent(object o, Gtk.ExposeEventArgs args)
       {

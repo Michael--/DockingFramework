@@ -209,7 +209,7 @@ namespace Docking.Widgets
       /// Gets the persistence data as int array
       /// </summary>
       /// <returns>The persistence.</returns>
-      public void SavePersistence()
+      public void SavePersistence() // TODO early prototype - abolish, implement IPersistable instead!
       {
          mPersistence = new VirtualListPersistenceList();
          ColumnControl.Column[] columns = mColumnControl.GetColumns();

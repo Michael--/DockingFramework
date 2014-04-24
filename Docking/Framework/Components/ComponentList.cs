@@ -28,16 +28,16 @@ namespace Docking.Components
             listStore.AppendValues(row.ToArray());
          }
 
-         Persistence p = (Persistence)ComponentManager.LoadObject("ComponentList", typeof(Persistence));
+         Persistence p = (Persistence)ComponentManager.LoadObject("ComponentList", typeof(Persistence)); // TODO early prototype - abolish, implement IPersistable instead!
          if (p != null)
             p.LoadColumnWidth(treeview1.Columns);
       }
 
-      public override void Save()
+      public override void Save() // TODO early prototype - abolish, implement IPersistable instead!
       {
          base.Save();
 
-         Persistence p = new Persistence();
+         Persistence p = new Persistence(); 
          p.SaveColumnWidth(treeview1.Columns);
          ComponentManager.SaveObject("ComponentList", p);
       }
@@ -163,7 +163,7 @@ namespace Docking.Components
 
 
    [Serializable()]
-   public class Persistence
+   public class Persistence 
    {
       public void SaveColumnWidth(Gtk.TreeViewColumn[] columns)
       {

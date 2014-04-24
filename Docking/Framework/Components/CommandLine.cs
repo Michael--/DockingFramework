@@ -45,7 +45,8 @@ namespace Docking.Components
             ComponentManager.Execute(String.Join("\r\n", phython_script_for_redirecting_stdout_and_stderr));
          });
       }
-      CommandLinePersistence mPersistence;
+
+      CommandLinePersistence mPersistence; // TODO early prototype - abolish, implement IPersistable instead!
 
       public override void Save()
       {
