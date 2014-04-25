@@ -134,7 +134,8 @@ namespace Docking.Components
 
       public AccelGroup AccelGroup { get; private set; }
 
-      String m_DefaultLayoutName;
+      const string m_DefaultLayoutName = "Default"; // TODO can we localize this string? Careful, the name is persisted...
+      
       ImageMenuItem m_DeleteLayout;
 
       /// <summary>
@@ -144,8 +145,7 @@ namespace Docking.Components
       /// If the main layout name is empty or null "Default" will be used as name.
       /// </summary>
       public void InstallLayoutMenu(string currentlayout)
-      {
-         m_DefaultLayoutName = "Default"; // TODO can we localize this string? Careful, the name is persisted...
+      {         
          AddLayout(m_DefaultLayoutName, false);
 
          DockFrame.CurrentLayout = !String.IsNullOrEmpty(currentlayout) ? currentlayout : m_DefaultLayoutName;
