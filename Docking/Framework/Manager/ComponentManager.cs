@@ -55,7 +55,6 @@ namespace Docking.Components
          AccelGroup = new AccelGroup();
          AddAccelGroup(AccelGroup);
          ComponentFinder = new Docking.Components.ComponentFinder();
-         XmlDocument = new XmlDocument();
          PowerDown = false;
          InitPythonEngine(pythonBaseVariableName);
 
@@ -134,7 +133,8 @@ namespace Docking.Components
 
       public AccelGroup AccelGroup { get; private set; }
 
-      const string m_DefaultLayoutName = "Default"; // TODO can we localize this string? Careful, the name is persisted...
+      const string CONFIG_ROOT_ELEMENT = "DockingConfiguration";
+      const string DEFAULT_LAYOUT_NAME = "Default"; // TODO can we localize this string? Careful, the name is persisted...
       
       ImageMenuItem m_DeleteLayout;
 
@@ -146,14 +146,14 @@ namespace Docking.Components
       /// </summary>
       public void InstallLayoutMenu(string currentlayout)
       {         
-         AddLayout(m_DefaultLayoutName, false);
+         AddLayout(DEFAULT_LAYOUT_NAME, false);
 
-         DockFrame.CurrentLayout = !String.IsNullOrEmpty(currentlayout) ? currentlayout : m_DefaultLayoutName;
+         DockFrame.CurrentLayout = !String.IsNullOrEmpty(currentlayout) ? currentlayout : DEFAULT_LAYOUT_NAME;
 
          m_DeleteLayout = new TaggedLocalizedImageMenuItem("Delete Current Layout");
          m_DeleteLayout.Activated += (object sender, EventArgs e) =>
          {
-            if(DockFrame.CurrentLayout != m_DefaultLayoutName)
+            if(DockFrame.CurrentLayout != DEFAULT_LAYOUT_NAME)
             {
                ResponseType result = MessageBox.Show(this, MessageType.Question,
                                          ButtonsType.YesNo,
@@ -164,9 +164,9 @@ namespace Docking.Components
                   MenuItem nitem = sender as MenuItem;
                   DockFrame.DeleteLayout(DockFrame.CurrentLayout);
                   RemoveMenuItem(nitem.Parent, DockFrame.CurrentLayout);
-                  DockFrame.CurrentLayout = m_DefaultLayoutName;
+                  DockFrame.CurrentLayout = DEFAULT_LAYOUT_NAME;
                   CheckMenuItem(nitem.Parent, DockFrame.CurrentLayout);
-                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != m_DefaultLayoutName);
+                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != DEFAULT_LAYOUT_NAME);
                }
             }
          };
@@ -196,7 +196,7 @@ namespace Docking.Components
                DockFrame.CreateLayout(newLayoutName, !createEmptyLayout);
                DockFrame.CurrentLayout = newLayoutName;
                AppendLayoutMenu(newLayoutName, false);
-               m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != m_DefaultLayoutName);
+               m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != DEFAULT_LAYOUT_NAME);
             }
          };
 
@@ -207,7 +207,7 @@ namespace Docking.Components
          foreach(String s in DockFrame.Layouts)
             AppendLayoutMenu(s, true);
 
-         m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != m_DefaultLayoutName);
+         m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != DEFAULT_LAYOUT_NAME);
          MenuBar.ShowAll();
       }
 
@@ -306,7 +306,7 @@ namespace Docking.Components
                   if(!nitem.Active)
                      nitem.Active = true;
                   MessageWriteLine(String.Format("CurrentLayout={0}", label));
-                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != m_DefaultLayoutName);
+                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != DEFAULT_LAYOUT_NAME);
                }
                else
                   if(!nitem.Active)
@@ -607,29 +607,21 @@ namespace Docking.Components
 
       #region private properties
 
-      private Statusbar StatusBar { get; set; }
-
-      private Toolbar ToolBar { get; set; }
-
-      private MenuBar MenuBar { get; set; }
-
-      private XmlDocument XmlDocument { get; set; }
-
-      private XmlNode XmlConfiguration { get; set; }
+      private Statusbar      StatusBar                { get; set; }
+      private Toolbar        ToolBar                  { get; set; }
+      private MenuBar        MenuBar                  { get; set; }
+      private String         ConfigurationFilename    { get; set; }
+      private XmlDocument    ConfigurationXmlDocument { get; set; }
+      private XmlNode        ConfigurationXmlNode     { get; set; }
 
       #endregion
 
       #region public properties
 
-      public DockFrame DockFrame { get; private set; }
-
-      public ComponentFinder ComponentFinder { get; private set; }
-
-      public bool PowerDown { get; private set; }
-
-      public String ConfigurationFile { get; set; }
-
-      public Localization Localization { get; private set; }
+      public DockFrame       DockFrame                { get; private set; }
+      public ComponentFinder ComponentFinder          { get; private set; }
+      public bool            PowerDown                { get; private set; }
+      public Localization    Localization             { get; private set; }
 
       #endregion
 
@@ -993,70 +985,75 @@ namespace Docking.Components
 
       protected void LoadConfigurationFile(String filename)
       {
-         ConfigurationFile = filename;
+         ConfigurationFilename = filename;
+         ConfigurationXmlDocument = new XmlDocument();
 
-         // layout from file or new
-         if(File.Exists(filename))
-         {
-            // the manager holds the persistence in memory all the time
-            XmlDocument.Load(filename);
-            XmlConfiguration = XmlDocument.SelectSingleNode("DockingConfiguration");
-
-            // load XML node "layouts" in a memory file
-            // we should let the implementation of the Mono Develop Docking as it is
-            // to make it easier to update with newest version
-            XmlNode layouts = XmlConfiguration.SelectSingleNode("layouts");
-            if(layouts != null)
-            {
-               MemoryStream ms = new MemoryStream();
-               XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
-
-               layouts.WriteTo(xmlWriter);
-               xmlWriter.Flush();
-               XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
-
-               DockFrame.LoadLayouts(xmlReader);
-            }
+         if(!File.Exists(filename))
+         {            
+            ConfigurationXmlNode = ConfigurationXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT);
+            DockFrame.CreateLayout(DEFAULT_LAYOUT_NAME, true);
+            return;
          }
-         else
+
+         try { ConfigurationXmlDocument.Load(filename); } catch { ConfigurationXmlDocument = new XmlDocument(); }
+
+         ConfigurationXmlNode = ConfigurationXmlDocument.SelectSingleNode(CONFIG_ROOT_ELEMENT);
+         if(ConfigurationXmlNode==null)
+            ConfigurationXmlNode = ConfigurationXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT);
+
+         // load XML node "layouts" in a memory file
+         // we should leave the implementation of the Mono Develop Docking as it is
+         // to make it easier to update with newest version
+         XmlNode layouts = ConfigurationXmlNode.SelectSingleNode("layouts");
+         if(layouts!=null)
          {
-            DockFrame.CreateLayout("Default", true);
+            MemoryStream ms = new MemoryStream();
+            XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
+            layouts.WriteTo(xmlWriter);
+            xmlWriter.Flush();
+            XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
+            DockFrame.LoadLayouts(xmlReader);
          }
       }
 
-      protected void SaveConfigurationFile(String filename)
+      protected void SaveConfigurationFile()
+      {
+         ComponentsSave();
+
+         Localization.WriteChangedResourceFiles();
+
+         if(!string.IsNullOrEmpty(ConfigurationFilename))
+         {
+            ConfigurationXmlDocument.Save(new FileStream(
+               ConfigurationFilename, FileMode.Create, FileAccess.ReadWrite,
+               FileShare.None // open the file exclusively for writing, i.e., prevent other instances of us from interfering
+            ));
+         }
+
+         ComponentsRemove();
+      }
+
+      private void SaveDockFrameLayoutsToXmlConfigurationObject()
       {
          // save first DockFrame persistence in own (memory) file
          MemoryStream ms = new MemoryStream();
          XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
          DockFrame.SaveLayouts(xmlWriter);
          xmlWriter.Flush();
-         XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
 
          // re-load as XmlDocument
          XmlDocument doc = new XmlDocument();
-         doc.Load(xmlReader);
+         doc.Load(new XmlTextReader(new MemoryStream(ms.ToArray())));
 
-         // select layouts and replace in managed persistence
+         // select layouts and replace in XmlConfiguration
          // note that a node from other document must imported before use for add/replace
          XmlNode layouts = doc.SelectSingleNode("layouts");
-         XmlNode newLayouts = XmlDocument.ImportNode(layouts, true);
-         XmlNode oldLayouts = XmlConfiguration.SelectSingleNode("layouts");
+         XmlNode newLayouts = ConfigurationXmlDocument.ImportNode(layouts, true);
+         XmlNode oldLayouts = ConfigurationXmlNode.SelectSingleNode("layouts");
          if(oldLayouts != null)
-            XmlConfiguration.ReplaceChild(newLayouts, oldLayouts);
+            ConfigurationXmlNode.ReplaceChild(newLayouts, oldLayouts);
          else
-            XmlConfiguration.AppendChild(newLayouts);
-
-         ComponentsSave();
-
-         Localization.WriteChangedResourceFiles();
-         
-         XmlDocument.Save(new FileStream(
-            filename, FileMode.Create, FileAccess.ReadWrite,
-            FileShare.None // open the file exclusively for writing, i.e., prevent other instances of us from interfering
-         ));
-
-         ComponentsRemove();
+            ConfigurationXmlNode.AppendChild(newLayouts);
       }
 
       // contains the current component while load/save persistence
@@ -1186,6 +1183,7 @@ namespace Docking.Components
                currentLoadSaveItem = null;
             }
          }
+         SaveDockFrameLayoutsToXmlConfigurationObject();
       }
 
       private void ComponentsRemove()
@@ -1251,7 +1249,7 @@ namespace Docking.Components
          if(save_persistency)
          {
             SavePersistency();
-            SaveConfigurationFile(ConfigurationFile);
+            SaveConfigurationFile();
          }
 
          foreach(DockItem item in DockFrame.GetItems())
@@ -1287,10 +1285,10 @@ namespace Docking.Components
             if(currentLoadSaveItem != null)
                pimpedElementName += "_" + currentLoadSaveItem.Id.ToString();
 
-         if(XmlConfiguration == null || pimpedElementName == null)
+         if(ConfigurationXmlNode == null || pimpedElementName == null)
             return null;
 
-         XmlNode element = XmlConfiguration.SelectSingleNode(pimpedElementName);
+         XmlNode element = ConfigurationXmlNode.SelectSingleNode(pimpedElementName);
          if(element == null)
             return null;
 
@@ -1374,7 +1372,7 @@ namespace Docking.Components
                pimpedElementName += "_" + currentLoadSaveItem.Id.ToString();
 
          // replace in managed persistence
-         XmlNode newNode = XmlDocument.CreateElement(pimpedElementName);
+         XmlNode newNode = ConfigurationXmlDocument.CreateElement(pimpedElementName);
 
          // add serialized data
          MemoryStream formattedStream = new MemoryStream();
@@ -1382,21 +1380,21 @@ namespace Docking.Components
          formatter.Serialize(formattedStream, obj);
          formattedStream.Flush();
          string serializedAsHex = ToHexString(formattedStream.GetBuffer());
-         XmlNode importNode = XmlDocument.CreateElement(obj.GetType().Name + "_FMT");
+         XmlNode importNode = ConfigurationXmlDocument.CreateElement(obj.GetType().Name + "_FMT");
          importNode.InnerText = serializedAsHex;
          newNode.AppendChild(importNode);
 
          // need new base node if started without old config
-         if(XmlConfiguration == null)
+         if(ConfigurationXmlNode == null)
          {
-            XmlConfiguration = XmlDocument.CreateElement("DockingConfiguration");
-            XmlDocument.AppendChild(XmlConfiguration);
+            ConfigurationXmlNode = ConfigurationXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT);
+            ConfigurationXmlDocument.AppendChild(ConfigurationXmlNode);
          }
-         XmlNode oldNode = XmlConfiguration.SelectSingleNode(pimpedElementName);
+         XmlNode oldNode = ConfigurationXmlNode.SelectSingleNode(pimpedElementName);
          if(oldNode != null)
-            XmlConfiguration.ReplaceChild(newNode, oldNode);
+            ConfigurationXmlNode.ReplaceChild(newNode, oldNode);
          else
-            XmlConfiguration.AppendChild(newNode);
+            ConfigurationXmlNode.AppendChild(newNode);
       }
 
       #endregion
@@ -1407,7 +1405,7 @@ namespace Docking.Components
 
       public void SaveSetting(string instance, string key, string val)
       {
-         if(XmlConfiguration == null)
+         if(ConfigurationXmlNode == null)
             return;
 
          List<string> portions = new List<string>(instance.Split('/'));
@@ -1416,7 +1414,7 @@ namespace Docking.Components
             return;
 
          XmlNode N = null;
-         XmlNode parent = XmlConfiguration;
+         XmlNode parent = ConfigurationXmlNode;
          foreach(string p in portions)
          {
             try
@@ -1429,7 +1427,7 @@ namespace Docking.Components
             }
             if(N == null)
             {
-               N = XmlDocument.CreateElement(p);
+               N = ConfigurationXmlDocument.CreateElement(p);
                parent.AppendChild(N);
             }
             parent = N;
@@ -1504,7 +1502,7 @@ namespace Docking.Components
 
       public string LoadSetting(string instance, string key, string defaultval)
       {
-         if(XmlConfiguration == null)
+         if(ConfigurationXmlNode == null)
             return defaultval;
 
          List<string> portions = new List<string>(instance.Split('/'));
@@ -1515,7 +1513,7 @@ namespace Docking.Components
          try
          {
             XmlNode N = null;
-            XmlNode parent = XmlConfiguration;
+            XmlNode parent = ConfigurationXmlNode;
             foreach(string p in portions)
             {
                N = parent.SelectSingleNode(p);
