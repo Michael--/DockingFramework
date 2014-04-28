@@ -3,7 +3,7 @@ using System;
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-    public partial class PropertyViewer : Component, IProperty, ILocalizableComponent
+    public partial class PropertyViewer : Component, IPropertyViewer, ILocalizableComponent
     {
         public PropertyViewer ()
         {
@@ -27,9 +27,9 @@ namespace Docking.Components
            this.propertygrid1.QueueDraw(); 
         }
 
-        #region IProperty
+        #region IPropertyViewer
 
-        void IProperty.SetObject(Object obj)
+        void IPropertyViewer.SetObject(Object obj)
         {
             if(obj==this.propertygrid1.CurrentObject)
                 return;
@@ -38,7 +38,7 @@ namespace Docking.Components
             this.propertygrid1.QueueDraw(); // TODO: work currently not as expected
         }
 
-        void IProperty.SetObject(Object obj, Object[] providers)
+        void IPropertyViewer.SetObject(Object obj, Object[] providers)
         {
             if (obj == this.propertygrid1.CurrentObject)
                 return;
@@ -50,7 +50,7 @@ namespace Docking.Components
         /// <summary>
         /// Get an event on any property changes
         /// </summary>
-        PropertyChangedEventHandler IProperty.PropertyChanged
+        PropertyChangedEventHandler IPropertyViewer.PropertyChanged
         {
             get { return PropertyChangedHandler; }
             set { PropertyChangedHandler = value; }
@@ -61,7 +61,7 @@ namespace Docking.Components
         #endregion
     }
 
-    #region IProperty
+    #region IPropertyViewer
 
     public class PropertyChangedEventArgs : EventArgs
     {
@@ -70,29 +70,6 @@ namespace Docking.Components
             Object = obj;
         }
         public Object Object { get; private set; }
-    }
-
-
-    public delegate void PropertyChangedEventHandler(PropertyChangedEventArgs e);
-
-    public interface IProperty
-    {
-        /// <summary>
-        /// Sets the current object to display its properties
-        /// </summary>
-        void SetObject(Object obj);
-
-        /// <summary>
-        /// Sets the current object and display the properties of given providers
-        /// Show the properties of more than one instance
-        /// The base object is the anchor, also used to send PropertyChanged event
-        /// </summary>
-        void SetObject(Object obj, Object[] providers);
-
-        /// <summary>
-        /// Get an event on any property changes
-        /// </summary>
-        PropertyChangedEventHandler PropertyChanged { get; set; }
     }
 
     #endregion

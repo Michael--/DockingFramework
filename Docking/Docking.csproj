@@ -138,7 +138,6 @@
     <Compile Include="Tools\Threading\WorkerThread.cs" />
     <Compile Include="Tools\Threading\WorkerThreadInfo.cs" />
     <Compile Include="Framework\Interfaces\IFileOpen.cs" />
-    <Compile Include="Framework\Components\PropertyViewer.cs" />
     <Compile Include="gtk-gui\Docking.Components.PropertyViewer.cs" />
     <Compile Include="Monodevelop.Docking\AutoHideBox.cs" />
     <Compile Include="Monodevelop.Docking\DockBar.cs" />
@@ -228,6 +227,8 @@
     <Compile Include="Xwt.Motion\Tweener.cs" />
     <Compile Include="Framework\Components\Component.cs" />
     <Compile Include="Monodevelop.Docking\DockingHelper\MonoWorkarounds.cs" />
+    <Compile Include="Framework\Components\PropertyViewer.cs" />
+    <Compile Include="Framework\Interfaces\IPropertyViewer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -1150,8 +1150,8 @@ namespace Docking.Components
             if(item.Content is Component)
                (item.Content as Component).VisibilityChanged(item.Content, item.Visible);
 
-            if(item.Content is IProperty)
-               mPropertyInterfaces.Add(item.Content as IProperty);
+            if(item.Content is IPropertyViewer)
+               mPropertyInterfaces.Add(item.Content as IPropertyViewer);
 
             if(item.Content is IScript)
                mScriptInterfaces.Add(item.Content as IScript);
@@ -1723,8 +1723,8 @@ namespace Docking.Components
             if(item.Content is Component)
                AddComponent(item.Content);
 
-            if(item.Content is IProperty)
-               mPropertyInterfaces.Add(item.Content as IProperty);
+            if(item.Content is IPropertyViewer)
+               mPropertyInterfaces.Add(item.Content as IPropertyViewer);
 
             if(item.Content is IScript)
                mScriptInterfaces.Add(item.Content as IScript);
@@ -1734,14 +1734,14 @@ namespace Docking.Components
 
       private void HandleDockItemRemoved(DockItem item)
       {
-         if(item.Content is IProperty)
-            mPropertyInterfaces.Remove(item.Content as IProperty);
+         if(item.Content is IPropertyViewer)
+            mPropertyInterfaces.Remove(item.Content as IPropertyViewer);
 
          // tell all other about current item changed if it the removed component
          if(CurrentDockItem == item)
          {
-            // care all IProperty Widgets
-            foreach(IProperty ip in mPropertyInterfaces)
+            // care all IPropertyViewers
+            foreach(IPropertyViewer ip in mPropertyInterfaces)
                ip.SetObject(null);
 
             // care all IScript Widgets
@@ -1861,7 +1861,7 @@ namespace Docking.Components
       public DockItem CurrentDockItem { get; protected set; }
 
       DockVisualStyle mNormalStyle, mSelectedStyle;
-      List<IProperty> mPropertyInterfaces = new List<IProperty>();
+      List<IPropertyViewer> mPropertyInterfaces = new List<IPropertyViewer>();
       List<IScript> mScriptInterfaces = new List<IScript>();
 
       /// <summary>
@@ -1926,10 +1926,10 @@ namespace Docking.Components
                mMenuCopy.Sensitive = CurrentDockItem.Content is ICopy;
                mMenuPaste.Sensitive = CurrentDockItem.Content is IPaste;
 
-               // notify all IProperty Widgets
-               if(!(CurrentDockItem.Content is IProperty))
+               // notify all IPropertyViewers
+               if(!(CurrentDockItem.Content is IPropertyViewer))
                {
-                  foreach(IProperty ip in mPropertyInterfaces)
+                  foreach(IPropertyViewer ip in mPropertyInterfaces)
                      ip.SetObject(null);
                }
                // notify all IScript Widgets

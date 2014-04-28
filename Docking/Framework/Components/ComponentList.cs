@@ -46,16 +46,16 @@ namespace Docking.Components
 
       public override void ComponentAdded(object item)
       {
-         if (item is IProperty)
-            mPropertyInterfaces.Add(item as IProperty);
+         if (item is IPropertyViewer)
+            mPropertyInterfaces.Add(item as IPropertyViewer);
 
          ChangeInstanceCount(item, 1);
       }
 
       public override void ComponentRemoved(object item)
       {
-         if (item is IProperty)
-            mPropertyInterfaces.Remove(item as IProperty);
+         if (item is IPropertyViewer)
+            mPropertyInterfaces.Remove(item as IPropertyViewer);
 
          ChangeInstanceCount(item, -1);
       }
@@ -158,7 +158,7 @@ namespace Docking.Components
       const int DescriptionIndex = 3;
 
 
-      List<IProperty> mPropertyInterfaces = new List<IProperty>();
+      List<IPropertyViewer> mPropertyInterfaces = new List<IPropertyViewer>();
    }
 
 
