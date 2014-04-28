@@ -39,9 +39,11 @@ namespace Docking.Components
 
       public string[] CommandLineArguments;
 
+      public string ApplicationName { get; private set; }
+
       // make sure that you construct this class from the main thread!
-      public ComponentManager(string[] args, WindowType wt, string pythonBaseVariableName = "cm")
-      : base(wt)
+      public ComponentManager(string[] args, string application_name, string pythonApplicationObjectName)
+      : base(WindowType.Toplevel)
       {
          Clock = new Stopwatch();
          Clock.Start();
@@ -50,13 +52,19 @@ namespace Docking.Components
 
          CommandLineArguments = args;
 
+         ApplicationName = application_name;
+
          Localization = new Components.Localization(this);
          Localization.SearchForResources(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Languages", "*.resx"));
+
          AccelGroup = new AccelGroup();
          AddAccelGroup(AccelGroup);
+
          ComponentFinder = new Docking.Components.ComponentFinder();
+
          PowerDown = false;
-         InitPythonEngine(pythonBaseVariableName);
+
+         InitPythonEngine(pythonApplicationObjectName);
 
          MakeWidgetReceiveDropEvents(Toplevel, OnDragDataReceived);
 
@@ -1239,12 +1247,12 @@ namespace Docking.Components
          currentLoadSaveItem = null; // WTF is this? get rid of it!
       }
 
-      public void Quit(bool save_persistency)
+      public bool Quit(bool save_persistency)
       {
          foreach(DockItem item in DockFrame.GetItems())
             if((item.Content!=null) && (item.Content is Component))
                if(!(item.Content as Component).IsCloseOK())
-                  return; // close has been canceled, for example by a dialog prompt which asks for saving an edited document
+                  return false; // close has been canceled, for example by a dialog prompt which asks for saving an edited document
 
          if(save_persistency)
          {
@@ -1259,6 +1267,8 @@ namespace Docking.Components
          PowerDown = true;
 
          Application.Quit();
+
+         return true;
       }
 
       protected void OnDeleteEvent(object sender, DeleteEventArgs a)
