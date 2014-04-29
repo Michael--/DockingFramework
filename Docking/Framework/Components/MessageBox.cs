@@ -56,8 +56,6 @@ namespace Docking.Components
             case MessageType.Warning:  ((Gtk.Image)md.Image).Pixbuf = PIXBUF_WARNING;  break;
             case MessageType.Question: ((Gtk.Image)md.Image).Pixbuf = PIXBUF_QUESTION; break;
             case MessageType.Error:    ((Gtk.Image)md.Image).Pixbuf = PIXBUF_ERROR;    break;
-            case MessageType.Other:    ((Gtk.Image)md.Image).Pixbuf = PIXBUF_INFO;     break;
-            default:                   ((Gtk.Image)md.Image).Pixbuf = PIXBUF_INFO;     break;
             }
          }
 
