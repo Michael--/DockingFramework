@@ -270,8 +270,8 @@ namespace Docking.Tools
           foreach(TreePath path in selection.GetSelectedRows())
           {
              TreeIter iter;
-             selection.TreeView.Model.GetIter(out iter, path);
-             result.Add(iter);
+             if(selection.TreeView.Model.GetIter(out iter, path))
+                result.Add(iter);
           }
           return result;
        }

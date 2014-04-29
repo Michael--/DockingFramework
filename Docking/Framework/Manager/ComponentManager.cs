@@ -1221,9 +1221,9 @@ namespace Docking.Components
          {
             this.Resize(w, h);
             this.Move(x, y);
-            if((windowstate & (int)Gdk.WindowState.Maximized)!=0)
-               this.Maximize();
          }
+         if((windowstate & (int)Gdk.WindowState.Maximized)!=0)
+            this.Maximize();
 
          InstallLayoutMenu(layout);
       }
