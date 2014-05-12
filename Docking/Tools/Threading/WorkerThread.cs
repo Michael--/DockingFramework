@@ -67,7 +67,7 @@ namespace Docking.Tools
                 ProgressChanged(percent, new ProgressChangedEventArgs(percent, this));
         }
             
-        public WorkerThread (String name, String description)
+        public WorkerThread (String name, String description = "")
         {
             State = WorkState.NotStarted;
             mThread = new Thread(ThreadHull);
