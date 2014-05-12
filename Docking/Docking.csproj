@@ -227,9 +227,9 @@
     <Compile Include="Xwt.Motion\ObjectTransforms.cs" />
     <Compile Include="Xwt.Motion\Tweener.cs" />
     <Compile Include="Framework\Components\Component.cs" />
-    <Compile Include="Monodevelop.Docking\DockingHelper\MonoWorkarounds.cs" />
     <Compile Include="Framework\Components\PropertyViewer.cs" />
     <Compile Include="Framework\Interfaces\IPropertyViewer.cs" />
+    <Compile Include="Tools\Misc\GtkSharpCompatibilityWorkarounds.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
