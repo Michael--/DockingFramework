@@ -71,6 +71,7 @@ namespace Docking.Tools
         {
             State = WorkState.NotStarted;
             mThread = new Thread(ThreadHull);
+            mThread.Name = name;
 
             m_JobInformation = WorkerThreadInfo.Create(this, name, description);
         }
