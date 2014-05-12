@@ -80,15 +80,9 @@ namespace Docking.Components
         TreeIter FindJob(JobInfo job)
         {
             TreeIter iter;
-            listStore.GetIterFirst(out iter);
-            while(!iter.Equals(TreeIter.Zero))
-            {
+            for(bool ok = listStore.GetIterFirst(out iter); ok; ok = listStore.IterNext(ref iter))
                if(listStore.GetValue(iter, COLUMN_JOB_INFORMATION)==job)
-               {
                   return iter;
-               }
-               listStore.IterNext(ref iter);
-            }
             return TreeIter.Zero;
         }
 
