@@ -41,6 +41,11 @@ namespace Docking.Components
 
       public string ApplicationName { get; private set; }
 
+      static ComponentManager()
+      {
+         PowerDown = false;
+      }
+
       // make sure that you construct this class from the main thread!
       public ComponentManager(string[] args, string application_name, string pythonApplicationObjectName)
       : base(WindowType.Toplevel)
@@ -61,8 +66,6 @@ namespace Docking.Components
          AddAccelGroup(AccelGroup);
 
          ComponentFinder = new Docking.Components.ComponentFinder();
-
-         PowerDown = false;
 
          InitPythonEngine(pythonApplicationObjectName);
 
@@ -628,7 +631,7 @@ namespace Docking.Components
 
       public DockFrame       DockFrame                { get; private set; }
       public ComponentFinder ComponentFinder          { get; private set; }
-      public bool            PowerDown                { get; private set; }
+      public static bool     PowerDown                { get; private set; }
       public Localization    Localization             { get; private set; }
 
       #endregion
