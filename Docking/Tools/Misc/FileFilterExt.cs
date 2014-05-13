@@ -31,7 +31,14 @@ namespace Docking.Tools
       // returns true if a given filename matches one of the patterns of this filter
       public bool Matches(string filename)
       {
-         return Filter(new FileFilterInfo { Contains = FileFilterFlags.Filename, Filename = filename });
+         FileFilterInfo info = new FileFilterInfo
+         {
+            Contains    = FileFilterFlags.Filename | FileFilterFlags.DisplayName,
+            Filename    = filename,
+            DisplayName = filename
+         };
+ 
+         return this.Filter(info);
       }
    }
 }
