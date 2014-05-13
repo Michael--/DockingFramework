@@ -127,6 +127,7 @@
     <Compile Include="Tools\Colors\Colors.cs" />
     <Compile Include="Tools\Graphics\SystemDrawing_vs_GTK_Conversion.cs" />
     <Compile Include="Tools\Misc\EncodingStringWriter.cs" />
+    <Compile Include="Tools\Misc\FileFilterExt.cs" />
     <Compile Include="Tools\Misc\StringTools.cs" />
     <Compile Include="Tools\Misc\LocalizationExtensions.cs" />
     <Compile Include="Tools\Misc\TreeViewExtensions.cs" />

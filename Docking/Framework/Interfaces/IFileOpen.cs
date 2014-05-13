@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Gtk;
+using Docking.Tools;
 
 namespace Docking.Components
 {
@@ -11,7 +12,7 @@ namespace Docking.Components
         /// and offer them in its FileOpen dialog.
         /// </summary>
         /// <returns></returns>
-        List<FileFilter> SupportedFileTypes();
+        List<FileFilterExt> SupportedFileTypes();
 
         /// <summary>
         /// Ask the component if file type supported.

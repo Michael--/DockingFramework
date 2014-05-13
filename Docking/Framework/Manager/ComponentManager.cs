@@ -645,16 +645,16 @@ namespace Docking.Components
          item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.O, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          item.Activated += (sender, e) =>
          {
-            List<FileFilter> filefilters = new List<FileFilter>();
+            List<FileFilterExt> filefilters = new List<FileFilterExt>();
             foreach(DockItem d in DockFrame.GetItems())
                if(d.Content is IFileOpen)
                   filefilters.AddRange((d.Content as IFileOpen).SupportedFileTypes());
 
 #if false // as long as we have no mechanism (see below) which offers the user to instantiate new components which can handle new file types, we should not offer him this *.* option
-                FileFilter any = new FileFilter();
-                any.AddPattern("*.*");
-                any.Name = "*.* - Any File";
-                filefilters.Add(any);
+            FileFilter any = new FileFilter();
+            any.AddPattern("*.*");
+            any.Name = "*.* - Any File";
+            filefilters.Add(any);
 #endif
 
             String filename = OpenFileDialog("Choose a file to open...".Localized("Docking.Components"), filefilters);
@@ -722,52 +722,95 @@ namespace Docking.Components
          return result;
       }
 
-      public String OpenFileDialog(string prompt)
+      public String OpenFileDialog(string prompt, FileFilterExt filefilter = null)
       {
-         return OpenFileDialog(prompt, new List<FileFilter>());
+         List<FileFilterExt> filters = new List<FileFilterExt>();
+         if(filefilter!=null)
+            filters.Add(filefilter);
+         return OpenFileDialog(prompt, filters);
       }
 
-      public String OpenFileDialog(string prompt, FileFilter filefilter)
-      {
-         List<FileFilter> L = null;
-         if(filefilter != null)
-         {
-            L = new List<FileFilter>();
-            L.Add(filefilter);
-         }
-         return OpenFileDialog(prompt, L);
-      }
-
-      public String OpenFileDialog(string prompt, List<FileFilter> filefilters)
+      public String OpenFileDialog(string prompt, List<FileFilterExt> filefilters)
       {
          String result = null;
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Open,
                                               "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
                                               "Open".Localized("Docking.Components"), ResponseType.Accept);
 
-         if(filefilters != null)
-            foreach(FileFilter filter in filefilters)
+         if(filefilters!=null && filefilters.Count>0)
+         {
+            FileFilterExt combinedfilter = new FileFilterExt();
+            combinedfilter.Name = "COMBINED";
+          
+            foreach(FileFilterExt filter in filefilters)
+               foreach(string pattern in filter.GetPatterns())
+                  combinedfilter.AddPattern(pattern);
+         
+            dlg.AddFilter(combinedfilter);
+            foreach(FileFilterExt filter in filefilters)
                dlg.AddFilter(filter);
+         }
 
          if(dlg.Run() == (int) ResponseType.Accept)
-         {
             result = dlg.Filename;
-         }
 
          dlg.Destroy();
          return result;
       }
 
-      public String SaveFileDialog(string prompt, FileFilterExt[] filefilters = null)
+      public string[] OpenFilesDialog(string prompt, FileFilterExt filefilter = null)
+      {
+         List<FileFilterExt> filters = new List<FileFilterExt>();
+         if(filefilter!=null)
+            filters.Add(filefilter);
+         return OpenFilesDialog(prompt, filters);        
+      }
+
+      public string[] OpenFilesDialog(string prompt, List<FileFilterExt> filefilters)
+      {
+         string[] result = null;
+         FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Open,
+                                              "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
+                                              "Open".Localized("Docking.Components"), ResponseType.Accept);
+
+         dlg.SelectMultiple = true;
+
+         if(filefilters!=null && filefilters.Count>0)
+         {
+            FileFilterExt combinedfilter = new FileFilterExt();
+            combinedfilter.Name = "COMBINED";
+          
+            foreach(FileFilterExt filter in filefilters)
+               foreach(string pattern in filter.GetPatterns())
+                  combinedfilter.AddPattern(pattern);
+         
+            dlg.AddFilter(combinedfilter);
+            foreach(FileFilterExt filter in filefilters)
+               dlg.AddFilter(filter);
+         }
+
+         if(dlg.Run() == (int) ResponseType.Accept)
+            result = dlg.Filenames;
+
+         dlg.Destroy();
+         return result;
+      }
+
+      public String SaveFileDialog(string prompt, FileFilterExt filefilter)
+      {
+         return SaveFileDialog(prompt, new List<FileFilterExt>() { filefilter } );
+      }
+
+      public String SaveFileDialog(string prompt, List<FileFilterExt> filefilters = null)
       {
          String result = null;
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Save,
                                               "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
                                               "Save".Localized("Docking.Components"), ResponseType.Accept);
 
-         if(filefilters != null)
+         if(filefilters!=null)
             foreach(FileFilterExt filter in filefilters)
-               dlg.AddFilter(filter.Filter);
+               dlg.AddFilter(filter);
 
          if(dlg.Run() == (int) ResponseType.Accept)
          {
@@ -778,15 +821,23 @@ namespace Docking.Components
             {
                foreach(FileFilterExt f in filefilters)
                {
-                  if(f.Filter == selectedFilter)
+                  if(f==selectedFilter)
                   {
-                     string expectedExtension = f.Pattern.TrimStart(new char[] { '*' });
-
-                     if(!result.EndsWith(expectedExtension, true, null))
-                     {
-                        result = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(result),
-                            System.IO.Path.GetFileName(result) + expectedExtension);
+                     bool correct_extension_found = false;                   
+                     string firstext = null;
+                     foreach(string pattern in f.GetPatterns())
+                     {                          
+                        string ext = pattern.TrimStart('*');
+                        if(firstext==null)
+                           firstext = ext;
+                        if(result.EndsWith(ext, true, null))
+                        {
+                           correct_extension_found = true;
+                           break;
+                        }
                      }
+                     if(!correct_extension_found && firstext!=null)
+                        result += firstext;
                      break;
                   }
                }
@@ -2407,22 +2458,6 @@ namespace Docking.Components
       public string LocalizationKey { get; set; }
 
       public bool IgnoreLocalization { get; set; }
-   }
-
-   // used for SaveAs dialog, necessary to extend with correct file extension
-   public class FileFilterExt
-   {
-      public FileFilterExt(string pattern, string name)
-      {
-         Pattern = pattern;
-         Filter = new FileFilter();
-         Filter.AddPattern(pattern);
-         Filter.Name = name;
-      }
-
-      public FileFilter Filter { get; private set; }
-
-      public string Pattern { get; set; }
    }
 }
 
