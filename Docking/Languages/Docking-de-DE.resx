@@ -253,8 +253,8 @@ Es wird empfohlen, anschließend die Übersetzungen manuell zu überprüfen.</va
   <data name="Docking.Components.No component is instantiated which can handle file {0}" xml:space="preserve">
     <value>Es ist aktuell kein Fenster geöffnet, das Dateien dieses Typs {0] handhaben kann</value>
   </data>
-  <data name="Docking.Components.Opening file {0} as {1}" xml:space="preserve">
-    <value>Öffne Datei {0} als {1}</value>
+  <data name="Docking.Components.Opening file {0} as {1}..." xml:space="preserve">
+    <value>Öffne Datei {0} als {1}...</value>
   </data>
   <data name="Docking.Components.Opening whole directories like {0} currently isn't implemented" xml:space="preserve">
     <value>Ganze Ordner wie z.B. {0} auf einmal zu öffnen ist aktuell nicht implementiert.</value>

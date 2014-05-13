@@ -252,8 +252,8 @@
   <data name="Docking.Components.Open" xml:space="preserve">
     <value>打开</value>
   </data>
-  <data name="Docking.Components.Opening file {0} as {1}" xml:space="preserve">
-    <value>打开文件{0} {1}</value>
+  <data name="Docking.Components.Opening file {0} as {1}..." xml:space="preserve">
+    <value>打开文件 {0} 类型 {1}...</value>
   </data>
   <data name="Docking.Components.Opening whole directories like {0} currently isn't implemented" xml:space="preserve">
     <value>文件夹无法打开 {0}</value>
