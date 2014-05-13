@@ -723,6 +723,20 @@ namespace Docking.Components
          return OpenFileDialog(prompt, filters);
       }
 
+      const int MAX_RECENT_FILES = 9;
+      static List<string> mRecentFiles = new List<string>();
+
+      public void AddToRecentFiles(string filename)
+      {
+         if(string.IsNullOrEmpty(filename))
+            return;
+         if(mRecentFiles.Contains(filename))
+            mRecentFiles.Remove(filename);
+         mRecentFiles.Insert(0, filename);
+         if(mRecentFiles.Count>MAX_RECENT_FILES)
+            mRecentFiles.RemoveRange(MAX_RECENT_FILES, mRecentFiles.Count-MAX_RECENT_FILES);
+      }
+
       public String OpenFileDialog(string prompt, List<FileFilterExt> filters)
       {
          String result = null;
@@ -751,6 +765,8 @@ namespace Docking.Components
             result = dlg.Filename;
 
          dlg.Destroy();
+
+         AddToRecentFiles(result);
          return result;
       }
 
@@ -792,6 +808,10 @@ namespace Docking.Components
             result = dlg.Filenames;
 
          dlg.Destroy();
+
+         if(result!=null)
+            foreach(string filename in result)
+               AddToRecentFiles(filename);
          return result;
       }
 
@@ -847,6 +867,8 @@ namespace Docking.Components
          }
 
          dlg.Destroy();
+
+         AddToRecentFiles(result);
          return result;
       }
 
