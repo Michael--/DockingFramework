@@ -726,20 +726,23 @@ namespace Docking.Components
       public String OpenFileDialog(string prompt, List<FileFilterExt> filters)
       {
          String result = null;
+
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Open,
                                               "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
                                               "Open".Localized("Docking.Components"), ResponseType.Accept);
 
          if(filters!=null && filters.Count>0)
          {
-            FileFilterExt combinedfilter = new FileFilterExt();
-            combinedfilter.Name = "COMBINED";
-          
-            foreach(FileFilterExt filter in filters)
-               foreach(string pattern in filter.GetPatterns())
-                  combinedfilter.AddPattern(pattern);
-         
-            dlg.AddFilter(combinedfilter);
+            if(filters.Count>1)
+            {
+               FileFilterExt combinedfilter = new FileFilterExt();
+               foreach(FileFilterExt filter in filters)
+                  foreach(string pattern in filter.GetPatterns())
+                     combinedfilter.AddPattern(pattern);         
+               combinedfilter.Name = "(all supported file types)";
+               dlg.AddFilter(combinedfilter);
+            }
+
             foreach(FileFilterExt filter in filters)
                dlg.AddFilter(filter);
          }
@@ -762,6 +765,7 @@ namespace Docking.Components
       public string[] OpenFilesDialog(string prompt, List<FileFilterExt> filters)
       {
          string[] result = null;
+
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Open,
                                               "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
                                               "Open".Localized("Docking.Components"), ResponseType.Accept);
@@ -770,14 +774,16 @@ namespace Docking.Components
 
          if(filters!=null && filters.Count>0)
          {
-            FileFilterExt combinedfilter = new FileFilterExt();
-            combinedfilter.Name = "COMBINED";
-          
-            foreach(FileFilterExt filter in filters)
-               foreach(string pattern in filter.GetPatterns())
-                  combinedfilter.AddPattern(pattern);
-         
-            dlg.AddFilter(combinedfilter);
+            if(filters.Count>1)
+            {
+               FileFilterExt combinedfilter = new FileFilterExt();               
+               foreach(FileFilterExt filter in filters)
+                  foreach(string pattern in filter.GetPatterns())
+                     combinedfilter.AddPattern(pattern);                     
+               combinedfilter.Name = "(all supported file types)";
+               dlg.AddFilter(combinedfilter);
+            }
+
             foreach(FileFilterExt filter in filters)
                dlg.AddFilter(filter);
          }
