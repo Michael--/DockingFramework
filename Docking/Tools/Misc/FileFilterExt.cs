@@ -13,18 +13,14 @@ namespace Docking.Tools
 
       public FileFilterExt(string pattern, string name)
       {
-         string patternL = pattern.ToLowerInvariant();
-
-         Name = name+" ("+patternL+")";
-         AddPattern(patternL);         
+         Name = name+" ("+pattern+")";
+         AddPattern(pattern);         
       }
 
       new public void AddPattern(string pattern)
       { 
-         string patternL = pattern.ToLowerInvariant();
-
-         mPatterns.Add(patternL);
-         base.AddPattern(patternL);
+         mPatterns.Add(pattern);
+         base.AddPattern(pattern);
       }
  
       public IEnumerable<string> GetPatterns()
@@ -35,9 +31,7 @@ namespace Docking.Tools
       // returns true if a given filename matches one of the patterns of this filter
       public bool Matches(string filename)
       {
-         string filenameL = filename.ToLowerInvariant();
-
-         return Filter(new FileFilterInfo { Contains = FileFilterFlags.Filename, Filename = filenameL });
+         return Filter(new FileFilterInfo { Contains = FileFilterFlags.Filename, Filename = filename });
       }
    }
 }

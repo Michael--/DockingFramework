@@ -645,19 +645,12 @@ namespace Docking.Components
          item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.O, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          item.Activated += (sender, e) =>
          {
-            List<FileFilterExt> filefilters = new List<FileFilterExt>();
+            List<FileFilterExt> filters = new List<FileFilterExt>();
             foreach(DockItem d in DockFrame.GetItems())
                if(d.Content is IFileOpen)
-                  filefilters.AddRange((d.Content as IFileOpen).SupportedFileTypes());
+                  filters.AddRange((d.Content as IFileOpen).SupportedFileTypes());
 
-#if false // as long as we have no mechanism (see below) which offers the user to instantiate new components which can handle new file types, we should not offer him this *.* option
-            FileFilter any = new FileFilter();
-            any.AddPattern("*.*");
-            any.Name = "*.* - Any File";
-            filefilters.Add(any);
-#endif
-
-            String filename = OpenFileDialog("Choose a file to open...".Localized("Docking.Components"), filefilters);
+            String filename = OpenFileDialog("Choose a file to open...".Localized("Docking.Components"), filters);
             if(filename != null)
                OpenFile(filename);
          };
@@ -722,32 +715,32 @@ namespace Docking.Components
          return result;
       }
 
-      public String OpenFileDialog(string prompt, FileFilterExt filefilter = null)
+      public String OpenFileDialog(string prompt, FileFilterExt filter = null)
       {
          List<FileFilterExt> filters = new List<FileFilterExt>();
-         if(filefilter!=null)
-            filters.Add(filefilter);
+         if(filter!=null)
+            filters.Add(filter);
          return OpenFileDialog(prompt, filters);
       }
 
-      public String OpenFileDialog(string prompt, List<FileFilterExt> filefilters)
+      public String OpenFileDialog(string prompt, List<FileFilterExt> filters)
       {
          String result = null;
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Open,
                                               "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
                                               "Open".Localized("Docking.Components"), ResponseType.Accept);
 
-         if(filefilters!=null && filefilters.Count>0)
+         if(filters!=null && filters.Count>0)
          {
             FileFilterExt combinedfilter = new FileFilterExt();
             combinedfilter.Name = "COMBINED";
           
-            foreach(FileFilterExt filter in filefilters)
+            foreach(FileFilterExt filter in filters)
                foreach(string pattern in filter.GetPatterns())
                   combinedfilter.AddPattern(pattern);
          
             dlg.AddFilter(combinedfilter);
-            foreach(FileFilterExt filter in filefilters)
+            foreach(FileFilterExt filter in filters)
                dlg.AddFilter(filter);
          }
 
@@ -758,15 +751,15 @@ namespace Docking.Components
          return result;
       }
 
-      public string[] OpenFilesDialog(string prompt, FileFilterExt filefilter = null)
+      public string[] OpenFilesDialog(string prompt, FileFilterExt filter = null)
       {
          List<FileFilterExt> filters = new List<FileFilterExt>();
-         if(filefilter!=null)
-            filters.Add(filefilter);
+         if(filter!=null)
+            filters.Add(filter);
          return OpenFilesDialog(prompt, filters);        
       }
 
-      public string[] OpenFilesDialog(string prompt, List<FileFilterExt> filefilters)
+      public string[] OpenFilesDialog(string prompt, List<FileFilterExt> filters)
       {
          string[] result = null;
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Open,
@@ -775,17 +768,17 @@ namespace Docking.Components
 
          dlg.SelectMultiple = true;
 
-         if(filefilters!=null && filefilters.Count>0)
+         if(filters!=null && filters.Count>0)
          {
             FileFilterExt combinedfilter = new FileFilterExt();
             combinedfilter.Name = "COMBINED";
           
-            foreach(FileFilterExt filter in filefilters)
+            foreach(FileFilterExt filter in filters)
                foreach(string pattern in filter.GetPatterns())
                   combinedfilter.AddPattern(pattern);
          
             dlg.AddFilter(combinedfilter);
-            foreach(FileFilterExt filter in filefilters)
+            foreach(FileFilterExt filter in filters)
                dlg.AddFilter(filter);
          }
 
@@ -796,20 +789,23 @@ namespace Docking.Components
          return result;
       }
 
-      public String SaveFileDialog(string prompt, FileFilterExt filefilter)
+      public String SaveFileDialog(string prompt, FileFilterExt filter = null)
       {
-         return SaveFileDialog(prompt, new List<FileFilterExt>() { filefilter } );
+         List<FileFilterExt> filters = new List<FileFilterExt>();
+         if(filter!=null)
+            filters.Add(filter);
+         return SaveFileDialog(prompt, filters);        
       }
 
-      public String SaveFileDialog(string prompt, List<FileFilterExt> filefilters = null)
+      public String SaveFileDialog(string prompt, List<FileFilterExt> filters = null)
       {
          String result = null;
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Save,
                                               "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
                                               "Save".Localized("Docking.Components"), ResponseType.Accept);
 
-         if(filefilters!=null)
-            foreach(FileFilterExt filter in filefilters)
+         if(filters!=null)
+            foreach(FileFilterExt filter in filters)
                dlg.AddFilter(filter);
 
          if(dlg.Run() == (int) ResponseType.Accept)
@@ -819,7 +815,7 @@ namespace Docking.Components
             FileFilter selectedFilter = dlg.Filter;
             if(selectedFilter != null)
             {
-               foreach(FileFilterExt f in filefilters)
+               foreach(FileFilterExt f in filters)
                {
                   if(f==selectedFilter)
                   {
