@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using Docking.Components;
 using Docking.Tools;
+
 
 namespace Docking.Widgets
 {
@@ -153,25 +155,51 @@ namespace Docking.Widgets
 
    public class FileChooserDialogLocalized : Gtk.FileChooserDialog, ILocalizableWidget
    {
+      public static string InitialFolderToShow = null;
+
+      static FileChooserDialogLocalized()
+      {
+         string home = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+         if(Directory.Exists(home))
+            InitialFolderToShow = home;
+      } 
+
       protected FileChooserDialogLocalized()
       : base() 
-      { (this as ILocalizableWidget).Localize(this.GetType().Namespace); }
+      { Constructor(); }
 
-       public FileChooserDialogLocalized(IntPtr raw)
-       : base(raw)
-       { (this as ILocalizableWidget).Localize(this.GetType().Namespace); }
+      public FileChooserDialogLocalized(IntPtr raw)
+      : base(raw)
+      { Constructor(); }
 
-       public FileChooserDialogLocalized(string title, Gtk.Window parent, Gtk.FileChooserAction action, params object[] button_data)
-       : base(title, parent, action, button_data)
-       { (this as ILocalizableWidget).Localize(this.GetType().Namespace); }
+      public FileChooserDialogLocalized(string title, Gtk.Window parent, Gtk.FileChooserAction action, params object[] button_data)
+      : base(title, parent, action, button_data)
+      { Constructor(); }
 
-       public FileChooserDialogLocalized(string backend, string title, Gtk.Window parent, Gtk.FileChooserAction action, params object[] button_data)
-       : base(backend, title, parent, action, button_data)
-       { (this as ILocalizableWidget).Localize(this.GetType().Namespace); }
+      public FileChooserDialogLocalized(string backend, string title, Gtk.Window parent, Gtk.FileChooserAction action, params object[] button_data)
+      : base(backend, title, parent, action, button_data)
+      { Constructor(); }
+
+      private void Constructor()
+      {
+         (this as ILocalizableWidget).Localize(this.GetType().Namespace);
+         if(!String.IsNullOrEmpty(InitialFolderToShow) && Directory.Exists(InitialFolderToShow))
+            this.SetCurrentFolder(InitialFolderToShow);
+      }
 
       void ILocalizableWidget.Localize(string namespc)
       {
           Localization.LocalizeControls(namespc, this);
+      }
+
+      new public int Run()
+      {
+         int result = base.Run();
+
+         if(Directory.Exists(this.CurrentFolder))
+            InitialFolderToShow = this.CurrentFolder;
+
+         return result;
       }
    }
 }

@@ -126,6 +126,7 @@
     <Compile Include="Framework\Interfaces\IMessage.cs" />
     <Compile Include="Tools\Colors\Colors.cs" />
     <Compile Include="Tools\Graphics\SystemDrawing_vs_GTK_Conversion.cs" />
+    <Compile Include="Tools\Misc\AssemblyHelper.cs" />
     <Compile Include="Tools\Misc\EncodingStringWriter.cs" />
     <Compile Include="Tools\Misc\FileFilterExt.cs" />
     <Compile Include="Tools\Misc\StringTools.cs" />

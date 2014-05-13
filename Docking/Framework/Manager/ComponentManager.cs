@@ -729,7 +729,7 @@ namespace Docking.Components
 
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Open,
                                               "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
-                                              "Open".Localized("Docking.Components"), ResponseType.Accept);
+                                              "Open".Localized("Docking.Components"),   ResponseType.Accept);
 
          if(filters!=null && filters.Count>0)
          {
@@ -739,7 +739,7 @@ namespace Docking.Components
                foreach(FileFilterExt filter in filters)
                   foreach(string pattern in filter.GetPatterns())
                      combinedfilter.AddPattern(pattern);         
-               combinedfilter.Name = "(all supported file types)";
+               combinedfilter.Name = "(all supported file types)".Localized("Docking.Components");
                dlg.AddFilter(combinedfilter);
             }
 
@@ -768,9 +768,9 @@ namespace Docking.Components
 
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Open,
                                               "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
-                                              "Open".Localized("Docking.Components"), ResponseType.Accept);
+                                              "Open".Localized("Docking.Components"),   ResponseType.Accept);
 
-         dlg.SelectMultiple = true;
+         dlg.SelectMultiple = true;        
 
          if(filters!=null && filters.Count>0)
          {
@@ -780,7 +780,7 @@ namespace Docking.Components
                foreach(FileFilterExt filter in filters)
                   foreach(string pattern in filter.GetPatterns())
                      combinedfilter.AddPattern(pattern);                     
-               combinedfilter.Name = "(all supported file types)";
+               combinedfilter.Name = "(all supported file types)".Localized("Docking.Components");
                dlg.AddFilter(combinedfilter);
             }
 
@@ -850,32 +850,6 @@ namespace Docking.Components
          return result;
       }
 
-      static bool PlatformIsWin32ish
-      {
-         get
-         {
-            switch(Environment.OSVersion.Platform)
-            {
-            case PlatformID.Win32S:
-               return true;
-            case PlatformID.Win32Windows:
-               return true;
-            case PlatformID.Win32NT:
-               return true;
-            case PlatformID.WinCE:
-               return false; // note this. WinCE is very different than Win32
-            case PlatformID.Unix:
-               return false;
-            case PlatformID.Xbox:
-               return false; // or should we return true here better???
-            case PlatformID.MacOSX:
-               return false;
-            default:
-               return false;
-            }
-         }
-      }
-
       const string URL_PREFIX_FILE = "file://";
       const string URL_PREFIX_HTTP = "http://";
       const string URL_PREFIX_HTTPS = "https://";
@@ -886,7 +860,7 @@ namespace Docking.Components
          if(url.StartsWith(URL_PREFIX_FILE))
          {
             string filename = url.Substring(URL_PREFIX_FILE.Length);
-            if(PlatformIsWin32ish)
+            if(AssemblyHelper.PlatformIsWin32ish)
             {
                // treat how local filenames are encoded on Windows. Example: file:///D:/some/folder/myfile.txt
                if(filename.Length >= 3 &&
