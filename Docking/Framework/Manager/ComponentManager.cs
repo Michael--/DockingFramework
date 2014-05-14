@@ -454,7 +454,7 @@ namespace Docking.Components
          if(!OpenFile(filename))
          {
             if(MessageBox.Show(MessageType.Question, ButtonsType.YesNo,
-                               String.Format("Opening file '{0}' failed. Maybe no window is open which can handle it. In future, this tool will offer you such a window. Currently it cannot do that yet. Do you want to remove ths file from the recent files list?".Localized("Docking.Components"), filename)
+                               String.Format("Opening file '{0}' failed. Maybe no window is open which can handle it. In future, this tool will offer you such a window. Currently it cannot do that yet. Do you want to remove the file from the recent files list?".Localized("Docking.Components"), filename)
                               )==ResponseType.Yes)
                RemoveRecentFile(filename);
             return;
