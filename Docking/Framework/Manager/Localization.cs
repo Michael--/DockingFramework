@@ -9,8 +9,9 @@ using System.IO;
 using System.Globalization;
 using System.Diagnostics;
 using Docking.Tools;
-using Gtk;
 using Docking.Framework;
+using Gtk;
+
 
 namespace Docking.Components
 {
@@ -362,7 +363,7 @@ namespace Docking.Components
          if(key==null || key.Length<=0)
             return "";
 
-         string key2 = StringTools.StripSpecialCharacters((prefix==null ? "" : prefix+".")+key);
+         string key2 = StringTools.StripSpecialCharacters((String.IsNullOrEmpty(prefix) ? "" : prefix+".")+key);
 
          Node node = null;
          if (mCurrentLanguage != null && mCurrentLanguage.Nodes.TryGetValue(key2, out node) && (node.Value as String).Length > 0)

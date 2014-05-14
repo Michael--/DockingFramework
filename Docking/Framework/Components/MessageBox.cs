@@ -14,26 +14,11 @@ namespace Docking.Components
        private static Gdk.Pixbuf PIXBUF_QUESTION;
        private static Gdk.Pixbuf PIXBUF_ERROR;
 
-       private static bool IsWindows()
-       {
-         switch(Environment.OSVersion.Platform)
-         {
-            case PlatformID.Win32S:       return true;
-            case PlatformID.Win32Windows: return true;
-            case PlatformID.Win32NT:      return true;
-            case PlatformID.WinCE:        return true;
-            case PlatformID.Unix:         return false;
-            case PlatformID.Xbox:         return false; // or should we return true here better???
-            case PlatformID.MacOSX:       return false;
-            default:                      return false;
-          }
-       }
-
        public static void Init(ComponentManager cm)
        {
           ComponentManager = cm;
 
-          if(IsWindows())
+          if(AssemblyHelper.PlatformIsWin32ish)
           {
              PIXBUF_INFO     = SystemDrawing_vs_GTK_Conversion.Bitmap2Pixbuf(System.Drawing.SystemIcons.Information);
              PIXBUF_WARNING  = SystemDrawing_vs_GTK_Conversion.Bitmap2Pixbuf(System.Drawing.SystemIcons.Warning);
@@ -48,7 +33,7 @@ namespace Docking.Components
             parent = ComponentManager;
 			MessageDialog md = new MessageDialog(parent, DialogFlags.Modal, msgtype, buttontype, format, args);
 
-         if(IsWindows()) // replace Gtk's private icons by Windows standard icons
+         if(AssemblyHelper.PlatformIsWin32ish) // replace Gtk's private icons by Windows standard icons
          {
             switch(msgtype)
             {
@@ -69,6 +54,14 @@ namespace Docking.Components
          {
             md.Title = "";
             md.Icon  = null;
+         }
+
+         // localize button texts
+         foreach(Gtk.Widget w in md.ActionArea.Children)
+         {
+            Gtk.Button b = w as Gtk.Button;
+            if(b!=null)
+               b.Label = b.Label.Localized("Docking.Components");
          }
 
 			ResponseType result = (ResponseType)md.Run();

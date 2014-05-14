@@ -211,6 +211,21 @@ It is recommended to manually check the translations afterwards.</value>
   <data name="Docking.Components.US name" xml:space="preserve">
     <value>Text in US English</value>
   </data>
+  <data name="Docking.Components.gtk-cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Docking.Components.gtk-close" xml:space="preserve">
+    <value>Cloe</value>
+  </data>
+  <data name="Docking.Components.gtk-no" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Docking.Components.gtk-ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Docking.Components.gtk-yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
   <data name="LANGUAGE_NAME" xml:space="preserve">
     <value>US English</value>
   </data>

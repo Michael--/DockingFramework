@@ -251,7 +251,7 @@ Es wird empfohlen, anschließend die Übersetzungen manuell zu überprüfen.</va
     <value>Datei {0} nicht gefunden</value>
   </data>
   <data name="Docking.Components.No component is instantiated which can handle file {0}" xml:space="preserve">
-    <value>Es ist aktuell kein Fenster geöffnet, das Dateien dieses Typs {0] handhaben kann</value>
+    <value>Es ist aktuell kein Fenster geöffnet, das Dateien dieses Typs {0} handhaben kann</value>
   </data>
   <data name="Docking.Components.Opening file {0} as {1}..." xml:space="preserve">
     <value>Öffne Datei {0} als {1}...</value>
@@ -279,5 +279,20 @@ Es wird empfohlen, anschließend die Übersetzungen manuell zu überprüfen.</va
   </data>
   <data name="MENU.Select All" xml:space="preserve">
     <value>Alles auswählen</value>
+  </data>
+  <data name="Docking.Components.gtk-cancel" xml:space="preserve">
+    <value>Abbrechen</value>
+  </data>
+  <data name="Docking.Components.gtk-close" xml:space="preserve">
+    <value>Schließen</value>
+  </data>
+  <data name="Docking.Components.gtk-no" xml:space="preserve">
+    <value>Nein</value>
+  </data>
+  <data name="Docking.Components.gtk-ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Docking.Components.gtk-yes" xml:space="preserve">
+    <value>Ja</value>
   </data>
 </root>

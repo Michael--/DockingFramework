@@ -445,7 +445,7 @@ namespace Docking.Components
          if(!File.Exists(filename))
          {
             if(MessageBox.Show(MessageType.Question, ButtonsType.YesNo,
-                               String.Format("File '{0}' does not exist. Do you want to remove it from the recent files list?".Localized("Docking.Components"), filename)
+                               "File '{0}' does not exist. Do you want to remove it from the recent files list?".Localized(this), filename
                               )==ResponseType.Yes)
                RemoveRecentFile(filename);
             return;
@@ -454,7 +454,7 @@ namespace Docking.Components
          if(!OpenFile(filename))
          {
             if(MessageBox.Show(MessageType.Question, ButtonsType.YesNo,
-                               String.Format("Opening file '{0}' failed. Maybe no window is open which can handle it. In future, this tool will offer you such a window. Currently it cannot do that yet. Do you want to remove the file from the recent files list?".Localized("Docking.Components"), filename)
+                               "Opening file '{0}' failed. Maybe no window is open which can handle it. In future, this tool will offer you such a window. Currently it cannot do that yet. Do you want to remove the file from the recent files list?".Localized(this), filename
                               )==ResponseType.Yes)
                RemoveRecentFile(filename);
             return;
@@ -751,7 +751,7 @@ namespace Docking.Components
                if(d.Content is IFileOpen)
                   filters.AddRange((d.Content as IFileOpen).SupportedFileTypes());
 
-            String filename = OpenFileDialog("Choose a file to open...".Localized("Docking.Components"), filters);
+            String filename = OpenFileDialog("Open file...", filters);
             if(filename != null)
                OpenFile(filename);
          };
@@ -805,12 +805,12 @@ namespace Docking.Components
          return success;
       }
 
-      public String OpenFolderDialog(string prompt)
+      public String OpenFolderDialog(string title)
       {
          String result = null;
-         FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.SelectFolder,
-                                              "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
-                                              "Select".Localized("Docking.Components"), ResponseType.Accept);
+         FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.SelectFolder,
+                                              "Cancel".Localized(this), ResponseType.Cancel,
+                                              "Select".Localized(this), ResponseType.Accept);
          if(dlg.Run() == (int) ResponseType.Accept)
          {
             result = dlg.Filename;
@@ -828,13 +828,13 @@ namespace Docking.Components
          return OpenFileDialog(prompt, filters);
       }
 
-      public String OpenFileDialog(string prompt, List<FileFilterExt> filters)
+      public String OpenFileDialog(string title, List<FileFilterExt> filters)
       {
          String result = null;
 
-         FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Open,
-                                              "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
-                                              "Open".Localized("Docking.Components"),   ResponseType.Accept);
+         FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
+                                              "Cancel".Localized(this), ResponseType.Cancel,
+                                              "Open".Localized(this),   ResponseType.Accept);
 
          if(filters!=null && filters.Count>0)
          {
@@ -869,13 +869,13 @@ namespace Docking.Components
          return OpenFilesDialog(prompt, filters);        
       }
 
-      public string[] OpenFilesDialog(string prompt, List<FileFilterExt> filters)
+      public string[] OpenFilesDialog(string title, List<FileFilterExt> filters)
       {
          string[] result = null;
 
-         FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Open,
-                                              "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
-                                              "Open".Localized("Docking.Components"),   ResponseType.Accept);
+         FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
+                                              "Cancel".Localized(this), ResponseType.Cancel,
+                                              "Open".Localized(this),   ResponseType.Accept);
 
          dlg.SelectMultiple = true;        
 
@@ -887,7 +887,7 @@ namespace Docking.Components
                foreach(FileFilterExt filter in filters)
                   foreach(string pattern in filter.GetPatterns())
                      combinedfilter.AddPattern(pattern);                     
-               combinedfilter.Name = "(all supported file types)".Localized("Docking.Components");
+               combinedfilter.Name = "(all supported file types)".Localized(this);
                dlg.AddFilter(combinedfilter);
             }
 
@@ -914,12 +914,12 @@ namespace Docking.Components
          return SaveFileDialog(prompt, filters);        
       }
 
-      public String SaveFileDialog(string prompt, List<FileFilterExt> filters = null)
+      public String SaveFileDialog(string title, List<FileFilterExt> filters = null)
       {
          String result = null;
-         FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(prompt, this, FileChooserAction.Save,
-                                              "Cancel".Localized("Docking.Components"), ResponseType.Cancel,
-                                              "Save".Localized("Docking.Components"), ResponseType.Accept);
+         FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Save,
+                                              "Cancel".Localized(this), ResponseType.Cancel,
+                                              "Save".Localized(this),   ResponseType.Accept);
 
          if(filters!=null)
             foreach(FileFilterExt filter in filters)
