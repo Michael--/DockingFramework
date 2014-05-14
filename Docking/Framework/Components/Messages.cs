@@ -1,4 +1,8 @@
 using System;
+using Docking.Widgets;
+using Docking.Components;
+using Docking.Tools;
+using Gtk;
 
 namespace Docking.Components
 {
@@ -16,7 +20,7 @@ namespace Docking.Components
 		{
          if (format == null)
             return;
-			Gtk.TextIter iter = textview1.Buffer.EndIter;
+			TextIter iter = textview1.Buffer.EndIter;
          String str = String.Format(format, args);
 			textview1.Buffer.Insert(ref iter, str + "\r\n");
 
@@ -34,7 +38,7 @@ namespace Docking.Components
 			// textview1.ScrollToIter(textview1.Buffer.EndIter, 0.0, false, 0, 0);
         }
 
-        Gtk.TextMark m_Scroll2EndMark;
+        TextMark m_Scroll2EndMark;
 
         #endregion
 
@@ -46,10 +50,52 @@ namespace Docking.Components
         {}
         #endregion
 
+        void Clear()
+        {
+           textview1.Buffer.Clear();
+           m_Scroll2EndMark = textview1.Buffer.CreateMark("Scroll2End", textview1.Buffer.EndIter, true);
+        }
+
         public Messages()
         {
             this.Build ();
-            m_Scroll2EndMark = textview1.Buffer.CreateMark("Scroll2End", textview1.Buffer.EndIter, true);
+
+            Clear();
+
+            textview1.PopulatePopup += (object o, PopulatePopupArgs args) =>
+            {
+               foreach(Widget w in args.Menu.Children)
+               {
+                  ImageMenuItem item = w as ImageMenuItem;
+                  if(item!=null)
+                  {
+                     string stock = (item.Image as Image).Stock;
+                     if(stock=="gtk-copy") // https://developer.gnome.org/gtk3/stable/gtk3-Stock-Items.html#GTK-STOCK-DELETE:CAPS
+                     {
+                        item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Copy-16.png"));
+                        (item.Child as Label).LabelProp = "Copy".Localized("MENU");
+                     }
+                     else if(stock=="gtk-select-all")
+                     {
+                        //item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.SelectAll-16.png"));
+                        item.Image = null;
+                        (item.Child as Label).LabelProp = "Select All".Localized("MENU");
+                     }
+                     else
+                        w.HideAll();
+                  }
+                  else
+                     w.HideAll();
+               }
+
+               TaggedLocalizedImageMenuItem newitem = new TaggedLocalizedImageMenuItem("Clear");
+               newitem.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Broom-16.png"));
+               newitem.Activated += (object sender, EventArgs e) => Clear();               
+               newitem.ShowAll();
+               args.Menu.Append(newitem);
+
+               Localization.LocalizeMenu(args.Menu);
+            };
         }
     }
 

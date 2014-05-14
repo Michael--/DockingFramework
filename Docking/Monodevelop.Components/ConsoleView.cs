@@ -30,6 +30,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Gtk;
+using Docking.Widgets;
+using Docking.Components;
 
 namespace MonoDevelop.Components
 {
@@ -70,20 +72,20 @@ namespace MonoDevelop.Components
 
       void TextViewPopulatePopup(object o, PopulatePopupArgs args)
       {
-         MenuItem item = new MenuItem("Clear");
+         //ReplaceGtkIconsByOwnOnes(args.Menu);
+
          SeparatorMenuItem sep = new SeparatorMenuItem();
-
-         item.Activated += ClearActivated;
-         item.Show();
          sep.Show();
-
          args.Menu.Add(sep);
-         args.Menu.Add(item);
-      }
 
-      void ClearActivated(object sender, EventArgs e)
-      {
-         Clear();
+         TaggedLocalizedImageMenuItem newitem = new TaggedLocalizedImageMenuItem("Clear");
+         newitem.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Broom-16.png"));
+         newitem.Activated += (object sender, EventArgs e) => Clear();               
+         newitem.ShowAll();
+
+         args.Menu.Add(newitem);
+
+         Localization.LocalizeMenu(args.Menu);
       }
 
       public void SetFont(Pango.FontDescription font)

@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using Docking.Components;
 using Docking.Tools;
+using Gtk;
 
 
 namespace Docking.Widgets
@@ -14,7 +15,7 @@ namespace Docking.Widgets
    {
       public LabelLocalized()           : base()    {}
       public LabelLocalized(IntPtr raw) : base(raw) {}
-      public LabelLocalized(string s)   : base(s)   {}      
+      public LabelLocalized(string s)   : base(s)   {}
 
       private string mLocalizationKey;
       public string LocalizationKey
@@ -156,6 +157,10 @@ namespace Docking.Widgets
    public class FileChooserDialogLocalized : Gtk.FileChooserDialog, ILocalizableWidget
    {
       public static string InitialFolderToShow = null;
+      public static int    InitialW            = 0;
+      public static int    InitialH            = 0;
+      public static int    InitialX            = 0;
+      public static int    InitialY            = 0;
 
       static FileChooserDialogLocalized()
       {
@@ -185,6 +190,11 @@ namespace Docking.Widgets
          (this as ILocalizableWidget).Localize(this.GetType().Namespace);
          if(!String.IsNullOrEmpty(InitialFolderToShow) && Directory.Exists(InitialFolderToShow))
             this.SetCurrentFolder(InitialFolderToShow);
+         if(InitialW>0 && InitialH>0)
+         {
+            this.Resize(InitialW, InitialH);
+            this.Move(InitialX, InitialY);
+         }
       }
 
       void ILocalizableWidget.Localize(string namespc)
@@ -199,7 +209,88 @@ namespace Docking.Widgets
          if(Directory.Exists(this.CurrentFolder))
             InitialFolderToShow = this.CurrentFolder;
 
+         this.GetSize(out InitialW, out InitialH);
+         this.GetPosition(out InitialX, out InitialY);
+
          return result;
       }
+   }
+
+   public class TaggedLocalizedMenuItem : MenuItem, ILocalizableWidget
+   {
+      public TaggedLocalizedMenuItem(IntPtr raw)
+      : base(raw)
+      {}
+
+      public TaggedLocalizedMenuItem(String label)
+      : base(label)
+      {}
+
+      public System.Object Tag { get; set; }
+
+      void ILocalizableWidget.Localize(string namespc)
+      {
+         Label l = this.Child as Label;
+         if(LocalizationKey == null)
+            LocalizationKey = l.Text;
+         l.Text = LocalizationKey.Localized(namespc);
+      }
+
+      public string LocalizationKey { get; set; }
+   }
+
+   public class TaggedLocalizedImageMenuItem : ImageMenuItem, ILocalizableWidget
+   {
+      public TaggedLocalizedImageMenuItem(IntPtr raw)
+      : base(raw)
+      {}
+
+      public TaggedLocalizedImageMenuItem(String label)
+      : base(label)
+      {}
+
+      public System.Object Tag { get; set; }
+
+      void ILocalizableWidget.Localize(string namespc)
+      {
+         Label l = this.Child as Label;
+         if(LocalizationKey == null)
+            LocalizationKey = l.Text;
+         l.Text = LocalizationKey.Localized(namespc);
+      }
+
+      public string LocalizationKey { get; set; }
+   }
+
+   public class TaggedLocalizedCheckedMenuItem : CheckMenuItem, ILocalizableWidget
+   {
+      public TaggedLocalizedCheckedMenuItem(IntPtr raw)
+         : base(raw)
+      {
+         IgnoreLocalization = false;
+      }
+
+      public TaggedLocalizedCheckedMenuItem(String name)
+         : base(name)
+      {
+         IgnoreLocalization = false;
+      }
+
+      public System.Object Tag { get; set; }
+
+      void ILocalizableWidget.Localize(string namespc)
+      {
+         if(!IgnoreLocalization)
+         {
+            Label l = this.Child as Label;
+            if(LocalizationKey == null)
+               LocalizationKey = l.Text;
+            l.Text = LocalizationKey.Localized(namespc);
+         }
+      }
+
+      public string LocalizationKey { get; set; }
+
+      public bool IgnoreLocalization { get; set; }
    }
 }

@@ -130,11 +130,11 @@ namespace Docking.Components
          return foundmenu;
       }
 
-      protected void AppendMenu(String path, MenuItem item)
+      protected void AppendMenuItem(String path, MenuItem item)
       {
-         Menu foundmenu = FindMenu(path);
-         if(foundmenu != null)
-            foundmenu.Append(item);
+         Menu menu = FindMenu(path);
+         if(menu!=null)
+            menu.Append(item);
       }
 
       protected void SetMenuBar(MenuBar menuBar)
@@ -211,9 +211,9 @@ namespace Docking.Components
             }
          };
 
-         AppendMenu(@"Options\Layout", newLayout);
-         AppendMenu(@"Options\Layout", m_DeleteLayout);
-         AppendMenu(@"Options\Layout", new SeparatorMenuItem());
+         AppendMenuItem(@"Options\Layout", newLayout);
+         AppendMenuItem(@"Options\Layout", m_DeleteLayout);
+         AppendMenuItem(@"Options\Layout", new SeparatorMenuItem());
 
          foreach(String s in DockFrame.Layouts)
             AppendLayoutMenu(s, true);
@@ -326,7 +326,7 @@ namespace Docking.Components
                   }
             }
          };
-         AppendMenu(@"Options\Layout", item);
+         AppendMenuItem(@"Options\Layout", item);
          if(!init)
             UncheckMenuChildren(item.Parent, item);
          item.Active = (name == DockFrame.CurrentLayout);
@@ -354,12 +354,113 @@ namespace Docking.Components
          item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.F4, Gdk.ModifierType.Mod1Mask, AccelFlags.Visible));
          item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          item.Activated += OnQuitActionActivated;
-         AppendMenu("File", item);
+         AppendMenuItem("File", item);
       }
 
-      protected void OnQuitActionActivated(object sender, EventArgs e)
+      protected void OnQuitActionActivated(object sender, EventArgs args)
       {
          Quit(true);
+      }
+
+      private SeparatorMenuItem   mRecentFilesBegin = null;
+      private const int           MAX_RECENT_FILES  = 9;
+      private List<ImageMenuItem> mRecentFiles      = new List<ImageMenuItem>();     
+
+      public void AddRecentFile(string filename, bool do_update_menu = true)
+      {
+         if(string.IsNullOrEmpty(filename))
+            return;
+
+         RemoveRecentFile(filename, false);
+
+         ImageMenuItem newitem = new ImageMenuItem(filename);
+         //newitem.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.File-16.png"));
+         newitem.Activated += OnRecentFileActivated;         
+         (newitem.Child as Label).UseUnderline = false;
+
+         mRecentFiles.Insert(0, newitem);
+         if(mRecentFiles.Count>MAX_RECENT_FILES)
+            mRecentFiles.RemoveRange(MAX_RECENT_FILES, mRecentFiles.Count-MAX_RECENT_FILES);
+
+         if(do_update_menu)
+            UpdateRecentFilesMenu();
+     }
+  
+     public void RemoveRecentFile(string filename, bool do_update_menu = true)
+     {
+         List<ImageMenuItem> founditems = new List<ImageMenuItem>();
+         foreach(ImageMenuItem item in mRecentFiles)
+            if(item.GetText()==filename)
+               founditems.Add(item);
+
+         foreach(ImageMenuItem item in founditems)
+            mRecentFiles.Remove(item);
+
+         if(do_update_menu)
+            UpdateRecentFilesMenu();
+     }
+
+     private void UpdateRecentFilesMenu()
+     {
+         Menu filemenu = FindMenu("File");
+
+         List<Widget> oldstuff = new List<Widget>();
+         oldstuff.AddRange(filemenu.Children);
+
+         if(mRecentFilesBegin!=null)
+         {
+            bool deletionmode = false;
+            foreach(Widget w in oldstuff)
+            {
+               if(w==mRecentFilesBegin)
+                  deletionmode = true;
+               if(deletionmode)
+                  filemenu.Remove(w);
+            }
+         }
+         mRecentFilesBegin = null;
+ 
+         if(mRecentFiles.Count>0)
+         {
+            mRecentFilesBegin = new SeparatorMenuItem();
+            filemenu.Append(mRecentFilesBegin);
+            mRecentFilesBegin.ShowAll();
+
+            foreach(ImageMenuItem r in mRecentFiles)
+            {
+               filemenu.Append(r);
+               r.ShowAll();
+            } 
+         }
+      }
+
+      protected void OnRecentFileActivated(object sender, EventArgs args)
+      {
+         ImageMenuItem item = sender as ImageMenuItem;
+         if(item==null)
+            return;
+
+         string filename = item.GetText();
+
+         if(!File.Exists(filename))
+         {
+            if(MessageBox.Show(MessageType.Question, ButtonsType.YesNo,
+                               String.Format("File '{0}' does not exist. Do you want to remove it from the recent files list?".Localized("Docking.Components"), filename)
+                              )==ResponseType.Yes)
+               RemoveRecentFile(filename);
+            return;
+         }
+
+         if(!OpenFile(filename))
+         {
+            if(MessageBox.Show(MessageType.Question, ButtonsType.YesNo,
+                               String.Format("Opening file '{0}' failed. Do you want to remove it from the recent files list?".Localized("Docking.Components"), filename)
+                              )==ResponseType.Yes)
+               RemoveRecentFile(filename);
+            return;
+         }
+
+         // no call AddToRecentFiles() is necessary here, OpenFile() already takes care of that         
       }
 
       #region cut, copy, paste
@@ -374,7 +475,7 @@ namespace Docking.Components
          mMenuCut.Sensitive = false;
          mMenuCut.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.x, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          mMenuCut.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Delete, Gdk.ModifierType.ShiftMask, AccelFlags.Visible));
-         AppendMenu("Edit", mMenuCut);
+         AppendMenuItem("Edit", mMenuCut);
 
          mMenuCopy = new TaggedLocalizedImageMenuItem("Copy");
          mMenuCopy.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Copy-16.png"));
@@ -382,7 +483,7 @@ namespace Docking.Components
          mMenuCopy.Sensitive = false;
          mMenuCopy.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.c, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          mMenuCopy.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Insert, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
-         AppendMenu("Edit", mMenuCopy);
+         AppendMenuItem("Edit", mMenuCopy);
 
          mMenuPaste = new TaggedLocalizedImageMenuItem("Paste");
          mMenuPaste.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Paste-16.png"));
@@ -390,7 +491,7 @@ namespace Docking.Components
          mMenuPaste.Sensitive = false;
          mMenuPaste.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.v, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          mMenuPaste.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Insert, Gdk.ModifierType.ShiftMask, AccelFlags.Visible));
-         AppendMenu("Edit", mMenuPaste);
+         AppendMenuItem("Edit", mMenuPaste);
       }
 
       protected void OnCutActivated(object sender, EventArgs e)
@@ -480,7 +581,7 @@ namespace Docking.Components
             if(pb != null)
                item.Image = new Image(pb);
             item.Activated += ComponentHandleActivated;
-            AppendMenu(builder.ToString(), item);
+            AppendMenuItem(builder.ToString(), item);
          }
          MenuBar.ShowAll();
       }
@@ -552,7 +653,7 @@ namespace Docking.Components
             TaggedLocalizedCheckedMenuItem item = new TaggedLocalizedCheckedMenuItem(name) { IgnoreLocalization = true };
             item.Activated += OnLanguageActivated;
             item.Tag = code;
-            AppendMenu(string.Format("{0}\\Language", baseMenu, name), item);
+            AppendMenuItem(string.Format("{0}\\Language", baseMenu, name), item);
 
             if(mLanguageBaseMenu == null)
                mLanguageBaseMenu = item.Parent as Menu;
@@ -654,7 +755,7 @@ namespace Docking.Components
             if(filename != null)
                OpenFile(filename);
          };
-         AppendMenu("File", item);
+         AppendMenuItem("File", item);
       }
 
       public bool OpenFile(string filename)
@@ -697,6 +798,10 @@ namespace Docking.Components
          MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} as {1}..."), filename, openers[0].Value);
          bool success = openers[0].Key.OpenFile(filename);
          MessageWriteLine(success ? "File opened successfully" : "File opening failed");
+
+         if(success)
+            AddRecentFile(filename);
+
          return success;
       }
 
@@ -721,20 +826,6 @@ namespace Docking.Components
          if(filter!=null)
             filters.Add(filter);
          return OpenFileDialog(prompt, filters);
-      }
-
-      const int MAX_RECENT_FILES = 9;
-      static List<string> mRecentFiles = new List<string>();
-
-      public void AddToRecentFiles(string filename)
-      {
-         if(string.IsNullOrEmpty(filename))
-            return;
-         if(mRecentFiles.Contains(filename))
-            mRecentFiles.Remove(filename);
-         mRecentFiles.Insert(0, filename);
-         if(mRecentFiles.Count>MAX_RECENT_FILES)
-            mRecentFiles.RemoveRange(MAX_RECENT_FILES, mRecentFiles.Count-MAX_RECENT_FILES);
       }
 
       public String OpenFileDialog(string prompt, List<FileFilterExt> filters)
@@ -766,7 +857,7 @@ namespace Docking.Components
 
          dlg.Destroy();
 
-         AddToRecentFiles(result);
+         AddRecentFile(result);
          return result;
       }
 
@@ -811,7 +902,7 @@ namespace Docking.Components
 
          if(result!=null)
             foreach(string filename in result)
-               AddToRecentFiles(filename);
+               AddRecentFile(filename);
          return result;
       }
 
@@ -868,7 +959,7 @@ namespace Docking.Components
 
          dlg.Destroy();
 
-         AddToRecentFiles(result);
+         AddRecentFile(result);
          return result;
       }
 
@@ -1278,6 +1369,23 @@ namespace Docking.Components
             this.Maximize();
 
          InstallLayoutMenu(layout);
+
+         string dir = LoadSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", "");
+         if(!string.IsNullOrEmpty(dir) && Directory.Exists(dir))
+            Docking.Widgets.FileChooserDialogLocalized.InitialFolderToShow = dir;
+         Docking.Widgets.FileChooserDialogLocalized.InitialW = LoadSetting(instance, "FileChooserDialogLocalized.W", 0);
+         Docking.Widgets.FileChooserDialogLocalized.InitialH = LoadSetting(instance, "FileChooserDialogLocalized.H", 0);
+         Docking.Widgets.FileChooserDialogLocalized.InitialX = LoadSetting(instance, "FileChooserDialogLocalized.X", 0);
+         Docking.Widgets.FileChooserDialogLocalized.InitialY = LoadSetting(instance, "FileChooserDialogLocalized.Y", 0);
+
+         List<string> recentfiles = persistency.LoadSetting(instance, "RecentFiles", new List<string>());
+         recentfiles.Reverse();
+         if(recentfiles.Count>0)
+         {
+            foreach(string filename in recentfiles)
+               AddRecentFile(filename, false);
+            UpdateRecentFilesMenu();
+         }
       }
 
       protected virtual void SavePersistency() // TODO abolish, replace by implementing IPersistable
@@ -1295,6 +1403,18 @@ namespace Docking.Components
          persistency.SaveSetting(instance, "h",           h);
          persistency.SaveSetting(instance, "layout",      DockFrame.CurrentLayout);
          persistency.SaveSetting(instance, "windowstate", (int)WindowState);
+         List<string> recentfiles = new List<string>();
+         foreach(ImageMenuItem item in mRecentFiles)
+            recentfiles.Add(item.GetText());
+
+         persistency.SaveSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", Docking.Widgets.FileChooserDialogLocalized.InitialFolderToShow);
+         persistency.SaveSetting(instance, "FileChooserDialogLocalized.W",                   Docking.Widgets.FileChooserDialogLocalized.InitialW);
+         persistency.SaveSetting(instance, "FileChooserDialogLocalized.H",                   Docking.Widgets.FileChooserDialogLocalized.InitialH);
+         persistency.SaveSetting(instance, "FileChooserDialogLocalized.X",                   Docking.Widgets.FileChooserDialogLocalized.InitialX);
+         persistency.SaveSetting(instance, "FileChooserDialogLocalized.Y",                   Docking.Widgets.FileChooserDialogLocalized.InitialY);
+
+         persistency.SaveSetting(instance, "RecentFiles", recentfiles);
+
 
          currentLoadSaveItem = null; // WTF is this? get rid of it!
       }
@@ -2376,86 +2496,6 @@ namespace Docking.Components
       {
          return Gdk.Pixbuf.FromDrawable(GdkWindow, GdkWindow.Colormap, 0, 0, 0, 0, (this as Gtk.Widget).Allocation.Width, (this as Gtk.Widget).Allocation.Height);
       }
-   }
-
-   public class TaggedLocalizedMenuItem : MenuItem, ILocalizableWidget
-   {
-      public TaggedLocalizedMenuItem(IntPtr raw)
-         : base(raw)
-      {
-      }
-
-      public TaggedLocalizedMenuItem(String name)
-         : base(name)
-      {
-      }
-
-      public System.Object Tag { get; set; }
-
-      void ILocalizableWidget.Localize(string namespc)
-      {
-         Label l = this.Child as Label;
-         if(LocalizationKey == null)
-            LocalizationKey = l.Text;
-         l.Text = LocalizationKey.Localized(namespc);
-      }
-
-      public string LocalizationKey { get; set; }
-   }
-
-   public class TaggedLocalizedImageMenuItem : ImageMenuItem, ILocalizableWidget
-   {
-      public TaggedLocalizedImageMenuItem(IntPtr raw)
-      : base(raw)
-      {}
-
-      public TaggedLocalizedImageMenuItem(String name)
-      : base(name)
-      {}
-
-      public System.Object Tag { get; set; }
-
-      void ILocalizableWidget.Localize(string namespc)
-      {
-         Label l = this.Child as Label;
-         if(LocalizationKey == null)
-            LocalizationKey = l.Text;
-         l.Text = LocalizationKey.Localized(namespc);
-      }
-
-      public string LocalizationKey { get; set; }
-   }
-
-   public class TaggedLocalizedCheckedMenuItem : CheckMenuItem, ILocalizableWidget
-   {
-      public TaggedLocalizedCheckedMenuItem(IntPtr raw)
-         : base(raw)
-      {
-         IgnoreLocalization = false;
-      }
-
-      public TaggedLocalizedCheckedMenuItem(String name)
-         : base(name)
-      {
-         IgnoreLocalization = false;
-      }
-
-      public System.Object Tag { get; set; }
-
-      void ILocalizableWidget.Localize(string namespc)
-      {
-         if(!IgnoreLocalization)
-         {
-            Label l = this.Child as Label;
-            if(LocalizationKey == null)
-               LocalizationKey = l.Text;
-            l.Text = LocalizationKey.Localized(namespc);
-         }
-      }
-
-      public string LocalizationKey { get; set; }
-
-      public bool IgnoreLocalization { get; set; }
    }
 }
 

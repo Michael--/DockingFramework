@@ -129,6 +129,7 @@
     <Compile Include="Tools\Misc\AssemblyHelper.cs" />
     <Compile Include="Tools\Misc\EncodingStringWriter.cs" />
     <Compile Include="Tools\Misc\FileFilterExt.cs" />
+    <Compile Include="Tools\Misc\MenuItemExtensions.cs" />
     <Compile Include="Tools\Misc\StringTools.cs" />
     <Compile Include="Tools\Misc\LocalizationExtensions.cs" />
     <Compile Include="Tools\Misc\TreeViewExtensions.cs" />
@@ -245,6 +246,7 @@
     <EmbeddedResource Include="Framework\Resources\Paste-16.png" />
     <EmbeddedResource Include="Framework\Resources\PropertyViewer-16.png" />
     <EmbeddedResource Include="Framework\Resources\Quit-16.png" />
+    <EmbeddedResource Include="Framework\Resources\Broom-16.png" />
     <Content Include="Languages\Docking-en-US.resx">
       <LastGenOutput>Docking-default.Designer.cs</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

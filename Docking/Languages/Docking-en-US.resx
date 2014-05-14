@@ -217,11 +217,23 @@ It is recommended to manually check the translations afterwards.</value>
   <data name="MENU.Activities" xml:space="preserve">
     <value>Threads</value>
   </data>
+  <data name="MENU.Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
   <data name="MENU.Command Line" xml:space="preserve">
     <value>Command Line</value>
   </data>
   <data name="MENU.Component List" xml:space="preserve">
     <value>Component List</value>
+  </data>
+  <data name="MENU.Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="MENU.Cut" xml:space="preserve">
+    <value>Cut</value>
+  </data>
+  <data name="MENU.Delete" xml:space="preserve">
+    <value>Delete</value>
   </data>
   <data name="MENU.Delete Current Layout" xml:space="preserve">
     <value>Delete Current Window Layout</value>
@@ -253,6 +265,9 @@ It is recommended to manually check the translations afterwards.</value>
   <data name="MENU.Open..." xml:space="preserve">
     <value>Open...</value>
   </data>
+  <data name="MENU.Paste" xml:space="preserve">
+    <value>Paste</value>
+  </data>
   <data name="MENU.Properties" xml:space="preserve">
     <value>Properties</value>
   </data>
@@ -261,5 +276,8 @@ It is recommended to manually check the translations afterwards.</value>
   </data>
   <data name="MENU.Script Editor" xml:space="preserve">
     <value>Script Editor</value>
+  </data>
+  <data name="MENU.Select All" xml:space="preserve">
+    <value>Select All</value>
   </data>
 </root>

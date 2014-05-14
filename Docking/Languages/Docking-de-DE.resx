@@ -262,4 +262,22 @@ Es wird empfohlen, anschließend die Übersetzungen manuell zu überprüfen.</va
   <data name="Docking.Components.Choose a file to open..." xml:space="preserve">
     <value>Wählen Sie eine zu öffnende Datei...</value>
   </data>
+  <data name="MENU.Clear" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="MENU.Copy" xml:space="preserve">
+    <value>Kopieren</value>
+  </data>
+  <data name="MENU.Cut" xml:space="preserve">
+    <value>Ausschneiden</value>
+  </data>
+  <data name="MENU.Delete" xml:space="preserve">
+    <value>Löschen</value>
+  </data>
+  <data name="MENU.Paste" xml:space="preserve">
+    <value>Einfügen</value>
+  </data>
+  <data name="MENU.Select All" xml:space="preserve">
+    <value>Alles auswählen</value>
+  </data>
 </root>

@@ -261,4 +261,22 @@
   <data name="Docking.Components.Path" xml:space="preserve">
     <value>路径</value>
   </data>
+  <data name="MENU.Clear" xml:space="preserve">
+    <value>清除</value>
+  </data>
+  <data name="MENU.Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="MENU.Cut" xml:space="preserve">
+    <value>Cut</value>
+  </data>
+  <data name="MENU.Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="MENU.Paste" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="MENU.Select All" xml:space="preserve">
+    <value>Select All</value>
+  </data>
 </root>
