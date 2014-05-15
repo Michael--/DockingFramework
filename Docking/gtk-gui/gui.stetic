@@ -251,7 +251,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="Docking.Widgets.EntryLocalizedLocalized" id="entryLayoutName">
+                  <widget class="Docking.Widgets.EntryLocalized" id="entryLayoutName">
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="IsEditable">True</property>
