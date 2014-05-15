@@ -713,7 +713,7 @@ namespace Docking.Components
             {
                if(item.Content != null)
                {
-                  Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
+                  Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);                  
 
                   if(item.Content is ILocalizableComponent)
                   {
@@ -734,6 +734,9 @@ namespace Docking.Components
 
             throw e;
          }
+
+         // after localization change, the child elements may need re-layouting
+         DockFrame.ResizeChildren(); 
 
          if(isvis && triggerRedraw)
             this.Show();
@@ -1884,7 +1887,7 @@ namespace Docking.Components
             return null;
          }
 
-         Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
+         Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);         
 
          item.DefaultVisible = false;
          //item.DrawFrame = true;

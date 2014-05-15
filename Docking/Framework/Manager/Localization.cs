@@ -116,8 +116,6 @@ namespace Docking.Components
             if(w is ILocalizableWidget)
                (w as ILocalizableWidget).Localize(prefix);
          }
-
-         container.ResizeChildren(); // changed strings in labels etc. might require their resizing
       }
 
       public string[] AvailableLanguages()
