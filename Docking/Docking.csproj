@@ -129,7 +129,6 @@
     <Compile Include="Tools\Misc\AssemblyHelper.cs" />
     <Compile Include="Tools\Misc\EncodingStringWriter.cs" />
     <Compile Include="Tools\Misc\FileFilterExt.cs" />
-    <Compile Include="Tools\Misc\MenuItemExtensions.cs" />
     <Compile Include="Tools\Misc\StringTools.cs" />
     <Compile Include="Tools\Misc\LocalizationExtensions.cs" />
     <Compile Include="Tools\Misc\TreeViewExtensions.cs" />

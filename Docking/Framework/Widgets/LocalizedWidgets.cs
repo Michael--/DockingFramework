@@ -239,7 +239,20 @@ namespace Docking.Widgets
       public string LocalizationKey { get; set; }
    }
 
-   public class TaggedLocalizedImageMenuItem : ImageMenuItem, ILocalizableWidget
+   public class TaggedImageMenuItem : ImageMenuItem
+   {
+      public TaggedImageMenuItem(IntPtr raw)
+      : base(raw)
+      {}
+
+      public TaggedImageMenuItem(String label)
+      : base(label)
+      {}
+
+      public System.Object Tag { get; set; }
+   }
+
+   public class TaggedLocalizedImageMenuItem : TaggedImageMenuItem, ILocalizableWidget
    {
       public TaggedLocalizedImageMenuItem(IntPtr raw)
       : base(raw)
@@ -248,8 +261,6 @@ namespace Docking.Widgets
       public TaggedLocalizedImageMenuItem(String label)
       : base(label)
       {}
-
-      public System.Object Tag { get; set; }
 
       void ILocalizableWidget.Localize(string namespc)
       {

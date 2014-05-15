@@ -362,25 +362,36 @@ namespace Docking.Components
          Quit(true);
       }
 
-      private SeparatorMenuItem   mRecentFilesBegin = null;
-      private const int           MAX_RECENT_FILES  = 9;
-      private List<ImageMenuItem> mRecentFiles      = new List<ImageMenuItem>();     
+      public  int                       MaxRecentFiles    = 9;
+      private SeparatorMenuItem         mRecentFilesBegin = null;
+      private List<TaggedImageMenuItem> mRecentFiles      = new List<TaggedImageMenuItem>();     
 
       public void AddRecentFile(string filename, bool do_update_menu = true)
       {
          if(string.IsNullOrEmpty(filename))
             return;
 
-         RemoveRecentFile(filename, false);
+         string filename_normalized = AssemblyHelper.PlatformIsWin32ish ? filename.Replace('/', '\\') : filename;
 
-         ImageMenuItem newitem = new ImageMenuItem(filename);
+         RemoveRecentFile(filename_normalized, false);
+
+         string filename_shortened = filename_normalized;
+         if(filename_shortened.Length>200)
+         { 
+            filename_shortened = filename_shortened.Substring(0, 100-5)
+                               + " ... "
+                               + filename_shortened.Substring(filename_normalized.Length-100, 100);
+         }
+
+         TaggedImageMenuItem newitem = new TaggedImageMenuItem(filename_shortened); 
+         newitem.Tag = filename_normalized; // the FULL filename
          //newitem.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.File-16.png"));
          newitem.Activated += OnRecentFileActivated;         
          (newitem.Child as Label).UseUnderline = false;
 
          mRecentFiles.Insert(0, newitem);
-         if(mRecentFiles.Count>MAX_RECENT_FILES)
-            mRecentFiles.RemoveRange(MAX_RECENT_FILES, mRecentFiles.Count-MAX_RECENT_FILES);
+         if(mRecentFiles.Count>MaxRecentFiles)
+            mRecentFiles.RemoveRange(MaxRecentFiles, mRecentFiles.Count-MaxRecentFiles);
 
          if(do_update_menu)
             UpdateRecentFilesMenu();
@@ -388,12 +399,12 @@ namespace Docking.Components
   
      public void RemoveRecentFile(string filename, bool do_update_menu = true)
      {
-         List<ImageMenuItem> founditems = new List<ImageMenuItem>();
-         foreach(ImageMenuItem item in mRecentFiles)
-            if(item.GetText()==filename)
+         List<TaggedImageMenuItem> founditems = new List<TaggedImageMenuItem>();
+         foreach(TaggedImageMenuItem item in mRecentFiles)
+            if(((string)item.Tag).Equals(filename))
                founditems.Add(item);
 
-         foreach(ImageMenuItem item in founditems)
+         foreach(TaggedImageMenuItem item in founditems)
             mRecentFiles.Remove(item);
 
          if(do_update_menu)
@@ -426,7 +437,7 @@ namespace Docking.Components
             filemenu.Append(mRecentFilesBegin);
             mRecentFilesBegin.ShowAll();
 
-            foreach(ImageMenuItem r in mRecentFiles)
+            foreach(TaggedImageMenuItem r in mRecentFiles)
             {
                filemenu.Append(r);
                r.ShowAll();
@@ -436,11 +447,11 @@ namespace Docking.Components
 
       protected void OnRecentFileActivated(object sender, EventArgs args)
       {
-         ImageMenuItem item = sender as ImageMenuItem;
+         TaggedImageMenuItem item = sender as TaggedImageMenuItem;
          if(item==null)
             return;
 
-         string filename = item.GetText();
+         string filename = (string) item.Tag;
 
          if(!File.Exists(filename))
          {
@@ -1367,6 +1378,7 @@ namespace Docking.Components
          Docking.Widgets.FileChooserDialogLocalized.InitialX = LoadSetting(instance, "FileChooserDialogLocalized.X", 0);
          Docking.Widgets.FileChooserDialogLocalized.InitialY = LoadSetting(instance, "FileChooserDialogLocalized.Y", 0);
 
+         MaxRecentFiles = persistency.LoadSetting(instance, "MaxRecentFiles", 9);
          List<string> recentfiles = persistency.LoadSetting(instance, "RecentFiles", new List<string>());
          recentfiles.Reverse();
          if(recentfiles.Count>0)
@@ -1393,8 +1405,8 @@ namespace Docking.Components
          persistency.SaveSetting(instance, "layout",      DockFrame.CurrentLayout);
          persistency.SaveSetting(instance, "windowstate", (int)WindowState);
          List<string> recentfiles = new List<string>();
-         foreach(ImageMenuItem item in mRecentFiles)
-            recentfiles.Add(item.GetText());
+         foreach(TaggedImageMenuItem item in mRecentFiles)
+            recentfiles.Add((string)item.Tag);
 
          persistency.SaveSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", Docking.Widgets.FileChooserDialogLocalized.InitialFolderToShow);
          persistency.SaveSetting(instance, "FileChooserDialogLocalized.W",                   Docking.Widgets.FileChooserDialogLocalized.InitialW);
@@ -1402,6 +1414,7 @@ namespace Docking.Components
          persistency.SaveSetting(instance, "FileChooserDialogLocalized.X",                   Docking.Widgets.FileChooserDialogLocalized.InitialX);
          persistency.SaveSetting(instance, "FileChooserDialogLocalized.Y",                   Docking.Widgets.FileChooserDialogLocalized.InitialY);
 
+         persistency.SaveSetting(instance, "MaxRecentFiles", MaxRecentFiles);
          persistency.SaveSetting(instance, "RecentFiles", recentfiles);
       }
 
