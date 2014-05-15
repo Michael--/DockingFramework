@@ -28,7 +28,7 @@ namespace Docking.Components
             listStore.AppendValues(row.ToArray());
          }
 
-         Persistence p = (Persistence)ComponentManager.LoadObject("ComponentList", typeof(Persistence)); // TODO early prototype - abolish, implement IPersistable instead!
+         Persistence p = (Persistence)ComponentManager.LoadObject("ComponentList", typeof(Persistence), item); // TODO early prototype - abolish, implement IPersistable instead!
          if (p != null)
             p.LoadColumnWidth(treeview1.Columns);
       }
@@ -39,7 +39,7 @@ namespace Docking.Components
 
          Persistence p = new Persistence(); 
          p.SaveColumnWidth(treeview1.Columns);
-         ComponentManager.SaveObject("ComponentList", p);
+         ComponentManager.SaveObject("ComponentList", p, DockItem);
       }
 
       #region Component - Interaction

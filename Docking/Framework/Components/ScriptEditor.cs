@@ -148,7 +148,7 @@ namespace Docking.Components
       {
          base.Loaded(item);
 
-         mPersistence = (ScriptPersistence)ComponentManager.LoadObject("ScriptEditor", typeof(ScriptPersistence));
+         mPersistence = (ScriptPersistence)ComponentManager.LoadObject("ScriptEditor", typeof(ScriptPersistence), item);
          if (mPersistence == null)
             mPersistence = new ScriptPersistence();
 
@@ -189,7 +189,7 @@ namespace Docking.Components
          base.Save();
 
          mPersistence.VPanedPosition = vpaned1.Position;
-         ComponentManager.SaveObject("ScriptEditor", mPersistence);
+         ComponentManager.SaveObject("ScriptEditor", mPersistence, DockItem);
       }
 
       public override bool IsCloseOK()

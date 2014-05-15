@@ -1207,11 +1207,6 @@ namespace Docking.Components
             ConfigurationXmlNode.AppendChild(newLayouts);
       }
 
-      // contains the current component while load/save persistence
-      // note: because of this load/save is not thread safe, load/save have to use threads carefully
-      // TODO This is an ugly quickhack - get rid of this variable!
-      private DockItem currentLoadSaveItem;
-
       private bool mInitialLoadOfComponentsCompleted = false;
       private List<object> mComponents = new List<object>();
 
@@ -1282,9 +1277,7 @@ namespace Docking.Components
             {
                System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
                w.Start();
-               currentLoadSaveItem = item;
                (item.Content as Component).Loaded(item);
-               currentLoadSaveItem = null;
                w.Stop();
                //if (w.ElapsedMilliseconds > 25)
                if(w.ElapsedMilliseconds > 300) // raise the limit to get rid of annoying output we currently cannot change anyway
@@ -1329,9 +1322,7 @@ namespace Docking.Components
          {
             if(item.Content is Component)
             {
-               currentLoadSaveItem = item;
                (item.Content as Component).Save();
-               currentLoadSaveItem = null;
             }
          }
          SaveDockFrameLayoutsToXmlConfigurationObject();
@@ -1348,8 +1339,6 @@ namespace Docking.Components
 
       protected virtual void LoadPersistency() // TODO abolish, replace by implementing IPersistable
       {
-         currentLoadSaveItem = null; // WTF is this? get rid of it!
-
          string instance = "MainWindow";        
          IPersistency persistency = this as IPersistency;
 
@@ -1414,9 +1403,6 @@ namespace Docking.Components
          persistency.SaveSetting(instance, "FileChooserDialogLocalized.Y",                   Docking.Widgets.FileChooserDialogLocalized.InitialY);
 
          persistency.SaveSetting(instance, "RecentFiles", recentfiles);
-
-
-         currentLoadSaveItem = null; // WTF is this? get rid of it!
       }
 
       public bool Quit(bool save_persistency)
@@ -1458,14 +1444,11 @@ namespace Docking.Components
       /// Load an object from persistence.
       /// The optional parameter 'item' can be used to identify the proper DockItem instance.
       /// </summary>
-      public object LoadObject(String elementName, Type t, DockItem item = null)
+      public object LoadObject(String elementName, Type t, DockItem item)
       {
          String pimpedElementName = elementName;
          if(item != null)
             pimpedElementName += "_" + item.Id.ToString();
-         else
-            if(currentLoadSaveItem != null)
-               pimpedElementName += "_" + currentLoadSaveItem.Id.ToString();
 
          if(ConfigurationXmlNode == null || pimpedElementName == null)
             return null;
@@ -1544,14 +1527,11 @@ namespace Docking.Components
       /// Save an object to persistence.
       /// The optional paranmeter should be used only loading from threads to identify correct DockItem
       /// </summary>
-      public void SaveObject(String elementName, object obj, DockItem item = null)
+      public void SaveObject(String elementName, object obj, DockItem item)
       {
          String pimpedElementName = elementName;
          if(item != null)
             pimpedElementName += "_" + item.Id.ToString();
-         else
-            if(currentLoadSaveItem != null)
-               pimpedElementName += "_" + currentLoadSaveItem.Id.ToString();
 
          // replace in managed persistence
          XmlNode newNode = ConfigurationXmlDocument.CreateElement(pimpedElementName);
@@ -1887,10 +1867,8 @@ namespace Docking.Components
          // call initialization of new created component
          if(initCalls)
          {
-            currentLoadSaveItem = item;
             if(item.Content is Component)
                (item.Content as Component).Loaded(item);
-            currentLoadSaveItem = null;
 
             if(item.Content is Component)
                AddComponent(item.Content);

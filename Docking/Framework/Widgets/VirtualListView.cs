@@ -209,7 +209,7 @@ namespace Docking.Widgets
       /// Gets the persistence data as int array
       /// </summary>
       /// <returns>The persistence.</returns>
-      public void SavePersistence() // TODO early prototype - abolish, implement IPersistable instead!
+      public void SavePersistence(DockItem item) // TODO early prototype - abolish, implement IPersistable instead!
       {
          mPersistence = new VirtualListPersistenceList();
          ColumnControl.Column[] columns = mColumnControl.GetColumns();
@@ -221,16 +221,16 @@ namespace Docking.Widgets
             p.Tag = c.Tag;
             mPersistence.Persistence.Add(p);
          }
-         ComponentManager.SaveObject("VirtualListView", mPersistence);
+         ComponentManager.SaveObject("VirtualListView", mPersistence, this.DockItem);
       }
 
       /// <summary>
       /// Sets the persistence previously got with GetPersistence
       /// </summary>
       /// <param name="data">Data.</param>
-      public void LoadPersistence()
+      public void LoadPersistence(DockItem item)
       {
-         mPersistence = (VirtualListPersistenceList)ComponentManager.LoadObject("VirtualListView", typeof(VirtualListPersistenceList));
+         mPersistence = (VirtualListPersistenceList)ComponentManager.LoadObject("VirtualListView", typeof(VirtualListPersistenceList), item);
       }
 
       private Pango.Layout GetLayout()

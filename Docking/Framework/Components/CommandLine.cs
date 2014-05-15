@@ -52,7 +52,7 @@ namespace Docking.Components
       {
          base.Save();
 
-         ComponentManager.SaveObject("CommandLine", mPersistence);
+         ComponentManager.SaveObject("CommandLine", mPersistence, DockItem);
       }
 
       #region Component - Interaction
