@@ -33,7 +33,7 @@ namespace Docking.Components
 			global::Gtk.Paned.PanedChild w1 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.scrolledwindow4]));
 			w1.Resize = false;
 			// Container child vpaned1.Gtk.Paned+PanedChild
-			this.textMessage = new Docking.Widgets.TextViewLocalized ();
+			this.textMessage = new global::Docking.Widgets.TextViewLocalized ();
 			this.textMessage.CanFocus = true;
 			this.textMessage.Name = "textMessage";
 			this.textMessage.Editable = false;

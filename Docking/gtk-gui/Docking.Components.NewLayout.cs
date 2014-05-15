@@ -42,7 +42,7 @@ namespace Docking.Components
    w2.Expand = false;
    w2.Fill = false;
    // Container child hbox1.Gtk.Box+BoxChild
-   this.entryLayoutName = new Docking.Widgets.EntryLocalized ();
+   this.entryLayoutName = new global::Docking.Widgets.EntryLocalized ();
    this.entryLayoutName.CanFocus = true;
    this.entryLayoutName.Name = "entryLayoutName";
    this.entryLayoutName.IsEditable = true;
