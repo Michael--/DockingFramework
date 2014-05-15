@@ -736,7 +736,7 @@ namespace Docking.Components
          }
 
          // after localization change, the child elements may need re-layouting
-         DockFrame.ResizeChildren(); 
+         //DockFrame.ResizeChildren(); // TODO this breaks VirtualListView layout, commented it out
 
          if(isvis && triggerRedraw)
             this.Show();
