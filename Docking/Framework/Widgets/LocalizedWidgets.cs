@@ -36,6 +36,27 @@ namespace Docking.Widgets
    }
 
    [System.ComponentModel.ToolboxItem(true)]
+   public class EntryLocalized : Gtk.Entry, ILocalizableWidget
+   {
+      public EntryLocalized()                   : base()            {}
+      public EntryLocalized(int max)            : base(max)         {}
+      public EntryLocalized(IntPtr raw)         : base(raw)         {}
+      public EntryLocalized(string initialText) : base(initialText) {}
+
+      protected override void OnPopulatePopup(Menu menu)
+      {
+         base.OnPopulatePopup(menu);
+         Localization.LocalizeMenu(menu);
+      }
+
+      void ILocalizableWidget.Localize(string namespc)
+      {
+         // NOP, we do not localize the editable text
+      }
+   }
+
+
+   [System.ComponentModel.ToolboxItem(true)]
    public class ButtonLocalized : Gtk.Button, ILocalizableWidget
    {
       public ButtonLocalized()                  : base()         {}
