@@ -400,8 +400,12 @@ namespace Docking.Components
      public void RemoveRecentFile(string filename, bool do_update_menu = true)
      {
          List<TaggedImageMenuItem> founditems = new List<TaggedImageMenuItem>();
-         foreach(TaggedImageMenuItem item in mRecentFiles)
-            if(((string)item.Tag).Equals(filename))
+
+         StringComparison mode = AssemblyHelper.PlatformIsWin32ish
+                               ? StringComparison.InvariantCultureIgnoreCase
+                               : StringComparison.InvariantCulture;
+         foreach(TaggedImageMenuItem item in mRecentFiles)            
+            if(((string)item.Tag).Equals(filename, mode))
                founditems.Add(item);
 
          foreach(TaggedImageMenuItem item in founditems)
