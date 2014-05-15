@@ -702,32 +702,41 @@ namespace Docking.Components
 
       public void UpdateLanguage(bool triggerRedraw)
       {
-         // tell all components about changed language
-         foreach(DockItem item in DockFrame.GetItems())
-         {
-            if(item.Content != null)
-            {
-               Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
-
-               if(item.Content is ILocalizableComponent)
-               {
-                  ILocalizableComponent il = item.Content as ILocalizableComponent;
-                  il.LocalizationChanged(item);
-                  item.Content.Name = il.Name.Localized(item.Content);
-               }
-            }
-            item.UpdateTitle();
-         }
-
-         // todo: change menue and further language depending stuff
-         Localization.LocalizeMenu(MenuBar);
-
-         if(triggerRedraw)
-         {
-            // trigger redraw - this is a brute-force workaround, we found no other way yet to properly trigger a full-redraw of everything         
+         bool isvis = this.Visible;
+        
+         if(isvis && triggerRedraw)
             this.Hide();
-            this.Show();
+
+         try
+         {
+            foreach(DockItem item in DockFrame.GetItems())
+            {
+               if(item.Content != null)
+               {
+                  Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
+
+                  if(item.Content is ILocalizableComponent)
+                  {
+                     ILocalizableComponent il = item.Content as ILocalizableComponent;
+                     il.LocalizationChanged(item);
+                     item.Content.Name = il.Name.Localized(item.Content);
+                  }
+               }
+               item.UpdateTitle();
+            }
+
+            Localization.LocalizeMenu(MenuBar);
+         } 
+         catch(Exception e)
+         {
+            if(isvis && triggerRedraw)
+               this.Show();
+
+            throw e;
          }
+
+         if(isvis && triggerRedraw)
+            this.Show();
       }
 
       #endregion
