@@ -6,7 +6,7 @@ namespace Docking.Components
 	{
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
-		private global::Gtk.TextView textview1;
+		private Docking.Widgets.TextViewLocalized textview1;
 		
 		protected virtual void Build ()
 		{
@@ -23,7 +23,7 @@ namespace Docking.Components
 			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
 			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
 			// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
-			this.textview1 = new global::Gtk.TextView ();
+			this.textview1 = new Docking.Widgets.TextViewLocalized ();
 			this.textview1.CanFocus = true;
 			this.textview1.Name = "textview1";
 			this.textview1.Editable = false;

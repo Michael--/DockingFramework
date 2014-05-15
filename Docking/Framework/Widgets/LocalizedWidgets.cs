@@ -35,26 +35,6 @@ namespace Docking.Widgets
       }
    }
 
-   [System.ComponentModel.ToolboxItem(true)]
-   public class EntryLocalized : Gtk.Entry, ILocalizableWidget
-   {
-      public EntryLocalized()                   : base()            {}
-      public EntryLocalized(int max)            : base(max)         {}
-      public EntryLocalized(IntPtr raw)         : base(raw)         {}
-      public EntryLocalized(string initialText) : base(initialText) {}
-
-      protected override void OnPopulatePopup(Menu menu)
-      {
-         base.OnPopulatePopup(menu);
-         Localization.LocalizeMenu(menu);
-      }
-
-      void ILocalizableWidget.Localize(string namespc)
-      {
-         // NOP, we do not localize the editable text
-      }
-   }
-
 
    [System.ComponentModel.ToolboxItem(true)]
    public class ButtonLocalized : Gtk.Button, ILocalizableWidget
@@ -80,6 +60,52 @@ namespace Docking.Widgets
       {
          if(LocalizationKey!=null)
             Label = LocalizationKey.Localized(namespc);
+      }
+   }
+
+   [System.ComponentModel.ToolboxItem(true)]
+   public class EntryLocalized : Gtk.Entry, ILocalizableWidget
+   {
+      public EntryLocalized()                   : base()            {}
+      public EntryLocalized(int max)            : base(max)         {}
+      public EntryLocalized(IntPtr raw)         : base(raw)         {}
+      public EntryLocalized(string initialText) : base(initialText) {}
+
+      protected override void OnPopulatePopup(Menu menu)
+      {
+         base.OnPopulatePopup(menu);
+         Localization.LocalizeMenu(menu);
+         foreach(Widget w in menu.Children)
+            if((w is SeparatorMenuItem) || !w.Sensitive)
+               w.Visible = false;
+      }
+
+      void ILocalizableWidget.Localize(string namespc)
+      {
+         // NOP
+      }
+   }
+
+   [System.ComponentModel.ToolboxItem(true)]
+   public class TextViewLocalized : Gtk.TextView, ILocalizableWidget
+   {
+      public TextViewLocalized()                  : base()       {}
+      public TextViewLocalized(IntPtr raw)        : base(raw)    {}
+      public TextViewLocalized(TextBuffer buffer) : base(buffer) {}
+
+      protected override void OnPopulatePopup(Menu menu)
+      {
+         base.OnPopulatePopup(menu);
+         Localization.LocalizeMenu(menu);
+
+         foreach(Widget w in menu.Children)
+            if((w is SeparatorMenuItem) || !w.Sensitive)
+               w.Visible = false;
+      }
+
+      void ILocalizableWidget.Localize(string namespc)
+      {
+         // NOP
       }
    }
 

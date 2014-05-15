@@ -7,7 +7,7 @@ using Gtk;
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-   public partial class Messages : Component, IMessage, ILocalizableComponent
+   public partial class Messages : Component, IMessage, ILocalizableComponent, ICopy
     {
         #region IMessage
         // FIXME SLohse: This function currently may ONLY be called from the main GUI thread!
@@ -64,30 +64,6 @@ namespace Docking.Components
 
             textview1.PopulatePopup += (object o, PopulatePopupArgs args) =>
             {
-               foreach(Widget w in args.Menu.Children)
-               {
-                  ImageMenuItem item = w as ImageMenuItem;
-                  if(item!=null)
-                  {
-                     string stock = (item.Image as Image).Stock;
-                     if(stock=="gtk-copy") // https://developer.gnome.org/gtk3/stable/gtk3-Stock-Items.html#GTK-STOCK-DELETE:CAPS
-                     {
-                        item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Copy-16.png"));
-                        (item.Child as Label).LabelProp = "Copy".Localized("MENU");
-                     }
-                     else if(stock=="gtk-select-all")
-                     {
-                        //item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.SelectAll-16.png"));
-                        item.Image = null;
-                        (item.Child as Label).LabelProp = "Select All".Localized("MENU");
-                     }
-                     else
-                        w.HideAll();
-                  }
-                  else
-                     w.HideAll();
-               }
-
                TaggedLocalizedImageMenuItem newitem = new TaggedLocalizedImageMenuItem("Clear");
                newitem.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Broom-16.png"));
                newitem.Activated += (object sender, EventArgs e) => Clear();               
@@ -97,6 +73,16 @@ namespace Docking.Components
                Localization.LocalizeMenu(args.Menu);
             };
         }
+
+        #region ICopy
+
+        // TODO: extend the ICopy mechanism. Whenever a textentry or textview control has the focus which supports Cut/Copy/Paste, then connect it to the main Cut/Copy/Paste menu of the application.
+        void ICopy.Copy()
+        {
+           textview1.Buffer.CopyClipboard(Clipboard.Get(Gdk.Selection.Clipboard));
+        }
+
+        #endregion
     }
 
     #region Starter / Entry Point

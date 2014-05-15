@@ -57,7 +57,7 @@
             <property name="MemberName" />
             <property name="ShadowType">In</property>
             <child>
-              <widget class="Gtk.TextView" id="textview1">
+              <widget class="Docking.Widgets.TextViewLocalized" id="textview1">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="ShowScrollbars">True</property>
@@ -425,7 +425,7 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.TextView" id="textMessage">
+              <widget class="Docking.Widgets.TextViewLocalized" id="textMessage">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Editable">False</property>

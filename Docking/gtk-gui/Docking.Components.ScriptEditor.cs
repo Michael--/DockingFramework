@@ -7,7 +7,7 @@ namespace Docking.Components
 		private global::Gtk.VBox vbox2;
 		private global::Gtk.VPaned vpaned1;
 		private global::Gtk.ScrolledWindow scrolledwindow4;
-		private global::Gtk.TextView textMessage;
+		private Docking.Widgets.TextViewLocalized textMessage;
 		
 		protected virtual void Build ()
 		{
@@ -33,7 +33,7 @@ namespace Docking.Components
 			global::Gtk.Paned.PanedChild w1 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.scrolledwindow4]));
 			w1.Resize = false;
 			// Container child vpaned1.Gtk.Paned+PanedChild
-			this.textMessage = new global::Gtk.TextView ();
+			this.textMessage = new Docking.Widgets.TextViewLocalized ();
 			this.textMessage.CanFocus = true;
 			this.textMessage.Name = "textMessage";
 			this.textMessage.Editable = false;
