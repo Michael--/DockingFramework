@@ -301,4 +301,7 @@ Es wird empfohlen, anschließend die Übersetzungen manuell zu überprüfen.</va
   <data name="Docking.Components.All Known File Types" xml:space="preserve">
     <value>Alle unterstützten Dateitypen</value>
   </data>
+  <data name="Docking.Components.Select" xml:space="preserve">
+    <value>Auswählen</value>
+  </data>
 </root>

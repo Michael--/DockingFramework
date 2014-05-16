@@ -216,6 +216,9 @@
   <data name="Docking.Components.Script Editor" xml:space="preserve">
     <value>Script Editor</value>
   </data>
+  <data name="Docking.Components.Select" xml:space="preserve">
+    <value>Select</value>
+  </data>
   <data name="Docking.Components.Status" xml:space="preserve">
     <value>Status</value>
   </data>

@@ -300,4 +300,7 @@
   <data name="Docking.Components.All Known File Types" xml:space="preserve">
     <value>所有已知的文件类型</value>
   </data>
+  <data name="Docking.Components.Select" xml:space="preserve">
+    <value>选择</value>
+  </data>
 </root>
