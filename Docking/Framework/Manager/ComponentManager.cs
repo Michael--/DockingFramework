@@ -962,9 +962,13 @@ namespace Docking.Components
                }
             }
 
-            AddRecentFile(result);
+            if(File.Exists(result) &&
+               MessageBox.Show(MessageType.Question, ButtonsType.YesNo, "File '{0}' already exists.\nDo you want to overwrite it?", result)!=ResponseType.Yes)
+               result = null;
          }
 
+         if(result!=null)
+            AddRecentFile(result);
          dlg.Destroy();
          return result;
    }
