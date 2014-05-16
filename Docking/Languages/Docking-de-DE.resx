@@ -295,4 +295,10 @@ Es wird empfohlen, anschließend die Übersetzungen manuell zu überprüfen.</va
   <data name="Docking.Components.gtk-yes" xml:space="preserve">
     <value>Ja</value>
   </data>
+  <data name="Docking.Components.All Files" xml:space="preserve">
+    <value>Alle Dateien</value>
+  </data>
+  <data name="Docking.Components.All Known File Types" xml:space="preserve">
+    <value>Alle unterstützten Dateitypen</value>
+  </data>
 </root>

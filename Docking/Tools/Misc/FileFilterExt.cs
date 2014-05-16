@@ -13,7 +13,9 @@ namespace Docking.Tools
 
       public FileFilterExt(string pattern, string name)
       {
-         Name = name+" ("+pattern+")";
+         Name = name;
+         if(!string.IsNullOrEmpty(pattern))
+            Name += " ("+pattern+")";
          AddPattern(pattern);         
       }
 

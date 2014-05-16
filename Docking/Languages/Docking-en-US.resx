@@ -123,6 +123,12 @@
   <data name="Docking.Components.Activity" xml:space="preserve">
     <value>Thread</value>
   </data>
+  <data name="Docking.Components.All Files" xml:space="preserve">
+    <value>All Files</value>
+  </data>
+  <data name="Docking.Components.All Known File Types" xml:space="preserve">
+    <value>All Known File Types</value>
+  </data>
   <data name="Docking.Components.Cancel" xml:space="preserve">
     <value>Cancel</value>
   </data>
@@ -155,6 +161,21 @@
   </data>
   <data name="Docking.Components.File {0} does not exist" xml:space="preserve">
     <value>File {0} does not exist</value>
+  </data>
+  <data name="Docking.Components.gtk-cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Docking.Components.gtk-close" xml:space="preserve">
+    <value>Cloe</value>
+  </data>
+  <data name="Docking.Components.gtk-no" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Docking.Components.gtk-ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Docking.Components.gtk-yes" xml:space="preserve">
+    <value>Yes</value>
   </data>
   <data name="Docking.Components.Instances" xml:space="preserve">
     <value>Instances</value>
@@ -210,21 +231,6 @@ It is recommended to manually check the translations afterwards.</value>
   </data>
   <data name="Docking.Components.US name" xml:space="preserve">
     <value>Text in US English</value>
-  </data>
-  <data name="Docking.Components.gtk-cancel" xml:space="preserve">
-    <value>Cancel</value>
-  </data>
-  <data name="Docking.Components.gtk-close" xml:space="preserve">
-    <value>Cloe</value>
-  </data>
-  <data name="Docking.Components.gtk-no" xml:space="preserve">
-    <value>No</value>
-  </data>
-  <data name="Docking.Components.gtk-ok" xml:space="preserve">
-    <value>OK</value>
-  </data>
-  <data name="Docking.Components.gtk-yes" xml:space="preserve">
-    <value>Yes</value>
   </data>
   <data name="LANGUAGE_NAME" xml:space="preserve">
     <value>US English</value>

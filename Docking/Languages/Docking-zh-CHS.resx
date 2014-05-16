@@ -265,19 +265,19 @@
     <value>清除</value>
   </data>
   <data name="MENU.Copy" xml:space="preserve">
-    <value>Copy</value>
+    <value>复制</value>
   </data>
   <data name="MENU.Cut" xml:space="preserve">
-    <value>Cut</value>
+    <value>剜</value>
   </data>
   <data name="MENU.Delete" xml:space="preserve">
-    <value>Delete</value>
+    <value>删除</value>
   </data>
   <data name="MENU.Paste" xml:space="preserve">
-    <value>Paste</value>
+    <value>插入</value>
   </data>
   <data name="MENU.Select All" xml:space="preserve">
-    <value>Select All</value>
+    <value>全选</value>
   </data>
   <data name="Docking.Components.gtk-cancel" xml:space="preserve">
     <value>取消</value>
@@ -293,5 +293,11 @@
   </data>
   <data name="Docking.Components.gtk-yes" xml:space="preserve">
     <value>是的</value>
+  </data>
+  <data name="Docking.Components.All Files" xml:space="preserve">
+    <value>所有文件</value>
+  </data>
+  <data name="Docking.Components.All Known File Types" xml:space="preserve">
+    <value>所有已知的文件类型</value>
   </data>
 </root>

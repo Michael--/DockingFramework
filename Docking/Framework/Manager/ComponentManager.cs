@@ -23,6 +23,16 @@ using Gtk;
 
 namespace Docking.Components
 {
+   // This is a workaround for the problem that we cannot write "blablabla".Localized(this) inside class "ComponentManager",
+   // Because that would yield the wrong namespace: not "Docking.Components", but the one of the inherited main application class.
+   static class StringLoc
+   {
+      public static string L(this string s)
+      {         
+         return s.Localized("Docking.Components");
+      }
+   }
+
    public class ComponentManager : Gtk.Window, IPersistency, IMessageWriteLine, ICut, ICopy, IPaste
    {
 
@@ -168,7 +178,7 @@ namespace Docking.Components
             {
                ResponseType result = MessageBox.Show(this, MessageType.Question,
                                          ButtonsType.YesNo,
-                                         "Are you sure to remove the current layout?");
+                                         "Are you sure to remove the current layout?".L());
 
                if(result == ResponseType.Yes)
                {
@@ -460,7 +470,7 @@ namespace Docking.Components
          if(!File.Exists(filename))
          {
             if(MessageBox.Show(MessageType.Question, ButtonsType.YesNo,
-                               "File '{0}' does not exist. Do you want to remove it from the recent files list?".Localized(this), filename
+                               "File '{0}' does not exist. Do you want to remove it from the recent files list?".L(), filename
                               )==ResponseType.Yes)
                RemoveRecentFile(filename);
             return;
@@ -469,7 +479,7 @@ namespace Docking.Components
          if(!OpenFile(filename))
          {
             if(MessageBox.Show(MessageType.Question, ButtonsType.YesNo,
-                               "Opening file '{0}' failed. Maybe no window is open which can handle it. In future, this tool will offer you such a window. Currently it cannot do that yet. Do you want to remove the file from the recent files list?".Localized(this), filename
+                               "Opening file '{0}' failed. Maybe no window is open which can handle it. In future, this tool will offer you such a window. Currently it cannot do that yet. Do you want to remove the file from the recent files list?".L(), filename
                               )==ResponseType.Yes)
                RemoveRecentFile(filename);
             return;
@@ -835,13 +845,13 @@ namespace Docking.Components
       public String OpenFolderDialog(string title)
       {
          String result = null;
+
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.SelectFolder,
-                                              "Cancel".Localized(this), ResponseType.Cancel,
-                                              "Select".Localized(this), ResponseType.Accept);
-         if(dlg.Run() == (int) ResponseType.Accept)
-         {
+                                              "Cancel".L(), ResponseType.Cancel,
+                                              "Select".L(), ResponseType.Accept);
+
+         if(RunFileChooserDialogLocalized(dlg, null) == (int) ResponseType.Accept)
             result = dlg.Filename;
-         }
 
          dlg.Destroy();
          return result;
@@ -856,34 +866,15 @@ namespace Docking.Components
       }
 
       public String OpenFileDialog(string title, List<FileFilterExt> filters)
-      {
-         String result = null;
-
+      {         
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
-                                              "Cancel".Localized(this), ResponseType.Cancel,
-                                              "Open".Localized(this),   ResponseType.Accept);
+                                              "Cancel".L(), ResponseType.Cancel,
+                                              "Open".L(),   ResponseType.Accept);
 
-         if(filters!=null && filters.Count>0)
-         {
-            if(filters.Count>1)
-            {
-               FileFilterExt combinedfilter = new FileFilterExt();
-               foreach(FileFilterExt filter in filters)
-                  foreach(string pattern in filter.GetPatterns())
-                     combinedfilter.AddPattern(pattern);         
-               combinedfilter.Name = "(all supported file types)".Localized("Docking.Components");
-               dlg.AddFilter(combinedfilter);
-            }
+         if(RunFileChooserDialogLocalized(dlg, filters) != (int) ResponseType.Accept)
+            return null;
 
-            foreach(FileFilterExt filter in filters)
-               dlg.AddFilter(filter);
-         }
-
-         if(dlg.Run() == (int) ResponseType.Accept)
-            result = dlg.Filename;
-
-         dlg.Destroy();
-
+         string result = dlg.Filename;
          AddRecentFile(result);
          return result;
       }
@@ -898,35 +889,16 @@ namespace Docking.Components
 
       public string[] OpenFilesDialog(string title, List<FileFilterExt> filters)
       {
-         string[] result = null;
-
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
-                                              "Cancel".Localized(this), ResponseType.Cancel,
-                                              "Open".Localized(this),   ResponseType.Accept);
+                                              "Cancel".L(), ResponseType.Cancel,
+                                              "Open".L(),   ResponseType.Accept);
 
          dlg.SelectMultiple = true;        
 
-         if(filters!=null && filters.Count>0)
-         {
-            if(filters.Count>1)
-            {
-               FileFilterExt combinedfilter = new FileFilterExt();               
-               foreach(FileFilterExt filter in filters)
-                  foreach(string pattern in filter.GetPatterns())
-                     combinedfilter.AddPattern(pattern);                     
-               combinedfilter.Name = "(all supported file types)".Localized(this);
-               dlg.AddFilter(combinedfilter);
-            }
+         if(RunFileChooserDialogLocalized(dlg, filters) != (int) ResponseType.Accept)
+            return null;
 
-            foreach(FileFilterExt filter in filters)
-               dlg.AddFilter(filter);
-         }
-
-         if(dlg.Run() == (int) ResponseType.Accept)
-            result = dlg.Filenames;
-
-         dlg.Destroy();
-
+         string[] result = dlg.Filenames;
          if(result!=null)
             foreach(string filename in result)
                AddRecentFile(filename);
@@ -943,50 +915,70 @@ namespace Docking.Components
 
       public String SaveFileDialog(string title, List<FileFilterExt> filters = null)
       {
-         String result = null;
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Save,
-                                              "Cancel".Localized(this), ResponseType.Cancel,
-                                              "Save".Localized(this),   ResponseType.Accept);
+                                              "Cancel".L(), ResponseType.Cancel,
+                                              "Save".L(),   ResponseType.Accept);
 
-         if(filters!=null)
-            foreach(FileFilterExt filter in filters)
-               dlg.AddFilter(filter);
+         if(RunFileChooserDialogLocalized(dlg, filters) != (int) ResponseType.Accept)
+            return null;
 
-         if(dlg.Run() == (int) ResponseType.Accept)
+         string result = dlg.Filename;
+
+         FileFilter selectedFilter = dlg.Filter;
+         if(selectedFilter != null)
          {
-            result = dlg.Filename;
-
-            FileFilter selectedFilter = dlg.Filter;
-            if(selectedFilter != null)
+            foreach(FileFilterExt f in filters)
             {
-               foreach(FileFilterExt f in filters)
+               if(f==selectedFilter)
                {
-                  if(f==selectedFilter)
-                  {
-                     bool correct_extension_found = false;                   
-                     string firstext = null;
-                     foreach(string pattern in f.GetPatterns())
-                     {                          
-                        string ext = pattern.TrimStart('*');
-                        if(firstext==null)
-                           firstext = ext;
-                        if(result.EndsWith(ext, true, null))
-                        {
-                           correct_extension_found = true;
-                           break;
-                        }
+                  bool correct_extension_found = false;                   
+                  string firstext = null;
+                  foreach(string pattern in f.GetPatterns())
+                  {                          
+                     string ext = pattern.TrimStart('*');
+                     if(firstext==null)
+                        firstext = ext;
+                     if(result.EndsWith(ext, true, null))
+                     {
+                        correct_extension_found = true;
+                        break;
                      }
-                     if(!correct_extension_found && firstext!=null)
-                        result += firstext;
-                     break;
                   }
+                  if(!correct_extension_found && firstext!=null)
+                     result += firstext;
+                  break;
                }
             }
          }
 
-         dlg.Destroy();
-
          AddRecentFile(result);
+         return result;
+      }
+
+      private int RunFileChooserDialogLocalized(FileChooserDialogLocalized dlg, List<FileFilterExt> filters)
+      {
+         dlg.ShowHidden = true;
+
+         if(filters!=null && filters.Count>0)
+         {
+            if(filters.Count>1)
+            {
+               FileFilterExt combinedfilter = new FileFilterExt();
+               foreach(FileFilterExt filter in filters)
+                  foreach(string pattern in filter.GetPatterns())
+                     combinedfilter.AddPattern(pattern);         
+               combinedfilter.Name = "All Known File Types".L();
+               dlg.AddFilter(combinedfilter);
+            }
+
+            foreach(FileFilterExt filter in filters)
+               dlg.AddFilter(filter);
+
+            dlg.AddFilter(new FileFilterExt("*", "All Files".L()) { Name = "All Files".L() });
+         }
+
+         int result = dlg.Run();
+         dlg.Destroy();
          return result;
       }
 
