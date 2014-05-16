@@ -851,7 +851,9 @@ namespace Docking.Components
                                               "Select".L(), ResponseType.Accept);
 
          if(RunFileChooserDialogLocalized(dlg, null) == (int) ResponseType.Accept)
+         {
             result = dlg.Filename;
+         }
 
          dlg.Destroy();
          return result;
@@ -867,15 +869,19 @@ namespace Docking.Components
 
       public String OpenFileDialog(string title, List<FileFilterExt> filters)
       {         
+         string result = null;
+     
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
                                               "Cancel".L(), ResponseType.Cancel,
                                               "Open".L(),   ResponseType.Accept);
 
-         if(RunFileChooserDialogLocalized(dlg, filters) != (int) ResponseType.Accept)
-            return null;
+         if(RunFileChooserDialogLocalized(dlg, filters) == (int) ResponseType.Accept)
+         {
+            result = dlg.Filename;
+            AddRecentFile(result);
+         }
 
-         string result = dlg.Filename;
-         AddRecentFile(result);
+         dlg.Destroy();
          return result;
       }
 
@@ -889,19 +895,23 @@ namespace Docking.Components
 
       public string[] OpenFilesDialog(string title, List<FileFilterExt> filters)
       {
+         string[] result = null;
+
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
                                               "Cancel".L(), ResponseType.Cancel,
                                               "Open".L(),   ResponseType.Accept);
 
          dlg.SelectMultiple = true;        
 
-         if(RunFileChooserDialogLocalized(dlg, filters) != (int) ResponseType.Accept)
-            return null;
+         if(RunFileChooserDialogLocalized(dlg, filters) == (int) ResponseType.Accept)
+         {
+            result = dlg.Filenames;
+            if(result!=null)
+               foreach(string filename in result)
+                  AddRecentFile(filename);
+         }
 
-         string[] result = dlg.Filenames;
-         if(result!=null)
-            foreach(string filename in result)
-               AddRecentFile(filename);
+         dlg.Destroy();
          return result;
       }
 
@@ -915,45 +925,49 @@ namespace Docking.Components
 
       public String SaveFileDialog(string title, List<FileFilterExt> filters = null)
       {
+         string result = null;
+
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Save,
                                               "Cancel".L(), ResponseType.Cancel,
                                               "Save".L(),   ResponseType.Accept);
 
-         if(RunFileChooserDialogLocalized(dlg, filters) != (int) ResponseType.Accept)
-            return null;
-
-         string result = dlg.Filename;
-
-         FileFilter selectedFilter = dlg.Filter;
-         if(selectedFilter != null)
+         if(RunFileChooserDialogLocalized(dlg, filters) == (int) ResponseType.Accept)
          {
-            foreach(FileFilterExt f in filters)
+            result = dlg.Filename;
+
+            FileFilter selectedFilter = dlg.Filter;
+            if(selectedFilter != null)
             {
-               if(f==selectedFilter)
+               foreach(FileFilterExt f in filters)
                {
-                  bool correct_extension_found = false;                   
-                  string firstext = null;
-                  foreach(string pattern in f.GetPatterns())
-                  {                          
-                     string ext = pattern.TrimStart('*');
-                     if(firstext==null)
-                        firstext = ext;
-                     if(result.EndsWith(ext, true, null))
-                     {
-                        correct_extension_found = true;
-                        break;
+                  if(f==selectedFilter)
+                  {
+                     bool correct_extension_found = false;                   
+                     string firstext = null;
+                     foreach(string pattern in f.GetPatterns())
+                     {                          
+                        string ext = pattern.TrimStart('*');
+                        if(firstext==null)
+                           firstext = ext;
+                        if(result.EndsWith(ext, true, null))
+                        {
+                           correct_extension_found = true;
+                           break;
+                        }
                      }
+                     if(!correct_extension_found && firstext!=null)
+                        result += firstext;
+                     break;
                   }
-                  if(!correct_extension_found && firstext!=null)
-                     result += firstext;
-                  break;
                }
             }
+
+            AddRecentFile(result);
          }
 
-         AddRecentFile(result);
+         dlg.Destroy();
          return result;
-      }
+   }
 
       private int RunFileChooserDialogLocalized(FileChooserDialogLocalized dlg, List<FileFilterExt> filters)
       {
@@ -977,9 +991,14 @@ namespace Docking.Components
             dlg.AddFilter(new FileFilterExt("*", "All Files".L()) { Name = "All Files".L() });
          }
 
+         #if false
+         // we sadly cannot do this here, because we need the getters inside dlg (like .Filename), and they will no longer have proper contents after .Destroy()
          int result = dlg.Run();
          dlg.Destroy();
          return result;
+         #endif
+
+         return dlg.Run();
       }
 
       const string URL_PREFIX_FILE = "file://";
