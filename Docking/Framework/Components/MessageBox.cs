@@ -1,6 +1,7 @@
 using System;
 using Gtk;
 using Docking.Tools;
+using Docking.Helper;
 
 
 namespace Docking.Components
@@ -18,7 +19,7 @@ namespace Docking.Components
        {
           ComponentManager = cm;
 
-          if(AssemblyHelper.PlatformIsWin32ish)
+          if(Platform.IsWindows)
           {
              PIXBUF_INFO     = SystemDrawing_vs_GTK_Conversion.Bitmap2Pixbuf(System.Drawing.SystemIcons.Information);
              PIXBUF_WARNING  = SystemDrawing_vs_GTK_Conversion.Bitmap2Pixbuf(System.Drawing.SystemIcons.Warning);
@@ -33,7 +34,7 @@ namespace Docking.Components
             parent = ComponentManager;
 			MessageDialog md = new MessageDialog(parent, DialogFlags.Modal, msgtype, buttontype, format, args);
 
-         if(AssemblyHelper.PlatformIsWin32ish) // replace Gtk's private icons by Windows standard icons
+         if(Platform.IsWindows) // replace Gtk's private icons by Windows standard icons
          {
             switch(msgtype)
             {

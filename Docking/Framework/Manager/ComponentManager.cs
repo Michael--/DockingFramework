@@ -381,7 +381,7 @@ namespace Docking.Components
          if(string.IsNullOrEmpty(filename))
             return;
 
-         string filename_normalized = AssemblyHelper.PlatformIsWin32ish ? filename.Replace('/', '\\') : filename;
+         string filename_normalized = Platform.IsWindows ? filename.Replace('/', '\\') : filename;
 
          RemoveRecentFile(filename_normalized, false);
 
@@ -411,7 +411,7 @@ namespace Docking.Components
      {
          List<TaggedImageMenuItem> founditems = new List<TaggedImageMenuItem>();
 
-         StringComparison mode = AssemblyHelper.PlatformIsWin32ish
+         StringComparison mode = Platform.IsWindows
                                ? StringComparison.InvariantCultureIgnoreCase
                                : StringComparison.InvariantCulture;
          foreach(TaggedImageMenuItem item in mRecentFiles)            
@@ -1015,7 +1015,7 @@ namespace Docking.Components
          if(url.StartsWith(URL_PREFIX_FILE))
          {
             string filename = url.Substring(URL_PREFIX_FILE.Length);
-            if(AssemblyHelper.PlatformIsWin32ish)
+            if(Platform.IsWindows)
             {
                // treat how local filenames are encoded on Windows. Example: file:///D:/some/folder/myfile.txt
                if(filename.Length >= 3 &&

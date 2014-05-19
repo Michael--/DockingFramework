@@ -35,14 +35,15 @@ namespace Docking.Helper
 	{
 		static Platform ()
 		{
- 			IsWindows = System.IO.Path.DirectorySeparatorChar == '\\';
- 			IsMac = !IsWindows && IsRunningOnMac();
-			IsX11 = !IsMac && System.Environment.OSVersion.Platform == PlatformID.Unix;
+ 			IsWindows = System.IO.Path.DirectorySeparatorChar=='\\';
+         IsUNIX    = System.Environment.OSVersion.Platform==PlatformID.Unix ||
+                     System.Environment.OSVersion.Platform==PlatformID.MacOSX;
+ 			IsMac     = IsUNIX && IsRunningOnMac();
 		}
 		
-		public static bool IsMac { get; private set; }
-		public static bool IsX11 { get; private set; }
 		public static bool IsWindows { get; private set; }
+      public static bool IsUNIX    { get; private set; }
+		public static bool IsMac     { get; private set; }
 		
 		//From Managed.Windows.Forms/XplatUI
 		static bool IsRunningOnMac ()
