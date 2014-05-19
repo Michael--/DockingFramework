@@ -31,7 +31,7 @@ using Gdk;
 
 namespace Docking.Tools
 {
-	static class Platform
+	public static class Platform
 	{
 		static Platform ()
 		{
