@@ -124,21 +124,21 @@
     <Compile Include="Framework\Manager\ComponentManager.cs" />
     <Compile Include="Framework\Interfaces\IComponentFactory.cs" />
     <Compile Include="Framework\Interfaces\IMessage.cs" />
-    <Compile Include="Tools\Colors\Colors.cs" />
-    <Compile Include="Tools\Graphics\SystemDrawing_vs_GTK_Conversion.cs" />
-    <Compile Include="Tools\Misc\EncodingStringWriter.cs" />
-    <Compile Include="Tools\Misc\FileFilterExt.cs" />
-    <Compile Include="Tools\Misc\StringTools.cs" />
-    <Compile Include="Tools\Misc\LocalizationExtensions.cs" />
-    <Compile Include="Tools\Misc\TreeViewExtensions.cs" />
-    <Compile Include="Tools\Misc\WebClient2.cs">
+    <Compile Include="Framework\Tools\Colors\Colors.cs" />
+    <Compile Include="Framework\Tools\Graphics\SystemDrawing_vs_GTK_Conversion.cs" />
+    <Compile Include="Framework\Tools\Misc\EncodingStringWriter.cs" />
+    <Compile Include="Framework\Tools\Misc\FileFilterExt.cs" />
+    <Compile Include="Framework\Tools\Misc\StringTools.cs" />
+    <Compile Include="Framework\Tools\Misc\LocalizationExtensions.cs" />
+    <Compile Include="Framework\Tools\Misc\TreeViewExtensions.cs" />
+    <Compile Include="Framework\Tools\Misc\WebClient2.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Tools\Misc\WidgetExtensions.cs" />
-    <Compile Include="Tools\Threading\JobInformation.cs" />
-    <Compile Include="Tools\Threading\TaskInformation.cs" />
-    <Compile Include="Tools\Threading\WorkerThread.cs" />
-    <Compile Include="Tools\Threading\WorkerThreadInfo.cs" />
+    <Compile Include="Framework\Tools\Misc\WidgetExtensions.cs" />
+    <Compile Include="Framework\Tools\Threading\JobInformation.cs" />
+    <Compile Include="Framework\Tools\Threading\TaskInformation.cs" />
+    <Compile Include="Framework\Tools\Threading\WorkerThread.cs" />
+    <Compile Include="Framework\Tools\Threading\WorkerThreadInfo.cs" />
     <Compile Include="Framework\Interfaces\IFileOpen.cs" />
     <Compile Include="gtk-gui\Docking.Components.PropertyViewer.cs" />
     <Compile Include="Monodevelop.Docking\AutoHideBox.cs" />
@@ -162,7 +162,7 @@
     <Compile Include="Monodevelop.Docking\TabStrip.cs" />
     <Compile Include="Monodevelop.Docking\DockingHelper\HelperMethods.cs" />
     <Compile Include="Monodevelop.Docking\DockingHelper\HslColor.cs" />
-    <Compile Include="Monodevelop.Docking\DockingHelper\Platform.cs" />
+    <Compile Include="Framework\Tools\Misc\Platform.cs" />
     <Compile Include="Monodevelop.Docking\DockingHelper\GtkWorkarounds.cs" />
     <Compile Include="Monodevelop.Docking\DockingHelper\PangoUtil.cs" />
     <Compile Include="Monodevelop.Components\CompactScrolledWindow.cs" />
@@ -213,7 +213,7 @@
     <Compile Include="Framework\Manager\NewLayout.cs" />
     <Compile Include="gtk-gui\Docking.Components.NewLayout.cs" />
     <Compile Include="Framework\Components\MessageBox.cs" />
-    <Compile Include="Tools\Text\Levenshtein.cs" />
+    <Compile Include="Framework\Tools\Text\Levenshtein.cs" />
     <Compile Include="Framework\Components\CommandLine.cs" />
     <Compile Include="gtk-gui\Docking.Components.Command.cs" />
     <Compile Include="Monodevelop.Components\ConsoleView.cs" />
@@ -230,7 +230,7 @@
     <Compile Include="Framework\Components\Component.cs" />
     <Compile Include="Framework\Components\PropertyViewer.cs" />
     <Compile Include="Framework\Interfaces\IPropertyViewer.cs" />
-    <Compile Include="Tools\Misc\GtkSharpCompatibilityWorkarounds.cs" />
+    <Compile Include="Framework\Tools\Misc\GtkSharpCompatibilityWorkarounds.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -245,18 +245,18 @@
     <EmbeddedResource Include="Framework\Resources\PropertyViewer-16.png" />
     <EmbeddedResource Include="Framework\Resources\Quit-16.png" />
     <EmbeddedResource Include="Framework\Resources\Broom-16.png" />
-    <Content Include="Languages\Docking-en-US.resx">
+    <Content Include="Framework\Languages\Docking-en-US.resx">
       <LastGenOutput>Docking-default.Designer.cs</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Languages\Docking-de-DE.resx">
+    <Content Include="Framework\Languages\Docking-de-DE.resx">
       <LastGenOutput>Docking-default.Designer.cs</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
     </EmbeddedResource>
-    <Content Include="Languages\Docking-zh-CHS.resx">
+    <Content Include="Framework\Languages\Docking-zh-CHS.resx">
       <LastGenOutput>Docking-default.Designer.cs</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -29,7 +29,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Gdk;
 
-namespace Docking.Helper
+namespace Docking.Tools
 {
 	static class Platform
 	{

@@ -31,9 +31,9 @@
 
 using System;
 using Gtk;
-using Docking.Helper;
 using Xwt.Motion;
 using Animations = Xwt.Motion.AnimationExtensions;
+using Docking.Helper;
 
 namespace Docking
 {

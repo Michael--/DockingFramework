@@ -14,11 +14,11 @@ using Microsoft.Scripting;
 using Microsoft.Scripting.Hosting;
 using IronPython.Hosting;
 using IronPython.Runtime;
-using Docking.Helper;
 using Docking.Tools;
 using Docking.Widgets;
 using Docking.Framework;
 using Gtk;
+using Docking.Helper;
 
 
 namespace Docking.Components

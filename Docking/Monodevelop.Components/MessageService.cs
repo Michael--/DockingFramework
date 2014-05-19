@@ -30,6 +30,7 @@ using System;
 using Gtk;
 using System.Collections.Generic;
 using Docking.Helper;
+using Docking.Tools;
 
 namespace MonoDevelop.Ide
 {

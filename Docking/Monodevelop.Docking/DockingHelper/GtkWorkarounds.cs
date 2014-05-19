@@ -30,6 +30,7 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using Docking.Tools;
 
 namespace Docking.Helper
 {

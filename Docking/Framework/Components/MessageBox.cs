@@ -1,7 +1,6 @@
 using System;
 using Gtk;
 using Docking.Tools;
-using Docking.Helper;
 
 
 namespace Docking.Components

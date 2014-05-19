@@ -1,0 +1,307 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Docking.Components.Activities" xml:space="preserve">
+    <value>Threads</value>
+  </data>
+  <data name="Docking.Components.Activity" xml:space="preserve">
+    <value>Thread</value>
+  </data>
+  <data name="Docking.Components.All Files" xml:space="preserve">
+    <value>All Files</value>
+  </data>
+  <data name="Docking.Components.All Known File Types" xml:space="preserve">
+    <value>All Known File Types</value>
+  </data>
+  <data name="Docking.Components.Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Docking.Components.Cancel Activity" xml:space="preserve">
+    <value>Cancel Thread</value>
+  </data>
+  <data name="Docking.Components.Changes: {0}" xml:space="preserve">
+    <value>Changes: {0}</value>
+  </data>
+  <data name="Docking.Components.Choose a file to open..." xml:space="preserve">
+    <value>Choose a file to open...</value>
+  </data>
+  <data name="Docking.Components.Command Line" xml:space="preserve">
+    <value>Command Line</value>
+  </data>
+  <data name="Docking.Components.Component" xml:space="preserve">
+    <value>Component</value>
+  </data>
+  <data name="Docking.Components.Component List" xml:space="preserve">
+    <value>Component List</value>
+  </data>
+  <data name="Docking.Components.Create Folder" xml:space="preserve">
+    <value>Create Folder</value>
+  </data>
+  <data name="Docking.Components.Current name" xml:space="preserve">
+    <value>Localized Text</value>
+  </data>
+  <data name="Docking.Components.Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Docking.Components.File {0} does not exist" xml:space="preserve">
+    <value>File {0} does not exist</value>
+  </data>
+  <data name="Docking.Components.gtk-cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Docking.Components.gtk-close" xml:space="preserve">
+    <value>Cloe</value>
+  </data>
+  <data name="Docking.Components.gtk-no" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="Docking.Components.gtk-ok" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="Docking.Components.gtk-yes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="Docking.Components.Instances" xml:space="preserve">
+    <value>Instances</value>
+  </data>
+  <data name="Docking.Components.Key" xml:space="preserve">
+    <value>Key</value>
+  </data>
+  <data name="Docking.Components.Localization Editor" xml:space="preserve">
+    <value>Localization Editor</value>
+  </data>
+  <data name="Docking.Components.Messages" xml:space="preserve">
+    <value>Messages</value>
+  </data>
+  <data name="Docking.Components.No component is instantiated which can handle file {0}" xml:space="preserve">
+    <value>No component is instantiated which can handle file {0}</value>
+  </data>
+  <data name="Docking.Components.Open" xml:space="preserve">
+    <value>Open</value>
+  </data>
+  <data name="Docking.Components.Opening file {0} as {1}..." xml:space="preserve">
+    <value>Opening file {0} as {1}...</value>
+  </data>
+  <data name="Docking.Components.Opening whole directories like {0} currently isn't implemented" xml:space="preserve">
+    <value>Opening whole directories like {0} currently isn't implemented</value>
+  </data>
+  <data name="Docking.Components.Overwrite value with new translation?" xml:space="preserve">
+    <value>Really replace previously existing translation with new one?</value>
+  </data>
+  <data name="Docking.Components.Path" xml:space="preserve">
+    <value>Path</value>
+  </data>
+  <data name="Docking.Components.Properties" xml:space="preserve">
+    <value>Properties</value>
+  </data>
+  <data name="Docking.Components.Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Docking.Components.Script Editor" xml:space="preserve">
+    <value>Script Editor</value>
+  </data>
+  <data name="Docking.Components.Select" xml:space="preserve">
+    <value>Select</value>
+  </data>
+  <data name="Docking.Components.Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Docking.Components.Sure to translate all empty resources?" xml:space="preserve">
+    <value>Do you want to fill all un-localized strings with auto-translated ones from GoogleTranslate?
+It is recommended to manually check the translations afterwards.</value>
+  </data>
+  <data name="Docking.Components.Translate" xml:space="preserve">
+    <value>Translate</value>
+  </data>
+  <data name="Docking.Components.Translate All" xml:space="preserve">
+    <value>Add missing with GoogleTranslate</value>
+  </data>
+  <data name="Docking.Components.US name" xml:space="preserve">
+    <value>Text in US English</value>
+  </data>
+  <data name="LANGUAGE_NAME" xml:space="preserve">
+    <value>US English</value>
+  </data>
+  <data name="MENU.Activities" xml:space="preserve">
+    <value>Threads</value>
+  </data>
+  <data name="MENU.Clear" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="MENU.Command Line" xml:space="preserve">
+    <value>Command Line</value>
+  </data>
+  <data name="MENU.Component List" xml:space="preserve">
+    <value>Component List</value>
+  </data>
+  <data name="MENU.Copy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="MENU.Cut" xml:space="preserve">
+    <value>Cut</value>
+  </data>
+  <data name="MENU.Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="MENU.Delete Current Layout" xml:space="preserve">
+    <value>Delete Current Window Layout</value>
+  </data>
+  <data name="MENU.File" xml:space="preserve">
+    <value>File</value>
+  </data>
+  <data name="MENU.Infrastructure" xml:space="preserve">
+    <value>Infrastructure</value>
+  </data>
+  <data name="MENU.Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="MENU.Layout" xml:space="preserve">
+    <value>Window Layout</value>
+  </data>
+  <data name="MENU.Localization Editor" xml:space="preserve">
+    <value>Localization Editor</value>
+  </data>
+  <data name="MENU.Message" xml:space="preserve">
+    <value>Message</value>
+  </data>
+  <data name="MENU.Messages" xml:space="preserve">
+    <value>Messages</value>
+  </data>
+  <data name="MENU.New Layout..." xml:space="preserve">
+    <value>New Window Layout...</value>
+  </data>
+  <data name="MENU.Open..." xml:space="preserve">
+    <value>Open...</value>
+  </data>
+  <data name="MENU.Paste" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="MENU.Properties" xml:space="preserve">
+    <value>Properties</value>
+  </data>
+  <data name="MENU.Quit" xml:space="preserve">
+    <value>Quit</value>
+  </data>
+  <data name="MENU.Script Editor" xml:space="preserve">
+    <value>Script Editor</value>
+  </data>
+  <data name="MENU.Select All" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+</root>

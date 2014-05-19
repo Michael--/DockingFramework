@@ -32,6 +32,7 @@ using System.Runtime.InteropServices;
 
 using Gdk;
 using Cairo;
+using Docking.Tools;
 
 namespace Docking.Helper
 {
