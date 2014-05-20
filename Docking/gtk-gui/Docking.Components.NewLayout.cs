@@ -7,7 +7,7 @@ namespace Docking.Components
   private global::Gtk.VBox vbox2;
   private global::Gtk.HBox hbox1;
   private global::Gtk.Label label1;
-  private global::Gtk.Entry entryLayoutName;
+  private global::Docking.Widgets.EntryLocalized entryLayoutName;
   private global::Gtk.RadioButton radiobuttonCopy;
   private global::Gtk.RadioButton radiobuttonEmpty;
   private global::Gtk.Button buttonCancel;
