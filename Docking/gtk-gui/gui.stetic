@@ -239,7 +239,7 @@
                 <property name="MemberName" />
                 <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.Label" id="label1">
+                  <widget class="Docking.Widgets.LabelLocalized" id="label1">
                     <property name="MemberName" />
                     <property name="LabelProp">Layout Name:</property>
                   </widget>
@@ -273,7 +273,7 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.RadioButton" id="radiobuttonCopy">
+              <widget class="Docking.Widgets.RadioButtonLocalized" id="radiobuttonCopy">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label">Copy from current layout</property>
@@ -291,7 +291,7 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.RadioButton" id="radiobuttonEmpty">
+              <widget class="Docking.Widgets.RadioButtonLocalized" id="radiobuttonEmpty">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
                 <property name="Label">Empty layout</property>
@@ -326,7 +326,7 @@
         <property name="Size">2</property>
         <property name="LayoutStyle">End</property>
         <child>
-          <widget class="Gtk.Button" id="buttonCancel">
+          <widget class="Docking.Widgets.ButtonLocalized" id="buttonCancel">
             <property name="MemberName" />
             <property name="CanDefault">True</property>
             <property name="CanFocus">True</property>
@@ -342,7 +342,7 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Button" id="buttonOk">
+          <widget class="Docking.Widgets.ButtonLocalized" id="buttonOk">
             <property name="MemberName" />
             <property name="Sensitive">False</property>
             <property name="CanDefault">True</property>
@@ -491,7 +491,7 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Label" id="labelChanges">
+              <widget class="Docking.Widgets.LabelLocalized" id="labelChanges">
                 <property name="MemberName" />
                 <property name="LabelProp">Changes: 0</property>
               </widget>

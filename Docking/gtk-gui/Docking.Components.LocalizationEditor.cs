@@ -9,7 +9,7 @@ namespace Docking.Components
   private global::Gtk.TreeView treeview1;
   private global::Gtk.HBox hbox1;
   private global::Docking.Widgets.ButtonLocalized button1;
-  private global::Gtk.Label labelChanges;
+  private global::Docking.Widgets.LabelLocalized labelChanges;
   private global::Docking.Widgets.ButtonLocalized buttonTranslate;
   private global::Docking.Widgets.ButtonLocalized buttonTranslateAll;
 
@@ -51,7 +51,7 @@ namespace Docking.Components
    w3.Expand = false;
    w3.Fill = false;
    // Container child hbox1.Gtk.Box+BoxChild
-   this.labelChanges = new global::Gtk.Label ();
+   this.labelChanges = new global::Docking.Widgets.LabelLocalized ();
    this.labelChanges.Name = "labelChanges";
    this.labelChanges.LabelProp = "Changes: 0";
    this.hbox1.Add (this.labelChanges);

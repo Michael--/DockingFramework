@@ -6,12 +6,12 @@ namespace Docking.Components
  {
   private global::Gtk.VBox vbox2;
   private global::Gtk.HBox hbox1;
-  private global::Gtk.Label label1;
+  private global::Docking.Widgets.LabelLocalized label1;
   private global::Docking.Widgets.EntryLocalized entryLayoutName;
-  private global::Gtk.RadioButton radiobuttonCopy;
-  private global::Gtk.RadioButton radiobuttonEmpty;
-  private global::Gtk.Button buttonCancel;
-  private global::Gtk.Button buttonOk;
+  private global::Docking.Widgets.RadioButtonLocalized radiobuttonCopy;
+  private global::Docking.Widgets.RadioButtonLocalized radiobuttonEmpty;
+  private global::Docking.Widgets.ButtonLocalized buttonCancel;
+  private global::Docking.Widgets.ButtonLocalized buttonOk;
 
   protected virtual void Build ()
   {
@@ -33,7 +33,7 @@ namespace Docking.Components
    this.hbox1.Name = "hbox1";
    this.hbox1.Spacing = 6;
    // Container child hbox1.Gtk.Box+BoxChild
-   this.label1 = new global::Gtk.Label ();
+   this.label1 = new global::Docking.Widgets.LabelLocalized ();
    this.label1.Name = "label1";
    this.label1.LabelProp = "Layout Name:";
    this.hbox1.Add (this.label1);
@@ -57,7 +57,7 @@ namespace Docking.Components
    w4.Expand = false;
    w4.Fill = false;
    // Container child vbox2.Gtk.Box+BoxChild
-   this.radiobuttonCopy = new global::Gtk.RadioButton ("Copy from current layout");
+   this.radiobuttonCopy = new global::Docking.Widgets.RadioButtonLocalized ("Copy from current layout");
    this.radiobuttonCopy.CanFocus = true;
    this.radiobuttonCopy.Name = "radiobuttonCopy";
    this.radiobuttonCopy.Active = true;
@@ -70,7 +70,7 @@ namespace Docking.Components
    w5.Expand = false;
    w5.Fill = false;
    // Container child vbox2.Gtk.Box+BoxChild
-   this.radiobuttonEmpty = new global::Gtk.RadioButton ("Empty layout");
+   this.radiobuttonEmpty = new global::Docking.Widgets.RadioButtonLocalized ("Empty layout");
    this.radiobuttonEmpty.CanFocus = true;
    this.radiobuttonEmpty.Name = "radiobuttonEmpty";
    this.radiobuttonEmpty.DrawIndicator = true;
@@ -93,7 +93,7 @@ namespace Docking.Components
    w8.BorderWidth = ((uint)(5));
    w8.LayoutStyle = ((global::Gtk.ButtonBoxStyle)(4));
    // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-   this.buttonCancel = new global::Gtk.Button ();
+   this.buttonCancel = new global::Docking.Widgets.ButtonLocalized ();
    this.buttonCancel.CanDefault = true;
    this.buttonCancel.CanFocus = true;
    this.buttonCancel.Name = "buttonCancel";
@@ -105,7 +105,7 @@ namespace Docking.Components
    w9.Expand = false;
    w9.Fill = false;
    // Container child dialog1_ActionArea.Gtk.ButtonBox+ButtonBoxChild
-   this.buttonOk = new global::Gtk.Button ();
+   this.buttonOk = new global::Docking.Widgets.ButtonLocalized ();
    this.buttonOk.Sensitive = false;
    this.buttonOk.CanDefault = true;
    this.buttonOk.CanFocus = true;
