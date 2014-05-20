@@ -87,6 +87,28 @@ namespace Docking.Widgets
    }
 
    [System.ComponentModel.ToolboxItem(true)]
+   public class SpinButtonLocalized : Gtk.SpinButton, ILocalizableWidget
+   {
+      public SpinButtonLocalized(IntPtr raw)                                            : base(raw)                            {}
+      public SpinButtonLocalized(Adjustment adjustment, double climb_rate, uint digits) : base(adjustment, climb_rate, digits) {}
+      public SpinButtonLocalized(double min, double max, double step)                   : base(min, max, step)                 {}
+
+      protected override void OnPopulatePopup(Menu menu)
+      {
+         base.OnPopulatePopup(menu);
+         Localization.LocalizeMenu(menu);
+         foreach(Widget w in menu.Children)
+            if((w is SeparatorMenuItem) || !w.Sensitive)
+               w.Visible = false;
+      }
+
+      void ILocalizableWidget.Localize(string namespc)
+      {
+         // NOP
+      }
+   }
+
+   [System.ComponentModel.ToolboxItem(true)]
    public class TextViewLocalized : Gtk.TextView, ILocalizableWidget
    {
       public TextViewLocalized()                  : base()       {}
