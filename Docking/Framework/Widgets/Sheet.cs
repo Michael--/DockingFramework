@@ -444,6 +444,9 @@ namespace Docking.Widgets
 
       #endregion
 
+      protected const int LEFT_MOUSE_BUTTON  = 1;
+      protected const int RIGHT_MOUSE_BUTTON = 3;
+
       protected override bool OnButtonPressEvent(EventButton evnt)
       {        
          #region in case the mouse event happened in the header, let the base class treat it
@@ -464,7 +467,7 @@ namespace Docking.Widgets
          if(GetPathAtPos((int)evnt.X, (int)evnt.Y, out path, out col) &&
             Model.GetIter(out row, path))
          {
-            if(evnt.Button==1)
+            if(evnt.Button==LEFT_MOUSE_BUTTON)
             {               
                GrabFocus();
                Selection.SelectNone();
