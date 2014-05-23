@@ -87,6 +87,33 @@ namespace Docking.Widgets
    }
 
    [System.ComponentModel.ToolboxItem(true)]
+   public class ComboBoxEntryLocalized : Gtk.ComboBoxEntry, ILocalizableWidget
+   {
+      public ComboBoxEntryLocalized()                                  : base()                   { Constructor(); }
+      public ComboBoxEntryLocalized(IntPtr raw)                        : base(raw)                { Constructor(); }
+      public ComboBoxEntryLocalized(string[] entries)                  : base(entries)            { Constructor(); }
+      public ComboBoxEntryLocalized(TreeModel model, int text_column)  : base(model, text_column) { Constructor(); }
+
+      void Constructor()
+      {
+         this.Entry.PopulatePopup += new PopulatePopupHandler(OnPopulatePopup);
+      }
+
+      void OnPopulatePopup(object o, PopulatePopupArgs args)
+      {
+         Localization.LocalizeMenu(args.Menu);
+         foreach(Widget w in args.Menu.Children)
+            if((w is SeparatorMenuItem) || !w.Sensitive)
+               w.Visible = false;
+      }
+
+      void ILocalizableWidget.Localize(string namespc)
+      {
+         // NOP
+      }
+   }
+
+   [System.ComponentModel.ToolboxItem(true)]
    public class SpinButtonLocalized : Gtk.SpinButton, ILocalizableWidget
    {
       public SpinButtonLocalized(IntPtr raw)                                            : base(raw)                            {}
