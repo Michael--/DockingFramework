@@ -599,9 +599,12 @@ namespace Docking.Widgets
          return -1;
       }
 
+      protected const int LEFT_MOUSE_BUTTON  = 1;
+      protected const int RIGHT_MOUSE_BUTTON = 3;
+
       void TheButtonPressEvent(object o, ButtonPressEventArgs args)
       {
-         if (args.Event.Button == 1 && DragGripper < 0)
+         if (args.Event.Button == LEFT_MOUSE_BUTTON && DragGripper < 0)
          {
             DragGripper = HitGripper((int)args.Event.X);
             LastDragX = (int)args.Event.X;
@@ -610,7 +613,7 @@ namespace Docking.Widgets
 
       void TheButtonReleaseEvent(object o, ButtonReleaseEventArgs args)
       {
-         if (args.Event.Button == 1 && DragGripper >= 0)
+         if (args.Event.Button == LEFT_MOUSE_BUTTON && DragGripper >= 0)
             DragGripper = -1;
       }
 
