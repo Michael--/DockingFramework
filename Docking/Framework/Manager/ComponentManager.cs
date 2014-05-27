@@ -2403,8 +2403,8 @@ namespace Docking.Components
          /// <summary>
          /// Gets a simple component instance identification string.
          /// This normally is identical to the component window title.
-         /// For non-multi-instance components, this normally is a human-readable text like "Map Viewer".
-         /// For multi-instance components, this at the end has a number, for example "Map Viewer 2".
+         /// For non-multi-instance components, this normally is a human-readable text like "Map Explorer".
+         /// For multi-instance components, this at the end has a number, for example "Map Explorer 2".
          /// </summary>
          private string GetComponentIdentifier(DockItem item)
          {

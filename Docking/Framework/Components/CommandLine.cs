@@ -203,7 +203,7 @@ namespace Docking.Components
                                     "Each of them can be accessed by" + "\n" +
                                     "   app().GetInstance(\"xyz\")" + "\n" +
                                     ", for example" + "\n" +
-                                    "   app().GetInstance(\"Map Viewer 2\")" + "\n" +
+                                    "   app().GetInstance(\"Map Explorer 2\")" + "\n" +
                                     "You can also instantiate new components: To get a list of the available ones, run" + "\n" +
                                     "   print app().ListComponentTypes()" + "\n" +
                                     "Creation then works like this:" + "\n" +
