@@ -66,11 +66,6 @@ namespace Docking.Components
 
       /// <summary>
       /// When this function gets called, your class gets informed about the addition of a new component in the system.
-      /// This can be either
-      /// - a new instance of a class "Component"
-      /// - a new instance of a class "MapLayer"
-      /// - a new instance of a class "Plugin"
-      /// - in future: a new instance of a class "File"
       /// You can check if the object you get as a parameter is something you're interested in
       /// and, if yes, do something with it, for example, store a reference to it in an internal member variable.
       /// </summary>
