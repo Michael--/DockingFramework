@@ -48,6 +48,7 @@ namespace Docking.Components
             string script = m_TextEditor.Text;
             m_CompileTask = Task.Factory.StartNew(() =>
             {
+               System.Threading.Thread.CurrentThread.Name = "ScriptEditor.Compile";
                CompiledCode code = null;
                try
                {
