@@ -847,8 +847,8 @@ namespace Docking.Components
          String result = null;
 
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.SelectFolder,
-                                              "Cancel".L(), ResponseType.Cancel,
-                                              "Select".L(), ResponseType.Accept);
+                                              "Select".L(), ResponseType.Accept,
+                                              "Cancel".L(), ResponseType.Cancel);
 
          if(RunFileChooserDialogLocalized(dlg, null) == (int) ResponseType.Accept)
          {
@@ -872,8 +872,8 @@ namespace Docking.Components
          string result = null;
      
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
-                                              "Cancel".L(), ResponseType.Cancel,
-                                              "Open".L(),   ResponseType.Accept);
+                                              "Open".L(),   ResponseType.Accept,
+                                              "Cancel".L(), ResponseType.Cancel);
 
          if(RunFileChooserDialogLocalized(dlg, filters) == (int) ResponseType.Accept)
          {
@@ -898,8 +898,8 @@ namespace Docking.Components
          string[] result = null;
 
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
-                                              "Cancel".L(), ResponseType.Cancel,
-                                              "Open".L(),   ResponseType.Accept);
+                                              "Open".L(),   ResponseType.Accept,
+                                              "Cancel".L(), ResponseType.Cancel);
 
          dlg.SelectMultiple = true;        
 
@@ -928,8 +928,8 @@ namespace Docking.Components
          string result = null;
 
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Save,
-                                              "Cancel".L(), ResponseType.Cancel,
-                                              "Save".L(),   ResponseType.Accept);
+                                              "Save".L(),   ResponseType.Accept,
+                                              "Cancel".L(), ResponseType.Cancel);
 
          if(RunFileChooserDialogLocalized(dlg, filters) == (int) ResponseType.Accept)
          {
