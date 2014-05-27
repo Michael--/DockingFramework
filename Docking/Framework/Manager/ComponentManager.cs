@@ -451,11 +451,17 @@ namespace Docking.Components
             filemenu.Append(mRecentFilesBegin);
             mRecentFilesBegin.ShowAll();
 
+            uint i = 1;
             foreach(TaggedImageMenuItem r in mRecentFiles)
             {
+               for(uint j = 1; j<=9; j++)
+                  r.RemoveAccelerator(AccelGroup, ((uint)Gdk.Key.Key_0)+j, Gdk.ModifierType.None);
+               if(i<=9)
+                  r.AddAccelerator("activate", AccelGroup, ((uint)Gdk.Key.Key_0)+i, Gdk.ModifierType.None, AccelFlags.Visible);
                filemenu.Append(r);
                r.ShowAll();
-            } 
+               i++;
+             } 
          }
       }
 
