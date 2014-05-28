@@ -1176,6 +1176,53 @@ namespace Docking.Components
 
       #region Configuration
 
+      // In case a component has changed its namespace or class name, this function can massage the config to map the old name to the new one.
+      protected void RemapComponent(string from, string to)
+      {
+         XmlNode layouts = ConfigurationXmlNode.SelectSingleNode("layouts");
+         if(layouts!=null)
+         {
+            XmlNodeList nodes = layouts.SelectNodes(@"//item[@id]"); // selects all nodes named "item" with attribute "id"
+            foreach(XmlNode node in nodes)
+            {
+               foreach(XmlAttribute attr in node.Attributes)
+               {
+                  if(attr.Name=="id")
+                  {
+                     if(attr.Value==from)
+                        attr.Value = to;
+                     else if(attr.Value.StartsWith(from+"-"))
+                        attr.Value = to+"-"+attr.Value.Substring(from.Length+1);
+                  }
+                 
+               }
+            }
+         }
+
+         List<XmlNode> todo = new List<XmlNode>();
+         foreach(XmlNode node in ConfigurationXmlNode.ChildNodes)
+            if(node.Name==from || node.Name.StartsWith(from+"-"))
+               todo.Add(node);
+         foreach(XmlNode oldnode in todo)
+         {
+            string newname; 
+            if(oldnode.Name==from)
+               newname = to;
+            else if(oldnode.Name.StartsWith(from+"-"))
+               newname = to+"-"+oldnode.Name.Substring(from.Length+1);   
+            else 
+               throw new InvalidDataException(); // we should never get here
+            XmlNode newnode = ConfigurationXmlDocument.CreateNode(XmlNodeType.Element, newname, "");
+            newnode.InnerXml = oldnode.InnerXml;           
+            ConfigurationXmlNode.InsertAfter(newnode, oldnode);
+            ConfigurationXmlNode.RemoveChild(oldnode);
+         }
+      }
+
+      protected virtual void PerformDownwardsCompatibilityTweaksOnConfigurationFile()
+      {
+      }
+
       protected void LoadConfigurationFile(String filename)
       {
          ConfigurationFilename = filename;
@@ -1193,6 +1240,8 @@ namespace Docking.Components
          ConfigurationXmlNode = ConfigurationXmlDocument.SelectSingleNode(CONFIG_ROOT_ELEMENT);
          if(ConfigurationXmlNode==null)
             ConfigurationXmlNode = ConfigurationXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT);
+
+         PerformDownwardsCompatibilityTweaksOnConfigurationFile();
 
          // load XML node "layouts" in a memory file
          // we should leave the implementation of the Mono Develop Docking as it is
@@ -1283,33 +1332,32 @@ namespace Docking.Components
 
       protected void ComponentsLoaded()
       {
-         m_LockHandleVisibleChanged = false; // unlock visible change notices
+         mDisableHandleVisibleChanged = false;
 
-         // some startup time measurements
+         // startup time measurement
          System.Diagnostics.Stopwatch total = new System.Diagnostics.Stopwatch();
          total.Start();
 
-         // check all components for auto open, create any component not yet existing
-         var mustExists = ComponentFinder.GetAutoCreateList(this);
-         foreach(var cfi in mustExists)
+         // ensure that all components which have .AutoCreate set are present
+         List<ComponentFactoryInformation> autocreate = ComponentFinder.GetAutoCreateList(this);
+         foreach(ComponentFactoryInformation cfi in autocreate)
          {
-            bool exist = false;
-            foreach(var item in DockFrame.GetItems())
+            bool found = false;
+            foreach(DockItem item in DockFrame.GetItems())
             {
-               if(item.Content != null && item.Content.GetType() == cfi.ComponentType)
+               if(item.Content!=null && item.Content.GetType()==cfi.ComponentType)
                {
-                  exist = true;
+                  found = true;
                   break;
                }
             }
-            if(!exist)
+            if(!found)
             {
                DockItem item = CreateComponent(cfi, false);
-               if(cfi.HideOnCreate && item != null)
+               if(item!=null && cfi.HideOnCreate)
                   item.Visible = false;
             }
          }
-
 
          // tell all components about load state
          // time for late initialization and/or loading persistence
@@ -1321,10 +1369,11 @@ namespace Docking.Components
                w.Start();
                (item.Content as Component).Loaded(item);
                w.Stop();
-               //if (w.ElapsedMilliseconds > 25)
-               if(w.ElapsedMilliseconds > 300) // raise the limit to get rid of annoying output we currently cannot change anyway
+               //if (w.ElapsedMilliseconds>25)
+               if(w.ElapsedMilliseconds>300) // raise the limit to get rid of annoying output we currently cannot change anyway
                   MessageWriteLine("Invoking IComponent.Loaded() for component {0} took {1:0.00}s", item.Id, w.Elapsed.TotalSeconds);
             }
+
             if(item.Content is Component)
                (item.Content as Component).VisibilityChanged(item.Content, item.Visible);
 
@@ -1344,17 +1393,12 @@ namespace Docking.Components
          foreach(object o in components)
             AddComponent(o);
 
-
          foreach(DockItem item in DockFrame.GetItems())
-         {
             if(item.Content is Component)
-            {
                (item.Content as Component).InitComplete();
-            }
-         }
 
          total.Stop();
-         if(total.ElapsedMilliseconds > 100)
+         if(total.ElapsedMilliseconds>100)
             MessageWriteLine("ComponentsLoaded() total time = {0}s", total.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture));
       }
 
@@ -1422,8 +1466,10 @@ namespace Docking.Components
 
       protected virtual void SavePersistency() // TODO abolish, replace by implementing IPersistable
       {
-         string instance = "MainWindow";        
          IPersistency persistency = this as IPersistency;
+         string instance = "MainWindow";                 
+
+         persistency.SaveSetting("", "ConfigSavedByVersion", Assembly.GetCallingAssembly().GetName().Version.ToString());
 
          int x, y, w, h;
          GetPosition(out x, out y);
@@ -1614,9 +1660,11 @@ namespace Docking.Components
          if(ConfigurationXmlNode == null)
             return;
 
-         List<string> portions = new List<string>(instance.Split('/'));
+         List<string> portions = new List<string>();
+         if(!string.IsNullOrEmpty(instance))
+            portions.AddRange(instance.Split('/'));
          portions.Add(key);
-         if(portions.Count <= 0)
+         if(portions.Count<=0)
             return;
 
          XmlNode N = null;
@@ -1711,7 +1759,9 @@ namespace Docking.Components
          if(ConfigurationXmlNode == null)
             return defaultval;
 
-         List<string> portions = new List<string>(instance.Split('/'));
+         List<string> portions = new List<string>();
+         if(!string.IsNullOrEmpty(instance))
+            portions.AddRange(instance.Split('/'));
          portions.Add(key);
          if(portions.Count <= 0)
             return defaultval;
@@ -1968,16 +2018,16 @@ namespace Docking.Components
          item.Widget.Destroy();
       }
 
-      bool m_LockHandleVisibleChanged = true;
-      // startup lock
+      bool mDisableHandleVisibleChanged = true; // startup lock
+      
       void HandleVisibleChanged(object sender, EventArgs e)
       {
-         if(!m_LockHandleVisibleChanged)
-         {
-            DockItem item = sender as DockItem;
-            if(item.Content is Component)
-               (item.Content as Component).VisibilityChanged(item, item.Visible);
-         }
+         if(mDisableHandleVisibleChanged)
+            return;
+
+         DockItem item = sender as DockItem;
+         if(item.Content is Component)
+            (item.Content as Component).VisibilityChanged(item, item.Visible);
       }
 
       /// <summary>

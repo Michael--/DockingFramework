@@ -187,14 +187,11 @@ namespace Docking.Components
 
       public List<ComponentFactoryInformation> GetAutoCreateList(ComponentManager cm)
       {
-         List<ComponentFactoryInformation> ac = new List<ComponentFactoryInformation>();
-
+         List<ComponentFactoryInformation> result = new List<ComponentFactoryInformation>();
          foreach (ComponentFactoryInformation info in mComponents)
-         {
-            if (info.AutoCreate)
-               ac.Add(info);
-         }
-         return ac;
+            if(info.AutoCreate)
+               result.Add(info);
+         return result;
       }
    }
 
