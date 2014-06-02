@@ -2040,14 +2040,14 @@ namespace Docking.Components
       /// </summary>
       private DockItem CreateItem(ComponentFactoryInformation cfi, String name)
       {
-         Widget w = cfi.CreateInstance(this);
-         if(w==null)
+         Component component = cfi.CreateInstance(this);
+         if(component==null)
             return null;
 
          DockItem item = DockFrame.AddItem(name);
-         AddSelectNotifier(item, w);
+         AddSelectNotifier(item, component);
          AddSelectNotifier(item, item.TitleTab);
-         item.Content = w;
+         item.Content = component;
          if(item.Content is ILocalizableComponent)
             item.Content.Name = (item.Content as ILocalizableComponent).Name.Localized(item.Content);
          item.UpdateTitle();

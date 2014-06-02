@@ -34,10 +34,10 @@ namespace Docking.Components
          return null;
       }
 
-      Widget CreateInstance(ComponentFactoryInformation info, ComponentManager cm)
+      Component CreateInstance(ComponentFactoryInformation info, ComponentManager cm)
       {
-         Widget widget = info.CreateInstance(cm);
-         return widget;
+         Component component = info.CreateInstance(cm);
+         return component;
       }
 
       public Widget FindInstance(Type type)
@@ -204,20 +204,24 @@ namespace Docking.Components
          Active = active;
       }
 
-      public Widget CreateInstance(ComponentManager cm)
+      public Component CreateInstance(ComponentManager cm)
       {
          if(cm==null)
             return null;
-         Widget widget;
-         try { widget = (Widget)Activator.CreateInstance(ComponentType); }
+         Component component;
+         try { component = Activator.CreateInstance(ComponentType) as Component; }
          catch (Exception e)
          {
             cm.MessageWriteLine(e.ToString());
             return null;
          }
-         if (widget is Component)
-            (widget as Component).ComponentManager = cm;
-         return widget;
+         if(component==null)
+         {
+            cm.MessageWriteLine("Error: class '{0}' does not inherit from 'Component'", ComponentType.ToString());
+            return null;
+         }
+         component.ComponentManager = cm;
+         return component;
       }
 
       public Type   FactoryType    { get { return ComponentFactory.GetType(); } }
