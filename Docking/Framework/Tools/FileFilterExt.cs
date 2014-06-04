@@ -1,5 +1,6 @@
-﻿using Gtk;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Text;
+using Gtk;
 
 namespace Docking.Tools
 {
@@ -13,16 +14,66 @@ namespace Docking.Tools
 
       public FileFilterExt(string pattern, string name)
       {
+         string adjusted_pattern, pattern_to_show_to_user;
+         MakePatternCaseInsensitive(pattern, out adjusted_pattern, out pattern_to_show_to_user);
+
          Name = name;
-         if(!string.IsNullOrEmpty(pattern))
-            Name += " ("+pattern+")";
-         AddPattern(pattern);         
+         if(!string.IsNullOrEmpty(pattern_to_show_to_user))
+            Name += " ("+pattern_to_show_to_user+")";
+
+         AddPattern(adjusted_pattern);         
       }
 
       new public void AddPattern(string pattern)
       { 
-         mPatterns.Add(pattern);
-         base.AddPattern(pattern);
+         string adjusted_pattern, pattern_to_show_to_user;
+         MakePatternCaseInsensitive(pattern, out adjusted_pattern, out pattern_to_show_to_user);
+
+         mPatterns.Add(adjusted_pattern);
+         base.AddPattern(adjusted_pattern);
+      }
+
+      private void MakePatternCaseInsensitive(string pattern, out string adjusted_pattern, out string pattern_to_show_to_user)
+      {
+         StringBuilder adjusted_pattern_BUILDER        = new StringBuilder();
+         StringBuilder pattern_to_show_to_user_BUILDER = new StringBuilder();
+
+         uint brackets = 0;
+         foreach(char c in pattern)
+         {
+            if(c=='[')
+            {
+               brackets++;
+               adjusted_pattern_BUILDER.Append(c);
+               pattern_to_show_to_user_BUILDER.Append(c);
+            }
+            else if(c==']')
+            {
+               if(brackets>0)
+                  brackets--;
+               adjusted_pattern_BUILDER.Append(c);
+               pattern_to_show_to_user_BUILDER.Append(c);
+            }
+            else if(char.IsLetter(c) && brackets==0)
+            {
+               char L = char.ToLower(c);
+               char U = char.ToUpper(c);
+
+               adjusted_pattern_BUILDER.Append('[')
+                                       .Append( L )
+                                       .Append( U )
+                                       .Append(']');
+               pattern_to_show_to_user_BUILDER.Append(L);
+            }
+            else
+            {
+               adjusted_pattern_BUILDER.Append(c);
+               pattern_to_show_to_user_BUILDER.Append(c);
+            }
+         }
+
+         adjusted_pattern        = adjusted_pattern_BUILDER       .ToString();
+         pattern_to_show_to_user = pattern_to_show_to_user_BUILDER.ToString();
       }
  
       public IEnumerable<string> GetPatterns()
