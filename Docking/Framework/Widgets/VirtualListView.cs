@@ -4,11 +4,12 @@ using Gtk;
 using GLib;
 using Docking.Components;
 using Docking.Helper;
+using System.Text;
 
 namespace Docking.Widgets
 {
    [System.ComponentModel.ToolboxItem(true)]
-   public partial class VirtualListView : Component, ILocalizableWidget
+   public partial class VirtualListView : Component, ILocalizableWidget, ICopy
    {
       public VirtualListView()
       {
@@ -548,6 +549,29 @@ namespace Docking.Widgets
       {
          ((ILocalizableWidget)mColumnControl).Localize(namespc);
       }
+
+      #region ICopy
+
+      void ICopy.Copy()
+      {
+         if(SelectedRow<=0)
+            return;
+
+         StringBuilder result = new StringBuilder();
+         ColumnControl.Column[] columns = mColumnControl.GetVisibleColumnsInDrawOrder();
+         for(int c = 0; c<columns.Length; c++)
+         {
+            int columnIndex = columns[c].SortOrder;
+            string columnContent = GetContentDelegate(SelectedRow, columnIndex);
+            if(c>0)
+               result.Append("\t");
+            result.Append(columnContent);
+         }
+         if(result.Length>0)
+            this.GetClipboard(Gdk.Selection.Clipboard).Text = result.ToString();
+      }
+
+      #endregion
    }
 
    public class VirtualListViewEventArgs : EventArgs
