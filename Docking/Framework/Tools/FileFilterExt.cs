@@ -7,7 +7,8 @@ namespace Docking.Tools
    // this class works around the problem that GTK's class FileFilter does not allow read acces to a pattern which has been set via .AddPattern()
    public class FileFilterExt : Gtk.FileFilter
    {
-      List<string> mPatterns = new List<string>();
+      List<string> m_AdjustedPattern = new List<string>();
+      List<string> m_Pattern = new List<string>();
 
       public FileFilterExt()
       {}
@@ -21,6 +22,7 @@ namespace Docking.Tools
          if(!string.IsNullOrEmpty(pattern_to_show_to_user))
             Name += " ("+pattern_to_show_to_user+")";
 
+         m_Pattern.Add(pattern);
          AddPattern(adjusted_pattern);         
       }
 
@@ -29,7 +31,7 @@ namespace Docking.Tools
          string adjusted_pattern, pattern_to_show_to_user;
          MakePatternCaseInsensitive(pattern, out adjusted_pattern, out pattern_to_show_to_user);
 
-         mPatterns.Add(adjusted_pattern);
+         m_AdjustedPattern.Add(adjusted_pattern);
          base.AddPattern(adjusted_pattern);
       }
 
@@ -75,10 +77,15 @@ namespace Docking.Tools
          adjusted_pattern        = adjusted_pattern_BUILDER       .ToString();
          pattern_to_show_to_user = pattern_to_show_to_user_BUILDER.ToString();
       }
- 
-      public IEnumerable<string> GetPatterns()
+
+      public IEnumerable<string> GetAdjustedPattern()
       {
-         return mPatterns;
+         return m_AdjustedPattern;
+      }
+
+      public IEnumerable<string> GetPattern()
+      {
+         return m_Pattern;
       }
 
       // returns true if a given filename matches one of the patterns of this filter

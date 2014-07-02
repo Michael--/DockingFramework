@@ -944,7 +944,7 @@ namespace Docking.Components
                   {
                      bool correct_extension_found = false;                   
                      string firstext = null;
-                     foreach(string pattern in f.GetPatterns())
+                     foreach(string pattern in f.GetPattern())
                      {                          
                         string ext = pattern.TrimStart('*');
                         if(firstext==null)
@@ -983,7 +983,7 @@ namespace Docking.Components
             {
                FileFilterExt combinedfilter = new FileFilterExt();
                foreach(FileFilterExt filter in filters)
-                  foreach(string pattern in filter.GetPatterns())
+                  foreach(string pattern in filter.GetAdjustedPattern())
                      combinedfilter.AddPattern(pattern);         
                combinedfilter.Name = "All Known File Types".L();
                dlg.AddFilter(combinedfilter);
