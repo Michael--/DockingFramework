@@ -37,16 +37,16 @@ namespace Docking.Tools
          const ulong KILOBYTE = 1024;
          const ulong MEGABYTE = 1024*1024;
 
-         if(bytecount>=1000000)
+         if(bytecount>=MEGABYTE)
             return String.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:0.0} MB",
                                  ((float) bytecount)/MEGABYTE);
-         else if(bytecount>=1000)
+         else if(bytecount>=KILOBYTE)
             return String.Format(System.Globalization.CultureInfo.InvariantCulture, "{0:0.0} KB",
                                  ((float) bytecount)/KILOBYTE);
-         else if(bytecount!=1)
-            return String.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} Bytes", bytecount);
+         else if(bytecount==1)
+            return "1 Byte";            
          else
-            return "1 Byte";
+            return String.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} Bytes", bytecount);            
       }
    }
 }
