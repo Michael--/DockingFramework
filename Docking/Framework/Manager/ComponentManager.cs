@@ -2204,9 +2204,9 @@ namespace Docking.Components
       /// </summary>
       public uint PushStatusbar(String txt)
       {
-         Debug.Assert(StatusBar != null);
          uint id = mStatusBarUniqueId++;
-         StatusBar.Push(id, txt);
+         if(StatusBar!=null)
+            StatusBar.Push(id, txt);
          return id;
       }
 
@@ -2215,7 +2215,8 @@ namespace Docking.Components
       /// </summary>
       public void PopStatusbar(uint id)
       {
-         StatusBar.Pop(id);
+         if(StatusBar!=null)
+            StatusBar.Pop(id);
       }
 
       #endregion
@@ -2224,12 +2225,17 @@ namespace Docking.Components
 
       public void AddToolItem(ToolItem item)
       {
+         if(ToolBar==null)
+            return;
+
          item.Show();
          ToolBar.Insert(item, -1);
       }
 
       public void RemoveToolItem(ToolItem item)
       {
+         if(ToolBar==null)
+            return;
          ToolBar.Remove(item);
       }
 
