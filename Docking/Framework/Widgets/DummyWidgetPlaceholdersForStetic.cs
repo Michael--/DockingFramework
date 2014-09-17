@@ -19,6 +19,7 @@ using Gtk;
 
 namespace Docking
 {
+   [System.ComponentModel.ToolboxItem(true)]
    public class DockFrame : Gtk.HBox
    {
       public DockFrame() : base() {}
@@ -29,6 +30,7 @@ namespace Docking
 
 namespace Docking.Widgets
 {
+   [System.ComponentModel.ToolboxItem(true)]
    public class ButtonLocalized : Gtk.Button
    {
       public ButtonLocalized() : base() {}
@@ -37,6 +39,7 @@ namespace Docking.Widgets
       public ButtonLocalized(Widget widget) : base(widget) {}
    }
 
+   [System.ComponentModel.ToolboxItem(true)]
    public class CheckButtonLocalized : Gtk.CheckButton
    {
       public CheckButtonLocalized() : base() {}
@@ -44,6 +47,7 @@ namespace Docking.Widgets
       public CheckButtonLocalized(string label) : base(label) {}
    }
 
+   [System.ComponentModel.ToolboxItem(true)]
    public class EntryLocalized : Gtk.Entry
    {
       public EntryLocalized() : base() {}
@@ -52,6 +56,7 @@ namespace Docking.Widgets
       public EntryLocalized(string initialText) : base(initialText) {}
    }
 
+   [System.ComponentModel.ToolboxItem(true)]
    public class LabelLocalized : Gtk.Label
    {
       public LabelLocalized() : base() {}
@@ -59,14 +64,16 @@ namespace Docking.Widgets
       public LabelLocalized(string str) : base(str) {}
    }
 
+   [System.ComponentModel.ToolboxItem(true)]
    public class RadioButtonLocalized : Gtk.RadioButton
    {
       public RadioButtonLocalized(IntPtr raw) : base(raw) {}
       public RadioButtonLocalized(RadioButton radio_group_member) : base(radio_group_member) {}
-      public RadioButtonLocalized(string label) : base(label) {}
+      public RadioButtonLocalized(string label = "") : base(label) {}
       public RadioButtonLocalized(RadioButton radio_group_member, string label) : base(radio_group_member, label) {}
    }
 
+   [System.ComponentModel.ToolboxItem(true)]
    public class Sheet : Gtk.TreeView
    {
       public Sheet() : base() {}
@@ -74,13 +81,20 @@ namespace Docking.Widgets
       public Sheet(TreeModel model) : base(model) {}
    }
 
+   [System.ComponentModel.ToolboxItem(true)]
    public class SpinButtonLocalized : Gtk.SpinButton
    {
       public SpinButtonLocalized(IntPtr raw) : base(raw) {}
       public SpinButtonLocalized(Adjustment adjustment, double climb_rate, uint digits) : base(adjustment, climb_rate, digits) {}
       public SpinButtonLocalized(double min, double max, double step) : base(min, max, step) {}
+
+   #region glue code for older GtkSharp versions
+   // [Obsolete]
+   public SpinButtonLocalized() : this(0, 100, 1) {}
+   #endregion
    }
 
+   [System.ComponentModel.ToolboxItem(true)]
    public class TextViewLocalized : Gtk.TextView
    {
       public TextViewLocalized() : base() {}
@@ -90,6 +104,7 @@ namespace Docking.Widgets
 
    // TODO SLohse: this class currently is IMHO inherited currently from the wrong parent class ("Component" which inherits from Gtk.Bin),
    // but instead should inherit from Gtk.Widget
+   [System.ComponentModel.ToolboxItem(true)]
    public class VirtualListView : Gtk.Bin
    {
       protected VirtualListView() : base() {}
@@ -97,9 +112,33 @@ namespace Docking.Widgets
    }
 }
 
+// TODO adjust namespace?
+namespace MonoDevelop.Components.PropertyGrid
+{
+   [System.ComponentModel.ToolboxItem(true)]
+   public class PropertyGrid : Gtk.VBox
+   {		
+      public PropertyGrid() : base() {}
+      public PropertyGrid(IntPtr raw) : base(raw)  {}
+      public PropertyGrid(bool homogeneous, int spacing) : base(homogeneous, spacing) {}
+   }
+}
+
+namespace MonoDevelop.Components
+{
+   [System.ComponentModel.ToolboxItem(true)]
+   public class ConsoleView : Gtk.ScrolledWindow
+   {
+      public ConsoleView() : base() {}
+      public ConsoleView(IntPtr raw) : base(raw) {}
+      public ConsoleView(Adjustment hadjustment, Adjustment vadjustment) : base(hadjustment, vadjustment) {}
+   }
+}
+
 // TODO this should be relocated to somewhere else out of DockingFramework
 namespace Florence.GtkSharp
 {
+   [System.ComponentModel.ToolboxItem(true)]
    public class PlotWidget : Gtk.DrawingArea
    {
       public PlotWidget() : base() {}
