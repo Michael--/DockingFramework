@@ -120,6 +120,9 @@ namespace Docking.Widgets
       public SpinButtonLocalized(Adjustment adjustment, double climb_rate, uint digits) : base(adjustment, climb_rate, digits) {}
       public SpinButtonLocalized(double min, double max, double step)                   : base(min, max, step)                 {}
 
+      // [Obsolete] // for old GtkSharp versions
+      public SpinButtonLocalized() : this(0, 100, 1) {}
+
       protected override void OnPopulatePopup(Menu menu)
       {
          base.OnPopulatePopup(menu);

@@ -88,10 +88,8 @@ namespace Docking.Widgets
       public SpinButtonLocalized(Adjustment adjustment, double climb_rate, uint digits) : base(adjustment, climb_rate, digits) {}
       public SpinButtonLocalized(double min, double max, double step) : base(min, max, step) {}
 
-   #region glue code for older GtkSharp versions
-   // [Obsolete]
-   public SpinButtonLocalized() : this(0, 100, 1) {}
-   #endregion
+      // [Obsolete] // for old GtkSharp versions
+      public SpinButtonLocalized() : this(0, 100, 1) {}
    }
 
    [System.ComponentModel.ToolboxItem(true)]
