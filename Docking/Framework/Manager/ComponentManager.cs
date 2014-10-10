@@ -867,13 +867,16 @@ namespace Docking.Components
          return OpenFileDialog(prompt, filters);
       }
 
-      public String OpenFileDialog(string title, List<FileFilterExt> filters)
+      public String OpenFileDialog(string title, List<FileFilterExt> filters, string startFolder= null)
       {         
          string result = null;
      
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
                                               "Open".L(),   ResponseType.Accept,
                                               "Cancel".L(), ResponseType.Cancel);
+         if (!String.IsNullOrEmpty(startFolder)) {
+            dlg.SetCurrentFolder( startFolder);
+         }
 
          if(RunFileChooserDialogLocalized(dlg, filters) == (int) ResponseType.Accept)
          {
