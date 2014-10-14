@@ -87,15 +87,16 @@ namespace Docking.Tools
          PlatformID id = System.Environment.OSVersion.Platform;
          switch(id)
          {
-         case System.PlatformID.Win32S: return "windows"; // maybe in future we need to be more specific here, like "windows_7" or something, but currently just "windows" suffices
+         case System.PlatformID.Win32S:       return "windows"; // maybe in future we need to be more specific here, like "windows_7" or something, but currently just "windows" suffices
          case System.PlatformID.Win32Windows: return "windows"; // maybe in future we need to be more specific here, like "windows_7" or something, but currently just "windows" suffices
-         case System.PlatformID.Win32NT: return "windows"; // maybe in future we need to be more specific here, like "windows_7" or something, but currently just "windows" suffices
+         case System.PlatformID.Win32NT:      return "windows"; // maybe in future we need to be more specific here, like "windows_7" or something, but currently just "windows" suffices
 
-         case System.PlatformID.WinCE: return "windows_ce";
-         case System.PlatformID.Xbox: return "xbox";
+         case System.PlatformID.WinCE:        return "windows_ce";
+         case System.PlatformID.Xbox:         return "xbox";
+
+         case System.PlatformID.MacOSX:       return "osx"; // maybe in future we need to be more specific here
 
          case System.PlatformID.Unix:         /*NOP*/ break;
-         case System.PlatformID.MacOSX:       /*NOP*/ break;
          default:                             /*NOP*/ break;
          }
 
