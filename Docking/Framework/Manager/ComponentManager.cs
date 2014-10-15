@@ -140,6 +140,13 @@ namespace Docking.Components
          return foundmenu;
       }
 
+      // TODO: quickhack to add "Export" menu entries - find a better way to let components add and remove menu items later
+      public void AppendExportMenuQuickHack(MenuItem item)
+      {
+         mExportSubmenu.Append(item);
+         MenuBar.ShowAll();
+      }
+
       protected void AppendMenuItem(String path, MenuItem item)
       {
          Menu menu = FindMenu(path);
@@ -575,6 +582,7 @@ namespace Docking.Components
       protected void AddComponentMenus()
       {
          InstallFileOpenMenu();
+         InstallExportMenu();
          InstallQuitMenu();
          InstallEditMenu();
 
@@ -778,10 +786,10 @@ namespace Docking.Components
 
       void InstallFileOpenMenu()
       {
-         ImageMenuItem item = new TaggedLocalizedImageMenuItem("Open...");
-         item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.File-16.png"));
-         item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.O, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
-         item.Activated += (sender, e) =>
+         TaggedLocalizedImageMenuItem menuItem = new TaggedLocalizedImageMenuItem("Open...");
+         menuItem.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.File-16.png"));
+         menuItem.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.O, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
+         menuItem.Activated += (sender, e) =>
          {
             List<FileFilterExt> filters = new List<FileFilterExt>();
             foreach(DockItem d in DockFrame.GetItems())
@@ -792,7 +800,7 @@ namespace Docking.Components
             if(filename != null)
                OpenFile(filename);
          };
-         AppendMenuItem("File", item);
+         AppendMenuItem("File", menuItem);
       }
 
       public bool OpenFile(string filename)
@@ -916,6 +924,15 @@ namespace Docking.Components
 
          dlg.Destroy();
          return result;
+      }
+
+      Menu mExportSubmenu = new Menu();
+
+      void InstallExportMenu()
+      {
+         MenuItem menuItem = new TaggedLocalizedImageMenuItem("Export");         
+         menuItem.Submenu = mExportSubmenu;
+         AppendMenuItem("File", menuItem);
       }
 
       public String SaveFileDialog(string prompt, FileFilterExt filter = null)
@@ -1897,8 +1914,8 @@ namespace Docking.Components
 
       private void ComponentHandleActivated(object sender, EventArgs e)
       {
-         TaggedLocalizedImageMenuItem menuitem = sender as TaggedLocalizedImageMenuItem;
-         ComponentFactoryInformation cfi = menuitem.Tag as ComponentFactoryInformation;
+         TaggedLocalizedImageMenuItem menuItem = sender as TaggedLocalizedImageMenuItem;
+         ComponentFactoryInformation cfi = menuItem.Tag as ComponentFactoryInformation;
          CreateComponent(cfi, true);
       }
 
