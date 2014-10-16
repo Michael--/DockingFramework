@@ -106,7 +106,7 @@ namespace Docking.Components
 
          mNormalStyle = DockFrame.DefaultVisualStyle;
          mSelectedStyle = DockFrame.DefaultVisualStyle.Clone();
-         mSelectedStyle.PadBackgroundColor = new Gdk.Color(255, 0, 0);
+         mSelectedStyle.PadBackgroundColor = new Gdk.Color(100, 160, 255);//new Gdk.Color(255, 0, 0);
       }
 
       public void SetStatusBar(Statusbar sb)
@@ -2182,9 +2182,13 @@ namespace Docking.Components
                if(CurrentDockItem != null)
                {
                   CurrentDockItem.TitleTab.VisualStyle = mNormalStyle;
+                  CurrentDockItem.Widget.VisualStyle = mNormalStyle;
+                  CurrentDockItem.Widget.QueueDraw();
                }
                CurrentDockItem = select;
                CurrentDockItem.TitleTab.VisualStyle = mSelectedStyle;
+               CurrentDockItem.Widget.VisualStyle = mSelectedStyle;
+               CurrentDockItem.Widget.QueueDraw();
 
                mMenuCut.Sensitive = CurrentDockItem.Content is ICut;
                mMenuCopy.Sensitive = CurrentDockItem.Content is ICopy;

@@ -32,6 +32,7 @@ using System;
 using Gtk;
 using Mono.Unix;
 using Docking.Helper;
+using System.Drawing;
 
 namespace Docking
 {
@@ -52,6 +53,7 @@ namespace Docking
          
          mainBox.ResizeMode = Gtk.ResizeMode.Queue;
          mainBox.Spacing = 0;
+         mainBox.BorderWidth = 8;
          
          ShowAll ();
          
@@ -165,7 +167,84 @@ namespace Docking
             evnt.Window.DrawRectangle (gc, true, Allocation);
             gc.Dispose ();
          }
-         return base.OnExposeEvent (evnt);
+         bool result = base.OnExposeEvent(evnt);
+         Gdk.Color? col = VisualStyle.PadBackgroundColor;
+         if (col.HasValue)
+         {
+            DrawFocus(evnt.Window, Color.FromArgb(255, col.Value.Red / 256, col.Value.Green / 256, col.Value.Blue / 256));
+         }
+         return result;
+      }
+
+      void DrawFocus(Gdk.Window window, Color c)
+      {
+         int x, y, width, height;
+         window.GetPosition(out x, out y);
+         window.GetSize(out width, out height);
+         System.Drawing.Rectangle r = new System.Drawing.Rectangle(x, y, width, height);
+
+         using (Cairo.Context context = Gdk.CairoHelper.Create(window))
+         {
+            uint b = mainBox.BorderWidth;
+
+            // Top
+            {
+               Cairo.Gradient gradient = createGradient(0.0, 0.0, 0, b, c);
+               context.SetSource(gradient);
+               context.MoveTo(0, 0);
+               context.LineTo(r.Width, 0);
+               context.LineTo(r.Width - b + 1, b);
+               context.LineTo(b - 1, b);
+               context.ClosePath();
+               context.Fill();
+            }
+
+            // Left
+            {
+               Cairo.Gradient gradient = createGradient(0.0, 0.0, b, 0, c);
+               context.SetSource(gradient);
+               context.MoveTo(0, 0);
+               context.LineTo(b, b - 1);
+               context.LineTo(b, r.Height - b + 1);
+               context.LineTo(0, r.Height);
+               context.ClosePath();
+               context.Fill();
+            }
+
+            // Bottom
+            {
+               Cairo.Gradient gradient = createGradient(0.0, r.Height, 0, r.Height - b, c);
+               context.SetSource(gradient);
+               context.MoveTo(0, r.Height);
+               context.LineTo(b - 1, r.Height - b);
+               context.LineTo(r.Width - b + 1, r.Height - b);
+               context.LineTo(r.Width, r.Height);
+               context.ClosePath();
+               context.Fill();
+            }
+
+            // Right
+            {
+               Cairo.Gradient gradient = createGradient(r.Width, 0, r.Width - b, 0, c);
+               context.SetSource(gradient);
+               context.MoveTo(r.Width, 0);
+               context.LineTo(r.Width - b, b - 1);
+               context.LineTo(r.Width - b, r.Height - b  + 1);
+               context.LineTo(r.Width, r.Height);
+               context.ClosePath();
+               context.Fill();
+            }
+         }
+      }
+
+      private Cairo.Gradient createGradient(double x1, double y1, double x2, double y2, Color c)
+      {
+         Cairo.Gradient gradient = new Cairo.LinearGradient(x1, y1, x2, y2);
+         gradient.AddColorStop(0, new Cairo.Color(c.R / 256.0, c.G / 256.0, c.B / 256.0, 1.0));
+         gradient.AddColorStop(0.5, new Cairo.Color(c.R / 256.0, c.G / 256.0, c.B / 256.0, 1.0));
+         gradient.AddColorStop(0.5, new Cairo.Color(c.R / 256.0, c.G / 256.0, c.B / 256.0, 0.5));
+         gradient.AddColorStop(1.0, new Cairo.Color(c.R / 256.0, c.G / 256.0, c.B / 256.0, 0.1));
+         return gradient;
       }
    }
 
