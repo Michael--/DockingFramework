@@ -197,7 +197,7 @@ namespace Docking
                context.LineTo(b - 1, b);
                context.ClosePath();
                context.Fill();
-               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!?
+               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!? https://github.com/mono/gtk-sharp/pull/126
             }
 
             // Left
@@ -210,7 +210,7 @@ namespace Docking
                context.LineTo(0, r.Height);
                context.ClosePath();
                context.Fill();
-               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!?
+               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!? https://github.com/mono/gtk-sharp/pull/126
             }
 
             // Bottom
@@ -223,7 +223,7 @@ namespace Docking
                context.LineTo(r.Width, r.Height);
                context.ClosePath();
                context.Fill();
-               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!?
+               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!? https://github.com/mono/gtk-sharp/pull/126
             }
 
             // Right
@@ -236,7 +236,7 @@ namespace Docking
                context.LineTo(r.Width, r.Height);
                context.ClosePath();
                context.Fill();
-               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!?
+               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!? https://github.com/mono/gtk-sharp/pull/126
             }
          }
       }
