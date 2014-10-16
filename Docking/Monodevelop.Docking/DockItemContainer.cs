@@ -197,6 +197,7 @@ namespace Docking
                context.LineTo(b - 1, b);
                context.ClosePath();
                context.Fill();
+               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!?
             }
 
             // Left
@@ -209,6 +210,7 @@ namespace Docking
                context.LineTo(0, r.Height);
                context.ClosePath();
                context.Fill();
+               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!?
             }
 
             // Bottom
@@ -221,6 +223,7 @@ namespace Docking
                context.LineTo(r.Width, r.Height);
                context.ClosePath();
                context.Fill();
+               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!?
             }
 
             // Right
@@ -233,6 +236,7 @@ namespace Docking
                context.LineTo(r.Width, r.Height);
                context.ClosePath();
                context.Fill();
+               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!?
             }
          }
       }
