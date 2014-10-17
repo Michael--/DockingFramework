@@ -188,8 +188,9 @@ namespace Docking
             uint b = mainBox.BorderWidth;
 
             // Top
+            using (Cairo.Gradient gradient = createGradient(0.0, 0.0, 0, b, c))
             {
-               Cairo.Gradient gradient = createGradient(0.0, 0.0, 0, b, c);
+               
                context.SetSource(gradient);
                context.MoveTo(0, 0);
                context.LineTo(r.Width, 0);
@@ -197,12 +198,12 @@ namespace Docking
                context.LineTo(b - 1, b);
                context.ClosePath();
                context.Fill();
-               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!? https://github.com/mono/gtk-sharp/pull/126
             }
 
             // Left
+            using  (Cairo.Gradient gradient = createGradient(0.0, 0.0, b, 0, c))
             {
-               Cairo.Gradient gradient = createGradient(0.0, 0.0, b, 0, c);
+               
                context.SetSource(gradient);
                context.MoveTo(0, 0);
                context.LineTo(b, b - 1);
@@ -210,12 +211,11 @@ namespace Docking
                context.LineTo(0, r.Height);
                context.ClosePath();
                context.Fill();
-               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!? https://github.com/mono/gtk-sharp/pull/126
             }
 
             // Bottom
+            using (Cairo.Gradient gradient = createGradient(0.0, r.Height, 0, r.Height - b, c))
             {
-               Cairo.Gradient gradient = createGradient(0.0, r.Height, 0, r.Height - b, c);
                context.SetSource(gradient);
                context.MoveTo(0, r.Height);
                context.LineTo(b - 1, r.Height - b);
@@ -223,12 +223,11 @@ namespace Docking
                context.LineTo(r.Width, r.Height);
                context.ClosePath();
                context.Fill();
-               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!? https://github.com/mono/gtk-sharp/pull/126
             }
 
             // Right
+            using (Cairo.Gradient gradient = createGradient(r.Width, 0, r.Width - b, 0, c))
             {
-               Cairo.Gradient gradient = createGradient(r.Width, 0, r.Width - b, 0, c);
                context.SetSource(gradient);
                context.MoveTo(r.Width, 0);
                context.LineTo(r.Width - b, b - 1);
@@ -236,7 +235,6 @@ namespace Docking
                context.LineTo(r.Width, r.Height);
                context.ClosePath();
                context.Fill();
-               gradient.Dispose(); // ARGH, WHY IS THIS NECESSARY? SHOULDN'T THE DESTRUCTOR DO IT!? https://github.com/mono/gtk-sharp/pull/126
             }
          }
       }
