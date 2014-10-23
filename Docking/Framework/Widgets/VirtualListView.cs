@@ -554,21 +554,31 @@ namespace Docking.Widgets
 
       void ICopy.Copy()
       {
-         if(SelectedRow<=0)
-            return;
-
-         StringBuilder result = new StringBuilder();
-         ColumnControl.Column[] columns = mColumnControl.GetVisibleColumnsInDrawOrder();
-         for(int c = 0; c<columns.Length; c++)
+         int bottom, top;
+         GetSelection(out bottom, out top);
+         if (bottom >= 0 && bottom <= top)
          {
-            int columnIndex = columns[c].SortOrder;
-            string columnContent = GetContentDelegate(SelectedRow, columnIndex);
-            if(c>0)
-               result.Append("\t");
-            result.Append(columnContent);
+            int count = top - bottom + 1;
+            if (count < 1000 || MessageBox.Show(MessageType.Question, ButtonsType.YesNo, "You wan't to copy {0} lines to clipboard ?", count) == ResponseType.Yes)
+            {
+               StringBuilder result = new StringBuilder();
+               for (int i = bottom; i <= top; i++)
+               {
+                  ColumnControl.Column[] columns = mColumnControl.GetVisibleColumnsInDrawOrder();
+                  for (int c = 0; c < columns.Length; c++)
+                  {
+                     int columnIndex = columns[c].SortOrder;
+                     string columnContent = GetContentDelegate(i, columnIndex);
+                     if (c > 0)
+                        result.Append(";");
+                     result.Append(columnContent);
+                  }
+                  result.Append("\n");
+               }
+               if (result.Length > 0)
+                  this.GetClipboard(Gdk.Selection.Clipboard).Text = result.ToString();
+            }
          }
-         if(result.Length>0)
-            this.GetClipboard(Gdk.Selection.Clipboard).Text = result.ToString();
       }
 
       #endregion
