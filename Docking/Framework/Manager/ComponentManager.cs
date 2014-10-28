@@ -805,9 +805,9 @@ namespace Docking.Components
          AppendMenuItem("File", menuItem);
       }
 
-      public bool OpenFile(string filename, bool fileIsPartOfAnyArchive = false)
+      public bool OpenFile(string filename, object archiveHandle = null)
       {
-         if(Directory.Exists(filename))
+         if (archiveHandle == null && Directory.Exists(filename))
          {
             MessageWriteLine("Opening whole directories like {0} currently isn't implemented".FormatLocalizedWithPrefix("Docking.Components", filename));
             return false;
@@ -815,11 +815,21 @@ namespace Docking.Components
 
          List<KeyValuePair<IFileOpen, string>> openers = new List<KeyValuePair<IFileOpen, string>>();
 
-         if (Archive != null && Archive.IsArchive(filename))
+         bool isArchive = archiveHandle == null && Archive != null && Archive.IsArchive(filename);
+         int openedArchiveFiles = 0;
+         if (isArchive)
          {
-            // TODO:
-            // look into archive (.zip, .7z, etc) and call recurcive OpenURL() again
-            // if open of compressed file type possible copy its content to a local temp folder before open call
+            var handle = Archive.Open(filename);
+            if (handle != null)
+            {
+               var files = Archive.GetFileNames(handle);
+               foreach (var s in files)
+               {
+                  if (OpenFile(s, handle))
+                     openedArchiveFiles++;
+               }
+               Archive.Close(handle);
+            }
          }
 
          else
@@ -835,15 +845,22 @@ namespace Docking.Components
                      openers.Add(new KeyValuePair<IFileOpen, string>(opener, info));
                }
             }
+
+            if (openers.Count <= 0)
+            {
+               // TODO now search all classes implementing IFileOpen by calling their method IFileOpen.SupportedFileTypes()
+               // and let the user instantiate them to handle this file.
+               // That's not implemented yet. For now we fail with despair:
+               MessageWriteLine("No component is instantiated which can handle file {0}".FormatLocalizedWithPrefix("Docking.Components"), filename);
+               return false;
+            }
          }
 
-         if(openers.Count <= 0)
+
+         // open file from archive need optionally copy of file
+         if (archiveHandle != null)
          {
-            // TODO now search all classes implementing IFileOpen by calling their method IFileOpen.SupportedFileTypes()
-            // and let the user instantiate them to handle this file.
-            // That's not implemented yet. For now we fail with despair:
-            MessageWriteLine("No component is instantiated which can handle file {0}".FormatLocalizedWithPrefix("Docking.Components"), filename);
-            return false;
+            filename = Archive.Extract(archiveHandle, filename);
          }
 
          if (!File.Exists(filename))
@@ -853,14 +870,21 @@ namespace Docking.Components
          }
 
          // TODO: consider all and let the user pick which one
-         MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} as {1}..."), filename, openers[0].Value);
-         bool success = openers[0].Key.OpenFile(filename);
-         MessageWriteLine(success ? "File opened successfully" : "File opening failed");
+         if (!isArchive)
+         {
+            MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} as {1}..."), filename, openers[0].Value);
+            bool success = openers[0].Key.OpenFile(filename);
+            MessageWriteLine(success ? "File opened successfully" : "File opening failed");
+            if (success)
+               AddRecentFile(filename);
+            return success;
+         }
 
-         if (success && !fileIsPartOfAnyArchive)
+         // any archive opening
+         if (openedArchiveFiles > 0)
             AddRecentFile(filename);
 
-         return success;
+         return openedArchiveFiles > 0;
       }
 
       public String OpenFolderDialog(string title)

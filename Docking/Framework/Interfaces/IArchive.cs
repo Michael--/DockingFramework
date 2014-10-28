@@ -11,6 +11,6 @@ namespace Docking.Components
       string[] GetFileNames(object handle);
       object Open(string filename);
       void Close(object handle);
-      byte[] Read(object handle, int length);
+      string Extract(object handle, string filename);
    }
 }
