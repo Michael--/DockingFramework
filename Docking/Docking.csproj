@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Docking</RootNamespace>
     <AssemblyName>Docking</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
@@ -26,6 +26,7 @@
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
     <NoWarn>0219;1701</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -38,6 +39,7 @@
     <DebugType>none</DebugType>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0219</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
