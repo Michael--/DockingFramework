@@ -784,6 +784,8 @@ namespace Docking.Components
 
       #region OpenFile
 
+      protected IArchive Archive { get; set; }
+
       void InstallFileOpenMenu()
       {
          TaggedLocalizedImageMenuItem menuItem = new TaggedLocalizedImageMenuItem("Open...");
@@ -803,7 +805,7 @@ namespace Docking.Components
          AppendMenuItem("File", menuItem);
       }
 
-      public bool OpenFile(string filename)
+      public bool OpenFile(string filename, bool fileIsPartOfAnyArchive = false)
       {
          if(Directory.Exists(filename))
          {
@@ -811,22 +813,27 @@ namespace Docking.Components
             return false;
          }
 
-         if(!File.Exists(filename))
+         List<KeyValuePair<IFileOpen, string>> openers = new List<KeyValuePair<IFileOpen, string>>();
+
+         if (Archive != null && Archive.IsArchive(filename))
          {
-            MessageWriteLine("File {0} does not exist".FormatLocalizedWithPrefix("Docking.Components", filename));
-            return false;
+            // TODO:
+            // look into archive (.zip, .7z, etc) and call recurcive OpenURL() again
+            // if open of compressed file type possible copy its content to a local temp folder before open call
          }
 
-         List<KeyValuePair<IFileOpen, string>> openers = new List<KeyValuePair<IFileOpen, string>>();
-         // search EXISTING instances of components if they can handle this file:
-         foreach(DockItem item in DockFrame.GetItems())
+         else
          {
-            if(item.Content is IFileOpen)
+            // search EXISTING instances of components if they can handle this file:
+            foreach (DockItem item in DockFrame.GetItems())
             {
-               IFileOpen opener = (item.Content as IFileOpen);
-               string info = opener.TryOpenFile(filename);
-               if(info != null)
-                  openers.Add(new KeyValuePair<IFileOpen, string>(opener, info));
+               if (item.Content is IFileOpen)
+               {
+                  IFileOpen opener = (item.Content as IFileOpen);
+                  string info = opener.TryOpenFile(filename);
+                  if (info != null)
+                     openers.Add(new KeyValuePair<IFileOpen, string>(opener, info));
+               }
             }
          }
 
@@ -839,12 +846,18 @@ namespace Docking.Components
             return false;
          }
 
+         if (!File.Exists(filename))
+         {
+            MessageWriteLine("File {0} does not exist".FormatLocalizedWithPrefix("Docking.Components", filename));
+            return false;
+         }
+
          // TODO: consider all and let the user pick which one
          MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} as {1}..."), filename, openers[0].Value);
          bool success = openers[0].Key.OpenFile(filename);
          MessageWriteLine(success ? "File opened successfully" : "File opening failed");
 
-         if(success)
+         if (success && !fileIsPartOfAnyArchive)
             AddRecentFile(filename);
 
          return success;
