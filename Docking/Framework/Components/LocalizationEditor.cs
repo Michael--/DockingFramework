@@ -46,6 +46,17 @@ namespace Docking.Components
          treeview1.Model = listStore;
          treeview1.GetColumn(0).Click(); // enable sorting 1st column ascending as default
 
+         treeview1.SearchColumn = 0;
+         treeview1.SearchEqualFunc = (TreeModel model, int column, string key, TreeIter iter) =>
+            {
+               Localization.Node node = (Localization.Node)model.GetValue(iter, column);
+               if (node != null)
+               {
+                  return !node.Key.ToLower().Contains(key.ToLower());
+               }
+               return true;
+            };
+
          button1.Clicked += (sender, e) =>
          {
             ComponentManager.Localization.WriteChangedResourceFiles();
