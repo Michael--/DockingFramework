@@ -794,6 +794,12 @@ namespace Docking.Components
          menuItem.Activated += (sender, e) =>
          {
             List<FileFilterExt> filters = new List<FileFilterExt>();
+
+            if(Archive!=null && Archive is IFileOpen) // if an archive handler is installed that implements IFileOpen
+            {
+               filters.AddRange((Archive as IFileOpen).SupportedFileTypes());
+            }            
+
             foreach(DockItem d in DockFrame.GetItems())
                if(d.Content is IFileOpen)
                   filters.AddRange((d.Content as IFileOpen).SupportedFileTypes());
