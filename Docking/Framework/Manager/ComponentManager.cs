@@ -2641,6 +2641,16 @@ namespace Docking.Components
       {
          return Gdk.Pixbuf.FromDrawable(GdkWindow, GdkWindow.Colormap, 0, 0, 0, 0, (this as Gtk.Widget).Allocation.Width, (this as Gtk.Widget).Allocation.Height);
       }
+
+      public Gdk.Pixbuf LoadPixbufFromResource(string name)
+      {
+         return Gdk.Pixbuf.LoadFromResource(name);
+      }
+
+      public Gtk.Image LoadImageFromResource(string name)
+      {
+         return new Gtk.Image(Gdk.Pixbuf.LoadFromResource(name));
+      }
    }
 }
 

@@ -359,18 +359,8 @@ namespace Docking.Widgets
       protected const int RIGHT_MOUSE_BUTTON = 3;
 
       protected override bool OnButtonPressEvent(EventButton evnt)
-      { 
-         #region in case the mouse event happened in the header, let the base class treat it
-         // We cannot write
-         //   if(evnt.Y<wy)
-         // here, as GTK erroneously sets Y *WRONG* when a click happens in the header >:(
-         // Instead, we use YRoot here which fortunately still has the proper correct value: an absolute screen coordinate.
-         // We use it to check if the click was in the header.
-         //int ox, oy;
-         //GdkWindow.GetOrigin(out ox, out oy);
-         //if(evnt.YRoot<oy+HeaderHeight)
-         //   return base.OnButtonPressEvent(evnt);
-         #endregion
+      {
+         CurrentKeyboardModifier = evnt.State;
  
          TreePath path;
          TreeIter row;
