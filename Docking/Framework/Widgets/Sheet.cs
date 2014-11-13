@@ -281,12 +281,19 @@ namespace Docking.Widgets
       public SheetSelection SheetSelection;      
       public event SheetSelectionChangedEventHandler SheetSelectionChanged;
       public void OnSheetSelectionChanged(SheetSelection sheetselection) { if(SheetSelectionChanged!=null) SheetSelectionChanged(sheetselection); }
+      public ModifierType CurrentKeyboardModifier { get; protected set; }
 
       public Sheet()                : base()      { Constructor(); }
       public Sheet(IntPtr raw)      : base(raw)   { Constructor(); }
       public Sheet(TreeModel model) : base(model) { Constructor(); }
       private void Constructor()
       {
+         CursorChanged += HandleParentCursorChanged;
+
+         // Disable parent selection model
+         Selection.Mode = SelectionMode.None;
+
+         // Implementation of own selection model
          SheetSelection = new SheetSelection(this);
          HeadersClickable = true;
          //FocusLineWidth = 0; // TODO does not work. find some other way to hide the dotted "focused cells" line
@@ -301,139 +308,43 @@ namespace Docking.Widgets
          return result;
       }
 
+      protected void HandleParentCursorChanged(object sender, EventArgs e)
+      {
+         TreePath path;
+         TreeIter row;
+         TreeViewColumn col;
+         GetCursor(out path, out col);
+         if (Model.GetIter(out row, path) && col != null)
+         {
+            List<CellLocation> selectedcells = new List<CellLocation>(SheetSelection.SelectedCells);
+            if (selectedcells.Count <= 0 || (CurrentKeyboardModifier & ModifierType.ShiftMask) == 0)
+            {
+               SheetSelection.Select(row, col, (CurrentKeyboardModifier & ModifierType.ControlMask) != 0);
+            }
+            else
+            {
+               int col1 = Array.IndexOf(Columns, selectedcells[0].Col);
+               if (col1 <= 0)
+               {
+                  SheetSelection.Select(row, col, (CurrentKeyboardModifier & ModifierType.ControlMask) != 0);
+               }
+               else
+               {
+                  SheetSelection.SelectRange(selectedcells[0].Row, col1, row, Array.IndexOf(Columns, col));
+               }
+            }
+            QueueDraw();
+         }
+      }
+
       #region key press / release
 
-      public ModifierType CurrentKeyboardModifier { get; protected set; } 
+      
 
       protected override bool OnKeyPressEvent(EventKey evnt)
       {
          CurrentKeyboardModifier = evnt.State;
-
-         switch(evnt.Key)
-         {         
-            case Gdk.Key.Left:
-            case Gdk.Key.KP_Left:
-            {
-               List<TreeViewColumn> selectedcols = new List<TreeViewColumn>(SheetSelection.SelectedColumns);
-               List<TreeViewColumn> visiblecols  = (this as TreeView).VisibleColumns();
-               if(selectedcols.Count>0)
-               {
-                  int i = visiblecols.IndexOf(selectedcols[selectedcols.Count-1])-1;
-                  if(i<0)
-                     return true;
-                  SheetSelection.Select(visiblecols[i], (evnt.State & ModifierType.ShiftMask)!=0);
-                  QueueDraw();
-                  return true;
-               }
-
-               List<CellLocation> selectedcells = new List<CellLocation>(SheetSelection.SelectedCells);
-               if(selectedcells.Count<=0)
-                  return true;
-               int j = visiblecols.IndexOf(selectedcells[selectedcells.Count-1].Col)-1;
-               if(j<0)
-                  return true;
-               if((evnt.State & ModifierType.ShiftMask)==0)
-               {
-                  SheetSelection.Select(selectedcells[selectedcells.Count-1].Row, visiblecols[j], false);
-                  QueueDraw();
-                  return true;
-               }
-               else
-               {
-                  // not implemented yet
-                  //SelectRange(row1, col1, row2, col2);
-                  return true;
-               }                                               
-            }
-
-            case Gdk.Key.Right:
-            case Gdk.Key.KP_Right:
-            {
-               List<TreeViewColumn> selectedcols = new List<TreeViewColumn>(SheetSelection.SelectedColumns);
-               List<TreeViewColumn> visiblecols  = (this as TreeView).VisibleColumns();
-               if(selectedcols.Count>0)
-               {
-                  int i = visiblecols.IndexOf(selectedcols[selectedcols.Count-1])+1;
-                  if(i<=0 || i>=visiblecols.Count)
-                     return true;
-                  SheetSelection.Select(visiblecols[i], (evnt.State & ModifierType.ShiftMask)!=0);
-                  QueueDraw();
-                  return true;
-               }
-
-               List<CellLocation> selectedcells = new List<CellLocation>(SheetSelection.SelectedCells);
-               if(selectedcells.Count<=0)
-                  return true;
-               int j = visiblecols.IndexOf(selectedcells[selectedcells.Count-1].Col)+1;
-               if(j<=0 || j>=visiblecols.Count)
-                  return true;
-               if((evnt.State & ModifierType.ShiftMask)==0)
-               {
-                  SheetSelection.Select(selectedcells[selectedcells.Count-1].Row, visiblecols[j], false);
-                  QueueDraw();                  
-                  return true;
-               }
-               else
-               {
-                  // not implemented yet
-                  //SelectRange(row1, col1, row2, col2);
-                  return true;
-               }
-            }
-
-            case Gdk.Key.Up:
-            case Gdk.Key.KP_Up:
-            {
-               List<CellLocation> selectedcells = new List<CellLocation>(SheetSelection.SelectedCells);
-               if(selectedcells.Count<=0)
-                  return true;
-               TreeIter row = selectedcells[selectedcells.Count-1].Row;
-               if(!Model.IterPrev(ref row))
-                  return true;
-               if((evnt.State & ModifierType.ShiftMask)==0)
-               {
-                  SheetSelection.Select(row, selectedcells[selectedcells.Count-1].Col, false);
-                  QueueDraw();
-                  return true;
-               }
-               else
-               {
-                  // not implemented yet
-                  //SelectRange(row1, col1, row2, col2);
-                  return true;
-               }
-            }
-
-            case Gdk.Key.Down:
-            case Gdk.Key.KP_Down:
-            {
-               List<CellLocation> selectedcells = new List<CellLocation>(SheetSelection.SelectedCells);
-               if(selectedcells.Count<=0)
-                  return true;
-               TreeIter row = selectedcells[selectedcells.Count-1].Row;
-               if(!Model.IterNext(ref row))
-                  return true;
-               if((evnt.State & ModifierType.ShiftMask)==0)
-               {
-                  SheetSelection.Select(row, selectedcells[selectedcells.Count-1].Col, false);
-                  QueueDraw();
-                  return true;
-               }
-               else
-               {
-                  // not implemented yet
-                  //SelectRange(row1, col1, row2, col2);
-                  return true;
-               }
-            }
-         }
-
-         // We do _not_ invoke
-         //    base.OnKeyPressEvent(evnt);
-         // here. We want to have FULL control about what key does what.
-         // No inherited logic from our parent class.
-         //return base.OnKeyPressEvent(evnt);
-         return true;
+         return base.OnKeyPressEvent(evnt);
       }
 
       protected override bool OnKeyReleaseEvent(EventKey evnt)
@@ -448,17 +359,17 @@ namespace Docking.Widgets
       protected const int RIGHT_MOUSE_BUTTON = 3;
 
       protected override bool OnButtonPressEvent(EventButton evnt)
-      {        
+      { 
          #region in case the mouse event happened in the header, let the base class treat it
          // We cannot write
          //   if(evnt.Y<wy)
          // here, as GTK erroneously sets Y *WRONG* when a click happens in the header >:(
          // Instead, we use YRoot here which fortunately still has the proper correct value: an absolute screen coordinate.
          // We use it to check if the click was in the header.
-         int ox, oy;
-         GdkWindow.GetOrigin(out ox, out oy);
-         if(evnt.YRoot<oy+HeaderHeight)
-            return base.OnButtonPressEvent(evnt);
+         //int ox, oy;
+         //GdkWindow.GetOrigin(out ox, out oy);
+         //if(evnt.YRoot<oy+HeaderHeight)
+         //   return base.OnButtonPressEvent(evnt);
          #endregion
  
          TreePath path;
@@ -468,27 +379,13 @@ namespace Docking.Widgets
             Model.GetIter(out row, path))
          {
             if(evnt.Button==LEFT_MOUSE_BUTTON)
-            {               
+            {
+               //SetCursor(path, col, false);
                GrabFocus();
-               Selection.SelectNone();
-               List<CellLocation> selectedcells = new List<CellLocation>(SheetSelection.SelectedCells);
-               if(selectedcells.Count<=0 || (evnt.State & ModifierType.ShiftMask)==0)               
-                  SheetSelection.Select(row, col, (evnt.State & ModifierType.ControlMask)!=0);
-               else
-               {
-                  int col1 = Array.IndexOf(Columns, selectedcells[0].Col);
-                  if(col1<=0)
-                     SheetSelection.Select(row, col, (evnt.State & ModifierType.ControlMask)!=0);
-                  else
-                     SheetSelection.SelectRange(selectedcells[0].Row, col1, row, Array.IndexOf(Columns, col));
-               }
-               QueueDraw();
-               return true;
             }
          }
 
-         return true;
-         //return base.OnButtonPressEvent(evnt);
+         return base.OnButtonPressEvent(evnt);
       }
 
       protected int HeaderHeight = 0;
