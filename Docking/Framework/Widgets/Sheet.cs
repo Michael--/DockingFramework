@@ -282,6 +282,8 @@ namespace Docking.Widgets
       public event SheetSelectionChangedEventHandler SheetSelectionChanged;
       public void OnSheetSelectionChanged(SheetSelection sheetselection) { if(SheetSelectionChanged!=null) SheetSelectionChanged(sheetselection); }
       public ModifierType CurrentKeyboardModifier { get; protected set; }
+      public uint CurrentButton { get; protected set; }
+      protected CellLocation mSelectionHook = null;
 
       public Sheet()                : base()      { Constructor(); }
       public Sheet(IntPtr raw)      : base(raw)   { Constructor(); }
@@ -314,23 +316,27 @@ namespace Docking.Widgets
          TreeIter row;
          TreeViewColumn col;
          GetCursor(out path, out col);
-         if (Model.GetIter(out row, path) && col != null)
+         if (Model.GetIter(out row, path) && col != null && CurrentButton != 3)
          {
+            bool shiftDown = (CurrentKeyboardModifier & ModifierType.ShiftMask) != ModifierType.None;
+            bool ctrlDown = (CurrentKeyboardModifier & ModifierType.ControlMask) != ModifierType.None;
+
+            mSelectionHook = (shiftDown) ? mSelectionHook : new CellLocation(row, col);
             List<CellLocation> selectedcells = new List<CellLocation>(SheetSelection.SelectedCells);
-            if (selectedcells.Count <= 0 || (CurrentKeyboardModifier & ModifierType.ShiftMask) == 0)
+            int col1 = (selectedcells.Count > 0) ? Array.IndexOf(Columns, mSelectionHook.Col) : -1;
+            if (col1 >= 0 && shiftDown)
             {
-               SheetSelection.Select(row, col, (CurrentKeyboardModifier & ModifierType.ControlMask) != 0);
+               SheetSelection.SelectRange(mSelectionHook.Row, col1, row, Array.IndexOf(Columns, col));
             }
             else
             {
-               int col1 = Array.IndexOf(Columns, selectedcells[0].Col);
-               if (col1 <= 0)
+               if (SheetSelection.IsSelected(row, col) && (ctrlDown || selectedcells.Count == 1))
                {
-                  SheetSelection.Select(row, col, (CurrentKeyboardModifier & ModifierType.ControlMask) != 0);
+                  SheetSelection.Unselect(row, col);
                }
                else
                {
-                  SheetSelection.SelectRange(selectedcells[0].Row, col1, row, Array.IndexOf(Columns, col));
+                  SheetSelection.Select(row, col, ctrlDown);
                }
             }
             QueueDraw();
@@ -339,17 +345,61 @@ namespace Docking.Widgets
 
       #region key press / release
 
-      
-
+      [GLib.ConnectBeforeAttribute]
       protected override bool OnKeyPressEvent(EventKey evnt)
       {
          CurrentKeyboardModifier = evnt.State;
+         CurrentButton = 0U;
+
+         // Workaround for gtk broken cursor left<->right movement when shift is pressed ~.~
+         if ((CurrentKeyboardModifier & ModifierType.ShiftMask) != ModifierType.None)
+         {
+            TreePath path;
+            TreeIter row;
+            TreeViewColumn col;
+            GetCursor(out path, out col);
+            if (Model.GetIter(out row, path) && col != null)
+            {
+               List<TreeViewColumn> visiblecols = (this as TreeView).VisibleColumns();
+               switch (evnt.Key)
+               {
+                  case Gdk.Key.Left:
+                  case Gdk.Key.KP_Left:
+                  {
+                     int i = visiblecols.IndexOf(col);
+                     if (i > 0)
+                     {
+                        // Workaround: Need double call because gtk cursor change event is posted BEFORE cursor property update ~.~
+                        SetCursor(path, visiblecols[i - 1], false);
+                        SetCursor(path, visiblecols[i - 1], false);
+                     }
+                     return true;
+                  }
+                  case Gdk.Key.Right:
+                  case Gdk.Key.KP_Right:
+                  {
+                     int i = visiblecols.IndexOf(col);
+                     if (i > -1 && i < visiblecols.Count - 1)
+                     {
+                        // Workaround: Need double call because gtk cursor change event is posted BEFORE cursor property update ~.~
+                        SetCursor(path, visiblecols[i + 1], false);
+                        SetCursor(path, visiblecols[i + 1], false);
+                     }
+                     return true;
+                  }
+                  default:
+                     break;
+               }
+            }
+         }
+
          return base.OnKeyPressEvent(evnt);
       }
 
       protected override bool OnKeyReleaseEvent(EventKey evnt)
       {
          CurrentKeyboardModifier = evnt.State;
+         CurrentButton = 0U;
          return base.OnKeyReleaseEvent(evnt);
       }
 
@@ -361,20 +411,12 @@ namespace Docking.Widgets
       protected override bool OnButtonPressEvent(EventButton evnt)
       {
          CurrentKeyboardModifier = evnt.State;
- 
-         TreePath path;
-         TreeIter row;
-         TreeViewColumn col;
-         if(GetPathAtPos((int)evnt.X, (int)evnt.Y, out path, out col) &&
-            Model.GetIter(out row, path))
-         {
-            if(evnt.Button==LEFT_MOUSE_BUTTON)
-            {
-               //SetCursor(path, col, false);
-               GrabFocus();
-            }
-         }
+         CurrentButton = evnt.Button;
 
+         if(evnt.Button==LEFT_MOUSE_BUTTON)
+         {
+            GrabFocus();
+         }
          return base.OnButtonPressEvent(evnt);
       }
 
