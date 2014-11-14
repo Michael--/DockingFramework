@@ -316,7 +316,7 @@ namespace Docking.Widgets
          TreeIter row;
          TreeViewColumn col;
          GetCursor(out path, out col);
-         if (Model.GetIter(out row, path) && col != null && CurrentButton != 3)
+         if (Model.GetIter(out row, path) && col != null && CurrentButton != RIGHT_MOUSE_BUTTON)
          {
             bool shiftDown = (CurrentKeyboardModifier & ModifierType.ShiftMask) != ModifierType.None;
             bool ctrlDown = (CurrentKeyboardModifier & ModifierType.ControlMask) != ModifierType.None;
