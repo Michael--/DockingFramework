@@ -11,6 +11,14 @@ namespace Docking.Components
       // Your component derived from this class will only do read access, if any.
       public DockItem DockItem { get; set; }
 
+      // Returns true if this component currently is selected inits containing ComponentManager.
+      // Note that this is something different than the focus.
+      // The focus can be at some text edit control etc.      
+      public bool IsCurrentDockItem
+      {
+         get { return ComponentManager!=null && ComponentManager.CurrentDockItem==this.DockItem; }
+      }
+
       #region Python scripting
       /// <summary>
       /// Get an instance containing methods/getter/setter which will be available for python at runtime
