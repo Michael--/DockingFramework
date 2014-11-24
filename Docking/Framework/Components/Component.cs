@@ -14,10 +14,12 @@ namespace Docking.Components
       // Returns true if this component currently is selected inits containing ComponentManager.
       // Note that this is something different than the focus.
       // The focus can be at some text edit control etc.      
-      public bool IsCurrentDockItem
+      public bool IsCurrentDockItem { get
       {
-         get { return ComponentManager!=null && ComponentManager.CurrentDockItem==this.DockItem; }
-      }
+         return ComponentManager!=null
+             && ComponentManager.CurrentDockItem!=null
+             && ComponentManager.CurrentDockItem==this.DockItem;
+      }}
 
       #region Python scripting
       /// <summary>
