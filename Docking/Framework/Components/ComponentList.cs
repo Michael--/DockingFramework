@@ -46,6 +46,8 @@ namespace Docking.Components
 
       public override void ComponentAdded(object item)
       {
+         base.ComponentAdded(item);
+
          if (item is IPropertyViewer)
             mPropertyInterfaces.Add(item as IPropertyViewer);
 
@@ -54,6 +56,8 @@ namespace Docking.Components
 
       public override void ComponentRemoved(object item)
       {
+         base.ComponentRemoved(item);
+
          if (item is IPropertyViewer)
             mPropertyInterfaces.Remove(item as IPropertyViewer);
 

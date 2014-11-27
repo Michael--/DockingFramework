@@ -62,6 +62,7 @@ namespace Docking.Components
       List<IScript> m_ScriptInterface = new List<IScript>();
       public override void ComponentAdded(object item)
       {
+         base.ComponentAdded(item);
          if (item is IScript)
          {
             IScript script = item as IScript;
@@ -74,12 +75,14 @@ namespace Docking.Components
 
       public override void ComponentRemoved(object item)
       {
+         base.ComponentRemoved(item);
          if (item is IScript)
             m_ScriptInterface.Remove(item as IScript);
       }
 
       public override void FocusChanged(object item)
       {
+         base.FocusChanged(item);
          if (this == item)
          {
             foreach (IScript it in m_ScriptInterface)
