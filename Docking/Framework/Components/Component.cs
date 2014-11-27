@@ -126,11 +126,20 @@ namespace Docking.Components
          }
       }
 
-      // set any object to display with the known property viewer
+      /// <summary>
+      /// set any object to display with the known property viewer
+      /// </summary>
       public void SetPropertyObject(object value) { m_PropertyObject = value; }
 
-      // get the property object previously set
+      /// <summary>
+      /// get the property object previously set
+      /// </summary>
       public T GetPropertyObject<T>() { return (T)m_PropertyObject; }
+
+      /// <summary>
+      /// Get all available property viewer
+      /// </summary>
+      public IEnumerable<IPropertyViewer> PropertyViewer { get { return m_PropertyViewer; } }
 
       /// <summary>
       /// Called when your property object has been changed
