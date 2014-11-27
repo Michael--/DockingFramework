@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Docking.Components
 {
 	public class Component : Gtk.Bin
@@ -79,14 +81,31 @@ namespace Docking.Components
       /// You can check if the object you get as a parameter is something you're interested in
       /// and, if yes, do something with it, for example, store a reference to it in an internal member variable.
       /// </summary>
-      public virtual void ComponentAdded(object component) {}
+      public virtual void ComponentAdded(object component)
+      {
+         if (component is IPropertyViewer)
+         {
+            IPropertyViewer property = component as IPropertyViewer;
+
+            m_PropertyViewer.Add(property);
+            property.PropertyChanged += PropertyChangedEventHandler;
+         }
+      }
 
       /// <summary>
       /// This function informs you about that a component has been removed from the framework.
       /// If your implementation has a reference in its implementation to that component,
       /// this is the time to assign null to that.
       /// </summary>
-      public virtual void ComponentRemoved(object component) {}
+      public virtual void ComponentRemoved(object component)
+      {
+         if (component is IPropertyViewer)
+         {
+            IPropertyViewer property = component as IPropertyViewer;
+            property.PropertyChanged -= PropertyChangedEventHandler;
+            m_PropertyViewer.Remove(property);
+         }
+      }
 
       /// <summary>
       /// The current visibility state of some component has been changed.
@@ -98,15 +117,48 @@ namespace Docking.Components
       /// If item == this, your component is now the current one having the focus.
       /// For example this means it's time to update the properties list component.
       /// </summary>
-      public virtual void FocusChanged(object component) {}
+      public virtual void FocusChanged(object component)
+      {
+         if (component == this && m_PropertyObject != null)
+         {
+            foreach (IPropertyViewer p in m_PropertyViewer)
+               p.SetObject(m_PropertyObject);
+         }
+      }
 
+      // set any object to display with the known property viewer
+      public void SetPropertyObject(object value) { m_PropertyObject = value; }
+
+      // get the property object previously set
+      public T GetPropertyObject<T>() { return (T)m_PropertyObject; }
+
+      /// <summary>
+      /// Called when your property object has been changed
+      /// </summary>
+      public virtual void PropertyChanged() { }
 
       /// <summary>
       /// Called after any call for any component ( Loaded() and ComponentAdded() )
       /// </summary>
       public virtual void InitComplete() { }
 
+      #region property convinience private details
+
+      private List<IPropertyViewer> m_PropertyViewer = new List<IPropertyViewer>();
+      private object m_PropertyObject = null;
+
+      // called whenever the property object has been changed by any property viewer
+      private void PropertyChangedEventHandler(PropertyChangedEventArgs e)
+      {
+         if (e.Object == m_PropertyObject && m_PropertyObject != null)
+         {
+            PropertyChanged();
+         }
+      }
+
       #endregion
-	}
+
+      #endregion
+   }
 }
 
