@@ -1362,7 +1362,7 @@ namespace Docking.Components
       }
 
       private bool mInitialLoadOfComponentsCompleted = false;
-      private List<object> mComponents = new List<object>();
+      protected List<object> mComponents = new List<object>();
 
       public void AddComponent(object o)
       {
