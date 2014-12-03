@@ -2481,7 +2481,8 @@ namespace Docking.Components
       public dynamic Execute(String code)
       {
          CompiledCode compiled = Compile(code);
-         return compiled.Execute(ScriptScope);
+         try   { return compiled.Execute(ScriptScope); }
+         catch { return null;                          }         
       }
 
       public dynamic ExecuteFile(String filename)
