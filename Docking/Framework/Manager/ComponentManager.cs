@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Reflection;
+using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Globalization;
 using Microsoft.Scripting;
@@ -381,7 +382,35 @@ namespace Docking.Components
 
       public  int                       MaxRecentFiles    = 9;
       private SeparatorMenuItem         mRecentFilesBegin = null;
-      private List<TaggedImageMenuItem> mRecentFiles      = new List<TaggedImageMenuItem>();     
+      private List<TaggedImageMenuItem> mRecentFiles      = new List<TaggedImageMenuItem>();
+
+
+      public string ShrinkPath(string path, int maxLength)
+      {
+         if (path.Length < maxLength)
+            return path;
+
+         var slash = Platform.IsWindows ? '\\' : '/';
+
+         List<string> parts = new List<string>(path.Split(slash));
+
+         string start = parts[0] + slash + parts[1];
+         parts.RemoveAt(1);
+         parts.RemoveAt(0);
+
+         string end = parts[parts.Count - 1];
+         parts.RemoveAt(parts.Count - 1);
+
+         parts.Insert(0, "...");
+         while (parts.Count > 1 &&
+           start.Length + end.Length + parts.Sum(p => p.Length) + parts.Count > maxLength)
+            parts.RemoveAt(parts.Count - 1);
+
+         string mid = "" + slash;
+         parts.ForEach(p => mid += p + slash);
+
+         return start + mid + end;
+      }
 
       public void AddRecentFile(string filename, bool do_update_menu = true)
       {
@@ -391,14 +420,7 @@ namespace Docking.Components
          string filename_normalized = Platform.IsWindows ? filename.Replace('/', '\\') : filename;
 
          RemoveRecentFile(filename_normalized, false);
-
-         string filename_shortened = filename_normalized;
-         if(filename_shortened.Length>200)
-         { 
-            filename_shortened = filename_shortened.Substring(0, 100-5)
-                               + " ... "
-                               + filename_shortened.Substring(filename_normalized.Length-100, 100);
-         }
+         var filename_shortened = ShrinkPath(filename_normalized, 80);
 
          TaggedImageMenuItem newitem = new TaggedImageMenuItem(filename_shortened); 
          newitem.Tag = filename_normalized; // the FULL filename
