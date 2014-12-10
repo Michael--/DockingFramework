@@ -234,6 +234,8 @@
     <Compile Include="Framework\Components\PropertyViewer.cs" />
     <Compile Include="Framework\Interfaces\IPropertyViewer.cs" />
     <Compile Include="Framework\Tools\GtkSharpCompatibilityWorkarounds.cs" />
+    <Compile Include="Framework\Widgets\Find.cs" />
+    <Compile Include="gtk-gui\Docking.Widgets.Find.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

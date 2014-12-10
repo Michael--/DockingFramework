@@ -153,25 +153,37 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="Docking.Widgets.VirtualListView" design-size="300 300">
+  <widget class="Gtk.Bin" id="Docking.Widgets.VirtualListView" design-size="697 232">
     <property name="MemberName" />
     <property name="Visible">False</property>
+    <property name="Events">KeyPressMask, KeyReleaseMask</property>
+    <property name="ExtensionEvents">All</property>
     <child>
       <widget class="Gtk.VBox" id="vbox1">
         <property name="MemberName" />
         <property name="Spacing">1</property>
         <child>
-          <placeholder />
+          <widget class="Docking.Widgets.Find" id="findwidget">
+            <property name="MemberName" />
+            <property name="Events">ButtonPressMask</property>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
         </child>
         <child>
-          <widget class="Gtk.HBox" id="hbox1">
+          <widget class="Gtk.HBox" id="hbox2">
             <property name="MemberName" />
             <property name="Spacing">1</property>
             <child>
               <widget class="Gtk.DrawingArea" id="drawingarea">
                 <property name="MemberName" />
                 <property name="CanFocus">True</property>
-                <property name="Events">PointerMotionMask, ButtonPressMask, FocusChangeMask, ScrollMask</property>
+                <property name="Events">PointerMotionMask, ButtonPressMask, KeyPressMask, KeyReleaseMask, FocusChangeMask, ScrollMask</property>
+                <property name="ExtensionEvents">All</property>
                 <signal name="ExposeEvent" handler="OnDrawingareaExposeEvent" />
               </widget>
               <packing>
@@ -536,6 +548,101 @@
           </widget>
           <packing>
             <property name="Position">2</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="Gtk.Bin" id="Docking.Widgets.Find" design-size="451 27">
+    <property name="MemberName" />
+    <property name="Events">KeyPressMask, KeyReleaseMask</property>
+    <child>
+      <widget class="Gtk.HBox" id="hbox1">
+        <property name="MemberName" />
+        <property name="Spacing">6</property>
+        <child>
+          <widget class="Gtk.Button" id="buttonLast">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">TextOnly</property>
+            <property name="Label" translatable="yes">~</property>
+            <property name="UseUnderline">True</property>
+          </widget>
+          <packing>
+            <property name="Position">0</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Entry" id="entryFind">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="IsEditable">True</property>
+            <property name="InvisibleChar">●</property>
+          </widget>
+          <packing>
+            <property name="Position">1</property>
+            <property name="AutoSize">True</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Label" id="labelStatus">
+            <property name="MemberName" />
+            <property name="LabelProp" translatable="yes">status</property>
+            <property name="Justify">Center</property>
+          </widget>
+          <packing>
+            <property name="Position">2</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Button" id="buttonPrev">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">TextOnly</property>
+            <property name="Label" translatable="yes">&lt;</property>
+            <property name="UseUnderline">True</property>
+          </widget>
+          <packing>
+            <property name="Position">3</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Button" id="buttonNext">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">TextOnly</property>
+            <property name="Label" translatable="yes">&gt;</property>
+            <property name="UseUnderline">True</property>
+          </widget>
+          <packing>
+            <property name="Position">4</property>
+            <property name="AutoSize">True</property>
+            <property name="Expand">False</property>
+            <property name="Fill">False</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="Gtk.Button" id="buttonClear">
+            <property name="MemberName" />
+            <property name="CanFocus">True</property>
+            <property name="Type">TextOnly</property>
+            <property name="Label" translatable="yes">*</property>
+            <property name="UseUnderline">True</property>
+          </widget>
+          <packing>
+            <property name="Position">5</property>
             <property name="AutoSize">True</property>
             <property name="Expand">False</property>
             <property name="Fill">False</property>

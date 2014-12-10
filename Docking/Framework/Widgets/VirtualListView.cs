@@ -37,6 +37,9 @@ namespace Docking.Widgets
          {
             drawingarea.QueueDraw();
          };
+         var bc = (Box.BoxChild)vbox1[findwidget];
+         bc.Position = 0;
+         FindWidget.Visible = false;
       }
 
       ColumnControl mColumnControl;
@@ -83,6 +86,7 @@ namespace Docking.Widgets
       private int mRow;
 
       public void TriggerRepaint() { drawingarea.QueueDraw(); }
+      public Find FindWidget { get { return findwidget; } }
 
       /// <summary>
       /// Get selection. Return the range of selected lines.
@@ -137,6 +141,9 @@ namespace Docking.Widgets
          if (visible)
             widget.ShowAll();
          AddColumn(name, widget, tag, width);
+
+         // TODO: this is a hack
+         FindWidget.Visible = false;
       }
 
       void AddColumn(string name, Widget widget, int tag, int width)
@@ -465,14 +472,24 @@ namespace Docking.Widgets
             CurrentRowChanged(this, new VirtualListViewEventArgs(oldRow, CurrentRow));
       }
 
+      void UpdateFindBox()
+      {
+         if (!FindWidget.Visible)
+         {
+            FindWidget.Visible = true;
+         }
+         else
+         {
+            // testing
+            FindWidget.Visible = false;
+         }
+      }
+
       protected override bool OnKeyReleaseEvent(Gdk.EventKey evnt)
       {
          switch (evnt.Key)
          {
             case Gdk.Key.Shift_L:
-               SelectionMode = false;
-               return true;
-
             case Gdk.Key.Shift_R:
                SelectionMode = false;
                return true;
@@ -484,10 +501,16 @@ namespace Docking.Widgets
       {
          switch (evnt.Key)
          {
-            case Gdk.Key.Shift_L:
-               SelectionMode = true;
-               return true;
+            case Gdk.Key.F:
+            case Gdk.Key.f:
+               if ((evnt.State & Gdk.ModifierType.ControlMask) != 0)
+               {
+                  UpdateFindBox();
+                  return true;
+               }
+               break;
 
+            case Gdk.Key.Shift_L:
             case Gdk.Key.Shift_R:
                SelectionMode = true;
                return true;
