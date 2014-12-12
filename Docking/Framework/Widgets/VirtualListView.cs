@@ -39,7 +39,12 @@ namespace Docking.Widgets
          };
          var bc = (Box.BoxChild)vbox1[findwidget];
          bc.Position = 0;
-         FindWidget.Visible = false;
+         Find.Visible = false;
+
+         Find.Escaped += (o, e) =>
+         {
+            FindBoxInvisible();
+         };
       }
 
       ColumnControl mColumnControl;
@@ -86,7 +91,7 @@ namespace Docking.Widgets
       private int mRow;
 
       public void TriggerRepaint() { drawingarea.QueueDraw(); }
-      public Find FindWidget { get { return findwidget; } }
+      public Find Find { get { return findwidget; } }
 
       /// <summary>
       /// Get selection. Return the range of selected lines.
@@ -143,7 +148,7 @@ namespace Docking.Widgets
          AddColumn(name, widget, tag, width);
 
          // TODO: this is a hack
-         FindWidget.Visible = false;
+         Find.Visible = false;
       }
 
       void AddColumn(string name, Widget widget, int tag, int width)
@@ -472,16 +477,27 @@ namespace Docking.Widgets
             CurrentRowChanged(this, new VirtualListViewEventArgs(oldRow, CurrentRow));
       }
 
-      void UpdateFindBox()
+      void FindBoxInvisible()
       {
-         if (!FindWidget.Visible)
+         if (Find.Visible)
          {
-            FindWidget.Visible = true;
+            Find.Visible = false;
+            if (!HasFocus)
+               GrabFocus();
+         }
+      }
+
+      void FindBoxFlipVisible()
+      {
+         if (!Find.Visible)
+         {
+            Find.Visible = true;
+            if (!Find.HasFocus)
+               Find.GrabFocus();
          }
          else
          {
-            // testing
-            FindWidget.Visible = false;
+            FindBoxInvisible();
          }
       }
 
@@ -505,7 +521,7 @@ namespace Docking.Widgets
             case Gdk.Key.f:
                if ((evnt.State & Gdk.ModifierType.ControlMask) != 0)
                {
-                  UpdateFindBox();
+                  FindBoxFlipVisible();
                   return true;
                }
                break;

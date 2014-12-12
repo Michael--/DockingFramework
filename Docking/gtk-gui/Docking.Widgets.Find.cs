@@ -42,9 +42,11 @@ namespace Docking.Widgets
 			w1.Fill = false;
 			// Container child hbox1.Gtk.Box+BoxChild
 			this.entryFind = new global::Gtk.Entry ();
+			this.entryFind.CanDefault = true;
 			this.entryFind.CanFocus = true;
 			this.entryFind.Name = "entryFind";
 			this.entryFind.IsEditable = true;
+			this.entryFind.ActivatesDefault = true;
 			this.entryFind.InvisibleChar = '●';
 			this.hbox1.Add (this.entryFind);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.entryFind]));

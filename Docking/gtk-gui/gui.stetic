@@ -581,8 +581,10 @@
         <child>
           <widget class="Gtk.Entry" id="entryFind">
             <property name="MemberName" />
+            <property name="CanDefault">True</property>
             <property name="CanFocus">True</property>
             <property name="IsEditable">True</property>
+            <property name="ActivatesDefault">True</property>
             <property name="InvisibleChar">●</property>
           </widget>
           <packing>
