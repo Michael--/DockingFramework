@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(false)]
-   public partial class ScriptEditor : Component, IScript, ILocalizableComponent
+   public partial class ScriptEditor : Component, IScript, ILocalizableComponent, IPersistable
    {
       #region MAIN
 
@@ -32,7 +32,32 @@ namespace Docking.Components
 
          m_TextEditor.Document.LineChanged += (object sender, Mono.TextEditor.LineEventArgs e) =>
          {
+            // CompileScript(); // NOTE: a lot of compile calls occured on any text change, not really good
+         };
+
+         buttonOK.Clicked += (o, e) =>
+         {
             CompileScript();
+         };
+
+         vpaned1.ExposeEvent += (o, e) =>
+         {
+            if (mSetPositionOnlyOnce)
+            {
+               mSetPositionOnlyOnce = false;
+
+               // first calculate an useful position
+               if (VPanedPosition == 0)
+               {
+                  int width, height;
+                  this.GdkWindow.GetSize(out width, out height);
+                  VPanedPosition = height - 50;
+                  if (VPanedPosition <= 0)
+                     VPanedPosition = height;
+               }
+
+               vpaned1.Position = VPanedPosition;
+            }
          };
       }
 
@@ -149,12 +174,8 @@ namespace Docking.Components
       {
          base.Loaded(item);
 
-         mPersistence = (ScriptPersistence)ComponentManager.LoadObject("ScriptEditor", typeof(ScriptPersistence), item);
-         if (mPersistence == null)
-            mPersistence = new ScriptPersistence();
-
          // set vpaned position delayed when really possible, TODO: find event called only once, better as ExposeEvent
-         vpaned1.ExposeEvent += new Gtk.ExposeEventHandler(vpaned1_ExposeEvent);
+         vpaned1.Position = VPanedPosition;
 
          // Iterate over all loaded styles. TODO: user should select from available styles
          // foreach (string s in Mono.TextEditor.Highlighting.SyntaxModeService.Styles)
@@ -162,36 +183,7 @@ namespace Docking.Components
       }
 
       bool mSetPositionOnlyOnce = true;
-
-      ScriptPersistence mPersistence; // TODO early prototype - abolish, implement IPersistable instead!
-
-      void vpaned1_ExposeEvent(object o, Gtk.ExposeEventArgs args)
-      {
-         if (mSetPositionOnlyOnce)
-         {
-            mSetPositionOnlyOnce = false;
-
-            // first calculate an useful position
-            if (mPersistence.VPanedPosition == 0)
-            {
-               int width, height;
-               this.GdkWindow.GetSize(out width, out height);
-               mPersistence.VPanedPosition = height - 50;
-               if (mPersistence.VPanedPosition <= 0)
-                  mPersistence.VPanedPosition = height;
-            }
-
-            vpaned1.Position = mPersistence.VPanedPosition;
-         }
-      }
-
-      public override void Save()
-      {
-         base.Save();
-
-         mPersistence.VPanedPosition = vpaned1.Position;
-         ComponentManager.SaveObject("ScriptEditor", mPersistence, DockItem);
-      }
+      public int VPanedPosition { get; set; }
 
       public override bool IsCloseOK()
       {
@@ -199,6 +191,24 @@ namespace Docking.Components
          // When the user presses "Cancel", return false from this function to prevent the closing from happening.
          return true;
       }
+
+      #region IPersistable
+
+      void IPersistable.SaveTo(IPersistency persistency)
+      {
+         string instance = DockItem.Id.ToString();
+         VPanedPosition = vpaned1.Position;
+         persistency.SaveSetting(instance, "VPanedPosition", VPanedPosition);
+      }
+
+      void IPersistable.LoadFrom(IPersistency persistency)
+      {
+         string instance = DockItem.Id.ToString();
+         VPanedPosition = persistency.LoadSetting(instance, "VPanedPosition", VPanedPosition);
+      }
+
+      #endregion
+
 
       #region ILocalizable
 
@@ -208,13 +218,6 @@ namespace Docking.Components
       {}
       #endregion
 
-   }
-
-   [Serializable]
-   public class ScriptPersistence
-   {
-      public int VPanedPosition { get { return m_VPaned_Position; } set { m_VPaned_Position = value; } }
-      int m_VPaned_Position;
    }
 
    #region Starter / Entry Point

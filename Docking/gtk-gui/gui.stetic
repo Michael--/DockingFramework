@@ -410,9 +410,6 @@
         <property name="MemberName" />
         <property name="Spacing">6</property>
         <child>
-          <placeholder />
-        </child>
-        <child>
           <widget class="Gtk.VPaned" id="vpaned1">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
@@ -437,21 +434,62 @@
               </packing>
             </child>
             <child>
-              <widget class="Docking.Widgets.TextViewLocalized" id="textMessage">
+              <widget class="Gtk.HBox" id="hbox1">
                 <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="Editable">False</property>
-                <property name="Text" />
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Docking.Widgets.TextViewLocalized" id="textMessage">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Editable">False</property>
+                    <property name="Text" />
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.VBox" id="vbox1">
+                    <property name="MemberName" />
+                    <property name="Spacing">6</property>
+                    <child>
+                      <widget class="Gtk.Button" id="buttonOK">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Type">TextAndIcon</property>
+                        <property name="Icon">stock:gtk-apply Button</property>
+                        <property name="Label" translatable="yes" />
+                        <property name="UseUnderline">True</property>
+                      </widget>
+                      <packing>
+                        <property name="Position">0</property>
+                        <property name="AutoSize">True</property>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <placeholder />
+                    </child>
+                    <child>
+                      <placeholder />
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
               </widget>
             </child>
           </widget>
           <packing>
-            <property name="Position">1</property>
+            <property name="Position">0</property>
             <property name="AutoSize">False</property>
           </packing>
-        </child>
-        <child>
-          <placeholder />
         </child>
       </widget>
     </child>
