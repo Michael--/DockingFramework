@@ -86,6 +86,11 @@ namespace Docking.Components
       /// Gets the icon displayed on menu, the tab, ... default is no icon (null)
       /// </summary>
       Gdk.Pixbuf Icon { get; }
+
+      /// <summary>
+      /// Gets the license group name
+      /// </summary>
+      string LicenseGroup { get; }
    }
 
    /// <summary>
@@ -103,6 +108,8 @@ namespace Docking.Components
       public virtual Mode Options { get { return Mode.None; } }
 
       public virtual Gdk.Pixbuf Icon { get { return null; } }
+
+      public virtual string LicenseGroup { get { return null; } }
    }
 }
 
