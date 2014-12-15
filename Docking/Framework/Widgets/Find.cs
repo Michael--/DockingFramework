@@ -37,24 +37,12 @@ namespace Docking.Widgets
 
          buttonNext.Clicked += (s, e) =>
          {
-            if (Current < Matches - 1)
-            {
-               Current++;
-               UpdateStatus();
-               if (CurrentChanged != null)
-                  CurrentChanged(this, EventArgs.Empty);
-            }
+            MovePosition(1);
          };
 
          buttonPrev.Clicked += (s, e) =>
          {
-            if (Current > 0)
-            {
-               Current--;
-               UpdateStatus();
-               if (CurrentChanged != null)
-                  CurrentChanged(this, EventArgs.Empty);
-            }
+            MovePosition(-1);
          };
 
          buttonClear.Clicked += (s, e) =>
@@ -86,6 +74,18 @@ namespace Docking.Widgets
       /// </summary>
       public int Current { get; private set; }
 
+      private void MovePosition(int offset)
+      {
+         int newOffset = Math.Max(Math.Min(Current + offset, Matches - 1), 0);
+         if (newOffset != Current && newOffset >= 0 && newOffset < Matches)
+         {
+            Current = newOffset;
+            UpdateStatus();
+            if (CurrentChanged != null)
+               CurrentChanged(this, EventArgs.Empty);
+         }
+      }
+
       private void UpdateStatus()
       {
          if (Matches == 0)
@@ -115,6 +115,13 @@ namespace Docking.Widgets
             case Gdk.Key.Escape:
                if (Escaped != null)
                   Escaped(this, EventArgs.Empty);
+               return true;
+
+            case Gdk.Key.F3:
+               if ((evnt.State & Gdk.ModifierType.ShiftMask) != 0)
+                  MovePosition(-1);
+               else
+                  MovePosition(1);
                return true;
          }
 

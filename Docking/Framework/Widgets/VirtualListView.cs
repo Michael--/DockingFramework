@@ -45,6 +45,11 @@ namespace Docking.Widgets
          {
             FindBoxInvisible();
          };
+
+         Find.CurrentChanged += (o, e) =>
+         {
+            SelectionMode = false; // as a workaround to avoid selection with CTRL+F3
+         };
       }
 
       ColumnControl mColumnControl;
