@@ -3,8 +3,6 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8DDC0184-EBA8-4264-993D-E47173F12814}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Docking</RootNamespace>
@@ -47,14 +45,12 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="gdk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Drawing" />
     <Reference Include="Mono.Posix" />
     <Reference Include="pango-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Data.Linq" />
@@ -63,11 +59,9 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="glib-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="atk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
-      <Private>False</Private>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="IronPython.Modules">
@@ -288,6 +282,12 @@
     <EmbeddedResource Include="Framework\Manager\cm.py">
       <LogicalName>cm.py</LogicalName>
     </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Resources\arrow_down-16.png" />
+    <EmbeddedResource Include="Framework\Resources\arrow_left-16.png" />
+    <EmbeddedResource Include="Framework\Resources\arrow_right-16.png" />
+    <EmbeddedResource Include="Framework\Resources\arrow_up-16.png" />
+    <EmbeddedResource Include="Framework\Resources\control_eject-16.png" />
+    <EmbeddedResource Include="Framework\Resources\cross-16.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="IronPython\" />
