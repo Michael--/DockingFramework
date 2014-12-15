@@ -76,6 +76,7 @@ namespace Docking.Components
          AccelGroup = new AccelGroup();
          AddAccelGroup(AccelGroup);
 
+         LicenseGroup = new LicenseGroup() { DefaultState = Components.LicenseGroup.State.ENABLED };
          ComponentFinder = new Docking.Components.ComponentFinder();
 
          InitPythonEngine(pythonApplicationObjectName);
@@ -613,6 +614,9 @@ namespace Docking.Components
             if(cfi.MenuPath == null)
                continue;
 
+            if (LicenseGroup.IsDisabled(cfi.LicenseGroup))
+               continue;
+
             // the last name is the menu name, all others are menu/sub-menu names
             String[] m = cfi.MenuPath.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -799,6 +803,7 @@ namespace Docking.Components
 
       public DockFrame       DockFrame                { get; private set; }
       public ComponentFinder ComponentFinder          { get; private set; }
+      public LicenseGroup    LicenseGroup             { get; private set; }
       public static bool     PowerDown                { get; private set; }
       public Localization    Localization             { get; private set; }
 
@@ -1438,9 +1443,12 @@ namespace Docking.Components
             }
             if(!found)
             {
-               DockItem item = CreateComponent(cfi, false);
-               if(item!=null && cfi.HideOnCreate)
-                  item.Visible = false;
+               if (LicenseGroup.IsEnabled(cfi.LicenseGroup))
+               {
+                  DockItem item = CreateComponent(cfi, false);
+                  if (item != null && cfi.HideOnCreate)
+                     item.Visible = false;
+               }
             }
          }
 
@@ -1992,6 +2000,9 @@ namespace Docking.Components
 
       public DockItem CreateComponent(ComponentFactoryInformation cfi, bool initCalls)
       {
+         if (LicenseGroup.IsDisabled(cfi.LicenseGroup))
+            return null;
+
          String name = cfi.ComponentType.ToString();
 
          // Find already existing - potentially invisible - instances for activation.

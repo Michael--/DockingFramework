@@ -111,6 +111,7 @@
     <Compile Include="Framework\Interfaces\IPersistable.cs" />
     <Compile Include="Framework\Interfaces\IPersistency.cs" />
     <Compile Include="Framework\Interfaces\IScript.cs" />
+    <Compile Include="Framework\Manager\LicenseGroup.cs" />
     <Compile Include="Framework\Manager\Localization.cs" />
     <Compile Include="Framework\Widgets\LocalizedWidgets.cs" />
     <Compile Include="Framework\Widgets\Sheet.cs" />

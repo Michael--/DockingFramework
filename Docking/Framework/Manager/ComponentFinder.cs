@@ -228,6 +228,7 @@ namespace Docking.Components
       public Type   ComponentType  { get { return ComponentFactory.TypeOfInstance; } }
       public String Comment        { get { return ComponentFactory.Comment; } }
       public String MenuPath       { get { return ComponentFactory.MenuPath; } }
+      public String LicenseGroup   { get { return ComponentFactory.LicenseGroup; } }
 
       public bool   MultiInstance  { get { return (ComponentFactory.Options & Mode.MultiInstance )!=0; } }
       public bool   AutoCreate     { get { return (ComponentFactory.Options & Mode.AutoCreate    )!=0; } }
