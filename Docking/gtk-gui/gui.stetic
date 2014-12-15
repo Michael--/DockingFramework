@@ -556,7 +556,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Bin" id="Docking.Widgets.Find" design-size="451 27">
+  <widget class="Gtk.Bin" id="Docking.Widgets.Find" design-size="451 30">
     <property name="MemberName" />
     <property name="Events">KeyPressMask, KeyReleaseMask</property>
     <child>
@@ -567,8 +567,9 @@
           <widget class="Gtk.Button" id="buttonLast">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Type">TextOnly</property>
-            <property name="Label" translatable="yes">~</property>
+            <property name="Type">TextAndIcon</property>
+            <property name="Icon">resource:Docking.Framework.Resources.control_eject-16.png</property>
+            <property name="Label" translatable="yes" />
             <property name="UseUnderline">True</property>
           </widget>
           <packing>
@@ -609,8 +610,9 @@
           <widget class="Gtk.Button" id="buttonPrev">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Type">TextOnly</property>
-            <property name="Label" translatable="yes">&lt;</property>
+            <property name="Type">TextAndIcon</property>
+            <property name="Icon">resource:Docking.Framework.Resources.arrow_left-16.png</property>
+            <property name="Label" translatable="yes" />
             <property name="UseUnderline">True</property>
           </widget>
           <packing>
@@ -624,8 +626,9 @@
           <widget class="Gtk.Button" id="buttonNext">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Type">TextOnly</property>
-            <property name="Label" translatable="yes">&gt;</property>
+            <property name="Type">TextAndIcon</property>
+            <property name="Icon">resource:Docking.Framework.Resources.arrow_right-16.png</property>
+            <property name="Label" translatable="yes" />
             <property name="UseUnderline">True</property>
           </widget>
           <packing>
@@ -639,8 +642,9 @@
           <widget class="Gtk.Button" id="buttonClear">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Type">TextOnly</property>
-            <property name="Label" translatable="yes">*</property>
+            <property name="Type">TextAndIcon</property>
+            <property name="Icon">resource:Docking.Framework.Resources.cross-16.png</property>
+            <property name="Label" translatable="yes" />
             <property name="UseUnderline">True</property>
           </widget>
           <packing>
