@@ -161,7 +161,7 @@ namespace Docking
 
          btnDock = new ImageButton ();
          btnDock.Image = pixAutoHide;
-         btnDock.TooltipText = "Auto Hide";
+         btnDock.TooltipText = "Minimize"; // previous text "Auto Hide" was misleading
          btnDock.CanFocus = false;
 //       btnDock.WidthRequest = btnDock.HeightRequest = 17;
          btnDock.Clicked += OnClickDock;
@@ -245,7 +245,7 @@ namespace Docking
                btnDock.TooltipText = "Dock";
             } else {
                btnDock.Image = pixAutoHide;
-               btnDock.TooltipText = "Auto Hide";
+               btnDock.TooltipText = "Minimize"; // previous text "Auto Hide" was misleading
             }
          } else {
             btnDock.Image = null;
