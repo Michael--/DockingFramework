@@ -50,7 +50,6 @@ namespace Docking
       ImageButton btnClose;
       DockItem item;
       bool allowPlaceholderDocking;
-      bool mouseOver;
 
       static Gdk.Cursor fleurCursor = new Gdk.Cursor (Gdk.CursorType.Fleur);
 
@@ -237,21 +236,15 @@ namespace Docking
          btnClose.Visible = (item.Behavior & DockItemBehavior.CantClose) == 0;
          btnDock.Visible = (item.Behavior & DockItemBehavior.CantAutoHide) == 0;
 
-// SLohse: commented the "disappearing" button logic out. it was inconsistent. floating windows had them disappear, docked ones not. totally confusing. we want to always see them.
-//       if (active || mouseOver) {
-            if (btnClose.Image == null)
-               btnClose.Image = pixClose;
-            if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating) {
-               btnDock.Image = pixDock;
-               btnDock.TooltipText = "Dock";
-            } else {
-               btnDock.Image = pixAutoHide;
-               btnDock.TooltipText = "Minimize"; // previous text "Auto Hide" was misleading
-            }
-//       } else {
-//          btnDock.Image = null;
-//          btnClose.Image = null;
-//       }
+         if (btnClose.Image == null)
+            btnClose.Image = pixClose;
+         if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating) {
+            btnDock.Image = pixDock;
+            btnDock.TooltipText = "Dock";
+         } else {
+            btnDock.Image = pixAutoHide;
+            btnDock.TooltipText = "Minimize"; // previous text "Auto Hide" was misleading
+         }
       }
 
       bool tabPressed, tabActivated;
@@ -311,15 +304,13 @@ namespace Docking
 
       protected override bool OnEnterNotifyEvent (Gdk.EventCrossing evnt)
       {
-         mouseOver = true;
          UpdateBehavior ();
-         return base.OnEnterNotifyEvent (evnt);
+         return base.OnEnterNotifyEvent(evnt);
       }
 
       void OnLeave ()
       {
-         mouseOver = false;
-         UpdateBehavior ();
+         UpdateBehavior();
       }
 
       [GLib.ConnectBeforeAttribute]
