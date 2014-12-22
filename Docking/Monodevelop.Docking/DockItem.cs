@@ -461,6 +461,8 @@ namespace Docking
             SetRegionStyle (frame.GetRegionStyleForItem (this));
 
             floatingWindow = new DockFloatingWindow ((Window)frame.Toplevel, GetTitle ());
+            floatingWindow.DefaultWidth = 640;
+            floatingWindow.DefaultHeight = 480;
 
             VBox box = new VBox ();
             box.Show ();
