@@ -237,7 +237,8 @@ namespace Docking
          btnClose.Visible = (item.Behavior & DockItemBehavior.CantClose) == 0;
          btnDock.Visible = (item.Behavior & DockItemBehavior.CantAutoHide) == 0;
 
-         if (active || mouseOver) {
+// SLohse: commented the "disappearing" button logic out. it was inconsistent. floating windows had them disappear, docked ones not. totally confusing. we want to always see them.
+//       if (active || mouseOver) {
             if (btnClose.Image == null)
                btnClose.Image = pixClose;
             if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating) {
@@ -247,10 +248,10 @@ namespace Docking
                btnDock.Image = pixAutoHide;
                btnDock.TooltipText = "Minimize"; // previous text "Auto Hide" was misleading
             }
-         } else {
-            btnDock.Image = null;
-            btnClose.Image = null;
-         }
+//       } else {
+//          btnDock.Image = null;
+//          btnClose.Image = null;
+//       }
       }
 
       bool tabPressed, tabActivated;
