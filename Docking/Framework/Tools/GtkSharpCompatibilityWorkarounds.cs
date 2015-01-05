@@ -24,12 +24,12 @@ namespace Docking // TODO use a different namespace
 		
 		public static void SetSource(this Context context, Pattern pattern)
 		{
-			//throw new Exception("implement me");
+         context.Source = pattern;
 		}
 		
 		public static void Dispose(this Context context)
 		{
-			//throw new Exception("implement me");
+			context.Source = null;
 		}
 	}
 	
