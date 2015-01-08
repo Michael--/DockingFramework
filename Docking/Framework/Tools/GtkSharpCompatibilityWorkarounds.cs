@@ -24,12 +24,20 @@ namespace Docking // TODO use a different namespace
 		
 		public static void SetSource(this Context context, Pattern pattern)
 		{
+         #pragma warning disable 618
+         // warning CS0618: 'Cairo.Context.Source' is obsolete: 'Use GetSource/GetSource'
+         // the getter function GetSource() is not present in Ubuntu 12.04 + MonoDevelop 3.x
          context.Source = pattern;
+         #pragma warning restore 618
 		}
 		
 		public static void Dispose(this Context context)
 		{
+         #pragma warning disable 618
+         // warning CS0618: 'Cairo.Context.Source' is obsolete: 'Use GetSource/GetSource'
+         // the getter function GetSource() is not present in Ubuntu 12.04 + MonoDevelop 3.x
 			context.Source = null;
+         #pragma warning restore 618
 		}
 	}
 	
