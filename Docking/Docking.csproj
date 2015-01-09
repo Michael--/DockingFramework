@@ -113,6 +113,7 @@
     <Compile Include="Framework\Interfaces\IScript.cs" />
     <Compile Include="Framework\Manager\LicenseGroup.cs" />
     <Compile Include="Framework\Manager\Localization.cs" />
+    <Compile Include="Framework\Tools\MD5Helper.cs" />
     <Compile Include="Framework\Widgets\LocalizedWidgets.cs" />
     <Compile Include="Framework\Widgets\Sheet.cs" />
     <Compile Include="gtk-gui\generated.cs" />
