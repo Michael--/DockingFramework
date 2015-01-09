@@ -920,7 +920,7 @@ namespace Docking.Components
          return openedArchiveFiles > 0;
       }
 
-      public String OpenFolderDialog(string title)
+      public String OpenFolderDialog(string title, string startFolder = null)
       {
          String result = null;
 
@@ -928,33 +928,33 @@ namespace Docking.Components
                                               "Select".L(), ResponseType.Accept,
                                               "Cancel".L(), ResponseType.Cancel);
 
+         if(!String.IsNullOrEmpty(startFolder))
+            dlg.SetCurrentFolder(startFolder);
+
          if(RunFileChooserDialogLocalized(dlg, null) == (int) ResponseType.Accept)
-         {
             result = dlg.Filename;
-         }
 
          dlg.Destroy();
          return result;
       }
 
-      public String OpenFileDialog(string prompt, FileFilterExt filter = null)
+      public String OpenFileDialog(string prompt, FileFilterExt filter = null, string startFolder = null)
       {
          List<FileFilterExt> filters = new List<FileFilterExt>();
          if(filter!=null)
             filters.Add(filter);
-         return OpenFileDialog(prompt, filters);
+         return OpenFileDialog(prompt, filters, startFolder);
       }
 
-      public String OpenFileDialog(string title, List<FileFilterExt> filters, string startFolder= null)
+      public String OpenFileDialog(string title, List<FileFilterExt> filters, string startFolder = null)
       {         
          string result = null;
      
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
                                               "Open".L(),   ResponseType.Accept,
                                               "Cancel".L(), ResponseType.Cancel);
-         if (!String.IsNullOrEmpty(startFolder)) {
-            dlg.SetCurrentFolder( startFolder);
-         }
+         if(!String.IsNullOrEmpty(startFolder))
+            dlg.SetCurrentFolder(startFolder);
 
          if(RunFileChooserDialogLocalized(dlg, filters) == (int) ResponseType.Accept)
          {
@@ -966,21 +966,23 @@ namespace Docking.Components
          return result;
       }
 
-      public string[] OpenFilesDialog(string prompt, FileFilterExt filter = null)
+      public string[] OpenFilesDialog(string prompt, FileFilterExt filter = null, string startFolder = null)
       {
          List<FileFilterExt> filters = new List<FileFilterExt>();
          if(filter!=null)
             filters.Add(filter);
-         return OpenFilesDialog(prompt, filters);        
+         return OpenFilesDialog(prompt, filters, startFolder);        
       }
 
-      public string[] OpenFilesDialog(string title, List<FileFilterExt> filters)
+      public string[] OpenFilesDialog(string title, List<FileFilterExt> filters, string startFolder = null)
       {
          string[] result = null;
 
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
                                               "Open".L(),   ResponseType.Accept,
                                               "Cancel".L(), ResponseType.Cancel);
+         if(!String.IsNullOrEmpty(startFolder))
+            dlg.SetCurrentFolder(startFolder);
 
          dlg.SelectMultiple = true;        
 
