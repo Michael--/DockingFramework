@@ -61,88 +61,119 @@ namespace Docking.Tools
     #endregion
 
     public static class TreeModelExtensions
-    {                                         
-        // allows you to write:
-        //   foreach(TreeIter iter in model.Rows())
-        //   {
-        //      ...
-        //   }
-        // Sadly, we cannot write
-        //    public static RowEnumerator Rows { get { return new RowEnumerator(model); } }
-        // , because currently only extension FUNCTIONS are syntactically possible, not extension PROPERTIES.
-        public static RowEnumerator Rows(this TreeModel model) { return new RowEnumerator(model); }
+    {
+       // allows you to write:
+       //   foreach(TreeIter iter in model.Rows())
+       //   {
+       //      ...
+       //   }
+       // Sadly, we cannot write
+       //    public static RowEnumerator Rows { get { return new RowEnumerator(model); } }
+       // , because currently only extension FUNCTIONS are syntactically possible, not extension PROPERTIES.
+       public static RowEnumerator Rows(this TreeModel model) { return new RowEnumerator(model); }
 
-        // Analogous function to NColumns by GTK. It is strange that this function is missing there.
-        // Sadly, we cannot write
-        //    public static int NRows { get { return ... } }
-        // , because currently only extension FUNCTIONS are syntactically possible, not extension PROPERTIES.
-        public static int NRows(this TreeModel model)
-        {
-           int result = 0;
-           foreach(TreeIter iter in model.Rows())
-              result++;
-           return result;
-        }
+       // Analogous function to NColumns by GTK. It is strange that this function is missing there.
+       // Sadly, we cannot write
+       //    public static int NRows { get { return ... } }
+       // , because currently only extension FUNCTIONS are syntactically possible, not extension PROPERTIES.
+       public static int NRows(this TreeModel model)
+       {
+          int result = 0;
+          foreach (TreeIter iter in model.Rows())
+             result++;
+          return result;
+       }
 
-        // returns true if the model contains no rows
-        public static bool IsEmpty(this TreeModel model)
-        {
-           TreeIter iter;
-           return !model.GetIterFirst(out iter) || iter.Equals(TreeIter.Zero);
-        }
+       // returns true if the model contains no rows
+       public static bool IsEmpty(this TreeModel model)
+       {
+          TreeIter iter;
+          return !model.GetIterFirst(out iter) || iter.Equals(TreeIter.Zero);
+       }
 
-        // opposite of .IterNext() - expensive linear search :(
-        public static bool IterPrev(this TreeModel model, ref TreeIter iter)
-        {
-           TreeIter prev = TreeIter.Zero;
-           foreach(TreeIter i in model.Rows())
-           {
-              if(i.Equals(iter))
-              {
-                 iter = prev;
-                 return !iter.Equals(TreeIter.Zero);
-              }
-              prev = i;
-           }         
-           iter = TreeIter.Zero;
-           return false;
-        } 
+       // opposite of .IterNext() - expensive linear search :(
+       public static bool IterPrev(this TreeModel model, ref TreeIter iter)
+       {
+          TreeIter prev = TreeIter.Zero;
+          foreach (TreeIter i in model.Rows())
+          {
+             if (i.Equals(iter))
+             {
+                iter = prev;
+                return !iter.Equals(TreeIter.Zero);
+             }
+             prev = i;
+          }
+          iter = TreeIter.Zero;
+          return false;
+       }
 
-        public static bool GetIterLast(this TreeModel model, out TreeIter iter)
-        {
-            iter = TreeIter.Zero;
-            TreeIter result;
-            if(!model.GetIterFirst(out result))
-                return false;
-            iter = result;
-            while(model.IterNext(ref result))
-                iter = result;
-            return true;
-        }
+       public static bool GetIterLast(this TreeModel model, out TreeIter iter)
+       {
+          iter = TreeIter.Zero;
+          TreeIter result;
+          if (!model.GetIterFirst(out result))
+             return false;
+          iter = result;
+          while (model.IterNext(ref result))
+             iter = result;
+          return true;
+       }
 
-        public static List<TreeIter> Find(this TreeModel model, int column, object searchfor)
-        {
-           List<TreeIter> result = new List<TreeIter>();
-           foreach(TreeIter iter in model.Rows())
-              if(model.GetValue(iter, column).Equals(searchfor))
-                 result.Add(iter);
-           return result;
-        }
+       public static IEnumerable<TreeIter> Find(this TreeModel model, int column, object searchfor)
+       {
+          List<TreeIter> result = new List<TreeIter>();
+          foreach (TreeIter iter in model.Rows())
+             if (model.GetValue(iter, column).Equals(searchfor))
+                result.Add(iter);
+          return result;
+       }
 
-         public static string RowToString(this TreeModel model, Gtk.TreeIter iter, List<int> columnids)
-         {
-            StringBuilder result = new StringBuilder();
-            foreach(int i in columnids)
-            {            
-               if(result.Length>0)
-                  result.Append("\t");
-               object o = model.GetValue(iter, i);
-               if(o!=null)
-                  result.Append(o.ToString());
-            }
-            return result.ToString();
-         }
-   }
+       public static string RowToString(this TreeModel model, Gtk.TreeIter iter, List<int> columnids)
+       {
+          StringBuilder result = new StringBuilder();
+          foreach (int i in columnids)
+          {
+             if (result.Length > 0)
+                result.Append("\t");
+             object o = model.GetValue(iter, i);
+             if (o != null)
+                result.Append(o.ToString());
+          }
+          return result.ToString();
+       }
+
+       public static IEnumerable<TreeIter> Childs(this TreeModel model, TreeIter parent)
+       {
+          List<TreeIter> childs = new List<TreeIter>();
+
+          if (parent.Equals(TreeIter.Zero))
+          {
+             for (int i = 0; i < model.IterNChildren(); i++)
+             {
+                TreeIter iter;
+                if (model.IterNthChild(out iter, i))
+                {
+                   childs.Add(iter);
+                   childs.AddRange(model.Childs(iter));
+                }
+             }
+          }
+          else
+          {
+             for (int i = 0; i < model.IterNChildren(parent); i++)
+             {
+                TreeIter iter;
+                if (model.IterNthChild(out iter, parent, i))
+                {
+                   childs.Add(iter);
+                   childs.AddRange(model.Childs(iter));
+                }
+             }
+          }
+          return childs;
+       }
+    }
 
    public static class TreeViewExtensions
    {                                         
@@ -202,7 +233,7 @@ namespace Docking.Tools
          menu.Popup(null, null, null, 3, time);
       }
 
-       public static List<TreeViewColumn> VisibleColumns(this TreeView treeview)
+      public static List<TreeViewColumn> VisibleColumns(this TreeView treeview)
        {
           List<TreeViewColumn> result = new List<TreeViewColumn>();
           foreach(TreeViewColumn col in treeview.Columns)
