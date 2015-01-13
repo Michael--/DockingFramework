@@ -1,10 +1,57 @@
 ﻿using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Docking.Tools
 {
    public class StringTools
    {
+      public static string ShrinkPath(string path, int maxLength)
+      {
+         if (path.Length < maxLength)
+            return path;
+
+         var slash = Platform.IsWindows ? '\\' : '/';
+
+         var parts = new List<string>(path.Split(slash));
+
+         string start = parts[0];
+         if (parts.Count() > 1)
+         {
+            start += slash + parts[1];
+            parts.RemoveAt(1);
+         }
+         parts.RemoveAt(0);
+         string end = null;
+         if (parts.Count() > 0)
+         {
+            end = parts[parts.Count - 1];
+            parts.RemoveAt(parts.Count - 1);
+
+            parts.Insert(0, "...");
+            while (parts.Count > 1 &&
+              start.Length + end.Length + parts.Sum(p => p.Length) + parts.Count > maxLength)
+               parts.RemoveAt(parts.Count - 1);
+         }
+
+         var mid = "" + slash;
+         parts.ForEach(p => mid += p + slash);
+         string result;
+         if (end != null)
+            result = start + mid + end;
+         else
+            result = start;
+
+         if (result.Length > maxLength && maxLength > 5)
+         {
+            int l = maxLength / 2 - 1;
+            result = result.Substring(0, l) + "~" + result.Substring(result.Length - l);
+         }
+
+         return result;
+      }
+
       public static string StripHTMLTags(string s)
       {
           if(s==null)
