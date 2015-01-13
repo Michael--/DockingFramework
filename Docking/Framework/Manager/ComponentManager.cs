@@ -20,7 +20,6 @@ using Docking.Widgets;
 using Docking.Framework;
 using Gtk;
 using Docking.Helper;
-using Docking.Tools;
 
 
 namespace Docking.Components
