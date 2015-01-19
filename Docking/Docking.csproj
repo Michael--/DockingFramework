@@ -129,11 +129,10 @@
     <Compile Include="Framework\Tools\FileFilterExt.cs" />
     <Compile Include="Framework\Tools\StringTools.cs" />
     <Compile Include="Framework\Tools\LocalizationExtensions.cs" />
-    <Compile Include="Framework\Tools\TreeViewExtensions.cs" />
+    <Compile Include="Framework\Tools\GtkSharpExtensions.cs" />
     <Compile Include="Framework\Tools\WebClient2.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Framework\Tools\WidgetExtensions.cs" />
     <Compile Include="Framework\Tools\JobInformation.cs" />
     <Compile Include="Framework\Tools\TaskInformation.cs" />
     <Compile Include="Framework\Tools\WorkerThread.cs" />
