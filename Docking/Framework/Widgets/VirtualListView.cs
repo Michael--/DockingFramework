@@ -59,7 +59,7 @@ namespace Docking.Widgets
       /// Sets the get content delegate. Will be called for any content request.
       /// </summary>
       public ContentDelegate GetContentDelegate { private get; set; }
-      public delegate String ContentDelegate(int row, int column);
+      public delegate object ContentDelegate(int row, int column);
 
       public ColorDelegate GetColorDelegate { private get; set; }
       public delegate void ColorDelegate(int row, ref System.Drawing.Color background, ref System.Drawing.Color foreground);
@@ -322,13 +322,25 @@ namespace Docking.Widgets
                rect = new Gdk.Rectangle(rect.Left, rect.Top, xwidth + mColumnControl.GripperWidth, ConstantHeight);
                if (c == columns.Length - 1)
                   rect.Width = Math.Max(rect.Width, exposeRect.Right - rect.Left + 1);
-               String content = GetContentDelegate(row, columnIndex);
-               LineLayout.SetText(content);
-               win.DrawRectangle(backgound, true, rect);
-               dx += 2;
-               win.DrawLayout(text, dx, dy, LineLayout);
-               dx += xwidth + mColumnControl.GripperWidth - 2;
-               rect.Offset(xwidth + mColumnControl.GripperWidth, 0);
+               object content = GetContentDelegate(row, columnIndex);
+               if (content is Gdk.Pixbuf)
+               {
+                  Gdk.Pixbuf image = (Gdk.Pixbuf)content;
+                  win.DrawRectangle(backgound, true, rect);
+                  dx += 2;
+                  image.RenderToDrawable(win, text, 0, 0, dx, dy, image.Width, image.Height, Gdk.RgbDither.Normal, 0, 0);
+                  dx += xwidth + mColumnControl.GripperWidth - 2;
+                  rect.Offset(xwidth + mColumnControl.GripperWidth, 0);
+               }
+               else
+               {
+                  LineLayout.SetText(content.ToString());
+                  win.DrawRectangle(backgound, true, rect);
+                  dx += 2;
+                  win.DrawLayout(text, dx, dy, LineLayout);
+                  dx += xwidth + mColumnControl.GripperWidth - 2;
+                  rect.Offset(xwidth + mColumnControl.GripperWidth, 0);
+               }
             }
             hscrollRange = Math.Max(hscrollRange, dx + rect.Width);
             dy += ConstantHeight;
@@ -612,10 +624,10 @@ namespace Docking.Widgets
                   for (int c = 0; c < columns.Length; c++)
                   {
                      int columnIndex = columns[c].SortOrder;
-                     string columnContent = GetContentDelegate(i, columnIndex);
+                     object columnContent = GetContentDelegate(i, columnIndex);
                      if (c > 0)
                         result.Append(";");
-                     result.Append(columnContent);
+                     result.Append(columnContent.ToString());
                   }
                   result.Append("\n");
                }
