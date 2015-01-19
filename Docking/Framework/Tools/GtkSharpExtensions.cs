@@ -10,6 +10,15 @@ using System.Diagnostics;
 
 namespace Docking.Tools
 {
+    public enum TreeViewEventType
+    {
+       Added,         // new treeview entry has been added
+       Removed,       // an existing entry has been removed/deleted
+       Changed,       // content has been changed
+       Selected,      // treeview entry has been selected
+       UserDefined1,  // user defined, meaning depends on entry type
+    }
+
     #region IEnumerable<TreeIter>
 
     public class TreeIterEnumerator : IEnumerator<TreeIter>
