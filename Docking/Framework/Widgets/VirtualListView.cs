@@ -452,8 +452,12 @@ namespace Docking.Widgets
       /// Move Cursor to line
       /// </summary>
       /// <param name="index"></param>
-      public void MoveCursorToIndex(int index)
+      public void MoveCursorToIndex(int index, bool cancelSelectionMode = false)
       {
+         if (cancelSelectionMode)
+         {
+            SelectionMode = false;
+         }
          OffsetCursor(index - CurrentRow);
       }
 
