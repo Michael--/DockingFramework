@@ -686,7 +686,7 @@ namespace Docking.Widgets
          int[] gripper = GripperPositions();
          for (int i = 0; i < gripper.Length; i++)
          {
-            Gdk.Rectangle rect = new Gdk.Rectangle(gripper[i], 0, 5, TotalHeight);
+            Gdk.Rectangle rect = new Gdk.Rectangle(gripper[i] - GripperWidth, 0, GripperWidth, TotalHeight);
             if (rect.Contains(x, 0))
                return i;
          }
