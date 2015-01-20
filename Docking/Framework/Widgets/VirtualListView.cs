@@ -64,6 +64,9 @@ namespace Docking.Widgets
       public ColorDelegate GetColorDelegate { private get; set; }
       public delegate void ColorDelegate(int row, ref System.Drawing.Color background, ref System.Drawing.Color foreground);
 
+      public delegate void ItemClickedEventHandler(int row, int column);
+      public event ItemClickedEventHandler ItemClickedEvent;
+
       /// <summary>
       /// Gets the current row index
       /// </summary>
@@ -431,6 +434,26 @@ namespace Docking.Widgets
             OffsetCursor(row - CurrentRow);
             if (!HasFocus)
                GrabFocus();
+
+            if (ItemClickedEvent != null)
+            {
+               // genereate event ItemClicked(row, column)
+               ColumnControl.Column[] columns = mColumnControl.GetVisibleColumnsInDrawOrder();
+               int dx = -(int)hscrollbar1.Value;
+               for (int c = 0; c < columns.Length; c++)
+               {
+                  ColumnControl.Column column = columns[c];
+                  int columnIndex = column.SortOrder;
+                  int xwidth = column.Width + mColumnControl.GripperWidth;
+
+                  if (evnt.X >= dx && evnt.X <= dx + xwidth)
+                  {
+                     ItemClickedEvent(SelectedRow, c);
+                     break;
+                  }
+                  dx += xwidth;
+               }
+            }
          }
          return base.OnButtonPressEvent(evnt);
       }
