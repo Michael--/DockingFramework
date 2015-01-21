@@ -50,6 +50,8 @@ namespace Docking.Widgets
          {
             SelectionMode = false; // as a workaround to avoid selection with CTRL+F3
          };
+
+         drawingarea.ButtonPressEvent += drawingarea_ButtonPressEvent;
       }
 
       ColumnControl mColumnControl;
@@ -424,16 +426,11 @@ namespace Docking.Widgets
          menu.Popup (null, null, null, 3, time);
       }
 
-
-      protected override bool OnButtonPressEvent(Gdk.EventButton evnt)
+      void drawingarea_ButtonPressEvent(object o, ButtonPressEventArgs args)
       {
-         if(evnt.TriggersContextMenu())
+         if (args.Event.Button == 1)
          {
-            ShowDockPopupMenu(evnt.Time);
-         }
-         else if (evnt.Button == 1 && evnt.Type == Gdk.EventType.ButtonPress)
-         {
-            int row = (int)evnt.Y / ConstantHeight + (int)vscrollbar1.Value;
+            int row = (int)args.Event.Y / ConstantHeight + (int)vscrollbar1.Value;
             OffsetCursor(row - CurrentRow);
             if (!HasFocus)
                GrabFocus();
@@ -449,7 +446,7 @@ namespace Docking.Widgets
                   int columnIndex = column.SortOrder;
                   int xwidth = column.Width + mColumnControl.GripperWidth;
 
-                  if (evnt.X >= dx && evnt.X <= dx + xwidth)
+                  if (args.Event.X >= dx && args.Event.X <= dx + xwidth)
                   {
                      ItemClickedEvent(SelectedRow, c);
                      break;
@@ -457,6 +454,14 @@ namespace Docking.Widgets
                   dx += xwidth;
                }
             }
+         }
+      }
+
+      protected override bool OnButtonPressEvent(Gdk.EventButton evnt)
+      {
+         if (evnt.TriggersContextMenu())
+         {
+            ShowDockPopupMenu(evnt.Time);
          }
          return base.OnButtonPressEvent(evnt);
       }
