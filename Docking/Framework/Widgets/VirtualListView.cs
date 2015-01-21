@@ -53,7 +53,7 @@ namespace Docking.Widgets
       }
 
       ColumnControl mColumnControl;
-      VirtualListPersistenceList mPersistence;
+      Dictionary<int, ColumnPersistence> mColumnPersistence = new Dictionary<int, ColumnPersistence>();
 
       /// <summary>
       /// Sets the get content delegate. Will be called for any content request.
@@ -161,16 +161,10 @@ namespace Docking.Widgets
 
       void AddColumn(string name, Widget widget, int tag, int width)
       {
-         if (mPersistence != null)
+         ColumnPersistence p;
+         if (mColumnPersistence.TryGetValue(tag, out p))
          {
-            foreach (VirtualListPersistence p in mPersistence.Persistence)
-            {
-               if (p.Tag == tag)
-               {
-                  width = p.Width;
-                  break;
-               }
-            }
+            width = p.Width;
          }
          mColumnControl.AddColumn(name, widget, tag, width);
       }
@@ -226,33 +220,42 @@ namespace Docking.Widgets
          return 0;
       }
 
-      /// <summary>
-      /// Gets the persistence data as int array
-      /// </summary>
-      /// <returns>The persistence.</returns>
-      public void SavePersistence(DockItem item) // TODO early prototype - abolish, implement IPersistable instead!
+      #region IPersistable
+
+      public void SaveTo(IPersistency persistency, string instance)
       {
-         mPersistence = new VirtualListPersistenceList();
+         mColumnPersistence.Clear();
          ColumnControl.Column[] columns = mColumnControl.GetColumns();
-         foreach(ColumnControl.Column c in columns)
-         {
-            VirtualListPersistence p = new VirtualListPersistence();
-            p.Visible = c.Visible;
-            p.Width = c.Width;
-            p.Tag = c.Tag;
-            mPersistence.Persistence.Add(p);
-         }
-         ComponentManager.SaveObject("VirtualListView", mPersistence, this.DockItem);
+         foreach (ColumnControl.Column c in columns)
+            mColumnPersistence.Add(c.Tag, new ColumnPersistence(c.Visible, c.Width));
+
+         StringBuilder b = new StringBuilder();
+         foreach (var s in mColumnPersistence)
+            b.AppendFormat("[{0} {1} {2}]", s.Key, s.Value.Visible ? 1 : 0, s.Value.Width);
+
+         persistency.SaveSetting(instance, "Columns", b.ToString());
       }
 
-      /// <summary>
-      /// Sets the persistence previously got with GetPersistence
-      /// </summary>
-      /// <param name="data">Data.</param>
-      public void LoadPersistence(DockItem item)
+      public void LoadFrom(IPersistency persistency, string instance)
       {
-         mPersistence = (VirtualListPersistenceList)ComponentManager.LoadObject("VirtualListView", typeof(VirtualListPersistenceList), item);
+         mColumnPersistence.Clear();
+         var columns = persistency.LoadSetting(instance, "Columns", "");
+         var sc = columns.Split(new char[] { '[', ']' }, StringSplitOptions.RemoveEmptyEntries);
+
+         foreach (var c in sc)
+         {
+            var v = c.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (v.Length >= 3)
+            {
+               int tag, visible, width;
+               if (int.TryParse(v[0], out tag) && int.TryParse(v[1], out visible) && int.TryParse(v[2], out width))
+                  mColumnPersistence.Add(tag, new ColumnPersistence(visible != 0, width));
+            }
+         }
       }
+
+      #endregion
+
 
       private Pango.Layout GetLayout()
       {
@@ -979,19 +982,15 @@ namespace Docking.Widgets
          }
       }
 
-      [Serializable()]
-      public class VirtualListPersistence
+      public class ColumnPersistence
       {
-         public int Tag { get; set; }
+         public ColumnPersistence(bool visible, int width)
+         {
+            Visible = visible;
+            Width = width;
+         }
 
-         public bool Visible { get; set; }
-
-         public int Width { get; set; }
-      }
-
-      [Serializable]
-      public class VirtualListPersistenceList
-      {
-         public List<VirtualListPersistence> Persistence = new List<VirtualListPersistence>();
+         public bool Visible { get; private set; }
+         public int Width { get; private set; }
       }
    }
