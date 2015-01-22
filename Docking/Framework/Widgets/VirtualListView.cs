@@ -417,19 +417,14 @@ namespace Docking.Widgets
             item.Tag = c;
             item.Activated += (object sender, EventArgs e) => 
             {
-               TaggedLocalizedCheckedMenuItem it = sender as TaggedLocalizedCheckedMenuItem;
-               ColumnControl.Column ct = it.Tag as ColumnControl.Column;
-               // TODO: change column visibility, recalculate column control and redraw all
-
+               var itm = sender as TaggedLocalizedCheckedMenuItem;
+               var ct = itm.Tag as ColumnControl.Column;
                ct.Visible = !ct.Visible;
-               ct.ColumnControl.ArangeColumns();
+               mColumnControl.ArangeColumns();
                drawingarea.QueueDraw();
-               // ct.ColumnControl.SetColumnWidth(c.Tag, widget, c.Width + (ct.Visible ? 100 : 0));
             };
             menu.Add(item);
          }
-
-         
          
          menu.ShowAll ();
          menu.Popup (null, null, null, 3, time);
@@ -855,7 +850,7 @@ namespace Docking.Widgets
             if (kvp.Key.Visible)
                offset += kvp.Value.Width + GripperWidth;
 
-         Column column = new Column(this, name, widget, tag, width, min_width) { SortOrder = mColumns.Count, X = offset };
+         Column column = new Column(name, widget, tag, width, min_width) { SortOrder = mColumns.Count, X = offset };
          mColumns.Add(widget, column);
          base.Put(widget, offset, TopOffset);
          widget.SizeAllocated += (o, args) =>
@@ -969,9 +964,8 @@ namespace Docking.Widgets
 
       public class Column
       {
-         public Column(ColumnControl cc, string name, Widget w, int tag, int width, int minWidth)
+         public Column(string name, Widget w, int tag, int width, int minWidth)
          {
-            ColumnControl = cc;
             Initialized = false;
             Name = name;
             Widget = w;
@@ -980,7 +974,6 @@ namespace Docking.Widgets
             MinWidth = minWidth;
          }
 
-         public ColumnControl ColumnControl { get; private set; }
          public bool Initialized { get; set; }
          public string Name { get; set; }
          public Widget Widget { get; set; }
