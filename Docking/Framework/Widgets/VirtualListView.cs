@@ -228,8 +228,8 @@ namespace Docking.Widgets
       public void SaveTo(IPersistency persistency, string instance)
       {
          mColumnPersistence.Clear();
-         ColumnControl.Column[] columns = mColumnControl.GetColumns();
-         foreach (ColumnControl.Column c in columns)
+         var columns = mColumnControl.GetColumns();
+         foreach (var c in columns)
             mColumnPersistence.Add(c.Tag, new ColumnPersistence(c.Visible, c.Width));
 
          StringBuilder b = new StringBuilder();
@@ -801,17 +801,15 @@ namespace Docking.Widgets
             this.Move(widget, c.X - mCurrentScollOffset, TopOffset); // move to same position, helper to redraw parent
 
             // move all following
-            foreach (KeyValuePair<Widget, Column> kvp in mColumns)
+            for (int i = index + 1; i < mColumns.Count; i++)
             {
+               var kvp = mColumns.ElementAt(i);
                c = kvp.Value;
-               if (c.Tag >= index + 1)
+               if (c.Visible)
                {
-                  if (c.Visible)
-                  {
-                     widget = kvp.Key;
-                     c.X += dx;
-                     this.Move(widget, c.X - mCurrentScollOffset, TopOffset);
-                  }
+                  widget = kvp.Key;
+                  c.X += dx;
+                  this.Move(widget, c.X - mCurrentScollOffset, TopOffset);
                }
             }
          }
@@ -882,14 +880,13 @@ namespace Docking.Widgets
       IEnumerable<KeyValuePair<int, int>> GripperPositions()
       {
          List<KeyValuePair<int, int>> gripper = new List<KeyValuePair<int,int>>();
-         foreach (KeyValuePair<Widget, Column> kvp in mColumns)
+
+         for (int i = 0; i < mColumns.Count; i++)
          {
+            var kvp = mColumns.ElementAt(i);
             Widget w = kvp.Key;
-            Column c = kvp.Value;
             if (w.Visible)
-            {
-               gripper.Add(new KeyValuePair<int, int>(c.Tag, w.Allocation.Right + 3));
-            }
+               gripper.Add(new KeyValuePair<int, int>(i, w.Allocation.Right + 3));
          }
          return gripper;
       }
@@ -911,12 +908,9 @@ namespace Docking.Widgets
          }
       }
 
-      public Column[] GetColumns()
+      public IEnumerable<Column> GetColumns()
       {
-         List<Column> c = new List<Column>();
-         foreach (KeyValuePair<Widget, Column> kvp in mColumns)
-            c.Add(kvp.Value);
-         return c.ToArray();
+         return mColumns.Values;
       }
 
       int mCurrentScollOffset = 0;
@@ -987,23 +981,14 @@ namespace Docking.Widgets
          }
 
          public ColumnControl ColumnControl { get; private set; }
-
          public bool Initialized { get; set; }
-
          public string Name { get; set; }
-
          public Widget Widget { get; set; }
-
          public int Tag { get; set; }
-
          public int SortOrder { get; set; }
-
          public int X { get; set; }
-
          public int Width { get; set; }
-
          public int MinWidth { get; set; }
-
          public bool Visible { get { return Widget.Visible; } set { Widget.Visible = value; } }
       }
    }
