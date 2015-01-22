@@ -667,7 +667,10 @@ namespace Docking.Widgets
                      object columnContent = GetContentDelegate(i, columnIndex);
                      if (c > 0)
                         result.Append(";");
-                     result.Append(columnContent.ToString());
+                     if (columnContent is Gdk.Pixbuf)
+                        result.Append("*");
+                     else
+                        result.Append(columnContent.ToString());
                   }
                   result.Append("\n");
                }
