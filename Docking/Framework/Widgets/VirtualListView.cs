@@ -168,6 +168,7 @@ namespace Docking.Widgets
          if (mColumnPersistence.TryGetValue(tag, out p))
          {
             width = p.Width;
+            widget.Visible = p.Visible;
          }
          mColumnControl.AddColumn(name, widget, tag, width);
       }
