@@ -457,7 +457,7 @@ namespace Docking.Widgets
 
                   if (args.Event.X >= dx && args.Event.X <= dx + xwidth)
                   {
-                     ItemClickedEvent(SelectedRow, c);
+                     ItemClickedEvent(SelectedRow, column.Tag);
                      break;
                   }
                   dx += xwidth;
