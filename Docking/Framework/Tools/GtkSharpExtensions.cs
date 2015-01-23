@@ -72,6 +72,19 @@ namespace Docking.Tools
 
     public static class GtkSharpExtensions
     {
+       public static void FillWithTexture(this Cairo.Context context, Gdk.Pixbuf pixbuf, double x, double y)
+       {
+          Gdk.CairoHelper.SetSourcePixbuf(context, pixbuf, x, y);
+          #pragma warning disable 618
+          // warning CS0618: 'Cairo.Context.Source' is obsolete: 'Use GetSource/GetSource'
+          // the getter function GetSource() is not present in Ubuntu 12.04 + MonoDevelop 3.x
+          Cairo.Pattern p = context.Source;
+          #pragma warning restore 618
+          (p as Cairo.SurfacePattern).Extend = Cairo.Extend.Repeat;
+          context.Fill();
+          p.Dispose();
+       }
+
        // allows you to write:
        //   foreach(TreeIter iter in model.Rows())
        //   {
