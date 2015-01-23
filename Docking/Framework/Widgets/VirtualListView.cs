@@ -25,7 +25,7 @@ namespace Docking.Widgets
          SelectionMode = false;
          DocumentEnd = true;
 
-         mColumnControl = new ColumnControl();
+         mColumnControl = new ColumnControl(this);
          vbox1.Add(mColumnControl);
 
          Gtk.Box.BoxChild boxChild = ((Gtk.Box.BoxChild)(this.vbox1[mColumnControl]));
@@ -67,8 +67,19 @@ namespace Docking.Widgets
       public ColorDelegate GetColorDelegate { private get; set; }
       public delegate void ColorDelegate(int row, ref System.Drawing.Color background, ref System.Drawing.Color foreground);
 
-      public delegate void ItemClickedEventHandler(int row, int column);
+      // click a element at row/column
+      public delegate void ItemClickedEventHandler(ButtonPressEventArgs args, int row, int column);
       public event ItemClickedEventHandler ItemClickedEvent;
+
+      // click a header at column
+      public delegate void HeaderClickedEventHandler(ButtonPressEventArgs args, int column);
+      public event HeaderClickedEventHandler HeaderClickedEvent;
+
+      public void CallHeaderClickedEvent(ButtonPressEventArgs args, int column)
+      {
+         if (HeaderClickedEvent != null)
+            HeaderClickedEvent(args, column);
+      }
 
       /// <summary>
       /// Gets the current row index
@@ -439,25 +450,25 @@ namespace Docking.Widgets
             OffsetCursor(row - CurrentRow);
             if (!HasFocus)
                GrabFocus();
+         }
 
-            if (ItemClickedEvent != null)
+         if (ItemClickedEvent != null)
+         {
+            // genereate event ItemClicked(row, column)
+            ColumnControl.Column[] columns = mColumnControl.GetVisibleColumnsInDrawOrder();
+            int dx = -(int)hscrollbar1.Value;
+            for (int c = 0; c < columns.Length; c++)
             {
-               // genereate event ItemClicked(row, column)
-               ColumnControl.Column[] columns = mColumnControl.GetVisibleColumnsInDrawOrder();
-               int dx = -(int)hscrollbar1.Value;
-               for (int c = 0; c < columns.Length; c++)
-               {
-                  ColumnControl.Column column = columns[c];
-                  int columnIndex = column.SortOrder;
-                  int xwidth = column.Width + mColumnControl.GripperWidth;
+               ColumnControl.Column column = columns[c];
+               int columnIndex = column.SortOrder;
+               int xwidth = column.Width + mColumnControl.GripperWidth;
 
-                  if (args.Event.X >= dx && args.Event.X <= dx + xwidth)
-                  {
-                     ItemClickedEvent(SelectedRow, column.Tag);
-                     break;
-                  }
-                  dx += xwidth;
+               if (args.Event.X >= dx && args.Event.X <= dx + xwidth)
+               {
+                  ItemClickedEvent(args, SelectedRow, column.Tag);
+                  break;
                }
+               dx += xwidth;
             }
          }
       }
@@ -699,8 +710,9 @@ namespace Docking.Widgets
 
    public class ColumnControl : Gtk.Fixed, ILocalizableWidget
    {
-      public ColumnControl()
+      public ColumnControl(VirtualListView view)
       {
+         mView = view;
          GripperWidth = 8;
 
          this.HasWindow = false;
@@ -738,6 +750,17 @@ namespace Docking.Widgets
 
       void TheButtonPressEvent(object o, ButtonPressEventArgs args)
       {
+         for (int i = 0; i < mColumns.Count; i++)
+         {
+            var kvp = mColumns.ElementAt(i);
+            Widget w = kvp.Key;
+            if (w.Visible && w.Allocation.Contains(new Gdk.Point((int)args.Event.X, w.Allocation.Top)))
+            {
+               mView.CallHeaderClickedEvent(args, i);
+               break;
+            }
+         }
+
          if (args.Event.Button == LEFT_MOUSE_BUTTON && DragGripper < 0)
          {
             DragGripper = HitGripper((int)args.Event.X);
@@ -835,6 +858,7 @@ namespace Docking.Widgets
 
       public Dictionary<Widget, Column> mColumns = new Dictionary<Widget, Column>();
       public ColumnChangedEventHandler ColumnChanged;
+      private VirtualListView mView;
 
       /// <summary>
       /// </summary>
