@@ -412,11 +412,6 @@ namespace Docking.Widgets
       {
          CurrentKeyboardModifier = evnt.State;
          CurrentButton = evnt.Button;
-
-         if(evnt.Button==LEFT_MOUSE_BUTTON)
-         {
-            GrabFocus();
-         }
          return base.OnButtonPressEvent(evnt);
       }
 
