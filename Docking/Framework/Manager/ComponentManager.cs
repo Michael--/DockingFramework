@@ -152,7 +152,7 @@ namespace Docking.Components
       protected void AppendMenuItem(String path, MenuItem item)
       {
          Menu menu = FindMenu(path);
-         if(menu!=null)
+         if (menu != null)
             menu.Append(item);
       }
 
@@ -581,6 +581,8 @@ namespace Docking.Components
          InstallQuitMenu();
          InstallEditMenu();
 
+         // get all menu entries first
+         List<KeyValuePair<string, TaggedLocalizedImageMenuItem>> menu = new List<KeyValuePair<string, TaggedLocalizedImageMenuItem>>();
          foreach(ComponentFactoryInformation cfi in ComponentFinder.ComponentInfos)
          {
             if(cfi.MenuPath == null)
@@ -612,8 +614,14 @@ namespace Docking.Components
             if(pb != null)
                item.Image = new Image(pb);
             item.Activated += ComponentHandleActivated;
-            AppendMenuItem(builder.ToString(), item);
+
+            menu.Add(new KeyValuePair<string, TaggedLocalizedImageMenuItem>(builder.ToString(), item));
          }
+
+         // after collecting sort by path and name before add to menue
+         menu.Sort((p1, p2) => (p1.Key + p1.Value.LabelText).CompareTo(p2.Key + p2.Value.LabelText));
+         foreach (var kvp in menu)
+            AppendMenuItem(kvp.Key, kvp.Value);
          MenuBar.ShowAll();
       }
 

@@ -349,6 +349,15 @@ namespace Docking.Widgets
       {}
 
       public System.Object Tag { get; set; }
+
+      public String LabelText
+      {
+         get
+         {
+            Label l = this.Child as Label;
+            return l.Text;
+         }
+      }
    }
 
    public class TaggedLocalizedImageMenuItem : TaggedImageMenuItem, ILocalizableWidget
