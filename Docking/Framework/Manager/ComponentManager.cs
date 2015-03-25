@@ -577,6 +577,7 @@ namespace Docking.Components
       protected void AddComponentMenus()
       {
          InstallFileOpenMenu();
+         InstallFileSaveConfigMenu();
          InstallExportMenu();
          InstallQuitMenu();
          InstallEditMenu();
@@ -818,6 +819,28 @@ namespace Docking.Components
          AppendMenuItem("File", menuItem);
       }
 
+      void InstallFileSaveConfigMenu()
+      {
+         TaggedLocalizedImageMenuItem menuItem = new TaggedLocalizedImageMenuItem("Save Config...");
+         menuItem.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.File-16.png"));
+         menuItem.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.S, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
+         menuItem.Activated += (sender, e) =>
+         {
+            string filename = SaveFileDialog("Save Config...", new List<FileFilterExt>()
+            {
+               new FileFilterExt("*.xml", "Config file")
+            }, ConfigurationFilename);
+
+            if (filename != null)
+            {
+               ConfigurationFilename = filename;
+               SaveConfigurationFile();
+            }
+         };
+         AppendMenuItem("File", menuItem);
+      }
+
+
       public bool OpenFile(string filename, object archiveHandle = null)
       {
          if (archiveHandle == null && Directory.Exists(filename))
@@ -987,21 +1010,26 @@ namespace Docking.Components
          AppendMenuItem("File", menuItem);
       }
 
-      public String SaveFileDialog(string prompt, FileFilterExt filter = null)
+      public String SaveFileDialog(string prompt, FileFilterExt filter = null, string currentFilename = null)
       {
          List<FileFilterExt> filters = new List<FileFilterExt>();
          if(filter!=null)
             filters.Add(filter);
-         return SaveFileDialog(prompt, filters);        
+         return SaveFileDialog(prompt, filters, currentFilename);        
       }
 
-      public String SaveFileDialog(string title, List<FileFilterExt> filters = null)
+      public String SaveFileDialog(string title, List<FileFilterExt> filters = null, string currentFilename = null)
       {
          string result = null;
 
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Save,
                                               "Save".L(),   ResponseType.Accept,
                                               "Cancel".L(), ResponseType.Cancel);
+         if (currentFilename != null)
+         {
+            dlg.SetCurrentFolder(System.IO.Path.GetDirectoryName(currentFilename));
+            dlg.SetFilename(currentFilename);
+         }
 
          if(RunFileChooserDialogLocalized(dlg, filters) == (int) ResponseType.Accept)
          {
@@ -1343,8 +1371,6 @@ namespace Docking.Components
                FileShare.None // open the file exclusively for writing, i.e., prevent other instances of us from interfering
             ));
          }
-
-         ComponentsRemove();
       }
 
       private void SaveDockFrameLayoutsToXmlConfigurationObject()
@@ -1581,6 +1607,7 @@ namespace Docking.Components
          {
             SavePersistency();
             SaveConfigurationFile();
+            ComponentsRemove();
          }
 
          foreach(DockItem item in DockFrame.GetItems())
