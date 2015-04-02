@@ -108,6 +108,13 @@ namespace Docking.Widgets
       protected VirtualListView() : base() {}
       public VirtualListView(IntPtr raw) : base(raw) {}
    }
+
+	[System.ComponentModel.ToolboxItem (true)]
+	public partial class Find : Gtk.Bin
+   {
+      protected Find() : base() {}
+      public Find(IntPtr raw) : base(raw) {}
+   }
 }
 
 // TODO adjust namespace?
