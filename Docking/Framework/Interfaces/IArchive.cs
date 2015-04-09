@@ -12,5 +12,7 @@ namespace Docking.Components
       object Open(string filename);
       void Close(object handle);
       string Extract(object handle, string filename);
+      byte[] ExtractToBuffer(object handle, string filename, long size = long.MaxValue);
+      long FileLength(object handle, string filename);
    }
 }
