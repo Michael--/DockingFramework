@@ -118,5 +118,10 @@ namespace Docking.Tools
 
          return "unknown";
       }
+
+      public static string AdjustDirectorySeparators(string filename)
+      {
+         return Platform.IsWindows ? filename.Replace('/', '\\') : filename.Replace('\\', '/');
+      }
    }
 }

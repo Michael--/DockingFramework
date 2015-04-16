@@ -390,7 +390,7 @@ namespace Docking.Components
          if(string.IsNullOrEmpty(filename))
             return;
 
-         string filename_normalized = Platform.IsWindows ? filename.Replace('/', '\\') : filename;
+         string filename_normalized = Platform.AdjustDirectorySeparators(filename);
 
          RemoveRecentFile(filename_normalized, false);
          var filename_shortened = StringTools.ShrinkPath(filename_normalized, 80);
