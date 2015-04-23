@@ -1405,7 +1405,7 @@ namespace Docking.Components
          mComponents.Add(o);
          if(mInitialLoadOfComponentsCompleted)
          {
-            foreach(object item in mComponents)
+            foreach(var item in mComponents)
             {
                if(item is Component)
                   (item as Component).ComponentAdded(o);
@@ -2066,16 +2066,18 @@ namespace Docking.Components
          // call initialization of new created component
          if(initCalls)
          {
-            if(item.Content is Component)
-               (item.Content as Component).Loaded(item);
+            if (item.Content is Component)
+            {
+               var component = item.Content as Component;
+               component.Loaded(item);
+               AddComponent(component);
+               component.InitComplete();
+            }
 
-            if(item.Content is Component)
-               AddComponent(item.Content);
-
-            if(item.Content is IPropertyViewer)
+            if (item.Content is IPropertyViewer)
                mPropertyInterfaces.Add(item.Content as IPropertyViewer);
 
-            if(item.Content is IScript)
+            if (item.Content is IScript)
                mScriptInterfaces.Add(item.Content as IScript);
          }
          return item;
