@@ -589,7 +589,7 @@ namespace Docking.Components
             if(cfi.MenuPath == null)
                continue;
 
-            if (LicenseGroup.IsDisabled(cfi.LicenseGroup))
+            if (!LicenseGroup.IsEnabled(cfi.LicenseGroup))
                continue;
 
             // the last name is the menu name, all others are menu/sub-menu names
@@ -2009,7 +2009,7 @@ namespace Docking.Components
 
       public DockItem CreateComponent(ComponentFactoryInformation cfi, bool initCalls)
       {
-         if (LicenseGroup.IsDisabled(cfi.LicenseGroup))
+         if (!LicenseGroup.IsEnabled(cfi.LicenseGroup))
             return null;
 
          String name = cfi.ComponentType.ToString();
@@ -2193,6 +2193,9 @@ namespace Docking.Components
 
          ComponentFactoryInformation cfi = ComponentFinder.FindComponent(typename);
          if(cfi == null)
+            return null;
+
+         if (!LicenseGroup.IsEnabled(cfi.LicenseGroup))
             return null;
 
          return CreateItem(cfi, id);

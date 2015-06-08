@@ -19,7 +19,7 @@ namespace Docking.Components
          ENABLED,    // group is registered as enabled
       }
 
-      public State GetState(string group)
+      private State GetState(string group)
       {
          State result;
          lock (m_Groups)
@@ -27,25 +27,34 @@ namespace Docking.Components
             if (group != null && m_Groups.TryGetValue(group, out result))
                return result;
          }
-         return DefaultState;
+         return State.NONE;
       }
 
-      public bool IsEnabled(string group)
+      /// <summary>
+      /// return true if any group in given string is enabled
+      /// </summary>
+      public bool IsEnabled(string groups)
       {
-         return GetState(group) == State.ENABLED;
+         if (groups != null)
+         {
+            foreach (var s in groups.Split(new char[] { '|', ' ', '\t', ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+               if (GetState(s) == State.ENABLED)
+                  return true;
+            }
+         }
+         return DefaultState == State.ENABLED;
       }
 
-      public bool IsDisabled(string group)
-      {
-         return !IsEnabled(group);
-      }
-
+      /// <summary>
+      /// Enable/Disable a group
+      /// </summary>
       public void SetGroup(string group, bool enabled)
       {
-         State result;
          lock (m_Groups)
          {
             // change existing or add new
+            State result;
             if (m_Groups.TryGetValue(group, out result))
                m_Groups[group] = enabled ? State.ENABLED : State.DISABLED;
             else

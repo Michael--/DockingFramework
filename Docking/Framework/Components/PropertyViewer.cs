@@ -82,6 +82,7 @@ namespace Docking.Components
         public override String MenuPath { get { return @"View\Infrastructure\Properties"; } }
         public override String Comment { get { return "Show selected Properties"; } }
         public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource ("Docking.Framework.Resources.PropertyViewer-16.png"); } }
+        public override string LicenseGroup { get { return "default"; } }
     }
     #endregion
 }
