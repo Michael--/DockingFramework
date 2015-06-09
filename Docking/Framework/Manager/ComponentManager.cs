@@ -121,7 +121,7 @@ namespace Docking.Components
          ToolBar = tb;
       }
 
-      public Menu FindMenu(String path)
+      public Menu FindMenu(String path, bool createIfNotExist)
       {
          // the last name is the menu name, all others are menu/sub-menu names
          String[] m = path.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
@@ -134,9 +134,14 @@ namespace Docking.Components
          System.Collections.IEnumerable children = MenuBar.Children;
          for(int i = 0; i < m.Length; i++)
          {
-            foundmenu = SearchOrCreateMenu(m[i], menuShell, children);
-            children = foundmenu.Children;
-            menuShell = foundmenu;
+            foundmenu = SearchMenu(m[i], menuShell, children);
+            if (foundmenu == null && createIfNotExist)
+               foundmenu = CreateMenu(m[i], menuShell);
+            if (foundmenu != null)
+            {
+               children = foundmenu.Children;
+               menuShell = foundmenu;
+            }
          }
 
          return foundmenu;
@@ -151,7 +156,7 @@ namespace Docking.Components
 
       protected void AppendMenuItem(String path, MenuItem item)
       {
-         Menu menu = FindMenu(path);
+         Menu menu = FindMenu(path, true);
          if (menu != null)
             menu.Append(item);
       }
@@ -429,7 +434,7 @@ namespace Docking.Components
 
      private void UpdateRecentFilesMenu()
      {
-         Menu filemenu = FindMenu("File");
+         Menu filemenu = FindMenu("File", true);
 
          List<Widget> oldstuff = new List<Widget>();
          oldstuff.AddRange(filemenu.Children);
@@ -626,7 +631,7 @@ namespace Docking.Components
          MenuBar.ShowAll();
       }
 
-      private Menu SearchOrCreateMenu(String name, MenuShell menuShell, System.Collections.IEnumerable children)
+      private Menu SearchMenu(String name, MenuShell menuShell, System.Collections.IEnumerable children)
       {
          // 1st search menu & return if existing
          foreach(MenuItem mi in children)
@@ -659,7 +664,12 @@ namespace Docking.Components
                return mi.Submenu as Menu;
          }
 
-         // 2nd append new menu
+         return null;
+      }
+
+      private Menu CreateMenu(String name, MenuShell menuShell)
+      {
+         // append new menu
          // todo: currently append at the end, may a dedicated position desired
          Menu menu = new Menu();
          MenuItem menuItem = new TaggedLocalizedMenuItem(name);
