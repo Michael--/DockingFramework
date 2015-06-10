@@ -55,7 +55,7 @@ namespace Docking.Components
             Initialize();
         }
 
-        #region ILocalizable
+        #region ILocalizableComponent
 
         string ILocalizableComponent.Name { get { return "Activities"; } }
 

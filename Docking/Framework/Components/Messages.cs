@@ -42,7 +42,7 @@ namespace Docking.Components
 
         #endregion
 
-        #region ILocalizable
+        #region ILocalizableComponent
 
         string ILocalizableComponent.Name { get { return "Messages"; } }
 

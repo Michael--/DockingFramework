@@ -177,7 +177,7 @@ namespace Docking.Components
       const int usValueIndex = 2;
       const int localValueIndex = 3;
 
-      #region ILocalizable
+      #region ILocalizableComponent
 
       string ILocalizableComponent.Name { get { return "Localization Editor"; } }
 
