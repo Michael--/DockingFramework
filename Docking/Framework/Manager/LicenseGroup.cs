@@ -39,8 +39,11 @@ namespace Docking.Components
          {
             foreach (var s in groups.Split(new char[] { '|', ' ', '\t', ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
-               if (GetState(s) == State.ENABLED)
+               var st = GetState(s);
+               if (st == State.ENABLED)
                   return true;
+               if (st == State.DISABLED)
+                  return false;
             }
          }
          return DefaultState == State.ENABLED;
