@@ -1333,7 +1333,7 @@ namespace Docking.Components
       {
       }
 
-      protected void LoadConfigurationFile(String filename)
+      protected void LoadConfigurationFile(String filename, bool loadLayout = true)
       {
          ConfigurationFilename = filename;
          ConfigurationXmlDocument = new XmlDocument();
@@ -1353,6 +1353,12 @@ namespace Docking.Components
 
          PerformDownwardsCompatibilityTweaksOnConfigurationFile();
 
+         if (loadLayout)
+            LoadLayout();
+      }
+
+      protected void LoadLayout()
+      {
          // load XML node "layouts" in a memory file
          // we should leave the implementation of the Mono Develop Docking as it is
          // to make it easier to update with newest version
