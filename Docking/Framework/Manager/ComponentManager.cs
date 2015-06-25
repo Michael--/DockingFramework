@@ -837,12 +837,12 @@ namespace Docking.Components
 
       void InstallFileSaveConfigMenu()
       {
-         TaggedLocalizedImageMenuItem menuItem = new TaggedLocalizedImageMenuItem("Save Config...");
+         TaggedLocalizedImageMenuItem menuItem = new TaggedLocalizedImageMenuItem("Save Config As...");
          menuItem.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.File-16.png"));
          menuItem.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.S, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          menuItem.Activated += (sender, e) =>
          {
-            string filename = SaveFileDialog("Save Config...", new List<FileFilterExt>()
+            string filename = SaveFileDialog("Save Config As...", new List<FileFilterExt>()
             {
                new FileFilterExt("*.xml", "Config file")
             }, ConfigurationFilename);
