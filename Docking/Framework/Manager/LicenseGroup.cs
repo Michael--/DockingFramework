@@ -24,7 +24,7 @@ namespace Docking.Components
          State result;
          lock (m_Groups)
          {
-            if (group != null && m_Groups.TryGetValue(group, out result))
+            if (group != null && m_Groups.TryGetValue(group.ToLowerInvariant(), out result))
                return result;
          }
          return State.NONE;
@@ -58,10 +58,10 @@ namespace Docking.Components
          {
             // change existing or add new
             State result;
-            if (m_Groups.TryGetValue(group, out result))
-               m_Groups[group] = enabled ? State.ENABLED : State.DISABLED;
+            if (m_Groups.TryGetValue(group.ToLowerInvariant(), out result))
+               result = enabled ? State.ENABLED : State.DISABLED;
             else
-               m_Groups.Add(group, enabled ? State.ENABLED : State.DISABLED);
+               m_Groups.Add(group.ToLowerInvariant(), enabled ? State.ENABLED : State.DISABLED);
          }
       }
 

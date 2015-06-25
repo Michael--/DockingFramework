@@ -181,10 +181,6 @@ namespace Docking.Components
       /// </summary>
       public void InstallLayoutMenu(string currentlayout)
       {         
-         AddLayout(DEFAULT_LAYOUT_NAME, false);
-
-         DockFrame.CurrentLayout = !String.IsNullOrEmpty(currentlayout) ? currentlayout : DEFAULT_LAYOUT_NAME;
-
          m_DeleteLayout = new TaggedLocalizedImageMenuItem("Delete Current Layout");
          m_DeleteLayout.Activated += (object sender, EventArgs e) =>
          {
@@ -1540,7 +1536,7 @@ namespace Docking.Components
                      (item.Content as Component).ComponentRemoved(other);
       }
 
-      protected virtual void LoadPersistency() // TODO abolish, replace by implementing IPersistable
+      protected virtual void LoadPersistency(bool installLayoutMenu) // TODO abolish, replace by implementing IPersistable
       {
          string instance = "MainWindow";        
          IPersistency persistency = this as IPersistency;
@@ -1560,7 +1556,11 @@ namespace Docking.Components
          if((windowstate & (int)Gdk.WindowState.Maximized)!=0)
             this.Maximize();
 
-         InstallLayoutMenu(layout);
+         AddLayout(DEFAULT_LAYOUT_NAME, false);
+         DockFrame.CurrentLayout = !String.IsNullOrEmpty(layout) ? layout : DEFAULT_LAYOUT_NAME;
+
+         if (installLayoutMenu)
+            InstallLayoutMenu(layout);
 
          string dir = LoadSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", "");
          if(!string.IsNullOrEmpty(dir) && Directory.Exists(dir))

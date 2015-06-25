@@ -253,6 +253,7 @@
     <Content Include="Languages\Docking-de-DE.resx">
       <LastGenOutput>Docking-default.Designer.cs</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
