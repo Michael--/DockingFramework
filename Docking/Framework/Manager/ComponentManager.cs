@@ -29,7 +29,7 @@ namespace Docking.Components
    static class StringLoc
    {
       public static string L(this string s)
-      {         
+      {
          return s.Localized("Docking.Components");
       }
    }
@@ -170,7 +170,7 @@ namespace Docking.Components
 
       const string CONFIG_ROOT_ELEMENT = "DockingConfiguration";
       const string DEFAULT_LAYOUT_NAME = "Default"; // TODO can we localize this string? Careful, the name is persisted...
-      
+
       ImageMenuItem m_DeleteLayout;
 
       /// <summary>
@@ -180,7 +180,7 @@ namespace Docking.Components
       /// If the main layout name is empty or null "Default" will be used as name.
       /// </summary>
       public void InstallLayoutMenu(string currentlayout)
-      {         
+      {
          m_DeleteLayout = new TaggedLocalizedImageMenuItem("Delete Current Layout");
          m_DeleteLayout.Activated += (object sender, EventArgs e) =>
          {
@@ -324,7 +324,7 @@ namespace Docking.Components
             CheckMenuItem nitem = sender as CheckMenuItem;
             String label = (nitem.Child as Label).Text;
 
-            // double check 
+            // double check
             if(DockFrame.HasLayout(label))
             {
                if(DockFrame.CurrentLayout != label)
@@ -396,10 +396,10 @@ namespace Docking.Components
          RemoveRecentFile(filename_normalized, false);
          var filename_shortened = StringTools.ShrinkPath(filename_normalized, 80);
 
-         TaggedImageMenuItem newitem = new TaggedImageMenuItem(filename_shortened); 
+         TaggedImageMenuItem newitem = new TaggedImageMenuItem(filename_shortened);
          newitem.Tag = filename_normalized; // the FULL filename
          //newitem.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.File-16.png"));
-         newitem.Activated += OnRecentFileActivated;         
+         newitem.Activated += OnRecentFileActivated;
          (newitem.Child as Label).UseUnderline = false;
 
          mRecentFiles.Insert(0, newitem);
@@ -409,7 +409,7 @@ namespace Docking.Components
          if(do_update_menu)
             UpdateRecentFilesMenu();
      }
-  
+
      public void RemoveRecentFile(string filename, bool do_update_menu = true)
      {
          List<TaggedImageMenuItem> founditems = new List<TaggedImageMenuItem>();
@@ -417,7 +417,7 @@ namespace Docking.Components
          StringComparison mode = Platform.IsWindows
                                ? StringComparison.InvariantCultureIgnoreCase
                                : StringComparison.InvariantCulture;
-         foreach(TaggedImageMenuItem item in mRecentFiles)            
+         foreach(TaggedImageMenuItem item in mRecentFiles)
             if(((string)item.Tag).Equals(filename, mode))
                founditems.Add(item);
 
@@ -447,7 +447,7 @@ namespace Docking.Components
             }
          }
          mRecentFilesBegin = null;
- 
+
          if(mRecentFiles.Count>0)
          {
             mRecentFilesBegin = new SeparatorMenuItem();
@@ -458,7 +458,7 @@ namespace Docking.Components
             {
                filemenu.Append(r);
                r.ShowAll();
-             } 
+             }
          }
       }
 
@@ -488,7 +488,7 @@ namespace Docking.Components
             return;
          }
 
-         // no call AddToRecentFiles() is necessary here, OpenFile() already takes care of that         
+         // no call AddToRecentFiles() is necessary here, OpenFile() already takes care of that
       }
 
       #region cut, copy, paste
@@ -620,7 +620,7 @@ namespace Docking.Components
             menu.Add(new KeyValuePair<string, TaggedLocalizedImageMenuItem>(builder.ToString(), item));
          }
 
-         // after collecting sort by path and name before add to menue
+         // after collecting sort by path and name before add to menu
          menu.Sort((p1, p2) => (p1.Key + p1.Value.LabelText).CompareTo(p2.Key + p2.Value.LabelText));
          foreach (var kvp in menu)
             AppendMenuItem(kvp.Key, kvp.Value);
@@ -734,7 +734,7 @@ namespace Docking.Components
       public void UpdateLanguage(bool triggerRedraw)
       {
          bool isvis = this.Visible;
-        
+
          if(isvis && triggerRedraw)
             this.Hide();
 
@@ -744,7 +744,7 @@ namespace Docking.Components
             {
                if(item.Content != null)
                {
-                  Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);                  
+                  Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
 
                   if(item.Content is ILocalizableComponent)
                   {
@@ -757,7 +757,7 @@ namespace Docking.Components
             }
 
             Localization.LocalizeMenu(MenuBar);
-         } 
+         }
          catch(Exception e)
          {
             if(isvis && triggerRedraw)
@@ -812,7 +812,7 @@ namespace Docking.Components
             if(Archive!=null && Archive is IFileOpen) // if an archive handler is installed that implements IFileOpen
             {
                filters.AddRange((Archive as IFileOpen).SupportedFileTypes());
-            }            
+            }
 
             foreach(DockItem d in DockFrame.GetItems())
                if(d.Content is IFileOpen)
@@ -956,9 +956,9 @@ namespace Docking.Components
       }
 
       public String OpenFileDialog(string title, List<FileFilterExt> filters, string startFolder = null)
-      {         
+      {
          string result = null;
-     
+
          FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
                                               "Open".L(),   ResponseType.Accept,
                                               "Cancel".L(), ResponseType.Cancel);
@@ -980,7 +980,7 @@ namespace Docking.Components
          List<FileFilterExt> filters = new List<FileFilterExt>();
          if(filter!=null)
             filters.Add(filter);
-         return OpenFilesDialog(prompt, filters, startFolder);        
+         return OpenFilesDialog(prompt, filters, startFolder);
       }
 
       public string[] OpenFilesDialog(string title, List<FileFilterExt> filters, string startFolder = null)
@@ -993,7 +993,7 @@ namespace Docking.Components
          if(!String.IsNullOrEmpty(startFolder))
             dlg.SetCurrentFolder(startFolder);
 
-         dlg.SelectMultiple = true;        
+         dlg.SelectMultiple = true;
 
          if(RunFileChooserDialogLocalized(dlg, filters) == (int) ResponseType.Accept)
          {
@@ -1011,7 +1011,7 @@ namespace Docking.Components
 
       void InstallExportMenu()
       {
-         MenuItem menuItem = new TaggedLocalizedImageMenuItem("Export");         
+         MenuItem menuItem = new TaggedLocalizedImageMenuItem("Export");
          menuItem.Submenu = mExportSubmenu;
          AppendMenuItem("File", menuItem);
       }
@@ -1021,7 +1021,7 @@ namespace Docking.Components
          List<FileFilterExt> filters = new List<FileFilterExt>();
          if(filter!=null)
             filters.Add(filter);
-         return SaveFileDialog(prompt, filters, currentFilename);        
+         return SaveFileDialog(prompt, filters, currentFilename);
       }
 
       public String SaveFileDialog(string title, List<FileFilterExt> filters = null, string currentFilename = null)
@@ -1048,10 +1048,10 @@ namespace Docking.Components
                {
                   if(f==selectedFilter)
                   {
-                     bool correct_extension_found = false;                   
+                     bool correct_extension_found = false;
                      string firstext = null;
                      foreach(string pattern in f.GetPattern())
-                     {                          
+                     {
                         string ext = pattern.TrimStart('*');
                         if(firstext==null)
                            firstext = ext;
@@ -1090,7 +1090,7 @@ namespace Docking.Components
                FileFilterExt combinedfilter = new FileFilterExt();
                foreach(FileFilterExt filter in filters)
                   foreach(string pattern in filter.GetAdjustedPattern())
-                     combinedfilter.AddPattern(pattern);         
+                     combinedfilter.AddPattern(pattern);
                combinedfilter.Name = "All Known File Types".L();
                dlg.AddFilter(combinedfilter);
             }
@@ -1179,7 +1179,7 @@ namespace Docking.Components
                if(file != null)
                {
                   bool result = OpenFile(filename);
-                  file.Close(); // will implicitly delete the file, see FileOptions.DeleteOnClose above 
+                  file.Close(); // will implicitly delete the file, see FileOptions.DeleteOnClose above
                   file = null;
                   return result;
                }
@@ -1228,9 +1228,9 @@ namespace Docking.Components
          Gtk.Drag.DestSet(widget, DestDefaults.All, sMapMIMEtoEnum,
              Gdk.DragAction.Default |
                 Gdk.DragAction.Copy |
-            //Gdk.DragAction.Move    
+            //Gdk.DragAction.Move
                 Gdk.DragAction.Link
-            //Gdk.DragAction.Private  
+            //Gdk.DragAction.Private
             //Gdk.DragAction.Ask
          );
       }
@@ -1300,7 +1300,7 @@ namespace Docking.Components
                      else if(attr.Value.StartsWith(from+"-"))
                         attr.Value = to+"-"+attr.Value.Substring(from.Length+1);
                   }
-                 
+
                }
             }
          }
@@ -1311,15 +1311,15 @@ namespace Docking.Components
                todo.Add(node);
          foreach(XmlNode oldnode in todo)
          {
-            string newname; 
+            string newname;
             if(oldnode.Name==from)
                newname = to;
             else if(oldnode.Name.StartsWith(from+"-"))
-               newname = to+"-"+oldnode.Name.Substring(from.Length+1);   
-            else 
+               newname = to+"-"+oldnode.Name.Substring(from.Length+1);
+            else
                throw new InvalidDataException(); // we should never get here
             XmlNode newnode = ConfigurationXmlDocument.CreateNode(XmlNodeType.Element, newname, "");
-            newnode.InnerXml = oldnode.InnerXml;           
+            newnode.InnerXml = oldnode.InnerXml;
             ConfigurationXmlNode.InsertAfter(newnode, oldnode);
             ConfigurationXmlNode.RemoveChild(oldnode);
          }
@@ -1335,7 +1335,7 @@ namespace Docking.Components
          ConfigurationXmlDocument = new XmlDocument();
 
          if(!File.Exists(filename))
-         {            
+         {
             ConfigurationXmlNode = ConfigurationXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT);
             DockFrame.CreateLayout(DEFAULT_LAYOUT_NAME, true);
             return;
@@ -1538,7 +1538,7 @@ namespace Docking.Components
 
       protected virtual void LoadPersistency(bool installLayoutMenu) // TODO abolish, replace by implementing IPersistable
       {
-         string instance = "MainWindow";        
+         string instance = "MainWindow";
          IPersistency persistency = this as IPersistency;
 
          int    x           = persistency.LoadSetting(instance, "x",           -9999999);
@@ -1546,7 +1546,7 @@ namespace Docking.Components
          int    w           = persistency.LoadSetting(instance, "w",           -9999999);
          int    h           = persistency.LoadSetting(instance, "h",           -9999999);
          string layout      = persistency.LoadSetting(instance, "layout",      "");
-         int    windowstate = persistency.LoadSetting(instance, "windowstate", 0); 
+         int    windowstate = persistency.LoadSetting(instance, "windowstate", 0);
 
          if(x!=-9999999 && y!=-9999999 && w!=-9999999 && h!=-9999999)
          {
@@ -1584,7 +1584,7 @@ namespace Docking.Components
       protected virtual void SavePersistency() // TODO abolish, replace by implementing IPersistable
       {
          IPersistency persistency = this as IPersistency;
-         string instance = "MainWindow";                 
+         string instance = "MainWindow";
 
          persistency.SaveSetting("", "ConfigSavedByVersion", Assembly.GetCallingAssembly().GetName().Version.ToString());
 
@@ -2059,7 +2059,7 @@ namespace Docking.Components
             do
             {
                instance++;
-               name = cfi.ComponentType.ToString() + "-" + instance.ToString();               
+               name = cfi.ComponentType.ToString() + "-" + instance.ToString();
             }
             while(DockFrame.GetItem(name)!=null);
          }
@@ -2073,7 +2073,7 @@ namespace Docking.Components
             return null;
          }
 
-         Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);         
+         Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
 
          item.DefaultVisible = false;
          //item.DrawFrame = true;
@@ -2142,7 +2142,7 @@ namespace Docking.Components
       }
 
       bool mDisableHandleVisibleChanged = true; // startup lock
-      
+
       void HandleVisibleChanged(object sender, EventArgs e)
       {
          if(mDisableHandleVisibleChanged)
@@ -2263,13 +2263,13 @@ namespace Docking.Components
             {
                AddSelectNotifier(item, xw);
             }
-         }              
+         }
 #if false // TODO: could be needed
             if (w is TreeView)
             {
-                foreach (TreeViewColumn twc in ((TreeView)w).Columns) 
+                foreach (TreeViewColumn twc in ((TreeView)w).Columns)
                 {
-                    twc.Clicked += (object sender, EventArgs e) => 
+                    twc.Clicked += (object sender, EventArgs e) =>
                     {
                         MessageWriteLine("{0} Test TreeViewColumn.Clicked {1}", qwe++, sender);
                     };
@@ -2379,7 +2379,7 @@ namespace Docking.Components
          {
             try
             {
-               LogFile = new StreamWriter(filename, clobber, new UTF8Encoding(false));         
+               LogFile = new StreamWriter(filename, clobber, new UTF8Encoding(false));
             }
             catch(Exception e)
             {
@@ -2458,9 +2458,9 @@ namespace Docking.Components
          m_ScriptingInstance = new ComponentManagerScripting(this);
          ScriptScope.SetVariable(pythonBaseVariableName, m_ScriptingInstance);
 
-         try 
+         try
          {
-            // add Python commands like "message(...)" 
+            // add Python commands like "message(...)"
             Execute(ReadResource("cm.py").Replace("[INSTANCE]", pythonBaseVariableName));
          }
          catch(Exception e)
@@ -2523,7 +2523,7 @@ namespace Docking.Components
       {
          CompiledCode compiled = Compile(code);
          try   { return compiled.Execute(ScriptScope); }
-         catch { return null;                          }         
+         catch { return null;                          }
       }
 
       public dynamic ExecuteFile(String filename)
@@ -2601,7 +2601,7 @@ namespace Docking.Components
             if(comp==null)
                return null;
 
-            string name = comp is ILocalizableComponent 
+            string name = comp is ILocalizableComponent
                         ? (comp as ILocalizableComponent).Name
                         : item.Content.Name;
 
@@ -2700,7 +2700,7 @@ namespace Docking.Components
 
       #endregion
 
-      // TODO this currently lacks the OS's window decoration (icon, window title text, buttons) 
+      // TODO this currently lacks the OS's window decoration (icon, window title text, buttons)
       public Gdk.Pixbuf Screenshot()
       {
          return Gdk.Pixbuf.FromDrawable(GdkWindow, GdkWindow.Colormap, 0, 0, 0, 0, (this as Gtk.Widget).Allocation.Width, (this as Gtk.Widget).Allocation.Height);
