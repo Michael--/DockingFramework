@@ -139,7 +139,7 @@
     <value>Eigenschaften</value>
   </data>
   <data name="Docking.Components.Localization Editor" xml:space="preserve">
-    <value>Lokalisierungs-Editor</value>
+    <value>Lokalisierungseditor</value>
   </data>
   <data name="MENU.Localization Editor" xml:space="preserve">
     <value>Lokalisierungseditor</value>
@@ -157,10 +157,10 @@
     <value>Neue Fensteranordnung</value>
   </data>
   <data name="MENU.Messages" xml:space="preserve">
-    <value>Nachrichten</value>
+    <value>Meldungen</value>
   </data>
   <data name="MENU.Message" xml:space="preserve">
-    <value>Nachricht</value>
+    <value>Meldung</value>
   </data>
   <data name="MENU.Layout" xml:space="preserve">
     <value>Fensteranordnung</value>

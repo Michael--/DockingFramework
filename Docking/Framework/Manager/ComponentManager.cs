@@ -1021,9 +1021,12 @@ namespace Docking.Components
 
       void InstallExportMenu()
       {
-         MenuItem menuItem = new TaggedLocalizedImageMenuItem("Export");
-         menuItem.Submenu = mExportSubmenu;
-         AppendMenuItem("File", menuItem);
+         if(LicenseGroup.IsEnabled("nts"))
+         {
+            MenuItem menuItem = new TaggedLocalizedImageMenuItem("Export");
+            menuItem.Submenu = mExportSubmenu;
+            AppendMenuItem("File", menuItem);
+         }
       }
 
       public String SaveFileDialog(string prompt, FileFilterExt filter = null, string currentFilename = null)
