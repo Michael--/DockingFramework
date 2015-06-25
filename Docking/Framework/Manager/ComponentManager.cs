@@ -844,7 +844,7 @@ namespace Docking.Components
          {
             string filename = SaveFileDialog("Save Config As...", new List<FileFilterExt>()
             {
-               new FileFilterExt("*.xml", "Config file")
+               new FileFilterExt("*.xml", "Config File")
             }, ConfigurationFilename);
 
             if (filename != null)
