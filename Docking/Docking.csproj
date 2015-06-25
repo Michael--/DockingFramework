@@ -246,6 +246,7 @@
     <EmbeddedResource Include="Framework\Resources\PropertyViewer-16.png" />
     <EmbeddedResource Include="Framework\Resources\Quit-16.png" />
     <EmbeddedResource Include="Framework\Resources\Broom-16.png" />
+    <EmbeddedResource Include="Framework\Resources\Save-16.png" />
     <Content Include="Languages\Docking-en-US.resx">
       <LastGenOutput>Docking-default.Designer.cs</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

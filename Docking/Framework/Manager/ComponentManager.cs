@@ -838,7 +838,7 @@ namespace Docking.Components
       void InstallFileSaveConfigMenu()
       {
          TaggedLocalizedImageMenuItem menuItem = new TaggedLocalizedImageMenuItem("Save Config As...");
-         menuItem.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.File-16.png"));
+         menuItem.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Save-16.png"));
          menuItem.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.S, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          menuItem.Activated += (sender, e) =>
          {
