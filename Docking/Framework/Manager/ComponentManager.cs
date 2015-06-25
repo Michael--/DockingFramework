@@ -811,12 +811,22 @@ namespace Docking.Components
 
             if(Archive!=null && Archive is IFileOpen) // if an archive handler is installed that implements IFileOpen
             {
-               filters.AddRange((Archive as IFileOpen).SupportedFileTypes());
+               List<FileFilterExt> morefilters = (Archive as IFileOpen).SupportedFileTypes();
+               filters.AddRange(morefilters);
             }
 
             foreach(DockItem d in DockFrame.GetItems())
+            {
                if(d.Content is IFileOpen)
-                  filters.AddRange((d.Content as IFileOpen).SupportedFileTypes());
+               {
+                  List<FileFilterExt> morefilters = (d.Content as IFileOpen).SupportedFileTypes();
+                  #if DEBUG
+                  foreach(FileFilterExt f in morefilters)
+                     MessageWriteLine("{0} supports opening {1}", d.Content.Name, f.Name);
+                  #endif
+                  filters.AddRange(morefilters);
+               }
+            }
 
             String filename = OpenFileDialog("Open file...", filters);
             if(filename != null)
