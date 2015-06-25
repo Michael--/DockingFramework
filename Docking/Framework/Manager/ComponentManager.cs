@@ -1511,7 +1511,7 @@ namespace Docking.Components
                (item.Content as Component).InitComplete();
 
          total.Stop();
-         if(total.ElapsedMilliseconds>100)
+         if(LicenseGroup.IsEnabled("nts") && total.ElapsedMilliseconds>100)
             MessageWriteLine("ComponentsLoaded() total time = {0}s", total.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture));
       }
 
