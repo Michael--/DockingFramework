@@ -1,5 +1,7 @@
 using System;
 
+using Docking.Tools;
+
 namespace Docking.Components
 {
    [Flags]
@@ -99,17 +101,12 @@ namespace Docking.Components
    /// </summary>
    public abstract class ComponentFactory : IComponentFactory
    {
-      public abstract String Comment { get; }
-
-      public abstract String MenuPath { get; }
-
-      public abstract Type TypeOfInstance { get; }
-
-      public virtual Mode Options { get { return Mode.None; } }
-
-      public virtual Gdk.Pixbuf Icon { get { return null; } }
-
-      public virtual string LicenseGroup { get { return null; } }
+      public abstract String     Comment        { get;                      }
+      public abstract String     MenuPath       { get;                      }
+      public abstract Type       TypeOfInstance { get;                      }
+      public virtual  Mode       Options        { get { return Mode.None; } }
+      public virtual  Gdk.Pixbuf Icon           { get { return null;      } }
+      public virtual  string     LicenseGroup   { get { return null;      } }
    }
 }
 

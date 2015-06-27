@@ -290,7 +290,7 @@ namespace Docking.Components
       public override Type TypeOfInstance { get { return typeof(LocalizationEditor); } }
       public override String MenuPath { get { return @"View\Infrastructure\Localization Editor"; } }
       public override String Comment { get { return "Edit possibility for all localization strings"; } }
-      public override Gdk.Pixbuf Icon { get { return Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Localization-16.png"); } }
+      public override Gdk.Pixbuf Icon { get { return Docking.Tools.ResourceLoader_Docking.LoadPixbuf("Localization-16.png"); } }
    }
    #endregion
 

@@ -32,6 +32,7 @@ using System.Collections.Generic;
 using Gtk;
 using Docking.Widgets;
 using Docking.Components;
+using Docking.Tools;
 
 namespace MonoDevelop.Components
 {
@@ -79,7 +80,7 @@ namespace MonoDevelop.Components
          args.Menu.Add(sep);
 
          TaggedLocalizedImageMenuItem newitem = new TaggedLocalizedImageMenuItem("Clear");
-         newitem.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Broom-16.png"));
+         newitem.Image = Docking.Tools.ResourceLoader_Docking.LoadImage("Broom-16.png");
          newitem.Activated += (object sender, EventArgs e) => Clear();               
          newitem.ShowAll();
 

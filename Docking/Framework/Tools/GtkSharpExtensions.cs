@@ -345,6 +345,14 @@ namespace Docking.Tools
          }
       }
 
+      public static Gtk.Widget FindInnermostFocusChild(this Gtk.Container container)
+      {
+         Widget f = container.FocusChild;
+         while(f!=null && (f is Gtk.Container) && !(f is TreeView))
+            f = (f as Gtk.Container).FocusChild;
+         return f;
+      }
+
       // comfort function to easily access a specific child widget in a nested widget children tree
       public static Gtk.Widget GetChild(this Gtk.Widget w, int i1)
       {
@@ -451,4 +459,5 @@ namespace Docking.Tools
          return (c is Gtk.Image) ? (Gtk.Image)c : null;
       }
    }
+
 }

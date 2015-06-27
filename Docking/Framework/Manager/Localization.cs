@@ -52,27 +52,27 @@ namespace Docking.Components
                   string stockicon = img.Stock;
                   if(stockicon=="gtk-cut")
                   {
-                     imi.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Cut-16.png"));
+                     imi.Image = Docking.Tools.ResourceLoader_Docking.LoadImage("Cut-16.png");
                      (imi.Child as Label).LabelProp = "Cut".Localized("MENU");
                   }
                   else if(stockicon=="gtk-copy")
                   {
-                     imi.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Copy-16.png"));
+                     imi.Image = Docking.Tools.ResourceLoader_Docking.LoadImage("Copy-16.png");
                      (imi.Child as Label).LabelProp = "Copy".Localized("MENU");
                   }
                   else if(stockicon=="gtk-paste")
                   {
-                     imi.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Paste-16.png"));
+                     imi.Image = Docking.Tools.ResourceLoader_Docking.LoadImage("Paste-16.png");
                      (imi.Child as Label).LabelProp = "Paste".Localized("MENU");
                   }
                   else if(stockicon=="gtk-delete")
                   {
-                     imi.Image = null; // new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Delete-16.png"));
+                     imi.Image = null; // Docking.Tools.ResourceLoader_Docking.LoadImage("Delete-16.png");
                      (imi.Child as Label).LabelProp = "Delete".Localized("MENU");
                   }
                   else if(stockicon=="gtk-select-all")
                   {
-                     imi.Image = null; // new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.SelectAll-16.png"));
+                     imi.Image = null; // Docking.Tools.ResourceLoader_Docking.LoadImage("SelectAll-16.png");
                      (imi.Child as Label).LabelProp = "Select All".Localized("MENU");
                   }
                }
