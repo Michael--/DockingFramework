@@ -1342,7 +1342,7 @@ namespace Docking.Components
       {
       }
 
-      protected void LoadConfigurationFile(String filename, bool loadLayout = true)
+      protected void LoadConfigurationFile(String filename)
       {
          ConfigurationFilename = filename;
          ConfigurationXmlDocument = new XmlDocument();
@@ -1361,9 +1361,6 @@ namespace Docking.Components
             ConfigurationXmlNode = ConfigurationXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT);
 
          PerformDownwardsCompatibilityTweaksOnConfigurationFile();
-
-         if (loadLayout)
-            LoadLayout();
       }
 
       protected void LoadLayout()
@@ -1495,9 +1492,12 @@ namespace Docking.Components
                w.Start();
                (item.Content as Component).Loaded(item);
                w.Stop();
-               //if (w.ElapsedMilliseconds>25)
-               if(w.ElapsedMilliseconds>300) // raise the limit to get rid of annoying output we currently cannot change anyway
-                  MessageWriteLine("Invoking IComponent.Loaded() for component {0} took {1:0.00}s", item.Id, w.Elapsed.TotalSeconds);
+
+               if(LicenseGroup.IsEnabled("nts")) // do not output this in customer versions
+               {
+                  if(w.ElapsedMilliseconds>300) // goal limit: 25, 300 is just to reduce current clutter
+                     MessageWriteLine("Invoking IComponent.Loaded() for component {0} took {1:0.00}s", item.Id, w.Elapsed.TotalSeconds);
+               }
             }
 
             if(item.Content is Component)

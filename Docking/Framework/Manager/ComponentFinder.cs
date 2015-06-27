@@ -208,6 +208,10 @@ namespace Docking.Components
       {
          if(cm==null)
             return null;
+
+         if(!cm.LicenseGroup.IsEnabled(this.LicenseGroup))
+            return null;
+
          Component component;
          try { component = Activator.CreateInstance(ComponentType) as Component; }
          catch (Exception e)
