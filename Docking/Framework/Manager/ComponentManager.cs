@@ -1625,12 +1625,14 @@ namespace Docking.Components
          persistency.SaveSetting(instance, "RecentFiles", recentfiles);
       }
 
-      public bool Quit(bool save_persistency)
+      public bool Quit(bool save_persistency, System.Action thingsToDoBeforeShutdown = null)
       {
          foreach(DockItem item in DockFrame.GetItems())
             if((item.Content!=null) && (item.Content is Component))
                if(!(item.Content as Component).IsCloseOK())
                   return false; // close has been canceled, for example by a dialog prompt which asks for saving an edited document
+
+         // from here on, shutdown activity goes on, so returning false must not happen from here on!
 
          if(save_persistency)
          {
@@ -1645,8 +1647,10 @@ namespace Docking.Components
 
          PowerDown = true;
 
-         Application.Quit();
+         if(thingsToDoBeforeShutdown!=null)
+            thingsToDoBeforeShutdown();
 
+         Application.Quit();
          return true;
       }
 
