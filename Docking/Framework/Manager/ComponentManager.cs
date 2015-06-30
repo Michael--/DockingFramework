@@ -2052,12 +2052,15 @@ namespace Docking.Components
          if(!cfi.MultiInstance)
          {
             DockItem di = DockFrame.GetItem(name);
+            if(di==null)
+               di = DockFrame.GetItem(name+"-1"); // this can occur when a component's setting MultiInstance is enabled/disabled during debugging
             if(di!=null)
             {
                if(!di.Visible)
                   di.Visible = true;
                return di;
             }
+            
          }
          else
          {
