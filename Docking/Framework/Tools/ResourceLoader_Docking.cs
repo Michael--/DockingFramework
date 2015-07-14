@@ -30,7 +30,7 @@ namespace Docking.Tools
             #if DEBUG
             catch(Exception e) { System.Console.Error.WriteLine(e.ToString()); }   
             #else
-            catch(Exception) {}
+            catch {}
             #endif
          }        
 

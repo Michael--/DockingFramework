@@ -1185,7 +1185,7 @@ namespace Docking.Components
                   file = File.Create(filename, 10000, FileOptions.DeleteOnClose);
                   www.OpenRead(url).CopyTo(file);
                }
-               catch(Exception)
+               catch
                {
                   file = null;
                }
@@ -1698,7 +1698,7 @@ namespace Docking.Components
                object result = (object) formatter.Deserialize(formattedStream);
                return result;
             }
-            catch(Exception)
+            catch
             {
                return null;
             }
@@ -1722,7 +1722,7 @@ namespace Docking.Components
             XmlSerializer serializer = new XmlSerializer(t);
             return serializer.Deserialize(xmlReader);
          }
-         catch(Exception)
+         catch
          {
             return null;
          }

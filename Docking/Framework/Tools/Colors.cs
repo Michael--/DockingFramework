@@ -331,7 +331,7 @@ namespace Docking.Tools
                     else
                         color_ = Color.FromArgb(Alpha, ColorTranslator.FromHtml(value));
                 }
-                catch (Exception)
+                catch
                 {
                     color_ = Color.Black;
                 }

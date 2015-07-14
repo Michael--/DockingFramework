@@ -273,7 +273,7 @@ namespace Docking.Components
             web.Encoding = Encoding.UTF8;
             html = web.DownloadString(url);
          }
-         catch (Exception)
+         catch
          {
             return null;
          }
