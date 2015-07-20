@@ -1386,12 +1386,19 @@ namespace Docking.Components
 
          Localization.WriteChangedResourceFiles();
 
-         if(!string.IsNullOrEmpty(ConfigurationFilename))
+         if (!string.IsNullOrEmpty(ConfigurationFilename))
          {
-            ConfigurationXmlDocument.Save(new FileStream(
-               ConfigurationFilename, FileMode.Create, FileAccess.ReadWrite,
-               FileShare.None // open the file exclusively for writing, i.e., prevent other instances of us from interfering
-            ));
+            try
+            {
+               ConfigurationXmlDocument.Save(new FileStream(
+                  ConfigurationFilename, FileMode.Create, FileAccess.ReadWrite,
+                  FileShare.None // open the file exclusively for writing, i.e., prevent other instances of us from interfering
+               ));
+            }
+            catch(Exception e)
+            {
+               this.MessageWriteLine("Failed to save configuration file '{0}': {1}", ConfigurationFilename, e.ToString());
+            }
          }
       }
 
