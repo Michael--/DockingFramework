@@ -235,6 +235,27 @@ namespace Docking.Widgets
          return 0;
       }
 
+      public IEnumerable<int> GetVisibleColumnIndex()
+      {
+         List<int> columnIndex = new List<int>();
+
+         ColumnControl.Column[] columns = mColumnControl.GetVisibleColumnsInDrawOrder();
+         foreach (var c in mColumnControl.GetVisibleColumnsInDrawOrder())
+            columnIndex.Add(c.SortOrder);
+         return columnIndex;
+      }
+
+      public IEnumerable<string> GetVisibleColumnNames()
+      {
+         List<string> names = new List<string>();
+
+         ColumnControl.Column[] columns = mColumnControl.GetVisibleColumnsInDrawOrder();
+         foreach (var c in mColumnControl.GetVisibleColumnsInDrawOrder())
+            names.Add(c.Name);
+         return names;
+      }
+
+
       #region IPersistable
 
       public void SaveTo(IPersistency persistency, string instance)
