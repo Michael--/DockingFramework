@@ -150,3 +150,16 @@ namespace Florence.GtkSharp
       public PlotWidget(IntPtr raw) : base(raw) {}
    }
 }
+
+// TODO relocate that custom control to Docking Framework
+namespace TempoGiusto.Guidance
+{
+   [System.ComponentModel.ToolboxItem(true)]
+   public class FieldInfoViewer : Gtk.TreeView
+   {
+      public FieldInfoViewer(TreeModel model) : base(model) {}
+//    public FieldInfoViewer(NodeStore store) : base(store) {}
+      public FieldInfoViewer()                : base()      {}
+      public FieldInfoViewer(IntPtr raw)      : base(raw)   {}
+   }
+}
