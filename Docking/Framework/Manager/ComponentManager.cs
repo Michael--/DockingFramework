@@ -154,6 +154,12 @@ namespace Docking.Components
          MenuBar.ShowAll();
       }
 
+      public void RemoveExportMenuQuickHack(MenuItem item)
+      {
+         mExportSubmenu.Remove(item);
+         MenuBar.ShowAll();
+      }
+
       protected void AppendMenuItem(String path, MenuItem item)
       {
          Menu menu = FindMenu(path, true);
