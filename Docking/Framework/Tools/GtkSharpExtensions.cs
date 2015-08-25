@@ -285,7 +285,6 @@ namespace Docking.Tools
 
       public static void CopySelectedRowsToClipboard(this TreeView treeView, List<int> columnids)
       {
-         Gtk.TreePath[] rows = treeView.Selection.GetSelectedRows();
          StringBuilder result = new StringBuilder();
          foreach(Gtk.TreeIter iter in treeView.Selection.GetSelectedRows_TreeIter())
          {
