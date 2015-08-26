@@ -166,9 +166,9 @@ namespace Docking.Tools
           return result.ToString();
        }
 
-       public static IEnumerable<TreeIter> Childs(this TreeModel model, TreeIter parent)
+       public static IEnumerable<TreeIter> Children(this TreeModel model, TreeIter parent)
        {
-          List<TreeIter> childs = new List<TreeIter>();
+          List<TreeIter> children = new List<TreeIter>();
 
           if (parent.Equals(TreeIter.Zero))
           {
@@ -177,8 +177,8 @@ namespace Docking.Tools
                 TreeIter iter;
                 if (model.IterNthChild(out iter, i))
                 {
-                   childs.Add(iter);
-                   childs.AddRange(model.Childs(iter));
+                   children.Add(iter);
+                   children.AddRange(model.Children(iter));
                 }
              }
           }
@@ -189,12 +189,12 @@ namespace Docking.Tools
                 TreeIter iter;
                 if (model.IterNthChild(out iter, parent, i))
                 {
-                   childs.Add(iter);
-                   childs.AddRange(model.Childs(iter));
+                   children.Add(iter);
+                   children.AddRange(model.Children(iter));
                 }
              }
           }
-          return childs;
+          return children;
        }
 
       static public TreeViewColumnLocalized AppendColumn(this TreeView treeview, TreeViewColumnLocalized column, CellRenderer renderer, string attr, int modelcolumn)
@@ -271,14 +271,26 @@ namespace Docking.Tools
              treeview.RemoveColumn(col);
        }
 
-       // TODO remove this function again. It is redundant to the existing ExpandToPath() function which does exactly the same, see http://wrapl.sourceforge.net/doc/Gtk/Gtk/TreeView.html
+      public static void CollapseRow(this TreeView treeView, TreeIter iter)
+      {
+         TreePath path = treeView.Model.GetPath(iter);
+         treeView.CollapseRow(path);
+      }
+
+      public static bool GetRowExpanded(this TreeView treeView, TreeIter iter)
+      {
+         TreePath path = treeView.Model.GetPath(iter);
+         return treeView.GetRowExpanded(path);
+      }
+
+      // TODO remove this function again. It is redundant to the existing ExpandToPath() function which does exactly the same, see http://wrapl.sourceforge.net/doc/Gtk/Gtk/TreeView.html
        public static void ExpandRowWithParents(this TreeView treeView, TreeIter iter)
        {
           Stack<TreePath> stack = new Stack<TreePath>();
           TreeStore treeStore = treeView.Model as TreeStore;
-          TreePath tp = treeStore.GetPath(iter);
-          do stack.Push(new TreePath(tp.ToString())); // clone
-          while (tp.Up());
+          TreePath path = treeStore.GetPath(iter);
+          do stack.Push(new TreePath(path.ToString())); // clone
+          while (path.Up());
           while (stack.Count > 0)
              treeView.ExpandRow(stack.Pop(), false);
        }
