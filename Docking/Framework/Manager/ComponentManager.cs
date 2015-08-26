@@ -1834,7 +1834,7 @@ namespace Docking.Components
             }
             parent = N;
          }
-         N.InnerText = val ?? "";
+         N.InnerText = val ?? ""; // note that this does XML-Escaping, for example > becomes &gt; , so you do not have to care what is inside 'val'; anything can be stored
       }
 
       public void SaveSetting(string instance, string key, List<string> val)
