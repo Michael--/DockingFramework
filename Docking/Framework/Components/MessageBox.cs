@@ -29,6 +29,9 @@ namespace Docking.Components
 
 		public static ResponseType Show(Window parent, MessageType msgtype, ButtonsType buttontype, string format, params object[] args)
 		{
+         if(ComponentManager!=null && !ComponentManager.IsMainThread)
+            throw new Exception("message boxes may only be popped up from the main GUI thread, i.e., they need a surrounding Gtk.Application.Invoke(delegate {}); block");
+
          if(parent==null && ComponentManager!=null)
             parent = ComponentManager;
 			MessageDialog md = new MessageDialog(parent, DialogFlags.Modal, msgtype, buttontype, format, args);
