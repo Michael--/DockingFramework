@@ -2171,7 +2171,7 @@ namespace Docking.Components
          if(item.Content is Component)
             (item.Content as Component).ComponentRemoved(item.Content);
 
-         item.Widget.Destroy();
+         // item.Widget.Destroy();
       }
 
       bool mDisableHandleVisibleChanged = true; // startup lock
