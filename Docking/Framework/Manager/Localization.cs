@@ -181,8 +181,12 @@ namespace Docking.Components
       {
          //CultureInfo ci;
          String name = Path.GetFileNameWithoutExtension(filename);
-         int i = name.IndexOf('-');
+         int i = name.LastIndexOf('-');
          Debug.Assert(i > 0);
+         i = name.LastIndexOf('-', i - 1);
+         Debug.Assert(i > 0);
+         if (i <= 0)
+            return;
          string basename = name.Substring(0, i);
          string code = name.Substring(i + 1);
 
