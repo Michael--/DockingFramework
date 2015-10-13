@@ -51,6 +51,7 @@ namespace Docking.Widgets
          {
             SelectionMode = false; // as a workaround to avoid selection with CTRL+F3
          };
+         FindPossibility = true;
 
          drawingarea.ButtonPressEvent += drawingarea_ButtonPressEvent;
       }
@@ -114,6 +115,7 @@ namespace Docking.Widgets
 
       public void TriggerRepaint() { drawingarea.QueueDraw(); }
       public Find Find { get { return findwidget; } }
+      public bool FindPossibility { get; set; } // true (default) if find options is possible and displayed/toggling pressing CTRL+F
 
       /// <summary>
       /// Get selection. Return the range of selected lines.
@@ -149,9 +151,13 @@ namespace Docking.Widgets
       /// <param name="visible">If set to <c>true</c> visible.</param>
       public void AddColumn(int tag, string name, int width, bool visible)
       {
-         Label label = new Label(name);
+         Label label = new Label(name)
+         {
+            UseMarkup = true,
+            Visible = true
+         };
+         label.SetAlignment(0, 0.5f);
          label.SetPadding(2, 2);
-         label.Visible = visible;
          AddColumn(name, label, tag, width);
       }
 
@@ -182,6 +188,9 @@ namespace Docking.Widgets
             widget.Visible = p.Visible;
          }
          mColumnControl.AddColumn(name, widget, tag, width);
+
+         // TODO: this is a hack
+         Find.Visible = false;
       }
 
       /// <summary>
@@ -578,15 +587,18 @@ namespace Docking.Widgets
 
       void FindBoxFlipVisible()
       {
-         if (!Find.Visible)
+         if (FindPossibility)
          {
-            Find.Visible = true;
-            if (!Find.HasFocus)
-               Find.GrabFocus();
-         }
-         else
-         {
-            FindBoxInvisible();
+            if (!Find.Visible)
+            {
+               Find.Visible = true;
+               if (!Find.HasFocus)
+                  Find.GrabFocus();
+            }
+            else
+            {
+               FindBoxInvisible();
+            }
          }
       }
 
@@ -944,11 +956,10 @@ namespace Docking.Widgets
          gc.RgbFgColor = new Gdk.Color(150, 150, 150);
 
          var gripper = GripperPositions();
-         int dy = 8;
          foreach (var g in gripper)
          {
             int x = g.Value;
-            win.DrawLine(gc, x + 2, dy, x + 2, TotalHeight - dy + 1);
+            win.DrawLine(gc, x + 2, Allocation.Top, x + 2, Allocation.Bottom);
          }
       }
 
