@@ -482,7 +482,10 @@ namespace Docking.Widgets
          {
             var widget = column.Key;
             var c = column.Value;
-            TaggedLocalizedCheckedMenuItem item = new TaggedLocalizedCheckedMenuItem(c.Name);
+
+            // remove markup language from label before display as menu name
+            var name = System.Text.RegularExpressions.Regex.Replace(c.Name, "(<.*?>)", "");
+            TaggedLocalizedCheckedMenuItem item = new TaggedLocalizedCheckedMenuItem(name);
             item.Active = c.Visible;
             item.Tag = c;
             item.Activated += (object sender, EventArgs e) => 
