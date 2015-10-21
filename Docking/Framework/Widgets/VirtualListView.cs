@@ -6,6 +6,7 @@ using Docking.Components;
 using Docking.Helper;
 using System.Text;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Docking.Widgets
 {
@@ -15,11 +16,7 @@ namespace Docking.Widgets
       public VirtualListView()
       {
          this.Build();
-         LineLayout = GetLayout();
-         int width, height;
-         LineLayout.SetMarkup("XYZ");
-         LineLayout.GetPixelSize(out width, out height);
-         ConstantHeight = height;
+         DefaultLayout = NewLayout(Pango.FontDescription.FromString("Tahoma 10"));
          CurrentRow = 0;
          SelectedRow = 0;
          SelectionMode = false;
@@ -127,7 +124,16 @@ namespace Docking.Widgets
          top = Math.Max(CurrentRow, SelectedRow);
       }
 
-      private Pango.Layout LineLayout { get; set; }
+      Pango.Layout NewLayout(Pango.FontDescription fd)
+      {
+         return new Pango.Layout(this.PangoContext)
+         {
+            FontDescription = fd,
+            Wrap = Pango.WrapMode.WordChar
+         };
+      }
+
+      public Pango.Layout DefaultLayout { get; private set; }
       private int ConstantHeight { get; set; }
       private int SelectedRow { get; set; }
       private bool SelectionMode { get; set; }
@@ -142,6 +148,17 @@ namespace Docking.Widgets
       }
 
       /// <summary>
+      /// Set a new font for a column
+      /// </summary>
+      public void SetColumnFontDescription(int tag, Pango.FontDescription fd)
+      {
+         var c = mColumnControl.GetColumn(tag);
+         Debug.Assert(c != null);
+         c.LineLayout.FontDescription = fd;
+         DetermineLayout();
+      }
+
+      /// <summary>
       /// Adds a new column, whereby the column is represented as a GTK label  
       /// After the last column has been added, you must confirm
       /// with UpdateColumns()
@@ -149,7 +166,7 @@ namespace Docking.Widgets
       /// <param name="name">Name.</param>
       /// <param name="width">Width.</param>
       /// <param name="visible">If set to <c>true</c> visible.</param>
-      public void AddColumn(int tag, string name, int width, bool visible)
+      public void AddColumn(int tag, string name, int width, bool visible, Pango.FontDescription fd = null)
       {
          Label label = new Label(name)
          {
@@ -158,7 +175,7 @@ namespace Docking.Widgets
          };
          label.SetAlignment(0, 0.5f);
          label.SetPadding(2, 2);
-         AddColumn(name, label, tag, width);
+         AddColumn(name, label, tag, width, fd != null ? NewLayout(fd) : DefaultLayout);
       }
 
       /// <summary>
@@ -169,17 +186,17 @@ namespace Docking.Widgets
       /// <param name="widget">Widget.</param>
       /// <param name="width">Width.</param>
       /// <param name="visible">If set to <c>true</c> visible.</param>
-      public void AddColumn(int tag, string name, Widget widget, int width, bool visible)
+      public void AddColumn(int tag, string name, Widget widget, int width, bool visible, Pango.FontDescription fd = null)
       {
          if (visible)
             widget.ShowAll();
-         AddColumn(name, widget, tag, width);
+         AddColumn(name, widget, tag, width, layout: fd != null ? NewLayout(fd) : DefaultLayout);
 
          // TODO: this is a hack
          Find.Visible = false;
       }
 
-      void AddColumn(string name, Widget widget, int tag, int width)
+      void AddColumn(string name, Widget widget, int tag, int width, Pango.Layout layout)
       {
          ColumnPersistence p;
          if (mColumnPersistence.TryGetValue(tag, out p))
@@ -187,7 +204,7 @@ namespace Docking.Widgets
             width = p.Width;
             widget.Visible = p.Visible;
          }
-         mColumnControl.AddColumn(name, widget, tag, width);
+         mColumnControl.AddColumn(name, widget, tag, layout, width);
 
          // TODO: this is a hack
          Find.Visible = false;
@@ -301,13 +318,16 @@ namespace Docking.Widgets
 
       #endregion
 
-
-      private Pango.Layout GetLayout()
+      private void DetermineLayout()
       {
-         Pango.Layout layout = new Pango.Layout(this.PangoContext);
-         layout.FontDescription = Pango.FontDescription.FromString("Tahoma 10");
-         layout.Wrap = Pango.WrapMode.WordChar;
-         return layout;
+         ConstantHeight = 0;
+         foreach (var c in mColumnControl.GetColumns())
+         {
+            int width, height;
+            c.LineLayout.SetMarkup("XYZ");
+            c.LineLayout.GetPixelSize(out width, out height);
+            ConstantHeight = Math.Max(ConstantHeight, height);
+         }
       }
 
       protected void OnDrawingareaExposeEvent(object o, Gtk.ExposeEventArgs args)
@@ -329,6 +349,14 @@ namespace Docking.Widgets
             TopVisibleRow = offset;
             BottomVisibleRow = offset;
          }
+
+         if (ConstantHeight == 0)
+         {
+            DetermineLayout();
+            if (ConstantHeight == 0)
+               return; // should never happen
+         }
+
          int hscrollRange = 0;
          int dy = exposeRect.Top;
          offset += dy / ConstantHeight;
@@ -385,10 +413,10 @@ namespace Docking.Widgets
                }
                else
                {
-                  LineLayout.SetText(content.ToString());
+                  column.LineLayout.SetText(content.ToString());
                   win.DrawRectangle(backgound, true, rect);
                   dx += 2;
-                  win.DrawLayout(text, dx, dy, LineLayout);
+                  win.DrawLayout(text, dx, dy, column.LineLayout);
                   dx += xwidth + mColumnControl.GripperWidth - 2;
                   rect.Offset(xwidth + mColumnControl.GripperWidth, 0);
                }
@@ -904,14 +932,14 @@ namespace Docking.Widgets
       int DragGripper = -1;
       int LastDragX = 0;
 
-      public void AddColumn(string name, Widget widget, int tag, int width = 50, int min_width = 20)
+      public void AddColumn(string name, Widget widget, int tag, Pango.Layout layout, int width = 50, int min_width = 20)
       {
          int offset = 0;
          foreach (KeyValuePair<Widget, Column> kvp in mColumns)
             if (kvp.Key.Visible)
                offset += kvp.Value.Width + GripperWidth;
 
-         Column column = new Column(name, widget, tag, width, min_width) { SortOrder = mColumns.Count, X = offset };
+         Column column = new Column(name, widget, tag, width, min_width, layout) { SortOrder = mColumns.Count, X = offset };
          mColumns.Add(widget, column);
          base.Put(widget, offset, TopOffset);
          widget.SizeAllocated += (o, args) =>
@@ -961,6 +989,14 @@ namespace Docking.Widgets
             int x = g.Value;
             win.DrawLine(gc, x + 2, Allocation.Top, x + 2, Allocation.Bottom);
          }
+      }
+
+      public Column GetColumn(int tag)
+      {
+         foreach(var c in mColumns.Values)
+            if (c.Tag == tag)
+               return c;
+         return null;
       }
 
       public IEnumerable<Column> GetColumns()
@@ -1024,7 +1060,7 @@ namespace Docking.Widgets
 
       public class Column
       {
-         public Column(string name, Widget w, int tag, int width, int minWidth)
+         public Column(string name, Widget w, int tag, int width, int minWidth, Pango.Layout layout)
          {
             Initialized = false;
             Name = name;
@@ -1032,6 +1068,7 @@ namespace Docking.Widgets
             Tag = tag;
             Width = width;
             MinWidth = minWidth;
+            LineLayout = layout;
          }
 
          public bool Initialized { get; set; }
@@ -1043,6 +1080,7 @@ namespace Docking.Widgets
          public int Width { get; set; }
          public int MinWidth { get; set; }
          public bool Visible { get { return Widget.Visible; } set { Widget.Visible = value; } }
+         public Pango.Layout LineLayout { get; set; }
       }
    }
 
