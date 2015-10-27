@@ -219,6 +219,11 @@ namespace Docking.Tools
            return color.A << 24 | color.B << 16 | color.G << 8 | color.R;
         }
 
+        public static uint ToUInt32(this System.Drawing.Color color) // RGBA
+        {
+           return ((uint)color.R) << 24 | ((uint)color.G) << 16 | ((uint)color.B) << 8 | ((uint)color.A);
+        }
+
         public static void ToRGBA(this Cairo.Color color, out byte r, out byte g, out byte b, out byte a)
         {
            r = (byte)(color.R*255f);
