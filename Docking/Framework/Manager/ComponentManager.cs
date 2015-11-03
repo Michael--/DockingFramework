@@ -1436,8 +1436,8 @@ namespace Docking.Components
 
       public void AddComponent(object o)
       {
-         Debug.Assert(!mComponents.Contains(o));
-         mComponents.Add(o);
+         if (!mComponents.Contains(o))
+            mComponents.Add(o);
          if(mInitialLoadOfComponentsCompleted)
          {
             foreach(var item in mComponents)
@@ -1452,9 +1452,8 @@ namespace Docking.Components
 
       public void RemoveComponent(object o)
       {
-         Debug.Assert(mComponents.Contains(o));
-         mComponents.Remove(o);
-         Debug.Assert(!mComponents.Contains(o));
+         if (mComponents.Contains(o))
+            mComponents.Remove(o);
          if(mInitialLoadOfComponentsCompleted)
          {
             foreach(object item in mComponents)
