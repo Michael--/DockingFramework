@@ -125,6 +125,15 @@ namespace Docking.Components
 
       void CollectTypes(String filename)
       {
+         // save runtime Exceptions by ignoring known problematic files
+         List<string> filenames_to_skip = new List<string>()
+         {
+            "SQLiteNetExtensions.dll"
+         };
+         foreach(string s in filenames_to_skip)
+            if(filename.ToLowerInvariant().EndsWith(System.IO.Path.DirectorySeparatorChar+s.ToLowerInvariant()))
+               return;
+            
          try
          {
             Assembly asm = Assembly.LoadFrom(filename);
