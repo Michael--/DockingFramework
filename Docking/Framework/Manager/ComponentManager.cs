@@ -874,7 +874,7 @@ namespace Docking.Components
             return false;
          }
 
-         List<Component> openers = new List<Component>();
+         List<Component> existing_components = new List<Component>();
 
          bool isArchive = archiveHandle == null && Archive != null && Archive.IsArchive(filename);
          int openedArchiveFiles = 0;
@@ -900,39 +900,40 @@ namespace Docking.Components
                Component c = item.Content as Component;
                if (c is IFileOpen && (c as IFileOpen).CanOpenFile(filename))
                {
-                  openers.Add(c);
+                  existing_components.Add(c);
                }
             }
 
             // search for available components
-            List<ComponentFactoryInformation> components = new List<ComponentFactoryInformation>();
+            List<ComponentFactoryInformation> available_components = new List<ComponentFactoryInformation>();
             foreach (ComponentFactoryInformation cfi in ComponentFinder.ComponentInfos)
             {
                if (typeof(IFileOpen).IsAssignableFrom(cfi.ComponentType) && cfi.SupportsFile(filename))
                {
                   // check if this is a single instance type and an instance is already open
-                  if (null == openers.Find((Component _c) => { return (_c.ComponentInfo.ComponentType == cfi.ComponentType) && (false == cfi.MultiInstance); }))
+                  if (null == existing_components.Find((Component _c) => { return (_c.ComponentInfo.ComponentType == cfi.ComponentType) && (false == cfi.MultiInstance); }))
                   {
-                     components.Add( cfi );
+                     available_components.Add( cfi );
                   }
                }
             }
 
-            if(components.Count + openers.Count > 1)
+            if(available_components.Count + existing_components.Count > 1) // show a dialog and let the user choose
             {
 			      bool success = true;
 
                // create a dialog and update the internal component model
-               ComponentSelectorDialog selector = new ComponentSelectorDialog( components, openers );
-               int result = selector.Run();
-               selector.selectedComponents( ref components, ref openers );
-               selector.Destroy();
+               ComponentSelectorDialog dlg = new ComponentSelectorDialog( available_components, existing_components );
+               int result = dlg.Run();
+               dlg.GetSelectedComponents(ref available_components, ref existing_components);
+               dlg.Hide();
+               //dlg.Destroy();
 
                // show to let the user choose how to open that file
                if(result==(int)ResponseType.Ok)
                {
                   // create a instance for each selected component
-                  foreach( ComponentFactoryInformation cfi in components )
+                  foreach( ComponentFactoryInformation cfi in available_components )
                   {
                      var component = CreateComponent(cfi, true ).Content;
                      if (component is IFileOpen)
@@ -944,7 +945,7 @@ namespace Docking.Components
                   }
 
                   // forward this file to all selected instances
-                  foreach (Component component in openers)
+                  foreach (Component component in existing_components)
                   {
                      MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} in component {1}..."), filename, component.Name);
                      success &= (component as IFileOpen).OpenFile(filename);
@@ -958,12 +959,24 @@ namespace Docking.Components
                   return success;
                }               
             }
-            else if (1 == components.Count && 0 == openers.Count)
+            else if(existing_components.Count==1 && available_components.Count==0) // use an existing component
             {
-               var component = CreateComponent(components[0], true).Content;
+               MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} in component {1}..."), filename, existing_components[0].Name);
+               bool success = (existing_components[0] as IFileOpen).OpenFile(filename);
+               if (success)
+               {
+                  AddRecentFile(filename);
+               }
+               MessageWriteLine(success ? "File opened successfully" : "File opening failed");
+               return success;
+
+            }
+            else if(existing_components.Count==0 && available_components.Count==1) // instantiate a new component
+            {
+               var component = CreateComponent(available_components[0], true).Content;
                if (component is IFileOpen)
                {
-                  MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} in component {1}..."), filename, components[0].Name);
+                  MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} in component {1}..."), filename, available_components[0].Name);
                   bool success = (component as IFileOpen).OpenFile(filename);
                   if (success)
                   {
@@ -973,21 +986,9 @@ namespace Docking.Components
                   return success;
                }
             }
-            else if (0 == components.Count && 1 == openers.Count)
+            else // no component available at all
             {
-               MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} in component {1}..."), filename, openers[0].Name);
-               bool success = (openers[0] as IFileOpen).OpenFile(filename);
-               if (success)
-               {
-                  AddRecentFile(filename);
-               }
-               MessageWriteLine(success ? "File opened successfully" : "File opening failed");
-               return success;
-
-            }
-            else
-            {
-               MessageWriteLine("Could not find any component which can handle file {0}".FormatLocalizedWithPrefix("Docking.Components"), filename);
+               MessageBox.Show("Could not find any component which can handle file {0}".FormatLocalizedWithPrefix("Docking.Components"), filename);
                return false;
             }
          }

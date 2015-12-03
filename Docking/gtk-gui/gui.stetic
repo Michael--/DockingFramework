@@ -695,7 +695,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Dialog" id="Docking.Widgets.ComponentSelectorDialog" design-size="450 300">
+  <widget class="Gtk.Dialog" id="Docking.Widgets.ComponentSelectorDialog" design-size="558 345">
     <property name="MemberName" />
     <property name="WindowPosition">CenterOnParent</property>
     <property name="Buttons">2</property>
@@ -714,7 +714,9 @@
                 <property name="WidthRequest">330</property>
                 <property name="HeightRequest">30</property>
                 <property name="Xalign">0</property>
-                <property name="LabelProp" translatable="yes">Found multiple components to open the selected file. Please select one or multiple component(s) from the list below and press Apply to proceed:</property>
+                <property name="LabelProp">Multiple components are available for handling this file.
+Please choose one or more from the list below:</property>
+                <property name="UseMarkup">True</property>
                 <property name="Wrap">True</property>
               </widget>
               <packing>

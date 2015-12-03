@@ -31,7 +31,8 @@ namespace Docking.Widgets
 			this.label1.HeightRequest = 30;
 			this.label1.Name = "label1";
 			this.label1.Xalign = 0F;
-			this.label1.LabelProp = "Found multiple components to open the selected file. Please select one or multiple component(s) from the list below and press Apply to proceed:";
+			this.label1.LabelProp = "Multiple components are available for handling this file.\nPlease choose one or more from the list below:";
+			this.label1.UseMarkup = true;
 			this.label1.Wrap = true;
 			this.vbox2.Add (this.label1);
 			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.label1]));
@@ -87,8 +88,8 @@ namespace Docking.Widgets
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
 			}
-			this.DefaultWidth = 450;
-			this.DefaultHeight = 300;
+			this.DefaultWidth = 558;
+			this.DefaultHeight = 345;
 			this.m_View.HasDefault = true;
 			this.Show ();
 		}

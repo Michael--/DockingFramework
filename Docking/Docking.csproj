@@ -239,7 +239,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <EmbeddedResource Include="Framework\Resources\Activities-16.png" />
-    <EmbeddedResource Include="Framework\Resources\ComponentList-16.png" />
+    <EmbeddedResource Include="Framework\Resources\Component-16.png" />
     <EmbeddedResource Include="Framework\Resources\Copy-16.png" />
     <EmbeddedResource Include="Framework\Resources\Cut-16.png" />
     <EmbeddedResource Include="Framework\Resources\File-16.png" />

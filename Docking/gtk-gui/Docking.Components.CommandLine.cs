@@ -6,7 +6,7 @@ namespace Docking.Components
 	{
 		private global::Gtk.VBox vbox1;
 		private global::MonoDevelop.Components.ConsoleView consoleview;
-		
+
 		protected virtual void Build ()
 		{
 			global::Stetic.Gui.Initialize (this);

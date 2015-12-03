@@ -5,17 +5,11 @@ namespace Docking.Components
 	public partial class ScriptEditor
 	{
 		private global::Gtk.VBox vbox2;
-		
 		private global::Gtk.VPaned vpaned1;
-		
 		private global::Gtk.ScrolledWindow scrolledwindow4;
-		
 		private global::Gtk.HBox hbox1;
-		
 		private global::Docking.Widgets.TextViewLocalized textMessage;
-		
 		private global::Gtk.VBox vbox1;
-		
 		private global::Gtk.Button buttonOK;
 
 		protected virtual void Build ()
@@ -62,23 +56,34 @@ namespace Docking.Components
 			this.buttonOK.CanFocus = true;
 			this.buttonOK.Name = "buttonOK";
 			this.buttonOK.UseUnderline = true;
-			global::Gtk.Image w3 = new global::Gtk.Image ();
-			w3.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-apply", global::Gtk.IconSize.Button);
-			this.buttonOK.Image = w3;
+			// Container child buttonOK.Gtk.Container+ContainerChild
+			global::Gtk.Alignment w3 = new global::Gtk.Alignment (0.5F, 0.5F, 0F, 0F);
+			// Container child GtkAlignment.Gtk.Container+ContainerChild
+			global::Gtk.HBox w4 = new global::Gtk.HBox ();
+			w4.Spacing = 2;
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Image w5 = new global::Gtk.Image ();
+			w5.Pixbuf = global::Stetic.IconLoader.LoadIcon (this, "gtk-apply", global::Gtk.IconSize.Button);
+			w4.Add (w5);
+			// Container child GtkHBox.Gtk.Container+ContainerChild
+			global::Gtk.Label w7 = new global::Gtk.Label ();
+			w4.Add (w7);
+			w3.Add (w4);
+			this.buttonOK.Add (w3);
 			this.vbox1.Add (this.buttonOK);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.buttonOK]));
-			w4.Position = 0;
-			w4.Expand = false;
-			w4.Fill = false;
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.buttonOK]));
+			w11.Position = 0;
+			w11.Expand = false;
+			w11.Fill = false;
 			this.hbox1.Add (this.vbox1);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox1]));
-			w5.Position = 1;
-			w5.Expand = false;
-			w5.Fill = false;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.vbox1]));
+			w12.Position = 1;
+			w12.Expand = false;
+			w12.Fill = false;
 			this.vpaned1.Add (this.hbox1);
 			this.vbox2.Add (this.vpaned1);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vpaned1]));
-			w7.Position = 0;
+			global::Gtk.Box.BoxChild w14 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.vpaned1]));
+			w14.Position = 0;
 			this.Add (this.vbox2);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

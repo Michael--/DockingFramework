@@ -5,15 +5,10 @@ namespace Docking.Widgets
 	public partial class VirtualListView
 	{
 		private global::Gtk.VBox vbox1;
-		
 		private global::Docking.Widgets.Find findwidget;
-		
 		private global::Gtk.HBox hbox2;
-		
 		private global::Gtk.DrawingArea drawingarea;
-		
 		private global::Gtk.VScrollbar vscrollbar1;
-		
 		private global::Gtk.HScrollbar hscrollbar1;
 
 		protected virtual void Build ()
@@ -53,10 +48,10 @@ namespace Docking.Widgets
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.vscrollbar1 = new global::Gtk.VScrollbar (null);
 			this.vscrollbar1.Name = "vscrollbar1";
-			this.vscrollbar1.Adjustment.Upper = 100D;
-			this.vscrollbar1.Adjustment.PageIncrement = 10D;
-			this.vscrollbar1.Adjustment.PageSize = 10D;
-			this.vscrollbar1.Adjustment.StepIncrement = 1D;
+			this.vscrollbar1.Adjustment.Upper = 100;
+			this.vscrollbar1.Adjustment.PageIncrement = 10;
+			this.vscrollbar1.Adjustment.PageSize = 10;
+			this.vscrollbar1.Adjustment.StepIncrement = 1;
 			this.hbox2.Add (this.vscrollbar1);
 			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vscrollbar1]));
 			w3.Position = 1;
@@ -68,10 +63,10 @@ namespace Docking.Widgets
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.hscrollbar1 = new global::Gtk.HScrollbar (null);
 			this.hscrollbar1.Name = "hscrollbar1";
-			this.hscrollbar1.Adjustment.Upper = 100D;
-			this.hscrollbar1.Adjustment.PageIncrement = 10D;
-			this.hscrollbar1.Adjustment.PageSize = 10D;
-			this.hscrollbar1.Adjustment.StepIncrement = 1D;
+			this.hscrollbar1.Adjustment.Upper = 100;
+			this.hscrollbar1.Adjustment.PageIncrement = 10;
+			this.hscrollbar1.Adjustment.PageSize = 10;
+			this.hscrollbar1.Adjustment.StepIncrement = 1;
 			this.vbox1.Add (this.hscrollbar1);
 			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hscrollbar1]));
 			w5.Position = 2;

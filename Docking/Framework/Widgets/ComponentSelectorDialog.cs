@@ -9,14 +9,14 @@ using Gdk;
 namespace Docking.Widgets
 {
    [System.ComponentModel.ToolboxItem(false)]
-   public partial class ComponentSelectorDialog : Gtk.Dialog
+   public partial class ComponentSelectorDialog : Gtk.Dialog, ILocalizableWidget
    {
       private class UIComponentDescriptor 
       {
          /// <summary>
          /// name if item to show in tree view
          /// </summary>
-         private string m_Name;
+         private string m_Text;
 
          /// <summary>
          /// image to show in tree view
@@ -26,21 +26,22 @@ namespace Docking.Widgets
          /// <summary>
          /// 
          /// </summary>
-         private ComponentFactoryInformation m_Component;
+         private ComponentFactoryInformation m_ComponentFactoryInformation;
 
          /// <summary>
          /// Name of component to show in list view
          /// </summary>
-         virtual public string Name { get { return m_Name; } }
+         virtual public string Text { get { return m_Text; } }
 
          /// <summary>
          /// small Icon to show in list view
          /// </summary>
          public Pixbuf Icon { get { return m_Icon; } }
+
          /// <summary>
          /// the orignal constructor given factory info
          /// </summary>
-         public ComponentFactoryInformation Descriptor { get { return m_Component; } }
+         public ComponentFactoryInformation ComponentFactoryInformation { get { return m_ComponentFactoryInformation; } }
 
          /// <summary>
          /// 
@@ -48,44 +49,33 @@ namespace Docking.Widgets
          public Component Instance { get; private set; }
 
          /// <summary>
-         /// checkbox is in sleeced state or not
+         /// checkbox is in selected state or not
          /// </summary>
          public bool Selected { get; set; }
 
-         public UIComponentDescriptor(string _name)
+         public UIComponentDescriptor(string text)
          {
-            m_Component = null;
-            m_Name = _name;
-            m_Icon = Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.ComponentList-16.png");
+            m_Text = text;
+            m_Icon = Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Component-16.png");
          }
 
-
-         public UIComponentDescriptor(ComponentFactoryInformation _component)
+         public UIComponentDescriptor(ComponentFactoryInformation cfi, Component component = null)
          {
-            m_Component = _component;
-            m_Icon = _component.Icon;
-            if ( null != _component.Name && _component.Name != string.Empty )
-            {
-               m_Name = _component.Name;
-            }
-            else 
-            {
-               m_Name = _component.Comment;
-            }
-         }
+            m_ComponentFactoryInformation = cfi;
+            m_Icon = cfi.Icon;
+            Instance = component;
 
-         public UIComponentDescriptor(ComponentFactoryInformation _component, Component _inst)
-         {
-            m_Component = _component;
-            Instance = _inst;
-            m_Icon = _component.Icon;
-            if (null != _component.Name && _component.Name != string.Empty)
+            if(!String.IsNullOrEmpty(cfi.MenuPath))
             {
-               m_Name = _component.Name;
+               // TODO we in future want to display the localized component name here.
+               // Currently that is impossible because the getter for that name currently does not sit in the factory, but in the instance.
+               // As a workaround, we take the menu item string (which usually matches the window title).
+               string[] portions = cfi.MenuPath.Split('\\');
+               m_Text = portions[portions.Length-1]; 
             }
             else
             {
-               m_Name = _component.Comment;
+               m_Text = "(unnamed component)";
             }
          }
 
@@ -94,7 +84,7 @@ namespace Docking.Widgets
       /// <summary>
       /// the model to propagate all icon containers to to tree view
       /// </summary>
-      protected TreeStore m_Components = new TreeStore(typeof(UIComponentDescriptor));
+      protected TreeStore m_TreeStore = new TreeStore(typeof(UIComponentDescriptor));
 
       /// <summary>
       /// Constructor create an instance using a list of available already created components and all other kown components
@@ -103,74 +93,90 @@ namespace Docking.Widgets
       /// <param name="_instances"></param>
       public ComponentSelectorDialog(List<ComponentFactoryInformation> _components, List<Component> _instances)
       {
-         this.Build();
-
+         this.Build();          
+         this.Icon = Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.File-16.png");
+         (this as ILocalizableWidget).Localize(this.GetType().ToString());         
          BuildTree();
-
-         // update model
          updateModel(_components, _instances);
       }
 
-      public void updateModel(List<ComponentFactoryInformation> _components, List<Component> _instances)
+      #region ILocalizableWidget
+      void ILocalizableWidget.Localize(string namespc)
+      {
+         Localization.LocalizeControls(namespc, this as Gtk.Container);
+
+         // TODO implement this correctly, this is just a quick+dirty non-localizing implementation
+         this.Title = "Choose Component";
+      }
+      #endregion
+
+      public void updateModel(List<ComponentFactoryInformation> cfis, List<Component> instances)
       {
          // clear to avoid useless updates
          m_View.Model = null;
-         m_Components.Clear();
+         m_TreeStore.Clear();
 
-         if ( 0 < _components.Count )
+         TreeIter it1 = TreeIter.Zero;
+         TreeIter it2 = TreeIter.Zero;
+           
+         if(instances.Count>0)
          {
-            var it = m_Components.AppendValues(new UIComponentDescriptor("Available Commponent Types"));
-            foreach( ComponentFactoryInformation cfi in _components )
+            it1 = m_TreeStore.AppendValues(new UIComponentDescriptor("Currently Opened Components"));
+            foreach(Component component in instances)
             {
-               m_Components.AppendValues( it, new UIComponentDescriptor(cfi) );
+               m_TreeStore.AppendValues(it1, new UIComponentDescriptor(component.ComponentInfo, component ));
             }
          }
 
-         if ( 0 < _instances.Count )
+         if(cfis.Count>0)
          {
-            var it = m_Components.AppendValues(new UIComponentDescriptor("Available Commponent Instances"));
-            foreach ( Component cfi in _instances)
+            it2 = m_TreeStore.AppendValues(new UIComponentDescriptor("Available Components"));
+            foreach(ComponentFactoryInformation cfi in cfis)
             {
-               m_Components.AppendValues( it, new UIComponentDescriptor(cfi.ComponentInfo, cfi ));
-            }
+               m_TreeStore.AppendValues(it2, new UIComponentDescriptor(cfi) );
+            }            
          }
 
-         // pass data to view
-         m_View.Model = m_Components;
+         m_View.Model = m_TreeStore;
+
+         if(!it1.Equals(TreeIter.Zero))
+            m_View.ExpandRowWithParents(it1);
+         if(!it2.Equals(TreeIter.Zero))
+            m_View.ExpandRowWithParents(it2);
       }
 
-      public bool selectedComponents( ref List<ComponentFactoryInformation> _components, ref List<Component> _instances )
+      public void GetSelectedComponents(ref List<ComponentFactoryInformation> components, ref List<Component> instances )
       {
-         _components.Clear();
-         _instances.Clear();
+         components.Clear();
+         instances.Clear();
 
-         List<ComponentFactoryInformation> components = new List<ComponentFactoryInformation>();
-         List<Component> instances = new List<Component>();
+         // cannot operate on "instances" or "components" directly due to the lambda expression below (won't compile)
+         List<ComponentFactoryInformation> components_ = new List<ComponentFactoryInformation>();
+         List<Component>                   instances_  = new List<Component>();
 
-         m_Components.Foreach( (TreeModel model, TreePath path, TreeIter iter) => 
+         m_TreeStore.Foreach( (TreeModel model, TreePath path, TreeIter iter) => 
          { 
             UIComponentDescriptor item = model.GetValue( iter, 0 ) as UIComponentDescriptor;
-            if( null != item )
+            if(item!=null)
             {
-               if ( item.Selected)
+               if(item.Selected)
                {
-                  if( null == item.Instance )
+                  if(item.Instance==null)
                   {
-                     components.Add(item.Descriptor);
+                     components_.Add(item.ComponentFactoryInformation);
                   }
                   else
                   {
-                     instances.Add( item.Instance );
+                     instances_.Add(item.Instance);
                   }
                }
             }
             return false; 
          } );
 
-         _components = components;
-         _instances = instances;
-
-         return (0 < _components.Count) || (0 < _instances.Count);
+         // cannot operate on "instances" or "components" directly due to the lambda expression below (won't compile)
+         components = components_;
+         instances = instances_;
       }
 
       private void BuildTree()
@@ -198,7 +204,7 @@ namespace Docking.Widgets
             {
                Gtk.CellRendererText cell = _cell as Gtk.CellRendererText;
                var model_item = _model.GetValue(_iter, 0) as UIComponentDescriptor;
-               cell.Text = model_item.Name;
+               cell.Text = model_item.Text;
             });
             m_View.AppendColumn(column);
          }
@@ -212,7 +218,7 @@ namespace Docking.Widgets
             column.SetCellDataFunc(renderer, (TreeViewColumn _column, CellRenderer _cell, TreeModel _model, TreeIter _iter) =>
             {
                var model_item = _model.GetValue(_iter, 0) as UIComponentDescriptor;
-               if ( null != model_item.Descriptor )
+               if ( null != model_item.ComponentFactoryInformation )
                {
                   (_cell as CellRendererToggle).Active = (model_item as UIComponentDescriptor).Selected;
                   (_cell as CellRendererToggle).Visible = true;
@@ -229,8 +235,8 @@ namespace Docking.Widgets
 		protected void OnComponentSelected( object _inst, ToggledArgs _args )
       {
          TreeIter it;
-         m_Components.GetIter(out it, new TreePath(_args.Path));
-         (m_Components.GetValue(it, 0) as UIComponentDescriptor).Selected = !(_inst as CellRendererToggle).Active;
+         m_TreeStore.GetIter(out it, new TreePath(_args.Path));
+         (m_TreeStore.GetValue(it, 0) as UIComponentDescriptor).Selected = !(_inst as CellRendererToggle).Active;
       }
    }
 }
