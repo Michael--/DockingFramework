@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using Docking.Tools;
 
@@ -57,9 +58,19 @@ namespace Docking.Components
    public interface IComponentFactory 
    {
       /// <summary>
+      /// Returns a list of file type supported to open by this component
+      /// </summary>
+      List<FileFilterExt> SupportedFileTypes { get; }
+
+      /// <summary>
       /// Get a short description of the component.
       /// </summary>
       String Comment { get; }
+
+      /// <summary>
+      /// Get a readable name of this component to show within the selector dialog
+      /// </summary>
+      String Name { get; }
 
       /// <summary>
       /// The menu path of the component. Return null if no menu is necessary (e.g. hidden components).
@@ -101,9 +112,22 @@ namespace Docking.Components
    /// </summary>
    public abstract class ComponentFactory : IComponentFactory
    {
-      public abstract String     Comment        { get;                      }
+      public abstract String Comment { get; }
       public abstract String     MenuPath       { get;                      }
       public abstract Type       TypeOfInstance { get;                      }
+
+      /// <summary>
+      /// List of file which can opened by this component. The component factory use this 
+      /// information to select one or more components while opening a file by the file menu.
+      /// </summary>
+      public virtual List<FileFilterExt> SupportedFileTypes { get { return null; } }
+
+      /// <summary>
+      /// Returns a use readable name of the component to create by the component factory while open a file for this component
+      /// </summary>
+      /// <value>The name.</value>
+      public virtual String Name    { get { return string.Empty; } }
+
       public virtual  Mode       Options        { get { return Mode.None; } }
       public virtual  Gdk.Pixbuf Icon           { get { return null;      } }
       public virtual  string     LicenseGroup   { get { return null;      } }

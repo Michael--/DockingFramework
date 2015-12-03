@@ -13,6 +13,11 @@ namespace Docking.Components
       // Your component derived from this class will only do read access, if any.
       public DockItem DockItem { get; set; }
 
+      /// <summary>
+      /// Component info used to create this instance
+      /// </summary>
+      public ComponentFactoryInformation ComponentInfo { get; set; }
+
       // Returns true if this component currently is selected inits containing ComponentManager.
       // Note that this is something different than the focus.
       // The focus can be at some text edit control etc.      

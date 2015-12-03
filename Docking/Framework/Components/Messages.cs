@@ -90,6 +90,7 @@ namespace Docking.Components
     public class MessagesFactory : ComponentFactory
     {
         public override Type TypeOfInstance { get { return typeof(Messages); } }
+        public override String Name { get { return "Messages"; } }
         public override String MenuPath { get { return @"View\Infrastructure\Messages"; } }
         public override String Comment { get { return "shows runtime messages of the application"; } }
         public override Gdk.Pixbuf Icon { get { return Docking.Tools.ResourceLoader_Docking.LoadPixbuf("Messages-16.png"); } }

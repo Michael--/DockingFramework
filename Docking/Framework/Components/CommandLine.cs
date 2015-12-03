@@ -257,6 +257,7 @@ namespace Docking.Components
    public class CommandFactory : ComponentFactory
    {
       public override Type TypeOfInstance { get { return typeof(CommandLine); } }
+      public override String Name { get { return "Command Line"; } }
       public override String MenuPath { get { return @"View\Infrastructure\Command Line"; } }
       public override String Comment { get { return "interactive input of python commands"; } }
       public override Gdk.Pixbuf Icon { get { return Docking.Tools.ResourceLoader_Docking.LoadPixbuf("Messages-16.png"); } }

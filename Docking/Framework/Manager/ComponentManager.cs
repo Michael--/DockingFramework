@@ -472,25 +472,28 @@ namespace Docking.Components
       {
          TaggedImageMenuItem item = sender as TaggedImageMenuItem;
          if(item==null)
+         {
             return;
+         }
 
          string filename = (string) item.Tag;
-
          if(!File.Exists(filename))
          {
             if(MessageBox.Show(MessageType.Question, ButtonsType.YesNo,
-                               "File '{0}' does not exist. Do you want to remove it from the recent files list?".L(), filename
-                              )==ResponseType.Yes)
+                               "File '{0}' does not exist. Do you want to remove it from the recent files list?".L(), filename )==ResponseType.Yes)
+            {
                RemoveRecentFile(filename);
+            }
             return;
          }
 
          if(!OpenFile(filename))
          {
             if(MessageBox.Show(MessageType.Question, ButtonsType.YesNo,
-                               "Opening file '{0}' failed. Maybe no window is open which can handle it. In future, this tool will offer you such a window. Currently it cannot do that yet. Do you want to remove the file from the recent files list?".L(), filename
-                              )==ResponseType.Yes)
+                               "Opening file '{0}' failed. Do you want to remove the file from the recent files list?".L(), filename )==ResponseType.Yes)
+            {
                RemoveRecentFile(filename);
+            }
             return;
          }
 
@@ -871,7 +874,7 @@ namespace Docking.Components
             return false;
          }
 
-         List<KeyValuePair<IFileOpen, string>> openers = new List<KeyValuePair<IFileOpen, string>>();
+         List<Component> openers = new List<Component>();
 
          bool isArchive = archiveHandle == null && Archive != null && Archive.IsArchive(filename);
          int openedArchiveFiles = 0;
@@ -889,27 +892,102 @@ namespace Docking.Components
                Archive.Close(handle);
             }
          }
-
          else
          {
-            // search EXISTING instances of components if they can handle this file:
+            // search already created instances of components if they can handle this file:
             foreach (DockItem item in DockFrame.GetItems())
             {
-               if (item.Content is IFileOpen)
+               Component c = item.Content as Component;
+               if (c is IFileOpen && (c as IFileOpen).CanOpenFile(filename))
                {
-                  IFileOpen opener = (item.Content as IFileOpen);
-                  string info = opener.TryOpenFile(filename);
-                  if (info != null)
-                     openers.Add(new KeyValuePair<IFileOpen, string>(opener, info));
+                  openers.Add(c);
                }
             }
 
-            if (openers.Count <= 0)
+            // search for available components
+            List<ComponentFactoryInformation> components = new List<ComponentFactoryInformation>();
+            foreach (ComponentFactoryInformation cfi in ComponentFinder.ComponentInfos)
             {
-               // TODO now search all classes implementing IFileOpen by calling their method IFileOpen.SupportedFileTypes()
-               // and let the user instantiate them to handle this file.
-               // That's not implemented yet. For now we fail with despair:
-               MessageWriteLine("No component is instantiated which can handle file {0}".FormatLocalizedWithPrefix("Docking.Components"), filename);
+               if (typeof(IFileOpen).IsAssignableFrom(cfi.ComponentType) && cfi.SupportsFile(filename))
+               {
+                  // check if this is a single instance type and an instance is already open
+                  if (null == openers.Find((Component _c) => { return (_c.ComponentInfo.ComponentType == cfi.ComponentType) && (false == cfi.MultiInstance); }))
+                  {
+                     components.Add( cfi );
+                  }
+               }
+            }
+
+            if(components.Count + openers.Count > 1)
+            {
+			      bool success = true;
+
+               // create a dialog and update the internal component model
+               ComponentSelectorDialog selector = new ComponentSelectorDialog( components, openers );
+               int result = selector.Run();
+               selector.selectedComponents( ref components, ref openers );
+               selector.Destroy();
+
+               // show to let the user choose how to open that file
+               if(result==(int)ResponseType.Ok)
+               {
+                  // create a instance for each selected component
+                  foreach( ComponentFactoryInformation cfi in components )
+                  {
+                     var component = CreateComponent(cfi, true ).Content;
+                     if (component is IFileOpen)
+                     {
+                        MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} in component {1}..."), filename, cfi.Name );
+                        success &= (component as IFileOpen).OpenFile(filename);
+                        MessageWriteLine(success ? "File opened successfully" : "File opening failed");
+                     }
+                  }
+
+                  // forward this file to all selected instances
+                  foreach (Component component in openers)
+                  {
+                     MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} in component {1}..."), filename, component.Name);
+                     success &= (component as IFileOpen).OpenFile(filename);
+                     MessageWriteLine(success ? "File opened successfully" : "File opening failed");
+                  }
+
+                  if (success)
+                  {
+                     AddRecentFile(filename);
+                  }
+                  return success;
+               }               
+            }
+            else if (1 == components.Count && 0 == openers.Count)
+            {
+               var component = CreateComponent(components[0], true).Content;
+               if (component is IFileOpen)
+               {
+                  MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} in component {1}..."), filename, components[0].Name);
+                  bool success = (component as IFileOpen).OpenFile(filename);
+                  if (success)
+                  {
+                     AddRecentFile(filename);
+                  }
+                  MessageWriteLine(success ? "File opened successfully" : "File opening failed");
+                  return success;
+               }
+            }
+            else if (0 == components.Count && 1 == openers.Count)
+            {
+               MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} in component {1}..."), filename, openers[0].Name);
+               bool success = (openers[0] as IFileOpen).OpenFile(filename);
+               if (success)
+               {
+                  AddRecentFile(filename);
+               }
+               MessageWriteLine(success ? "File opened successfully" : "File opening failed");
+               return success;
+
+            }
+            else
+            {
+               MessageWriteLine("Could not find any component which can handle file {0}".FormatLocalizedWithPrefix("Docking.Components"), filename);
                return false;
             }
          }
@@ -928,15 +1006,13 @@ namespace Docking.Components
          }
 
          // TODO: consider all and let the user pick which one
-         if (!isArchive)
+         /*if (!isArchive)
          {
             MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} as {1}..."), filename, openers[0].Value);
             bool success = openers[0].Key.OpenFile(filename);
             MessageWriteLine(success ? "File opened successfully" : "File opening failed");
-            if (success)
-               AddRecentFile(filename);
-            return success;
-         }
+            
+         }**/
 
          // any archive opening
          if (openedArchiveFiles > 0)
@@ -2198,6 +2274,9 @@ namespace Docking.Components
          Component component = cfi.CreateInstance(this);
          if(component==null)
             return null;
+
+         // keep component factory info of creation
+         component.ComponentInfo = cfi;
 
          DockItem item = DockFrame.AddItem(name);
          AddSelectNotifier(item, component);

@@ -225,6 +225,7 @@ namespace Docking.Components
    public class ScriptEditorFactory : ComponentFactory
    {
       public override Type TypeOfInstance { get { return typeof(ScriptEditor); } }
+      public override String Name { get { return "Script Editor"; } }
       public override String MenuPath { get { return @"View\Infrastructure\Script Editor"; } }
       public override String Comment { get { return "Show selected script"; } }
       public override Gdk.Pixbuf Icon { get { return Docking.Tools.ResourceLoader_Docking.LoadPixbuf("Messages-16.png"); } }

@@ -216,7 +216,7 @@
     <Compile Include="Framework\Components\MessageBox.cs" />
     <Compile Include="Framework\Tools\Levenshtein.cs" />
     <Compile Include="Framework\Components\CommandLine.cs" />
-    <Compile Include="gtk-gui\Docking.Components.Command.cs" />
+    <Compile Include="gtk-gui\Docking.Components.CommandLine.cs" />
     <Compile Include="Monodevelop.Components\ConsoleView.cs" />
     <Compile Include="Framework\Components\ScriptEditor.cs" />
     <Compile Include="gtk-gui\Docking.Components.ScriptEditor.cs" />
@@ -233,6 +233,8 @@
     <Compile Include="Framework\Interfaces\IPropertyViewer.cs" />
     <Compile Include="Framework\Widgets\Find.cs" />
     <Compile Include="gtk-gui\Docking.Widgets.Find.cs" />
+    <Compile Include="Framework\Widgets\ComponentSelectorDialog.cs" />
+    <Compile Include="gtk-gui\Docking.Widgets.ComponentSelectorDialog.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

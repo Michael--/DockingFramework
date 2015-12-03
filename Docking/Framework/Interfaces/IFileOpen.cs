@@ -17,7 +17,7 @@ namespace Docking.Components
         /// If yes, this function will return the string how this components names such files.
         /// If no, it will return null.
         /// </summary>
-        String TryOpenFile(String filename);
+        bool CanOpenFile(String filename);
 
         /// <summary>
         /// Load the file. Returns true on success.

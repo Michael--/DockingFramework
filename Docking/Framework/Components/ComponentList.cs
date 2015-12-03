@@ -185,6 +185,7 @@ namespace Docking.Components
    public class ComponentListFactory : ComponentFactory
    {
       public override Type TypeOfInstance { get { return typeof(ComponentList); } }
+      public override String Name { get { return "Component List"; } }
       public override String MenuPath { get { return @"View\Infrastructure\Component List"; } }
       public override String Comment { get { return "displays a list of all components"; } }
       public override Gdk.Pixbuf Icon { get { return Docking.Tools.ResourceLoader_Docking.LoadPixbuf("ComponentList-16.png"); } }

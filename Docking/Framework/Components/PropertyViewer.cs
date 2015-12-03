@@ -79,7 +79,8 @@ namespace Docking.Components
     public class PropertyViewerFactory : ComponentFactory
     {
         public override Type TypeOfInstance { get { return typeof(PropertyViewer); } }
-        public override String MenuPath { get { return @"View\Infrastructure\Properties"; } }
+        public override String Name { get { return "Property Viewer"; } }
+        public override String MenuPath { get { return @"View\Infrastructure\Property Viewer"; } }
         public override String Comment { get { return "Show selected Properties"; } }
         public override Gdk.Pixbuf Icon { get { return Docking.Tools.ResourceLoader_Docking.LoadPixbuf("PropertyViewer-16.png"); } }
         public override string LicenseGroup { get { return "default"; } }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using Docking;
+using Docking.Tools;
 using Gtk;
 using System.Diagnostics;
 
@@ -192,8 +193,7 @@ namespace Docking.Components
          }
          return theList.ToArray();
       }
-
-
+      
       public List<ComponentFactoryInformation> GetAutoCreateList(ComponentManager cm)
       {
          List<ComponentFactoryInformation> result = new List<ComponentFactoryInformation>();
@@ -211,6 +211,21 @@ namespace Docking.Components
          Debug.Assert(factory != null);
          ComponentFactory = factory;
          Active = active;
+      }
+
+      public bool SupportsFile( string _file )
+      {
+         if ( null != ComponentFactory.SupportedFileTypes )
+         {
+            foreach (FileFilterExt file_matcher in ComponentFactory.SupportedFileTypes)
+            {
+               if (file_matcher.Matches(_file))
+               {
+                  return true;
+               }
+            }
+         }
+         return false;
       }
 
       public Component CreateInstance(ComponentManager cm)
@@ -242,6 +257,9 @@ namespace Docking.Components
       public String Comment        { get { return ComponentFactory.Comment; } }
       public String MenuPath       { get { return ComponentFactory.MenuPath; } }
       public String LicenseGroup   { get { return ComponentFactory.LicenseGroup; } }
+
+      public String Name           { get { return ComponentFactory.Name; } }
+      public List<FileFilterExt> SupportedFileTypes { get { return ComponentFactory.SupportedFileTypes; } }
 
       public bool   MultiInstance  { get { return (ComponentFactory.Options & Mode.MultiInstance )!=0; } }
       public bool   AutoCreate     { get { return (ComponentFactory.Options & Mode.AutoCreate    )!=0; } }

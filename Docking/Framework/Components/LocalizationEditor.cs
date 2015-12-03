@@ -288,6 +288,7 @@ namespace Docking.Components
    public class LocalizationEditorFactory : ComponentFactory
    {
       public override Type TypeOfInstance { get { return typeof(LocalizationEditor); } }
+      public override String Name { get { return "Localization Editor"; } }
       public override String MenuPath { get { return @"View\Infrastructure\Localization Editor"; } }
       public override String Comment { get { return "Edit possibility for all localization strings"; } }
       public override Gdk.Pixbuf Icon { get { return Docking.Tools.ResourceLoader_Docking.LoadPixbuf("Localization-16.png"); } }
