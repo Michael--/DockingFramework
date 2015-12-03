@@ -8,14 +8,13 @@ namespace Docking.Components
     {
         /// <summary>
         /// Returns a list of supported file types this component can open.
+        /// TODO DEPRECATED! This function has been relocated to class ComponentFactory now. REMOVE THIS FUNCTION FROM HERE!
         /// </summary>
         /// <returns></returns>
         List<FileFilterExt> SupportedFileTypes();
 
         /// <summary>
         /// Ask the component if it can open a specific given file.
-        /// If yes, this function will return the string how this components names such files.
-        /// If no, it will return null.
         /// </summary>
         bool CanOpenFile(String filename);
 
