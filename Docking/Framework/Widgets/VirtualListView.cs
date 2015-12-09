@@ -932,6 +932,7 @@ namespace Docking.Widgets
 
       int TopOffset = 2;
       int TotalHeight = 0;
+      int TotalWidth = 0;
       int DragGripper = -1;
       int LastDragX = 0;
 
@@ -958,8 +959,8 @@ namespace Docking.Widgets
             this.EventBox.GetSizeRequest(out ewidth, out eheight);
             if (args.Allocation.Height > eheight)
             {
-               this.EventBox.SetSizeRequest(5000, args.Allocation.Height);
                TotalHeight = args.Allocation.Height;
+               EventBox.SetSizeRequest(TotalWidth, TotalHeight);
             }
          };
       }
@@ -992,6 +993,9 @@ namespace Docking.Widgets
             int x = g.Value;
             win.DrawLine(gc, x + 2, Allocation.Top, x + 2, Allocation.Bottom);
          }
+
+         TotalWidth = gripper.LastOrDefault().Value + 10;
+         EventBox.SetSizeRequest(TotalWidth, TotalHeight);
       }
 
       public Column GetColumn(int tag)
