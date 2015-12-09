@@ -437,6 +437,7 @@ namespace Docking.Widgets
                vscrollbar1.Adjustment.PageSize = pageSize;
                vscrollbar1.Adjustment.PageIncrement = pageSize;
             }
+            hscrollRange = Math.Max(mColumnControl.MinViewWidth, hscrollRange);
             hscrollRange += (int)hscrollbar1.Value;
             if (hscrollRange > 0)
                hscrollbar1.SetRange(0, hscrollRange);
@@ -929,6 +930,7 @@ namespace Docking.Widgets
       public delegate void ColumnChangedEventHandler(object obj, EventArgs e);
 
       public int GripperWidth { get; private set; }
+      public int MinViewWidth { get { return TotalWidth; } }
 
       int TopOffset = 2;
       int TotalHeight = 0;
