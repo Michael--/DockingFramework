@@ -1021,11 +1021,12 @@ namespace Docking.Widgets
          int dx = -offset;
          foreach (Column c in mColumns.Values)
          {
-            if (c.Widget == null)
-               continue;
-            Widget w = c.Widget;
-            this.Move(w, dx, TopOffset); // move to same position, helper to redraw parent
-            dx += w.Allocation.Width + GripperWidth;
+            if (c.Widget != null && c.Visible)
+            {
+               Widget w = c.Widget;
+               this.Move(w, dx, TopOffset); // move to same position, helper to redraw parent
+               dx += w.Allocation.Width + GripperWidth;
+            }
          }
       }
 
