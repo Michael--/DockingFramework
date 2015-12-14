@@ -16,7 +16,7 @@ namespace Docking.Tools
    /// </summary>
    public class QueueInvoke
    {
-      public QueueInvoke([CallerFilePathAttribute] string callerFileName = "", [CallerLineNumberAttribute] int callerLineNumber = 0)
+      private QueueInvoke(string callerFileName, int callerLineNumber)
       {
          CallerFileName = callerFileName;
          CallerLineNumber = callerLineNumber;
@@ -25,11 +25,17 @@ namespace Docking.Tools
          mQueueInvoke.Add(GetHashCode(), this);
       }
 
-      public string CallerFileName { get; private set; }
-      public int CallerLineNumber { get; private set; }
+      private string CallerFileName { get;  set; }
+      private int CallerLineNumber { get; set; }
+
       public override int GetHashCode()
       {
-         return CallerFileName.GetHashCode() ^ CallerLineNumber.GetHashCode();
+         return CalculateHashCode(CallerFileName, CallerLineNumber);
+      }
+
+      private static int CalculateHashCode(string callerFileName, int callerLineNumber)
+      {
+         return callerFileName.GetHashCode() ^ callerLineNumber.GetHashCode();
       }
 
       private int mCount = 0; // total count of Invoke calls
@@ -37,6 +43,14 @@ namespace Docking.Tools
       private int mQueueCount = 0; // current queue count 
       private int mQueueCountMax = 0; // max queue count
       private static Dictionary<int, QueueInvoke> mQueueInvoke = new Dictionary<int, QueueInvoke>(); // all instances created at while life time
+
+      private static QueueInvoke GetInstance(string callerFileName, int callerLineNumber)
+      {
+         QueueInvoke value;
+         if (!mQueueInvoke.TryGetValue(CalculateHashCode(callerFileName, callerLineNumber), out value))
+           value = new QueueInvoke(callerFileName, callerLineNumber);
+         return value;
+      }
 
       public static IEnumerable<string> Statistic
       {
@@ -49,7 +63,7 @@ namespace Docking.Tools
          }
       }
 
-      public string DebugInformation
+      private string DebugInformation
       {
          get
          {
@@ -61,7 +75,13 @@ namespace Docking.Tools
       /// Invoke call, perform handler in the main GUI thread, comparable to Gtk.Application.Invoke, but only last invoke in queue will be executed
       /// </summary>
       /// <param name="handler"></param>
-      public void Invoke(EventHandler handler)
+      public static void Invoke(EventHandler handler, [CallerFilePathAttribute] string callerFileName = "", [CallerLineNumberAttribute] int callerLineNumber = 0)
+      {
+         var instance = QueueInvoke.GetInstance(callerFileName, callerLineNumber);
+         instance.Invoke(handler);
+      }
+
+      private void Invoke(EventHandler handler)
       {
          // some statistic
          Interlocked.Increment(ref mQueueCount);
