@@ -115,6 +115,7 @@
     <Compile Include="Framework\Interfaces\IScript.cs" />
     <Compile Include="Framework\Manager\LicenseGroup.cs" />
     <Compile Include="Framework\Manager\Localization.cs" />
+    <Compile Include="Framework\Tools\QueueInvoke.cs" />
     <Compile Include="Framework\Tools\ResourceLoader_Docking.cs" />
     <Compile Include="Framework\Tools\MD5Helper.cs" />
     <Compile Include="Framework\Widgets\LocalizedWidgets.cs" />
