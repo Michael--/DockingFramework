@@ -18,8 +18,7 @@ namespace Docking.Widgets
          this.Build();
          DefaultLayout = NewLayout(Pango.FontDescription.FromString("Tahoma 10"));
          CurrentRow = 0;
-         SelectedRow = 0;
-         SelectionMode = false;
+         CurrentSelectionMode = SelectionMode.None;
          DocumentEnd = true;
 
          mColumnControl = new ColumnControl(this);
@@ -46,11 +45,15 @@ namespace Docking.Widgets
 
          Find.CurrentChanged += (o, e) =>
          {
-            SelectionMode = false; // as a workaround to avoid selection with CTRL+F3
+            CurrentSelectionMode = SelectionMode.None; // as a workaround to avoid selection with CTRL+F3
          };
          FindPossibility = true;
 
+         drawingarea.Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.ButtonMotionMask;
+
          drawingarea.ButtonPressEvent += drawingarea_ButtonPressEvent;
+         drawingarea.ButtonReleaseEvent += drawingarea_ButtonReleaseEvent;
+         drawingarea.MotionNotifyEvent += drawingarea_MotionNotifyEvent;
       }
 
       ColumnControl mColumnControl;
@@ -104,7 +107,6 @@ namespace Docking.Widgets
          {
             mRow = value;
             CurrentRow = Math.Min(CurrentRow, mRow - 1);
-            SelectedRow = Math.Min(CurrentRow, mRow - 1);
             vscrollbar1.SetRange(0, Math.Max(1, mRow - 1));
          }
       }
@@ -115,13 +117,11 @@ namespace Docking.Widgets
       public bool FindPossibility { get; set; } // true (default) if find options is possible and displayed/toggling pressing CTRL+F
 
       /// <summary>
-      /// Get selection. Return the range of selected lines.
-      /// At least the current line is always selected
+      /// Get selection. Return the selected lines indicies.
       /// </summary>
-      public void GetSelection(out int bottom, out int top)
+      public IEnumerable<int> GetSelection()
       {
-         bottom = Math.Min(CurrentRow, SelectedRow);
-         top = Math.Max(CurrentRow, SelectedRow);
+         return m_Selection;
       }
 
       Pango.Layout NewLayout(Pango.FontDescription fd)
@@ -135,17 +135,18 @@ namespace Docking.Widgets
 
       public Pango.Layout DefaultLayout { get; private set; }
       private int ConstantHeight { get; set; }
-      private int SelectedRow { get; set; }
-      private bool SelectionMode { get; set; }
+      private HashSet<int> m_Selection = new HashSet<int>();
+
+      enum SelectionMode
+      {
+         None,    // no selection, only the current line is "selected" as default
+         Block,   // all line between old current line and new current line will be added to the current selection (SHIFT-KEY)
+         Single   // the new current line added to the current selection                                           (CTRL-KEY)
+      }
+
+      private SelectionMode CurrentSelectionMode { get; set; }
       private int TopVisibleRow { get; set; }
       private int BottomVisibleRow { get; set; }
-
-      private bool isRowSelected(int row)
-      {
-         int bottom = Math.Min(CurrentRow, SelectedRow);
-         int top = Math.Max(CurrentRow, SelectedRow);
-         return row >= bottom && row <= top;
-      }
 
       /// <summary>
       /// Set a new font for a column
@@ -362,7 +363,7 @@ namespace Docking.Widgets
          offset += dy / ConstantHeight;
          dy -= dy % ConstantHeight;
 
-         Gdk.GC backgound = new Gdk.GC((Gdk.Drawable)base.GdkWindow);
+         Gdk.GC background = new Gdk.GC((Gdk.Drawable)base.GdkWindow);
          Gdk.GC text = new Gdk.GC((Gdk.Drawable)base.GdkWindow);
 
          ColumnControl.Column[] columns = mColumnControl.GetVisibleColumnsInDrawOrder();
@@ -375,20 +376,16 @@ namespace Docking.Widgets
             System.Drawing.Color backColor = System.Drawing.Color.WhiteSmoke;
             System.Drawing.Color textColor = System.Drawing.Color.Black;
 
-            if (isRowSelected(row))
-            {
-               if (HasFocus)
-                  backColor = System.Drawing.Color.DarkGray;
-               else
-                  backColor = System.Drawing.Color.LightGray;
-            }
-            else
-            {
-               if (GetColorDelegate != null)
-                  GetColorDelegate(row, ref backColor, ref textColor);
-            }
+            if (row == CurrentRow)
+               backColor = System.Drawing.Color.DarkGray;
 
-            backgound.RgbFgColor = new Gdk.Color(backColor.R, backColor.G, backColor.B);
+            else if (m_Selection.Contains(row))
+               backColor = System.Drawing.Color.LightGray;
+
+            else if (GetColorDelegate != null)
+               GetColorDelegate(row, ref backColor, ref textColor);
+
+            background.RgbFgColor = new Gdk.Color(backColor.R, backColor.G, backColor.B);
             text.RgbFgColor = new Gdk.Color(textColor.R, textColor.G, textColor.B);
 
             for (int c = 0; c < columns.Length; c++)
@@ -405,7 +402,7 @@ namespace Docking.Widgets
                if (content is Gdk.Pixbuf)
                {
                   Gdk.Pixbuf image = (Gdk.Pixbuf)content;
-                  win.DrawRectangle(backgound, true, rect);
+                  win.DrawRectangle(background, true, rect);
                   dx += 2;
                   image.RenderToDrawable(win, text, 0, 0, dx, dy, image.Width, image.Height, Gdk.RgbDither.Normal, 0, 0);
                   dx += xwidth + mColumnControl.GripperWidth - 2;
@@ -414,7 +411,7 @@ namespace Docking.Widgets
                else
                {
                   column.LineLayout.SetText(content.ToString());
-                  win.DrawRectangle(backgound, true, rect);
+                  win.DrawRectangle(background, true, rect);
                   dx += 2;
                   win.DrawLayout(text, dx, dy, column.LineLayout);
                   dx += xwidth + mColumnControl.GripperWidth - 2;
@@ -509,31 +506,40 @@ namespace Docking.Widgets
          if (args.Event.Button == 1)
          {
             int row = (int)args.Event.Y / ConstantHeight + (int)vscrollbar1.Value;
-            OffsetCursor(row - CurrentRow);
+            OffsetCursor(row - CurrentRow, true);
             if (!HasFocus)
                GrabFocus();
-         }
 
-         if (ItemClickedEvent != null)
-         {
-            // genereate event ItemClicked(row, column)
-            ColumnControl.Column[] columns = mColumnControl.GetVisibleColumnsInDrawOrder();
-            int dx = -(int)hscrollbar1.Value;
-            for (int c = 0; c < columns.Length; c++)
+            if (ItemClickedEvent != null)
             {
-               ColumnControl.Column column = columns[c];
-               int columnIndex = column.SortOrder;
-               int xwidth = column.Width + mColumnControl.GripperWidth;
-
-               if (args.Event.X >= dx && args.Event.X <= dx + xwidth)
+               // genereate event ItemClicked(row, column)
+               ColumnControl.Column[] columns = mColumnControl.GetVisibleColumnsInDrawOrder();
+               int dx = -(int)hscrollbar1.Value;
+               for (int c = 0; c < columns.Length; c++)
                {
-                  ItemClickedEvent(args, SelectedRow, column.Tag);
-                  break;
+                  ColumnControl.Column column = columns[c];
+                  int columnIndex = column.SortOrder;
+                  int xwidth = column.Width + mColumnControl.GripperWidth;
+
+                  if (args.Event.X >= dx && args.Event.X <= dx + xwidth)
+                  {
+                     ItemClickedEvent(args, CurrentRow, column.Tag);
+                     break;
+                  }
+                  dx += xwidth;
                }
-               dx += xwidth;
             }
          }
       }
+
+      void drawingarea_MotionNotifyEvent(object o, MotionNotifyEventArgs args)
+      {
+      }
+
+      void drawingarea_ButtonReleaseEvent(object o, ButtonReleaseEventArgs args)
+      {
+      }
+
 
       protected override bool OnButtonPressEvent(Gdk.EventButton evnt)
       {
@@ -544,6 +550,7 @@ namespace Docking.Widgets
          return base.OnButtonPressEvent(evnt);
       }
 
+
       protected override bool OnFocusInEvent(Gdk.EventFocus evnt)
       {
          drawingarea.QueueDraw();
@@ -552,7 +559,7 @@ namespace Docking.Widgets
 
       protected override bool OnFocusOutEvent(Gdk.EventFocus evnt)
       {
-         SelectionMode = false;
+         CurrentSelectionMode = SelectionMode.None;
          drawingarea.QueueDraw();
          return base.OnFocusOutEvent(evnt);
       }
@@ -561,20 +568,13 @@ namespace Docking.Widgets
       /// Move Cursor to line
       /// </summary>
       /// <param name="index"></param>
-      public void MoveCursorToIndex(int index, bool cancelSelectionMode = false)
+      public void MoveCursorToIndex(int index)
       {
-         if (cancelSelectionMode)
-         {
-            SelectionMode = false;
-         }
          OffsetCursor(index - CurrentRow);
       }
 
-      private void OffsetCursor(int offset)
+      private void OffsetCursor(int offset, bool forceSelection = false)
       {
-         if (offset == 0)
-            return;
-
          int oldRow = CurrentRow;
          CurrentRow += offset;
          if (CurrentRow < 0)
@@ -596,15 +596,53 @@ namespace Docking.Widgets
             vscrollbar1.Value = CurrentRow - (BottomVisibleRow - TopVisibleRow);
          }
 
-         if (redraw)
-            drawingarea.QueueDraw();
+         // care selection
+         {
+            if (!forceSelection && m_Selection.Count == 1)
+               forceSelection = true;
 
-         if (!SelectionMode)
-            SelectedRow = CurrentRow;
+            if (forceSelection)
+            {
+               var s = new HashSet<int>();
+               if (CurrentSelectionMode == SelectionMode.Block)
+               {
+                  var bottom = Math.Min(CurrentRow, oldRow);
+                  var top = Math.Max(CurrentRow, oldRow);
+                  var lines = Enumerable.Range(bottom, top - bottom + 1).ToArray();
+                  s.UnionWith(lines);
+               }
+               else
+               {
+                  s.Add(CurrentRow);
+               }
 
-         // provide current row now with an event
-         if (CurrentRow != oldRow && CurrentRow < RowCount && CurrentRowChanged != null)
-            CurrentRowChanged(this, new VirtualListViewEventArgs(oldRow, CurrentRow));
+               if (CurrentSelectionMode == SelectionMode.None)
+               {
+                  m_Selection.Clear();
+                  m_Selection.UnionWith(s);
+               }
+               else if (CurrentSelectionMode == SelectionMode.Block)
+               {
+                  m_Selection.UnionWith(s);
+               }
+               else
+               {
+                  m_Selection.SymmetricExceptWith(s);
+               }
+
+               if (CurrentSelectionMode != SelectionMode.Single)
+                  m_Selection.Add(CurrentRow);
+            }
+
+            if (redraw || forceSelection)
+            {
+               drawingarea.QueueDraw();
+
+               // provide current row now with an event
+               if (CurrentRowChanged != null)
+                  CurrentRowChanged(this, new VirtualListViewEventArgs(oldRow, CurrentRow));
+            }
+         }
       }
 
       void FindBoxInvisible()
@@ -638,9 +676,15 @@ namespace Docking.Widgets
       {
          switch (evnt.Key)
          {
+            case Gdk.Key.Escape:
+               CurrentSelectionMode = SelectionMode.None;
+               OffsetCursor(0, true);
+               return true;
+            case Gdk.Key.Control_L:
+            case Gdk.Key.Control_R:
             case Gdk.Key.Shift_L:
             case Gdk.Key.Shift_R:
-               SelectionMode = false;
+               CurrentSelectionMode = SelectionMode.None;
                return true;
          }
          return base.OnKeyReleaseEvent(evnt);
@@ -661,37 +705,44 @@ namespace Docking.Widgets
 
             case Gdk.Key.Shift_L:
             case Gdk.Key.Shift_R:
-               SelectionMode = true;
+               if (CurrentSelectionMode == SelectionMode.None)
+                  CurrentSelectionMode = SelectionMode.Block;
+               return true;
+
+            case Gdk.Key.Control_L:
+            case Gdk.Key.Control_R:
+               if (CurrentSelectionMode == SelectionMode.None)
+                  CurrentSelectionMode = SelectionMode.Single;
                return true;
 
             case Gdk.Key.Up:
             case Gdk.Key.KP_Up:
-               OffsetCursor(-1);
+               OffsetCursor(-1, CurrentSelectionMode != SelectionMode.None);
                return true;
 
             case Gdk.Key.Page_Up:
             case Gdk.Key.KP_Page_Up:
-               OffsetCursor(-(BottomVisibleRow - TopVisibleRow));
+               OffsetCursor(-(BottomVisibleRow - TopVisibleRow), CurrentSelectionMode != SelectionMode.None);
                return true;
 
             case Gdk.Key.Down:
             case Gdk.Key.KP_Down:
-               OffsetCursor(+1);
+               OffsetCursor(+1, CurrentSelectionMode != SelectionMode.None);
                return true;
 
             case Gdk.Key.Page_Down:
             case Gdk.Key.KP_Page_Down:
-               OffsetCursor(BottomVisibleRow - TopVisibleRow);
+               OffsetCursor(BottomVisibleRow - TopVisibleRow, CurrentSelectionMode != SelectionMode.None);
                return true;
 
             case Gdk.Key.Home:
             case Gdk.Key.KP_Home:
-               OffsetCursor(int.MinValue / 2);
+               OffsetCursor(int.MinValue / 2, CurrentSelectionMode != SelectionMode.None);
                return true;
 
             case Gdk.Key.End:
             case Gdk.Key.KP_End:
-               OffsetCursor(int.MaxValue / 2);
+               OffsetCursor(int.MaxValue / 2, CurrentSelectionMode != SelectionMode.None);
                return true;
 
             case Gdk.Key.Left:
@@ -726,36 +777,31 @@ namespace Docking.Widgets
 
       void ICopy.Copy()
       {
-         int bottom, top;
-         GetSelection(out bottom, out top);
-         if (bottom >= 0 && bottom <= top)
+         var selection = GetSelection();
+         int count = selection.Count();
+         if (count < 1000 || MessageBox.Show(MessageType.Question, ButtonsType.YesNo, "You wan't to copy {0} lines to clipboard ?", count) == ResponseType.Yes)
          {
-            int count = top - bottom + 1;
-            if (count < 1000 || MessageBox.Show(MessageType.Question, ButtonsType.YesNo, "You wan't to copy {0} lines to clipboard ?", count) == ResponseType.Yes)
+            StringBuilder result = new StringBuilder();
+            foreach (var i in selection)
             {
-               StringBuilder result = new StringBuilder();
-               for (int i = bottom; i <= top; i++)
+               ColumnControl.Column[] columns = mColumnControl.GetVisibleColumnsInDrawOrder();
+               for (int c = 0; c < columns.Length; c++)
                {
-                  ColumnControl.Column[] columns = mColumnControl.GetVisibleColumnsInDrawOrder();
-                  for (int c = 0; c < columns.Length; c++)
-                  {
-                     int columnIndex = columns[c].SortOrder;
-                     object columnContent = GetContentDelegate(i, columnIndex);
-                     if (c > 0)
-                        result.Append(";");
-                     if (columnContent is Gdk.Pixbuf)
-                        result.Append("*");
-                     else
-                        result.Append(columnContent.ToString());
-                  }
-                  result.Append("\n");
+                  int columnIndex = columns[c].SortOrder;
+                  object columnContent = GetContentDelegate(i, columnIndex);
+                  if (c > 0)
+                     result.Append(";");
+                  if (columnContent is Gdk.Pixbuf)
+                     result.Append("*");
+                  else
+                     result.Append(columnContent.ToString());
                }
-               if (result.Length > 0)
-                  this.GetClipboard(Gdk.Selection.Clipboard).Text = result.ToString();
+               result.Append("\n");
             }
+            if (result.Length > 0)
+               this.GetClipboard(Gdk.Selection.Clipboard).Text = result.ToString();
          }
       }
-
       #endregion
    }
 
