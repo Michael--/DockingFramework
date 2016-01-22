@@ -387,7 +387,7 @@ namespace Docking.Widgets
 
             background.RgbFgColor = new Gdk.Color(backColor.R, backColor.G, backColor.B);
             text.RgbFgColor = new Gdk.Color(textColor.R, textColor.G, textColor.B);
-
+            int maxwith = 0;
             for (int c = 0; c < columns.Length; c++)
             {
                ColumnControl.Column column = columns[c];
@@ -407,6 +407,7 @@ namespace Docking.Widgets
                   image.RenderToDrawable(win, text, 0, 0, dx, dy, image.Width, image.Height, Gdk.RgbDither.Normal, 0, 0);
                   dx += xwidth + mColumnControl.GripperWidth - 2;
                   rect.Offset(xwidth + mColumnControl.GripperWidth, 0);
+                  maxwith = Math.Max(maxwith, rect.Width);
                }
                else
                {
@@ -416,9 +417,13 @@ namespace Docking.Widgets
                   win.DrawLayout(text, dx, dy, column.LineLayout);
                   dx += xwidth + mColumnControl.GripperWidth - 2;
                   rect.Offset(xwidth + mColumnControl.GripperWidth, 0);
+
+                  int dwidth, dheight;
+                  column.LineLayout.GetPixelSize(out dwidth, out dheight);
+                  maxwith = Math.Max(maxwith, dwidth);
                }
             }
-            hscrollRange = Math.Max(hscrollRange, dx + rect.Width);
+            hscrollRange = Math.Max(hscrollRange, maxwith);
             dy += ConstantHeight;
             if (dy > exposeRect.Bottom)
                break;
@@ -434,8 +439,6 @@ namespace Docking.Widgets
                vscrollbar1.Adjustment.PageSize = pageSize;
                vscrollbar1.Adjustment.PageIncrement = pageSize;
             }
-            hscrollRange = Math.Max(mColumnControl.MinViewWidth, hscrollRange);
-            hscrollRange += (int)hscrollbar1.Value;
             if (hscrollRange > 0)
                hscrollbar1.SetRange(0, hscrollRange);
 
