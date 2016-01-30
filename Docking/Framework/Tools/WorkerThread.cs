@@ -62,8 +62,10 @@ namespace Docking.Tools
             
         public void ReportProgress(int percent)
         {
+            if(m_JobInformation.Progress==percent)
+               return;
             m_JobInformation.Progress = percent;
-            if (WorkerReportsProgress && ProgressChanged != null)
+            if(WorkerReportsProgress && ProgressChanged!=null)
                 ProgressChanged(percent, new ProgressChangedEventArgs(percent, this));
         }
             
