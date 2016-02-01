@@ -121,9 +121,8 @@ namespace Docking.Widgets
       /// </summary>
       public IEnumerable<int> GetSelection()
       {
-         var result = m_Selection.ToList();
-         result.Sort();
-         return result;
+         // TODO: as an alternative m_Selection could be a SortedSet, but with less performance overall
+         return m_Selection.OrderBy(x => x);
       }
 
       Pango.Layout NewLayout(Pango.FontDescription fd)
