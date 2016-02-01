@@ -121,7 +121,9 @@ namespace Docking.Widgets
       /// </summary>
       public IEnumerable<int> GetSelection()
       {
-         return m_Selection;
+         var result = m_Selection.ToList();
+         result.Sort();
+         return result;
       }
 
       Pango.Layout NewLayout(Pango.FontDescription fd)
