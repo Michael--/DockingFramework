@@ -16,7 +16,7 @@ namespace Docking.Widgets
       public VirtualListView()
       {
          this.Build();
-         DefaultLayout = NewLayout(Pango.FontDescription.FromString("Tahoma 10"));
+         DefaultLayout = NewLayout(Pango.FontDescription.FromString("Tahoma 10")); // TODO use the same font as the other GUI elements, for example like GTK#'s list control
          CurrentRow = 0;
          CurrentSelectionMode = SelectionMode.None;
          DocumentEnd = true;
