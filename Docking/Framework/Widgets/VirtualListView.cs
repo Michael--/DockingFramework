@@ -359,7 +359,7 @@ namespace Docking.Widgets
                return; // should never happen
          }
 
-         int hscrollRange = 0;
+         int maxHScrollRange = 0;
          int dy = exposeRect.Top;
          offset += dy / ConstantHeight;
          dy -= dy % ConstantHeight;
@@ -388,14 +388,12 @@ namespace Docking.Widgets
 
             background.RgbFgColor = new Gdk.Color(backColor.R, backColor.G, backColor.B);
             text.RgbFgColor = new Gdk.Color(textColor.R, textColor.G, textColor.B);
-            int maxwith = 0;
+            int totalwidth = 0;
             for (int c = 0; c < columns.Length; c++)
             {
                ColumnControl.Column column = columns[c];
                int columnIndex = column.SortOrder;
                int xwidth = column.Width;
-               if (dx > exposeRect.Right)
-                  break;
                rect = new Gdk.Rectangle(rect.Left, rect.Top, xwidth + mColumnControl.GripperWidth, ConstantHeight);
                if (c == columns.Length - 1)
                   rect.Width = Math.Max(rect.Width, exposeRect.Right - rect.Left + 1);
@@ -408,7 +406,7 @@ namespace Docking.Widgets
                   image.RenderToDrawable(win, text, 0, 0, dx, dy, image.Width, image.Height, Gdk.RgbDither.Normal, 0, 0);
                   dx += xwidth + mColumnControl.GripperWidth - 2;
                   rect.Offset(xwidth + mColumnControl.GripperWidth, 0);
-                  maxwith = Math.Max(maxwith, rect.Width);
+                  totalwidth += 2 + rect.Width;
                }
                else
                {
@@ -421,10 +419,10 @@ namespace Docking.Widgets
 
                   int dwidth, dheight;
                   column.LineLayout.GetPixelSize(out dwidth, out dheight);
-                  maxwith = Math.Max(maxwith, dwidth);
+                  totalwidth += 2 + mColumnControl.GripperWidth + dwidth;
                }
             }
-            hscrollRange = Math.Max(hscrollRange, maxwith);
+            maxHScrollRange = Math.Max(maxHScrollRange, totalwidth);
             dy += ConstantHeight;
             if (dy > exposeRect.Bottom)
                break;
@@ -440,8 +438,8 @@ namespace Docking.Widgets
                vscrollbar1.Adjustment.PageSize = pageSize;
                vscrollbar1.Adjustment.PageIncrement = pageSize;
             }
-            if (hscrollRange > 0)
-               hscrollbar1.SetRange(0, hscrollRange);
+            if (maxHScrollRange > 0 && maxHScrollRange > hscrollbar1.Value)
+               hscrollbar1.SetRange(0, maxHScrollRange);
 
             // position current row inside visible area
             // TODO: please think about, because of double redraw a more sophisticated solution could be possible
@@ -602,7 +600,7 @@ namespace Docking.Widgets
 
          // care selection
          {
-            if (!forceSelection && m_Selection.Count == 1)
+            if (!forceSelection && m_Selection.Count <= 1)
                forceSelection = true;
 
             if (forceSelection)
