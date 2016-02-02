@@ -21,8 +21,11 @@ namespace Docking.Tools
          CallerFileName = callerFileName;
          CallerLineNumber = callerLineNumber;
 
-         Debug.Assert(!mQueueInvoke.ContainsKey(GetHashCode()), "Create only once");
-         mQueueInvoke.Add(GetHashCode(), this);
+         lock (mQueueInvoke)
+         {
+            Debug.Assert(!mQueueInvoke.ContainsKey(GetHashCode()), "Create only once");
+            mQueueInvoke.Add(GetHashCode(), this);
+         }
       }
 
       private string CallerFileName { get;  set; }
@@ -46,20 +49,27 @@ namespace Docking.Tools
 
       private static QueueInvoke GetInstance(string callerFileName, int callerLineNumber)
       {
-         QueueInvoke value;
-         if (!mQueueInvoke.TryGetValue(CalculateHashCode(callerFileName, callerLineNumber), out value))
-           value = new QueueInvoke(callerFileName, callerLineNumber);
-         return value;
+         lock (mQueueInvoke)
+         {
+            QueueInvoke value;
+            if (!mQueueInvoke.TryGetValue(CalculateHashCode(callerFileName, callerLineNumber), out value))
+               value = new QueueInvoke(callerFileName, callerLineNumber);
+            return value;
+         }
       }
 
       public static IEnumerable<string> Statistic
       {
          get
          {
-            List<string> result = new List<string>();
-            foreach (var s in mQueueInvoke.Values)
-               result.Add(s.DebugInformation);
-            return result;
+            lock (mQueueInvoke)
+            {
+
+               List<string> result = new List<string>();
+               foreach (var s in mQueueInvoke.Values)
+                  result.Add(s.DebugInformation);
+               return result;
+            }
          }
       }
 
