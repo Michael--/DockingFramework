@@ -2575,18 +2575,28 @@ namespace Docking.Components
          if(PowerDown)
             return;
 
+         string s;
+         try
+         { 
+            s = String.Format(format, args);
+         }
+         catch(System.FormatException)
+         {
+            s = "(invalid format string)";
+         }
+
          if(LogFile!=null)
          {
-            LogFile.WriteLine(format, args);
+            LogFile.WriteLine(s);
             LogFile.Flush();
          }
 
          foreach(KeyValuePair<string, IMessage> kvp in mMessage)
-            kvp.Value.WriteLine(format, args);
+            kvp.Value.WriteLine(s);
 
          // queue all messages for new not yet existing receiver
          // todo: may should store only some messages to avoid memory leak ?
-         mMessageQueue.Add(String.Format(format, args));
+         mMessageQueue.Add(s);
       }
 
       List<String> mMessageQueue = new List<string>();
