@@ -823,7 +823,6 @@ namespace Docking.Components
                // If the Win7 standard fonts are not enough, TG will have to deliver its own, which we currently try to avoid.)
                // https://en.wikipedia.org/wiki/List_of_typefaces_included_with_Microsoft_Windows
                // https://en.wikipedia.org/wiki/List_of_CJK_fonts
-               // TODO later let the user choose the font + size
                return "Microsoft YaHei";
             }
             else if(osid.Contains("ubuntu"))
@@ -831,7 +830,6 @@ namespace Docking.Components
                // "Droid Sans" is a font coming by default with Ubuntu 14.04 LTS ("Trusty Tahr")
                // http://packages.ubuntu.com/trusty/fonts/
                // https://en.wikipedia.org/wiki/Droid_Sans
-               // TODO later let the user choose the font + size
                return "Droid Sans Fallback";
             }
             else
@@ -843,7 +841,6 @@ namespace Docking.Components
                // https://www.google.com/get/noto/help/cjk
                // To get it, install the package containing it, for example on ArchLinux, that is
                //    sudo pacman -S noto-fonts-cjk
-               // TODO later let the user choose the font + size
                return "Noto Sans CJK SC";
             }
          }
