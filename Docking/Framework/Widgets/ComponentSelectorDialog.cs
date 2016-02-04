@@ -91,8 +91,9 @@ namespace Docking.Widgets
       /// </summary>
       /// <param name="_components"></param>
       /// <param name="_instances"></param>
-      public ComponentSelectorDialog(List<ComponentFactoryInformation> _components, List<Component> _instances)
+      public ComponentSelectorDialog(Gtk.Window parent, List<ComponentFactoryInformation> _components, List<Component> _instances)
       {
+         this.TransientFor = parent; // make the window appear centered on top of its parent http://stackoverflow.com/questions/31781134/position-gtk-dialog-in-the-center-of-a-gtk-window
          this.Build();          
          this.Icon = Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.File-16.png");
          (this as ILocalizableWidget).Localize(this.GetType().ToString());         

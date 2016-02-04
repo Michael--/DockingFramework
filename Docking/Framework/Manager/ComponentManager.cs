@@ -966,7 +966,7 @@ namespace Docking.Components
 			      bool success = true;
 
                // create a dialog and update the internal component model
-               ComponentSelectorDialog dlg = new ComponentSelectorDialog( available_components, existing_components );
+               ComponentSelectorDialog dlg = new ComponentSelectorDialog(this, available_components, existing_components);
                int result = dlg.Run();
                dlg.GetSelectedComponents(ref available_components, ref existing_components);
                dlg.Hide();
@@ -1710,10 +1710,6 @@ namespace Docking.Components
          string dir = LoadSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", "");
          if(!string.IsNullOrEmpty(dir) && Directory.Exists(dir))
             Docking.Widgets.FileChooserDialogLocalized.InitialFolderToShow = dir;
-         Docking.Widgets.FileChooserDialogLocalized.InitialW = LoadSetting(instance, "FileChooserDialogLocalized.W", 0);
-         Docking.Widgets.FileChooserDialogLocalized.InitialH = LoadSetting(instance, "FileChooserDialogLocalized.H", 0);
-         Docking.Widgets.FileChooserDialogLocalized.InitialX = LoadSetting(instance, "FileChooserDialogLocalized.X", 0);
-         Docking.Widgets.FileChooserDialogLocalized.InitialY = LoadSetting(instance, "FileChooserDialogLocalized.Y", 0);
 
          MaxRecentFiles = persistency.LoadSetting(instance, "MaxRecentFiles", 9);
          List<string> recentfiles = persistency.LoadSetting(instance, "RecentFiles", new List<string>());
@@ -1748,10 +1744,6 @@ namespace Docking.Components
             recentfiles.Add((string)item.Tag);
 
          persistency.SaveSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", Docking.Widgets.FileChooserDialogLocalized.InitialFolderToShow);
-         persistency.SaveSetting(instance, "FileChooserDialogLocalized.W",                   Docking.Widgets.FileChooserDialogLocalized.InitialW);
-         persistency.SaveSetting(instance, "FileChooserDialogLocalized.H",                   Docking.Widgets.FileChooserDialogLocalized.InitialH);
-         persistency.SaveSetting(instance, "FileChooserDialogLocalized.X",                   Docking.Widgets.FileChooserDialogLocalized.InitialX);
-         persistency.SaveSetting(instance, "FileChooserDialogLocalized.Y",                   Docking.Widgets.FileChooserDialogLocalized.InitialY);
 
          persistency.SaveSetting(instance, "MaxRecentFiles", MaxRecentFiles);
          persistency.SaveSetting(instance, "RecentFiles", recentfiles);
