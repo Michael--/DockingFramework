@@ -375,12 +375,25 @@ namespace Docking.Components
 
       private void InstallQuitMenu()
       {
-         ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit");
-         item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png"));
-         item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.F4, Gdk.ModifierType.Mod1Mask, AccelFlags.Visible));
-         item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
-         item.Activated += OnQuitActionActivated;
-         AppendMenuItem("File", item);
+         {
+            ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit without Saving Config");
+          //item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png")); // no icon intentionally to make the normal "Quit" easier to catch with the eye
+            item.Activated += OnQuitAndDoNotSaveConfigActionActivated;
+            AppendMenuItem("File", item);
+         }
+         {
+            ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit");
+            item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png"));
+            item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.F4, Gdk.ModifierType.Mod1Mask, AccelFlags.Visible));
+            item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
+            item.Activated += OnQuitActionActivated;
+            AppendMenuItem("File", item);
+         }
+      }
+
+      protected void OnQuitAndDoNotSaveConfigActionActivated(object sender, EventArgs args)
+      {
+         Quit(false);
       }
 
       protected void OnQuitActionActivated(object sender, EventArgs args)
