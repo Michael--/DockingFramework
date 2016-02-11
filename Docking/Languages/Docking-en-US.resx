@@ -166,7 +166,7 @@
     <value>Cancel</value>
   </data>
   <data name="Docking.Components.gtk-close" xml:space="preserve">
-    <value>Cloe</value>
+    <value>Close</value>
   </data>
   <data name="Docking.Components.gtk-no" xml:space="preserve">
     <value>No</value>
