@@ -2171,6 +2171,12 @@ namespace Docking.Components
          CreateComponent(cfi, true);
       }
 
+      public bool CurrentLicenseCoversTheCreationOfComponent(string typename)
+      {
+         ComponentFactoryInformation cfi = ComponentFinder.FindComponent(typename);
+         return cfi!=null && LicenseGroup.IsEnabled(cfi.LicenseGroup);
+      }
+
       public DockItem CreateComponent(string typename, bool initCalls)
       {
          ComponentFactoryInformation cfi = ComponentFinder.FindComponent(typename);
