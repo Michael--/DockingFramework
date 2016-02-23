@@ -557,7 +557,8 @@ namespace Docking
 
       internal void Minimize ()
       {
-         dockBarItem.Minimize ();
+         if (dockBarItem != null)
+            dockBarItem.Minimize ();
       }
 
       internal bool IsPositionMarker {
