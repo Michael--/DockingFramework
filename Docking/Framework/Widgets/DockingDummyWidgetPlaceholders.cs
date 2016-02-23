@@ -100,6 +100,24 @@ namespace Docking.Widgets
       public TextViewLocalized(TextBuffer buffer) : base(buffer) {}
    }
 
+   [System.ComponentModel.ToolboxItem(true)]
+   public class ComboBoxLocalized : Gtk.ComboBox
+   {
+      public ComboBoxLocalized()                 : base()        {}
+      public ComboBoxLocalized(IntPtr raw)       : base(raw)     {}
+      public ComboBoxLocalized(string[] entries) : base(entries) {}
+      public ComboBoxLocalized(TreeModel model)  : base(model)   {}
+   }
+
+   [System.ComponentModel.ToolboxItem(true)]
+   public class ComboBoxEntryLocalized : Gtk.ComboBoxEntry
+   {
+      public ComboBoxEntryLocalized()                                  : base()                   {}
+      public ComboBoxEntryLocalized(IntPtr raw)                        : base(raw)                {}
+      public ComboBoxEntryLocalized(string[] entries)                  : base(entries)            {}
+      public ComboBoxEntryLocalized(TreeModel model, int text_column)  : base(model, text_column) {}
+   }
+
    // TODO SLohse: this class currently is IMHO inherited currently from the wrong parent class ("Component" which inherits from Gtk.Bin),
    // but instead should inherit from Gtk.Widget
    [System.ComponentModel.ToolboxItem(true)]
@@ -109,8 +127,8 @@ namespace Docking.Widgets
       public VirtualListView(IntPtr raw) : base(raw) {}
    }
 
-	[System.ComponentModel.ToolboxItem (true)]
-	public partial class Find : Gtk.Bin
+ [System.ComponentModel.ToolboxItem (true)]
+ public partial class Find : Gtk.Bin
    {
       protected Find() : base() {}
       public Find(IntPtr raw) : base(raw) {}
@@ -122,7 +140,7 @@ namespace MonoDevelop.Components.PropertyGrid
 {
    [System.ComponentModel.ToolboxItem(true)]
    public class PropertyGrid : Gtk.VBox
-   {		
+   {
       public PropertyGrid() : base() {}
       public PropertyGrid(IntPtr raw) : base(raw)  {}
       public PropertyGrid(bool homogeneous, int spacing) : base(homogeneous, spacing) {}
