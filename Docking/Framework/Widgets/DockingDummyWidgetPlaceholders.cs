@@ -101,15 +101,6 @@ namespace Docking.Widgets
    }
 
    [System.ComponentModel.ToolboxItem(true)]
-   public class ComboBoxLocalized : Gtk.ComboBox
-   {
-      public ComboBoxLocalized()                 : base()        {}
-      public ComboBoxLocalized(IntPtr raw)       : base(raw)     {}
-      public ComboBoxLocalized(string[] entries) : base(entries) {}
-      public ComboBoxLocalized(TreeModel model)  : base(model)   {}
-   }
-
-   [System.ComponentModel.ToolboxItem(true)]
    public class ComboBoxEntryLocalized : Gtk.ComboBoxEntry
    {
       public ComboBoxEntryLocalized()                                  : base()                   {}
