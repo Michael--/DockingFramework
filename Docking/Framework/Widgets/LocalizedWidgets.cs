@@ -87,6 +87,32 @@ namespace Docking.Widgets
    }
 
    [System.ComponentModel.ToolboxItem(true)]
+   public class ComboBoxLocalized : Gtk.ComboBox, ILocalizableWidget
+   {
+      public ComboBoxLocalized()                 : base()        { Constructor(); }
+      public ComboBoxLocalized(IntPtr raw)       : base(raw)     { Constructor(); }
+      public ComboBoxLocalized(string[] entries) : base(entries) { Constructor(); }
+      public ComboBoxLocalized(TreeModel model)  : base(model)   { Constructor(); }
+
+      void Constructor()
+      {
+         // TODO
+      }
+
+      // When accessing the combobox, never write code that depends on the localized text!
+      // Instead, just use the index (number) to access the text items or react on them!
+      public override void AppendText(string text)               { base.AppendText(text.Localized());           }
+      public override void InsertText(int position, string text) { base.InsertText(position, text.Localized()); }
+      public override void PrependText(string text)              { base.PrependText(text.Localized());          }
+    //public override void RemoveText(int position)              { base.RemoveText(position);                   }
+
+      void ILocalizableWidget.Localize(string namespc)
+      {
+         // TODO
+      }
+   }
+
+   [System.ComponentModel.ToolboxItem(true)]
    public class ComboBoxEntryLocalized : Gtk.ComboBoxEntry, ILocalizableWidget
    {
       public ComboBoxEntryLocalized()                                  : base()                   { Constructor(); }
