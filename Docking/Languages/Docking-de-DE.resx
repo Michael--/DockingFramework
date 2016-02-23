@@ -304,4 +304,7 @@ Es wird empfohlen, anschließend die Übersetzungen manuell zu überprüfen.</va
   <data name="Docking.Components.Select" xml:space="preserve">
     <value>Auswählen</value>
   </data>
+  <data name="MENU.Quit without Saving Config" xml:space="preserve">
+    <value>Beenden, ohne die aktuelle Konfiguration zu speichern</value>
+  </data>
 </root>
