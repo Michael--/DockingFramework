@@ -10,10 +10,11 @@ namespace Docking.Components
    //       - Display also information about existing instances
    //       - Add actions, like create/hide/show/erase
    [System.ComponentModel.ToolboxItem(false)]
-   public partial class ComponentList : Component, ILocalizableComponent
+   public partial class ComponentList : Component, ILocalizableComponent, IPersistable
    {
       public override void Loaded(DockItem item)
       {
+         // important to call base first to ensure loading of persistency
          base.Loaded(item);
 
          item.Title = "Component List";
@@ -27,20 +28,22 @@ namespace Docking.Components
             row.Add(cfi.Comment);
             listStore.AppendValues(row.ToArray());
          }
-
-         Persistence p = (Persistence)ComponentManager.LoadObject("ComponentList", typeof(Persistence), item); // TODO early prototype - abolish, implement IPersistable instead!
-         if (p != null)
-            p.LoadColumnWidth(treeview1.Columns);
       }
 
-      public override void Save() // TODO early prototype - abolish, implement IPersistable instead!
+      #region IPersistable
+      void IPersistable.LoadFrom(IPersistency persistency)
       {
-         base.Save();
-
-         Persistence p = new Persistence(); 
-         p.SaveColumnWidth(treeview1.Columns);
-         ComponentManager.SaveObject("ComponentList", p, DockItem);
+         string instance = DockItem.Id.ToString();
+         persistency.LoadColumnWidths(instance, treeview1);
       }
+
+      void IPersistable.SaveTo(IPersistency persistency)
+      {
+         string instance = DockItem.Id.ToString();
+         persistency.SaveColumnWidths(instance, treeview1);
+      }
+
+      #endregion
 
       #region Component - Interaction
 
@@ -153,32 +156,6 @@ namespace Docking.Components
       const int TypenameIndex = 2;
       const int DescriptionIndex = 3;
    }
-
-
-   [Serializable()]
-   public class Persistence 
-   {
-      public void SaveColumnWidth(Gtk.TreeViewColumn[] columns)
-      {
-         m_Width.Clear();
-         foreach (Gtk.TreeViewColumn c in columns)
-            m_Width.Add(c.Width);
-      }
-
-      public void LoadColumnWidth(Gtk.TreeViewColumn[] columns)
-      {
-         if (columns.Length == m_Width.Count)
-         {
-            for (int i = 0; i < columns.Length; i++)
-               columns[i].FixedWidth = Math.Max(20, m_Width[i]);
-         }
-      }
-
-      // to have a simple persistence make the member public
-      // otherwise you have to implement IXmlSerializable
-      public List<int> m_Width = new List<int>();
-   }
-
 
    #region Starter / Entry Point
 

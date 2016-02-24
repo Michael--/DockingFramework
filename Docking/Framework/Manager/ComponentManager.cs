@@ -1806,6 +1806,7 @@ namespace Docking.Components
       /// Load an object from persistence.
       /// The optional parameter 'item' can be used to identify the proper DockItem instance.
       /// </summary>
+      [Obsolete("Method is deprecated and will be removed soon")]
       public object LoadObject(String elementName, Type t, DockItem item)
       {
          String pimpedElementName = elementName;
@@ -1824,6 +1825,7 @@ namespace Docking.Components
          if(node != null)
          {
             MemoryStream formattedStream = new MemoryStream();
+
             byte[] data = FromHexString(node.InnerText);
             formattedStream.Write(data, 0, data.Length);
             formattedStream.Flush();
@@ -1864,18 +1866,10 @@ namespace Docking.Components
             return null;
          }
       }
-      // hexdump hex dump (copied from LittleHelper, need in also in other context)
-      // TODO this code is misplaced in this class, move it to somewhere else, e.g. "Tools"
-      public static String ToHexString(byte[] ar)
-      {
-         StringBuilder result = new StringBuilder();
-         for(int i = 0; i < ar.Length; i++)
-            result.Append(BitConverter.ToString(ar, i, 1));
-         return result.ToString();
-      }
+
       // Byte array from hexdump string
       // TODO this code is misplaced in this class, move it to somewhere else, e.g. "Tools"
-      public static Byte[] FromHexString(String s)
+      private static Byte[] FromHexString(String s)
       {
          if(s == null || (s.Length % 2) != 0)
             return null;
@@ -1884,44 +1878,8 @@ namespace Docking.Components
             bytes[i] = Convert.ToByte(s.Substring(i * 2, 2), 16);
          return bytes;
       }
-
-      /// <summary>
-      /// Save an object to persistence.
-      /// The optional paranmeter should be used only loading from threads to identify correct DockItem
-      /// </summary>
-      public void SaveObject(String elementName, object obj, DockItem item)
-      {
-         String pimpedElementName = elementName;
-         if(item != null)
-            pimpedElementName += "_" + item.Id.ToString();
-
-         // replace in managed persistence
-         XmlNode newNode = ConfigurationXmlDocument.CreateElement(pimpedElementName);
-
-         // add serialized data
-         MemoryStream formattedStream = new MemoryStream();
-         System.Runtime.Serialization.IFormatter formatter = new BinaryFormatter();
-         formatter.Serialize(formattedStream, obj);
-         formattedStream.Flush();
-         string serializedAsHex = ToHexString(formattedStream.GetBuffer());
-         XmlNode importNode = ConfigurationXmlDocument.CreateElement(obj.GetType().Name + "_FMT");
-         importNode.InnerText = serializedAsHex;
-         newNode.AppendChild(importNode);
-
-         // need new base node if started without old config
-         if(ConfigurationXmlNode == null)
-         {
-            ConfigurationXmlNode = ConfigurationXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT);
-            ConfigurationXmlDocument.AppendChild(ConfigurationXmlNode);
-         }
-         XmlNode oldNode = ConfigurationXmlNode.SelectSingleNode(pimpedElementName);
-         if(oldNode != null)
-            ConfigurationXmlNode.ReplaceChild(newNode, oldNode);
-         else
-            ConfigurationXmlNode.AppendChild(newNode);
-      }
-
       #endregion
+
 
       #region IPersistency
 

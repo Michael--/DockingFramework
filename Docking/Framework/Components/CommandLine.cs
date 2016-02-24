@@ -8,13 +8,12 @@ using System.Threading.Tasks;
 namespace Docking.Components
 {
    [System.ComponentModel.ToolboxItem(false)]
-   public partial class CommandLine : Component, ILocalizableComponent
+   public partial class CommandLine : Component, ILocalizableComponent, IPersistable
    {
       public override void Loaded(DockItem item)
       {
-         base.Loaded(item);
-
-         mPersistence = (CommandLinePersistence)ComponentManager.LoadObject("CommandLine", typeof(CommandLinePersistence), item);
+         // important to call base first to ensure loading of persistency
+         base.Loaded(item); 
 
          Task.Factory.StartNew(() =>
          {
@@ -49,12 +48,28 @@ namespace Docking.Components
 
       CommandLinePersistence mPersistence; // TODO early prototype - abolish, implement IPersistable instead!
 
-      public override void Save()
+      #region IPersistable
+      void IPersistable.LoadFrom(IPersistency persistency)
       {
-         base.Save();
+         string instance = DockItem.Id.ToString();
 
-         ComponentManager.SaveObject("CommandLine", mPersistence, DockItem);
+         if (mPersistence == null)
+            mPersistence = new CommandLinePersistence();
+         mPersistence.Script = persistency.LoadSetting(instance, "Script", "");
+
+         // Support old serializer for a while, can be removed next
+         if (mPersistence.Script.Length == 0)
+            mPersistence = (CommandLinePersistence)ComponentManager.LoadObject("CommandLine", typeof(CommandLinePersistence), DockItem);
       }
+
+
+      void IPersistable.SaveTo(IPersistency persistency)
+      {
+         string instance = DockItem.Id.ToString();
+         persistency.SaveSetting(instance, "Script", mPersistence.Script);
+      }
+
+      #endregion
 
       #region Component - Interaction
 
