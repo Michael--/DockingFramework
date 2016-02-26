@@ -152,6 +152,9 @@ namespace Docking.Components
                   ConsoleView.WriteOutput(s);
                });
             }
+            var msg = s.TrimEnd(new char[] { '\r', '\n' });
+            if (msg.Length > 0)
+               ComponentManager.MessageWriteLine("{0}", msg);
          }
 
          public int softspace { get; set; }

@@ -2527,45 +2527,45 @@ namespace Docking.Components
          if(format == null)
             return;
 
-         if(PowerDown)
-            return;
-
-         Gtk.Application.Invoke(delegate
-         {
-            MessageWriteLineWithoutInvoke(format, args);
-         });
-      }
-
-      protected void MessageWriteLineWithoutInvoke(String format, params object[] args)
-      {
-         if(format == null)
-            return;
-
-         if(PowerDown)
-            return;
-
          string s;
          try
-         { 
-            s = String.Format(format, args);
+         {
+            if (args.Count() == 0)
+               s = format;
+            else
+               s = String.Format(format, args);
          }
-         catch(System.FormatException)
+         catch (System.FormatException)
          {
             s = "(invalid format string)";
          }
 
-         if(LogFile!=null)
+         if (!Visible)
+            Console.WriteLine(s);
+
+         if (LogFile != null)
          {
             LogFile.WriteLine(s);
             LogFile.Flush();
          }
 
+         if (PowerDown)
+            return;
+
+         Gtk.Application.Invoke(delegate
+         {
+            MessageWriteLineWithoutInvoke(s);
+         });
+      }
+
+      protected void MessageWriteLineWithoutInvoke(String str)
+      {
          foreach(KeyValuePair<string, IMessage> kvp in mMessage)
-            kvp.Value.WriteLine(s);
+            kvp.Value.WriteLine(str);
 
          // queue all messages for new not yet existing receiver
-         // todo: may should store only some messages to avoid memory leak ?
-         mMessageQueue.Add(s);
+         if (mMessage.Count() == 0)
+            mMessageQueue.Add(str);
       }
 
       List<String> mMessageQueue = new List<string>();
@@ -2685,7 +2685,10 @@ namespace Docking.Components
          /// </summary>
          public void Quit()
          {
-            ComponentManager.Quit(true);
+            Gtk.Application.Invoke(delegate
+            {
+               ComponentManager.Quit(true);
+            });
          }
 
          /// <summary>
