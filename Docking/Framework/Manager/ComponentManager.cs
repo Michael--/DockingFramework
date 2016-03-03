@@ -76,7 +76,7 @@ namespace Docking.Components
          AccelGroup = new AccelGroup();
          AddAccelGroup(AccelGroup);
 
-         LicenseGroup = new LicenseGroup() { DefaultState = Components.LicenseGroup.State.ENABLED };
+         LicenseGroup = new LicenseGroup();
          ComponentFinder = new Docking.Components.ComponentFinder();
 
          InitPythonEngine(pythonApplicationObjectName);

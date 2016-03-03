@@ -7,9 +7,18 @@ namespace Docking.Components
 {
    public class LicenseGroup
    {
-      public LicenseGroup()
+      /// <summary>
+      /// The default state for not registered groups
+      /// </summary>
+      public static State DefaultState { get; set; }
+
+      static LicenseGroup()
       {
          DefaultState = State.DISABLED;
+      }
+
+      public LicenseGroup()
+      {
       }
 
       public enum State
@@ -69,11 +78,6 @@ namespace Docking.Components
       /// All existing group names and its current enabling state
       /// </summary>
       Dictionary<string, State> m_Groups = new Dictionary<string, State>();
-
-      /// <summary>
-      /// The default state for not registered groups
-      /// </summary>
-      public State DefaultState  { get; set; }
    }
   
 
