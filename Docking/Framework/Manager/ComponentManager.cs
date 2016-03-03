@@ -2648,22 +2648,30 @@ namespace Docking.Components
          return source.Compile();
       }
 
-      public dynamic Execute(CompiledCode compiled)
+      public dynamic Execute(CompiledCode compiled, List<KeyValuePair<string, object>> args = null)
       {
+         applyArguments(args);
          return compiled.Execute(ScriptScope);
       }
 
-      public dynamic Execute(String code)
+      public dynamic Execute(String code, List<KeyValuePair<string, object>> args = null)
       {
          CompiledCode compiled = Compile(code);
+         applyArguments(args);
          try   { return compiled.Execute(ScriptScope); }
          catch { return null;                          }
       }
 
-      public dynamic ExecuteFile(String filename)
+      public dynamic ExecuteFile(String filename, List<KeyValuePair<string, object>> args = null)
       {
          string code = File.ReadAllText(filename, Encoding.UTF8);
-         return Execute(code);
+         return Execute(code, args);
+      }
+
+      private void applyArguments(List<KeyValuePair<string, object>> args)
+      {
+         if (args != null)
+            args.ForEach(arg => ScriptScope.SetVariable(arg.Key, arg.Value));
       }
 
       ComponentManagerScripting m_ScriptingInstance;
