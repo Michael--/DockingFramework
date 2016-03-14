@@ -1966,11 +1966,13 @@ namespace Docking.Components
 
       public void SaveColumnWidths(string instance, Gtk.TreeView treeview)
       {
+         int okcount = 0;
          StringBuilder widths = new StringBuilder();
          foreach(TreeViewColumn col in treeview.Columns)
          {
-
             int w = col.Width;
+            if (w != 0)
+               okcount++;
             if(widths.Length > 0)
                widths.Append(";");
             string title = (col is TreeViewColumnLocalized) ? (col as TreeViewColumnLocalized).LocalizationKey : col.Title;
@@ -1978,7 +1980,8 @@ namespace Docking.Components
             if(!string.IsNullOrEmpty(title))
                widths.Append(title).Append("=").Append(col.Width);
          }
-         SaveSetting(instance, treeview.Name + ".ColumnWidths", widths.ToString());
+         if (okcount == treeview.Columns.Count())
+            SaveSetting(instance, treeview.Name + ".ColumnWidths", widths.ToString());
       }
 
       #endregion
@@ -2094,8 +2097,8 @@ namespace Docking.Components
                int width;
                if(Int32.TryParse(one[1], out width))
                {
-                  if(width < 5) // quickfix: make sure no columns become invisible
-                     width = 5;
+                  if(width == 0) // quickfix: make sure no columns become invisible
+                     continue;
                   foreach(TreeViewColumn col in treeview.Columns)
                   {
                      string title = (col is TreeViewColumnLocalized) ? (col as TreeViewColumnLocalized).LocalizationKey : col.Title;
