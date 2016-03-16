@@ -967,12 +967,11 @@ namespace Docking.Components
                if (typeof(IFileOpen).IsAssignableFrom(cfi.ComponentType) && cfi.SupportsFile(filename))
                {
                   // check if this is a single instance type and an instance is already open
-                  if (null == existing_components.Find((Component _c) => { return (_c.ComponentInfo.ComponentType == cfi.ComponentType) && (false == cfi.MultiInstance); }))
-                  {
-                     available_components.Add( cfi );
-                  }
+                  var ec = existing_components.Where(x => x.ComponentInfo.ComponentType.FullName == cfi.ComponentType.FullName && !cfi.MultiInstance);
+                  if (ec.Count() == 0)
+                     available_components.Add(cfi);
                }
-            }
+            } 
 
             if(available_components.Count + existing_components.Count > 1) // show a dialog and let the user choose
             {
