@@ -967,7 +967,7 @@ namespace Docking.Components
                if (typeof(IFileOpen).IsAssignableFrom(cfi.ComponentType) && cfi.SupportsFile(filename))
                {
                   // check if this is a single instance type and an instance is already open
-                  var ec = existing_components.Where(x => x.ComponentInfo.ComponentType.FullName == cfi.ComponentType.FullName && !cfi.MultiInstance);
+                  var ec = existing_components.Where(x => x.ComponentInfo.ComponentType==cfi.ComponentType && !cfi.MultiInstance);
                   if (ec.Count() == 0)
                      available_components.Add(cfi);
                }
