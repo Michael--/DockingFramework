@@ -198,8 +198,8 @@
   <data name="Docking.Components.Opening file {0} as {1}..." xml:space="preserve">
     <value>Opening file {0} as {1}...</value>
   </data>
-  <data name="Docking.Components.Opening whole directories like {0} currently isn't implemented" xml:space="preserve">
-    <value>Opening whole directories like {0} currently isn't implemented</value>
+  <data name="Docking.Components.Opening whole directories like '{0}' is not supported. Please choose individual files instead." xml:space="preserve">
+    <value>Docking.Components.Opening whole directories like '{0}' is not supported. Please choose individual files instead.</value>
   </data>
   <data name="Docking.Components.Overwrite value with new translation?" xml:space="preserve">
     <value>Really replace previously existing translation with new one?</value>
@@ -303,5 +303,11 @@ It is recommended to manually check the translations afterwards.</value>
   </data>
   <data name="MENU.Select All" xml:space="preserve">
     <value>Select All</value>
+  </data>
+  <data name="Docking.Components.Opening file {0} in component {1}..." xml:space="preserve">
+    <value>Opening file {0} in component {1}...</value>
+  </data>
+  <data name="MENU.Quit without Saving Config" xml:space="preserve">
+    <value>Quit without Saving Config</value>
   </data>
 </root>

@@ -926,7 +926,7 @@ namespace Docking.Components
       {
          if (archiveHandle == null && Directory.Exists(filename))
          {
-            MessageWriteLine("Opening whole directories like {0} currently isn't implemented".FormatLocalizedWithPrefix("Docking.Components", filename));
+            MessageBox.Show("Opening whole directories like\n'{0}'\nis not supported. Please choose individual files instead.".FormatLocalizedWithPrefix("Docking.Components", filename));
             return false;
          }
 
