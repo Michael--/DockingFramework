@@ -1534,10 +1534,17 @@ namespace Docking.Components
          {
             try
             {
-               ConfigurationXmlDocument.Save(new FileStream(
-                  ConfigurationFilename, FileMode.Create, FileAccess.ReadWrite,
-                  FileShare.None // open the file exclusively for writing, i.e., prevent other instances of us from interfering
-               ));
+               string dir = System.IO.Path.GetDirectoryName(ConfigurationFilename);
+               if(!System.IO.Directory.Exists(dir))
+                  System.IO.Directory.CreateDirectory(dir);
+
+               using(FileStream f = new FileStream(ConfigurationFilename, FileMode.Create, FileAccess.ReadWrite,
+                                                   FileShare.None // open the file exclusively for writing, i.e., prevent other instances of us from interfering!
+                                                  ))
+               {
+                  ConfigurationXmlDocument.Save(f);
+               }
+
             }
             catch(Exception e)
             {
@@ -1704,12 +1711,12 @@ namespace Docking.Components
          string instance = "MainWindow";
          IPersistency persistency = this as IPersistency;
 
+         int    windowstate = persistency.LoadSetting(instance, "windowstate", 0);
          int    x           = persistency.LoadSetting(instance, "x",           -9999999);
          int    y           = persistency.LoadSetting(instance, "y",           -9999999);
          int    w           = persistency.LoadSetting(instance, "w",           -9999999);
          int    h           = persistency.LoadSetting(instance, "h",           -9999999);
          string layout      = persistency.LoadSetting(instance, "layout",      "");
-         int    windowstate = persistency.LoadSetting(instance, "windowstate", 0);
 
          if(x!=-9999999 && y!=-9999999 && w!=-9999999 && h!=-9999999)
          {
@@ -1751,12 +1758,14 @@ namespace Docking.Components
          GetPosition(out x, out y);
          GetSize(out w, out h);
 
+         persistency.SaveSetting(instance, "windowstate", (int)WindowState);
          persistency.SaveSetting(instance, "x",           x);
          persistency.SaveSetting(instance, "y",           y);
          persistency.SaveSetting(instance, "w",           w);
          persistency.SaveSetting(instance, "h",           h);
-         persistency.SaveSetting(instance, "layout",      DockFrame.CurrentLayout);
-         persistency.SaveSetting(instance, "windowstate", (int)WindowState);
+
+         persistency.SaveSetting(instance, "layout", DockFrame.CurrentLayout);
+
          List<string> recentfiles = new List<string>();
          foreach(TaggedImageMenuItem item in mRecentFiles)
             recentfiles.Add((string)item.Tag);
