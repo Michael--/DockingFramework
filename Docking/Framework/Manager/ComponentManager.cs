@@ -374,14 +374,16 @@ namespace Docking.Components
          }
       }
 
-      private void InstallQuitMenu()
+      private void InstallQuitMenu(bool minimalistic = false)
       {
+         if(!minimalistic)
          {
             ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit without Saving Config");
           //item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png")); // no icon intentionally to make the normal "Quit" easier to catch with the eye
             item.Activated += OnQuitAndDoNotSaveConfigActionActivated;
             AppendMenuItem("File", item);
          }
+
          {
             ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit");
             item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png"));
@@ -598,12 +600,16 @@ namespace Docking.Components
       /// <summary>
       /// Add all component start/create menu entries
       /// </summary>
-      protected void AddComponentMenus()
+      protected void AddComponentMenus(bool minimalistic = false)
       {
          InstallFileOpenMenu();
-         InstallFileSaveConfigMenu();
-         InstallExportMenu();
-         InstallQuitMenu();
+
+         if(!minimalistic)
+         {
+            InstallFileSaveConfigMenu();
+            InstallExportMenu();
+         }
+         InstallQuitMenu(minimalistic);
          InstallEditMenu();
 
          // get all menu entries first
