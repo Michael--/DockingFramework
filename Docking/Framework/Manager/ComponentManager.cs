@@ -1489,7 +1489,6 @@ namespace Docking.Components
          if(!File.Exists(filename))
          {
             ConfigurationXmlNode = ConfigurationXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT);
-            DockFrame.CreateLayout(DEFAULT_LAYOUT_NAME, true);
             return;
          }
 
