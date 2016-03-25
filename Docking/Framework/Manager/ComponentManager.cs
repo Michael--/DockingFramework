@@ -1494,7 +1494,7 @@ namespace Docking.Components
 
          if(!File.Exists(filename))
          {
-            ConfigurationXmlNode = ConfigurationXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT);
+            ConfigurationXmlNode = ConfigurationXmlDocument.AppendChild(ConfigurationXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT));
             return;
          }
 
@@ -1502,7 +1502,7 @@ namespace Docking.Components
 
          ConfigurationXmlNode = ConfigurationXmlDocument.SelectSingleNode(CONFIG_ROOT_ELEMENT);
          if(ConfigurationXmlNode==null)
-            ConfigurationXmlNode = ConfigurationXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT);
+            ConfigurationXmlNode = ConfigurationXmlDocument.AppendChild(ConfigurationXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT));
 
          PerformDownwardsCompatibilityTweaksOnConfigurationFile();
       }
