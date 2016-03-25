@@ -58,7 +58,7 @@ namespace Docking.Components
       }
 
       // make sure that you construct this class from the main thread!
-      public ComponentManager(string[] args, string application_name, string pythonApplicationObjectName)
+      public ComponentManager(string[] args, string application_name, string pythonApplicationObjectName = null)
       : base(WindowType.Toplevel)
       {
          Clock = new Stopwatch();
@@ -79,7 +79,8 @@ namespace Docking.Components
          LicenseGroup = new LicenseGroup();
          ComponentFinder = new Docking.Components.ComponentFinder();
 
-         InitPythonEngine(pythonApplicationObjectName);
+         if(!string.IsNullOrEmpty(pythonApplicationObjectName))
+            InitPythonEngine(pythonApplicationObjectName);
 
          MakeWidgetReceiveDropEvents(Toplevel, OnDragDataReceived);
 
@@ -2646,6 +2647,8 @@ namespace Docking.Components
 
       public CompiledCode Compile(String code)
       {
+         if(ScriptEngine==null)
+            return null;
          ScriptSource source = ScriptEngine.CreateScriptSourceFromString(code, SourceCodeKind.AutoDetect);
          return source.Compile();
       }
@@ -2659,6 +2662,8 @@ namespace Docking.Components
       public dynamic Execute(String code, List<KeyValuePair<string, object>> args = null)
       {
          CompiledCode compiled = Compile(code);
+         if(compiled==null)
+            return null;
          applyArguments(args);
          try   { return compiled.Execute(ScriptScope); }
          catch { return null;                          }
@@ -2672,7 +2677,7 @@ namespace Docking.Components
 
       private void applyArguments(List<KeyValuePair<string, object>> args)
       {
-         if (args != null)
+         if(args!=null && ScriptScope!=null)
             args.ForEach(arg => ScriptScope.SetVariable(arg.Key, arg.Value));
       }
 
