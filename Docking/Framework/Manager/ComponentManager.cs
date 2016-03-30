@@ -1191,11 +1191,15 @@ namespace Docking.Components
                                               "Cancel".L(), ResponseType.Cancel);
          if (currentFilename != null)
          {
-            dlg.SetCurrentFolder(System.IO.Path.GetDirectoryName(currentFilename));
-            dlg.SetFilename(currentFilename);
+            var dirname = System.IO.Path.GetDirectoryName(currentFilename);
+            if (dirname != null && dirname.Length > 0)
+               dlg.SetCurrentFolderUri(dirname);
+            var filename = System.IO.Path.GetFileName(currentFilename);
+            if (filename != null && filename.Length > 0)
+               dlg.CurrentName = filename;
          }
 
-         if(RunFileChooserDialogLocalized(dlg, filters) == (int) ResponseType.Accept)
+         if (RunFileChooserDialogLocalized(dlg, filters) == (int) ResponseType.Accept)
          {
             result = dlg.Filename;
 
