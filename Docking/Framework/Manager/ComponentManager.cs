@@ -823,6 +823,9 @@ namespace Docking.Components
       public static bool     PowerDown                { get; private set; }
       public Localization    Localization             { get; private set; }
 
+      // default font for all languages except Arabic and Hebrew
+      // @see DEFAULT_FONT_ARAB
+      // @see DEFAULT_FONT_HEBR
       public static string DEFAULT_FONT
       {
          get
@@ -862,6 +865,46 @@ namespace Docking.Components
                // To get it, install the package containing it, for example on ArchLinux, that is
                //    sudo pacman -S noto-fonts-cjk
                return "Noto Sans CJK SC";
+            }
+         }
+      }
+
+      // default font for Arabic
+      // @see DEFAULT_FONT
+      // @see DEFAULT_FONT_HEBR
+      public static string DEFAULT_FONT_ARAB
+      {
+         get
+         {
+            string osid = Docking.Tools.Platform.OSIDString.ToLowerInvariant();
+            if(Docking.Tools.Platform.IsWindows)
+            {
+               // https://en.wikipedia.org/wiki/List_of_typefaces_included_with_Microsoft_Windows
+               return "Arial";
+            }
+            else
+            {
+               return DEFAULT_FONT;
+            }
+         }
+      }
+
+      // default font for Hebrew
+      // @see DEFAULT_FONT
+      // @see DEFAULT_FONT_ARAB
+      public static string DEFAULT_FONT_HEBR
+      {
+         get
+         {
+            string osid = Docking.Tools.Platform.OSIDString.ToLowerInvariant();
+            if(Docking.Tools.Platform.IsWindows)
+            {
+               // https://en.wikipedia.org/wiki/List_of_typefaces_included_with_Microsoft_Windows
+               return "Arial";
+            }
+            else
+            {
+               return DEFAULT_FONT;
             }
          }
       }
