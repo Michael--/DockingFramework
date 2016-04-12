@@ -505,7 +505,7 @@ namespace Docking.Widgets
 
       void drawingarea_ButtonPressEvent(object o, ButtonPressEventArgs args)
       {
-         if (args.Event.Button == 1)
+         if (args.Event.Button == LEFT_MOUSE_BUTTON)
          {
             int row = (int)args.Event.Y / ConstantHeight + (int)vscrollbar1.Value;
             OffsetCursor(row - CurrentRow, true);
