@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Security;
 using System.Security.Cryptography;
+using System.Net;
 
 namespace Docking.Tools
 {
-   public class WebClient2 : System.Net.WebClient
+   public class WebClient2 : WebClient
    {
       public static string UserAgent              = null;
 
@@ -29,10 +30,13 @@ namespace Docking.Tools
          get { return (ProxyPassword == null || ProxyPassword.Length <= 0) ? "" : ToHexString(ProtectedData.Protect(Encoding.UTF8.GetBytes(ProxyPassword), Entropy, DataProtectionScope.CurrentUser)); }
       }
 
+      public CookieContainer CookieContainer { get; set; } // default: null - if needed, set this before making a request
+      public string          Referer         { get; set; } // default: null - if needed, set this before making a request
+
       public WebClient2(bool withUserAgent = false)
       {
          if (withUserAgent && UserAgent != null && UserAgent.Length > 0)
-            Headers.Add(System.Net.HttpRequestHeader.UserAgent, UserAgent);
+            Headers.Add(HttpRequestHeader.UserAgent, UserAgent);
 
          if(UseProxy)
          {
@@ -46,15 +50,14 @@ namespace Docking.Tools
             {
                if (ProxyServer != null && ProxyServer.Length > 0)
                {
-                  Proxy = new System.Net.WebProxy(ProxyServer, ProxyPort);
+                  Proxy = new WebProxy(ProxyServer, ProxyPort);
                   if (ProxyUsername != null && ProxyUsername.Length > 0)
-                     Proxy.Credentials = new System.Net.NetworkCredential(ProxyUsername, ProxyPassword ?? "");
+                     Proxy.Credentials = new NetworkCredential(ProxyUsername, ProxyPassword ?? "");
                }
             }
          }
       }
 
-      // hexdump hex dump (copied from LittleHelper, need in also in other context) 
       static String ToHexString(byte[] ar)
       {
          StringBuilder result = new StringBuilder();
@@ -63,7 +66,6 @@ namespace Docking.Tools
          return result.ToString();
       }
 
-      // Byte array from hexdump string
       static Byte[] FromHexString(String s)
       {
          if (s == null || (s.Length % 2) != 0)
@@ -73,6 +75,20 @@ namespace Docking.Tools
             bytes[i] = Convert.ToByte(s.Substring(i * 2, 2), 16);
          return bytes;
       }
+
+      // http://stackoverflow.com/questions/1777221/using-cookiecontainer-with-webclient-class
+      protected override WebRequest GetWebRequest(Uri url)
+      {
+         HttpWebRequest req = base.GetWebRequest(url) as HttpWebRequest;
+         if(req!=null)
+         {
+            if(this.CookieContainer!=null)
+               req.CookieContainer = this.CookieContainer;
+            if(!string.IsNullOrEmpty(this.Referer))
+               req.Referer = this.Referer;
+         }
+         return req;
+      } 
 
    }
 }
