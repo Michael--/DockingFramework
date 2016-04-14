@@ -556,6 +556,11 @@ namespace Docking.Helper
          return img;
       }
 
+      public static Cairo.Color Clone(this Cairo.Color self)
+      {
+         return new Cairo.Color(self.R, self.G, self.B, self.A);
+      }
+
       public static Cairo.Color MultiplyAlpha (this Cairo.Color self, double alpha)
       {
          return new Cairo.Color (self.R, self.G, self.B, self.A * alpha);
