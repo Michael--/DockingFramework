@@ -167,7 +167,7 @@ namespace MonoDevelop.Components.PropertyGrid
          base.PackEnd(vpaned);
          base.FocusChain = new Gtk.Widget[] { vpaned };
 
-         helpButton.Active = ShowHelp = true; // MonoDevelop.Core.PropertyService.Get<bool> (PROP_HELP_KEY, true);
+         helpButton.Active = ShowHelp = false; // TODO retrieve this setting from persistency
 
          Populate();
          UpdateTabs();
@@ -231,6 +231,8 @@ namespace MonoDevelop.Components.PropertyGrid
             if(value != propertySort)
             {
                propertySort = value;
+               alphButton.Active = (propertySort==PropertySort.Alphabetical);
+               catButton .Active = (propertySort==PropertySort.Categorized );
                Populate();
             }
          }
@@ -399,6 +401,7 @@ namespace MonoDevelop.Components.PropertyGrid
                descTitleLabel = null;
                helpSeparator.Hide();
             }
+            helpButton.Active = value;
          }
       }
 

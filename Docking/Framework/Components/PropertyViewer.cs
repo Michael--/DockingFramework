@@ -3,7 +3,7 @@ using System;
 namespace Docking.Components
 {
     [System.ComponentModel.ToolboxItem(false)]
-    public partial class PropertyViewer : Component, IPropertyViewer, ILocalizableComponent
+    public partial class PropertyViewer : Component, IPropertyViewer, ILocalizableComponent, IPersistable
     {
         public PropertyViewer ()
         {
@@ -57,6 +57,31 @@ namespace Docking.Components
         }
 
         private PropertyChangedEventHandler PropertyChangedHandler;
+
+        #endregion
+
+        #region IPersistable
+
+        void IPersistable.SaveTo(IPersistency persistency)
+        {
+           string instance = DockItem.Id.ToString();
+           persistency.SaveSetting(instance, "ShowHelp", this.propertygrid1.ShowHelp);
+           persistency.SaveSetting(instance, "Sort",     (int)this.propertygrid1.PropertySort);
+        }
+
+        void IPersistable.LoadFrom(IPersistency persistency)
+        {
+           string instance = DockItem.Id.ToString();
+
+           bool b = persistency.LoadSetting(instance, "ShowHelp", this.propertygrid1.ShowHelp);
+           this.propertygrid1.ShowHelp = !b; // workaround: have to toggle this to have an effect...
+           this.propertygrid1.ShowHelp =  b; //
+
+           int i = persistency.LoadSetting(instance, "Sort", (int)this.propertygrid1.PropertySort);
+           if(i==(int)MonoDevelop.Components.PropertyGrid.PropertySort.Alphabetical ||
+              i==(int)MonoDevelop.Components.PropertyGrid.PropertySort.Categorized)
+              this.propertygrid1.PropertySort = (MonoDevelop.Components.PropertyGrid.PropertySort)i;
+        }
 
         #endregion
     }
