@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Docking.Tools
 {
@@ -16,23 +17,37 @@ namespace Docking.Tools
    //    you need to copy+paste this class to there and use THAT, not THIS.
    public class ResourceLoader_Docking
    {
-      private static string RESOURCE_PREFIX = "Docking.Framework.Resources."; // this is added here explicitly to PREVENT that resources from other assemblies get loaded! (that would lead to random crashes...)
+      private static string RESOURCE_PREFIX = // Assembly.GetExecutingAssembly().GetName().Name // returns "Docking", not "Docking.Framework", TODO: find out, why
+                                              "Docking.Framework"
+                                            + ".Resources."; // this is added here explicitly to PREVENT that resources from other assemblies get loaded! (that would lead to random crashes...)
 
       // a pink 16x16 dummy placeholder PNG for resources that cannot be retrieved
       private static byte[] DUMMY_PLACEHOLDER_IMAGE = System.Convert.FromBase64String("iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAAK3RFWHRDcmVhdGlvbiBUaW1lAFNhIDI3IEp1biAyMDE1IDE0OjQ5OjM2ICswMTAwswJnxwAAAAd0SU1FB98GGww0ExFqaikAAAAJcEhZcwAACxIAAAsSAdLdfvwAAAAEZ0FNQQAAsY8L/GEFAAAABlBMVEUAAAD/AP82/WKvAAAADklEQVR42mP4/5+BFAQA/U4f4d7IdZcAAAAASUVORK5CYII=");
 
-      public static Gdk.Pixbuf LoadPixbuf(string resourcename)
-      {
+      public static System.IO.Stream LoadResource(string resourcename)
+      {         
          if(!String.IsNullOrEmpty(resourcename))
          {
             string fullresourcename = RESOURCE_PREFIX+resourcename;
-            try { return Gdk.Pixbuf.LoadFromResource(fullresourcename); }
+            try { return Assembly.GetExecutingAssembly().GetManifestResourceStream(fullresourcename); }
             #if DEBUG
-            catch(Exception e) { System.Console.Error.WriteLine(e.ToString()); }   
+            catch(Exception e) { System.Console.Error.WriteLine(e.ToString()); }
             #else
             catch {}
             #endif
-         }        
+         }
+         return null;
+      }
+
+      public static Gdk.Pixbuf LoadPixbuf(string resourcename)
+      {
+         System.IO.Stream stream = LoadResource(resourcename);
+         try { if(stream!=null) return new Gdk.Pixbuf(stream); }
+         #if DEBUG
+         catch(Exception e) { System.Console.Error.WriteLine(e.ToString()); }   
+         #else
+         catch {}
+         #endif
 
          // return dummy placeholder image here instead of null to avoid program crashes!
          // return a new one each time to make all instances independent!
