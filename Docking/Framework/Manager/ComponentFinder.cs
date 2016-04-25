@@ -129,7 +129,8 @@ namespace Docking.Components
          // save runtime Exceptions by ignoring known problematic files
          List<string> filenames_to_skip = new List<string>()
          {
-            "SQLiteNetExtensions.dll"
+            "SQLiteNetExtensions.dll",
+            "sqlite3.dll"
          };
          foreach(string s in filenames_to_skip)
             if(filename.ToLowerInvariant().EndsWith(System.IO.Path.DirectorySeparatorChar+s.ToLowerInvariant()))
@@ -141,15 +142,21 @@ namespace Docking.Components
             Type[] types = asm.GetExportedTypes();
             mTypes.AddRange(types);
          }
-         catch (FileNotFoundException) { } // cheap            
-         catch (BadImageFormatException) { } // cheap
-         catch (ReflectionTypeLoadException) { } // cheap
-         catch (MissingMethodException) { } // cheap
-         catch (TypeLoadException) { } // cheap
-         catch (Exception) // runtime expensive! avoid getting here to have a speedy start!
+         catch(FileNotFoundException)       {} // cheap            
+         catch(BadImageFormatException)     {} // cheap
+         catch(ReflectionTypeLoadException) {} // cheap
+         catch(MissingMethodException)      {} // cheap
+         catch(TypeLoadException)           {} // cheap
+         #if DEBUG
+         catch(Exception e)                    // runtime expensive! avoid getting here to have a speedy start!  
          {
-            //Console.WriteLine(e.ToString());
+            Console.WriteLine("cannot load framework components DLL '{0}':", filename);
+            Console.WriteLine("   "+e.ToString());
          }
+         #else
+         catch(Exception)                      // runtime expensive! avoid getting here to have a speedy start!
+         { /* NOP */ }
+         #endif
       }
 
       /// <summary>
