@@ -125,6 +125,12 @@ namespace Docking.Widgets
          return m_Selection.OrderBy(x => x);
       }
 
+      public void ClearSelection()
+      {
+         m_Selection.Clear();
+         TriggerRepaint();
+      }
+
       Pango.Layout NewLayout(Pango.FontDescription fd)
       {
          return new Pango.Layout(this.PangoContext)
