@@ -725,7 +725,7 @@ namespace Docking
          if (tabstrip != null && (Behavior & DockItemBehavior.NeverFloating) == 0 && Status != DockItemStatus.Floating
             && (Status == DockItemStatus.Dockable || Status == DockItemStatus.AutoHide))
          {
-            citem = new MenuItem(Catalog.GetString("Flip tab"));
+            citem = new MenuItem(Catalog.GetString("Toggle Horizontal/Vertical Tab Layout"));
             citem.Activated += (o, e) =>
             {
                tabstrip.Flip();
