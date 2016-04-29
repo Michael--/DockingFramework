@@ -104,12 +104,11 @@ namespace Docking.Components
          style.PadTitleLabelColor = Styles.PadLabelColor;
          style.PadBackgroundColor = Styles.PadBackground;
          style.InactivePadBackgroundColor = Styles.InactivePadBackground;
-         // style.PadTitleHeight = barHeight;
          DockFrame.DefaultVisualStyle = style;
 
          mNormalStyle = DockFrame.DefaultVisualStyle;
          mSelectedStyle = DockFrame.DefaultVisualStyle.Clone();
-         mSelectedStyle.PadBackgroundColor = new Gdk.Color(100, 160, 255);//new Gdk.Color(255, 0, 0);
+         mSelectedStyle.PadBackgroundColor = new Gdk.Color(100, 160, 255);
       }
 
       public void SetStatusBar(Statusbar sb)

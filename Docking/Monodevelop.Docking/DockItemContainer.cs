@@ -53,7 +53,7 @@ namespace Docking
          
          mainBox.ResizeMode = Gtk.ResizeMode.Queue;
          mainBox.Spacing = 0;
-         mainBox.BorderWidth = 8;
+         mainBox.BorderWidth = 5;
          
          ShowAll ();
          
