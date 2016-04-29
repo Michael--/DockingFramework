@@ -821,6 +821,7 @@ namespace Docking.Components
       public LicenseGroup    LicenseGroup             { get; private set; }
       public static bool     PowerDown                { get; private set; }
       public Localization    Localization             { get; private set; }
+      public bool            OperateInBatchMode       { get; set;         }
 
       // default font for all languages except Arabic and Hebrew
       // @see DEFAULT_FONT_ARAB

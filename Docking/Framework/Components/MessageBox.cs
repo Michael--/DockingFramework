@@ -32,6 +32,47 @@ namespace Docking.Components
          if(ComponentManager!=null && !ComponentManager.IsMainThread)
             throw new Exception("message boxes may only be popped up from the main GUI thread, i.e., they need a surrounding Gtk.Application.Invoke(delegate {}); block");
 
+         if(ComponentManager!=null)
+            ComponentManager.MessageWriteLine(format, args);
+
+         #region treat batch mode case
+         if(ComponentManager!=null && ComponentManager.OperateInBatchMode && ComponentManager.Visible==false)
+         {
+            switch(buttontype)
+            {
+            case ButtonsType.None:
+               ComponentManager.MessageWriteLine("[NONE]"); 
+               return ResponseType.None;
+
+            case ButtonsType.Ok:
+               ComponentManager.MessageWriteLine("[OK]");
+               return ResponseType.Ok;
+
+            case ButtonsType.Close:
+               ComponentManager.MessageWriteLine("[CLOSE]"); 
+               return ResponseType.Close;
+
+            case ButtonsType.Cancel:
+               ComponentManager.MessageWriteLine("[CANCEL]");
+               return ResponseType.Cancel;
+
+            case ButtonsType.YesNo:    
+               throw new Exception("sorry, but a yes/no messagebox cannot be decided in batch mode :(");
+
+            case ButtonsType.OkCancel:
+               #if true
+               throw new Exception("are we sure here we want an automatic [OK] click in batch mode???");
+               #else
+               // be BOLD and assume an automated "OK" in script mode???? hmmm........... might be dangerous.....
+               // "Do you really want to delete the internet? [OK]/[CANCEL]"......
+               ComponentManager.MessageWriteLine("[OK]");               
+               return ResponseType.Ok;
+               #endif               
+            }
+            throw new Exception("unknown message box button type");
+         }
+         #endregion
+
          if(parent==null && ComponentManager!=null)
             parent = ComponentManager;
          MessageDialog md = new MessageDialog(parent, DialogFlags.Modal, msgtype, buttontype, format, args);
@@ -66,9 +107,6 @@ namespace Docking.Components
             if(b!=null)
                b.Label = b.Label.Localized("Docking.Components");
          }
-
-         if(ComponentManager!=null)
-            ComponentManager.MessageWriteLine(format, args);
 
          ResponseType result = (ResponseType) md.Run();
          md.Destroy();
