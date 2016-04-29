@@ -672,6 +672,21 @@ namespace Docking
             menu.Append(citem);
          }
 
+         {
+            citem = new MenuItem(this.Status==DockItemStatus.AutoHide
+                                 ? Catalog.GetString("Restore" )
+                                 : Catalog.GetString("Minimize"));
+            citem.Activated += (o, e) =>
+            {
+               TitleTab.OnClickDock(o, e);
+               if(this.Status==DockItemStatus.AutoHide)
+                  (o as MenuItem).Name = this.Status==DockItemStatus.AutoHide
+                                       ? Catalog.GetString("Restore" )
+                                       : Catalog.GetString("Minimize");
+            };
+            menu.Append(citem);
+         }
+
 #if false
          // Hide menuitem
          if ((Behavior & DockItemBehavior.CantClose) == 0

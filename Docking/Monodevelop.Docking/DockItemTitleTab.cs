@@ -205,7 +205,7 @@ namespace Docking
          UpdateVisualStyle();
       }
 
-      void OnClickDock(object s, EventArgs a)
+      public void OnClickDock(object s, EventArgs a)
       {
          if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating)
             item.Status = DockItemStatus.Dockable;
