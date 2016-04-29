@@ -297,7 +297,7 @@ namespace Docking
 			}
 		}
 		
-		void ResetVisibleGroups ()
+		internal void ResetVisibleGroups ()
 		{
 			visibleObjects = null;
 			MarkForRelayout ();
@@ -361,14 +361,30 @@ namespace Docking
 						ob.SizeAllocate (ob.Allocation);
 					return;
 				}
-				if (VisibleObjects.Count > 1 && boundTabStrip != null) {
-					int tabsHeight = boundTabStrip.SizeRequest ().Height;
-					newAlloc.Height -= tabsHeight;
-					newAlloc.Y += tabsHeight;
-					boundTabStrip.QueueDraw ();
-				} else if (VisibleObjects.Count != 0) {
-					((DockGroupItem)VisibleObjects [0]).Item.Widget.Show ();
-				}
+
+            if (VisibleObjects.Count > 1 && boundTabStrip != null)
+            {
+               var sr = boundTabStrip.SizeRequest();
+
+               if (boundTabStrip.isVertical)
+               {
+                  int tabsWidth = sr.Width;
+                  newAlloc.Width -= tabsWidth;
+                  newAlloc.X += tabsWidth;
+                  boundTabStrip.QueueDraw();
+               }
+               else
+               {
+                  int tabsHeight = sr.Height;
+                  newAlloc.Height -= tabsHeight;
+                  newAlloc.Y += tabsHeight;
+                  boundTabStrip.QueueDraw();
+               }
+            }
+            else if (VisibleObjects.Count != 0)
+            {
+               ((DockGroupItem)VisibleObjects[0]).Item.Widget.Show();
+            }
 				allocStatus = AllocStatus.Valid;
 				foreach (DockObject ob in VisibleObjects) {
 					ob.Size = ob.PrefSize = -1;
@@ -923,6 +939,7 @@ namespace Docking
 			if (hgc != null)
 				hgc.Dispose ();
 		}
+
 		
 		public void ResizeItem (int index, int newSize)
 		{
@@ -957,7 +974,8 @@ namespace Docking
 		
 		internal override void QueueResize ()
 		{
-			foreach (DockObject obj in VisibleObjects)
+         CalcNewSizes();
+         foreach (DockObject obj in VisibleObjects)
 				obj.QueueResize ();
 		}
 		

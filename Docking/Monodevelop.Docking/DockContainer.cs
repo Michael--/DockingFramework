@@ -233,9 +233,19 @@ namespace Docking
 
 			needsRelayout = true;
 			QueueResize ();
-		}
-		
-		void LayoutWidgets ()
+      }
+
+
+      internal void RecalcLayout()
+      {
+         List<DockGroup> tabbedGroups = new List<DockGroup>();
+         GetTabbedGroups(layout, tabbedGroups);
+         foreach (var dockGroup in tabbedGroups)
+            dockGroup.ResetVisibleGroups();
+      }
+
+
+      void LayoutWidgets ()
 		{
 			if (!needsRelayout)
 				return;
@@ -534,8 +544,8 @@ namespace Docking
 				dragSize = (dockGroup.Type == DockGroupType.Horizontal) ? obj.Allocation.Width : obj.Allocation.Height;
 				return base.OnButtonPressEvent (ev);
 			}
-			
-			protected override bool OnButtonReleaseEvent (Gdk.EventButton e)
+
+         protected override bool OnButtonReleaseEvent (Gdk.EventButton e)
 			{
 				dragging = false;
 				return base.OnButtonReleaseEvent (e);

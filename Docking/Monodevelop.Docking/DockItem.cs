@@ -48,7 +48,7 @@ namespace Docking
       DockFrame frame;
       int defaultWidth = -1;
       int defaultHeight = -1;
-      string title;  
+      string title;
       Gdk.Pixbuf icon;
       bool expand;
       DockItemBehavior behavior;
@@ -75,16 +75,16 @@ namespace Docking
       public event EventHandler ContentVisibleChanged;
       public event EventHandler ContentRequired;
 
-        public DockFrame DockFrame { get { return frame; } }
+      public DockFrame DockFrame { get { return frame; } }
 
-      internal DockItem (DockFrame frame, string id)
+      internal DockItem(DockFrame frame, string id)
       {
          this.frame = frame;
          this.id = id;
-         currentVisualStyle = regionStyle = frame.GetRegionStyleForItem (this);
+         currentVisualStyle = regionStyle = frame.GetRegionStyleForItem(this);
       }
 
-      internal DockItem (DockFrame frame, Widget w, string id): this (frame, id)
+      internal DockItem(DockFrame frame, Widget w, string id) : this(frame, id)
       {
          content = w;
       }
@@ -94,96 +94,112 @@ namespace Docking
          get { return id; }
       }
 
-        public int InstanceIndex
-        {
-            get
-            {
-                int i = Id.LastIndexOf('-');
-                if (i < 0)
-                    return 0;
-                if (i + 1 >= Id.Length)
-                    return 0;
-                string s = Id.Substring(i + 1);
-                int index = Convert.ToInt32(s);
-                return index;
-            }
-        }
+      public int InstanceIndex
+      {
+         get
+         {
+            int i = Id.LastIndexOf('-');
+            if (i < 0)
+               return 0;
+            if (i + 1 >= Id.Length)
+               return 0;
+            string s = Id.Substring(i + 1);
+            int index = Convert.ToInt32(s);
+            return index;
+         }
+      }
 
-      internal bool StickyVisible {
+      internal bool StickyVisible
+      {
          get { return stickyVisible; }
          set { stickyVisible = value; }
       }
 
-      public string Title {
+      public string Title
+      {
          get { return title ?? string.Empty; }
-         set {
+         set
+         {
             title = value;
             if (titleTab != null)
-               titleTab.SetTitle (widget, icon, title);
-            frame.UpdateTitle (this);
+               titleTab.SetTitle(widget, icon, title);
+            frame.UpdateTitle(this);
             if (floatingWindow != null)
-               floatingWindow.Title = GetTitle ();
+               floatingWindow.Title = GetTitle();
          }
       }
 
       public void UpdateTitle()
       {
-         if(this.Content==null)
+         if (this.Content == null)
             return;
          string newtitle = (this.Content is ILocalizableComponent)
                          ? (this.Content as ILocalizableComponent).Name.Localized(this.Content)
-                         :  this.Content.Name;
-         if(InstanceIndex>=2)
-            newtitle += " "+InstanceIndex;
+                         : this.Content.Name;
+         if (InstanceIndex >= 2)
+            newtitle += " " + InstanceIndex;
          this.Title = newtitle;
       }
 
-      public bool Visible {
-         get {
-            return frame.GetVisible (this);
-         }
-         set {
-            stickyVisible = value;
-            frame.SetVisible (this, value);
-            UpdateVisibleStatus ();
-         }
-      }
-
-      public bool VisibleInLayout (string layout)
+      public bool Visible
       {
-         return frame.GetVisible (this, layout);
+         get
+         {
+            return frame.GetVisible(this);
+         }
+         set
+         {
+            stickyVisible = value;
+            frame.SetVisible(this, value);
+            UpdateVisibleStatus();
+         }
       }
 
-      internal DockItemTitleTab TitleTab {
-         get {
-            if (titleTab == null) {
-               titleTab = new DockItemTitleTab (this, frame);
+      public bool VisibleInLayout(string layout)
+      {
+         return frame.GetVisible(this, layout);
+      }
+
+      internal DockItemTitleTab TitleTab
+      {
+         get
+         {
+            if (titleTab == null)
+            {
+               titleTab = new DockItemTitleTab(this, frame);
                titleTab.VisualStyle = currentVisualStyle;
-               titleTab.SetTitle (Widget, icon, title);
-               titleTab.ShowAll ();
+               titleTab.SetTitle(Widget, icon, title);
+               titleTab.ShowAll();
             }
             return titleTab;
          }
       }
 
-      public DockItemStatus Status {
-         get {
-            return frame.GetStatus (this);
+      public DockItemStatus Status
+      {
+         get
+         {
+            return frame.GetStatus(this);
          }
-         set {
-            frame.SetStatus (this, value);
+         set
+         {
+            frame.SetStatus(this, value);
          }
       }
 
-      public IDockItemLabelProvider DockLabelProvider {
+      public IDockItemLabelProvider DockLabelProvider
+      {
          get { return this.dockLabelProvider; }
          set { this.dockLabelProvider = value; }
       }
 
-      internal DockItemContainer Widget {
-         get {
-            if (widget == null) {
-               widget = new DockItemContainer (frame, this);
+      internal DockItemContainer Widget
+      {
+         get
+         {
+            if (widget == null)
+            {
+               widget = new DockItemContainer(frame, this);
                widget.VisualStyle = currentVisualStyle;
                widget.Visible = false; // Required to ensure that the Shown event is fired
                widget.Shown += SetupContent;
@@ -192,255 +208,295 @@ namespace Docking
          }
       }
 
-      public DockVisualStyle VisualStyle {
+      public DockVisualStyle VisualStyle
+      {
          get { return itemStyle; }
-         set { itemStyle = value; UpdateStyle (); }
+         set { itemStyle = value; UpdateStyle(); }
       }
 
-      internal void SetRegionStyle (DockVisualStyle style)
+      internal void SetRegionStyle(DockVisualStyle style)
       {
          regionStyle = style;
-         UpdateStyle ();
+         UpdateStyle();
       }
 
-      void UpdateStyle ()
+      void UpdateStyle()
       {
          var s = itemStyle != null ? itemStyle : regionStyle;
-         if (s != currentVisualStyle) {
+         if (s != currentVisualStyle)
+         {
             currentVisualStyle = s;
             if (titleTab != null)
                titleTab.VisualStyle = s;
             if (widget != null)
                widget.VisualStyle = s;
-            frame.UpdateStyle (this);
+            frame.UpdateStyle(this);
          }
       }
 
-      void SetupContent (object ob, EventArgs args)
+      void SetupContent(object ob, EventArgs args)
       {
          widget.Shown -= SetupContent;
 
-         if (ContentRequired != null) {
+         if (ContentRequired != null)
+         {
             gettingContent = true;
-            try {
-               ContentRequired (this, EventArgs.Empty);
-            } finally {
+            try
+            {
+               ContentRequired(this, EventArgs.Empty);
+            }
+            finally
+            {
                gettingContent = false;
             }
          }
 
-         widget.UpdateContent ();
-         widget.Shown += delegate {
-            UpdateContentVisibleStatus ();
+         widget.UpdateContent();
+         widget.Shown += delegate
+         {
+            UpdateContentVisibleStatus();
          };
-         widget.Hidden += delegate {
-            UpdateContentVisibleStatus ();
+         widget.Hidden += delegate
+         {
+            UpdateContentVisibleStatus();
          };
-         widget.ParentSet += delegate {
-            UpdateContentVisibleStatus ();
+         widget.ParentSet += delegate
+         {
+            UpdateContentVisibleStatus();
          };
-         UpdateContentVisibleStatus ();
+         UpdateContentVisibleStatus();
       }
 
-      public Widget Content {
-         get {
+      public Widget Content
+      {
+         get
+         {
             return content;
          }
-         set {
+         set
+         {
             content = value;
             if (!gettingContent && widget != null)
-               widget.UpdateContent ();
+               widget.UpdateContent();
          }
       }
 
-      public DockItemToolbar GetToolbar (PositionType position)
+      public DockItemToolbar GetToolbar(PositionType position)
       {
-         switch (position) {
+         switch (position)
+         {
             case PositionType.Top:
                if (toolbarTop == null)
-                  toolbarTop = new DockItemToolbar (this, PositionType.Top);
+                  toolbarTop = new DockItemToolbar(this, PositionType.Top);
                return toolbarTop;
             case PositionType.Bottom:
                if (toolbarBottom == null)
-                  toolbarBottom = new DockItemToolbar (this, PositionType.Bottom);
+                  toolbarBottom = new DockItemToolbar(this, PositionType.Bottom);
                return toolbarBottom;
             case PositionType.Left:
                if (toolbarLeft == null)
-                  toolbarLeft = new DockItemToolbar (this, PositionType.Left);
+                  toolbarLeft = new DockItemToolbar(this, PositionType.Left);
                return toolbarLeft;
             case PositionType.Right:
                if (toolbarRight == null)
-                  toolbarRight = new DockItemToolbar (this, PositionType.Right);
+                  toolbarRight = new DockItemToolbar(this, PositionType.Right);
                return toolbarRight;
-            default: throw new ArgumentException ();
+            default: throw new ArgumentException();
          }
       }
 
-      internal bool HasWidget {
+      internal bool HasWidget
+      {
          get { return widget != null; }
       }
 
-      public string DefaultLocation {
+      public string DefaultLocation
+      {
          get { return defaultLocation; }
          set { defaultLocation = value; }
       }
 
-      public bool DefaultVisible {
+      public bool DefaultVisible
+      {
          get { return defaultVisible; }
          set { defaultVisible = value; }
       }
 
-      public DockItemStatus DefaultStatus {
+      public DockItemStatus DefaultStatus
+      {
          get { return defaultStatus; }
          set { defaultStatus = value; }
       }
 
-      public int DefaultWidth {
-         get {
+      public int DefaultWidth
+      {
+         get
+         {
             return defaultWidth;
          }
-         set {
+         set
+         {
             defaultWidth = value;
          }
       }
 
-      public int DefaultHeight {
-         get {
+      public int DefaultHeight
+      {
+         get
+         {
             return defaultHeight;
          }
-         set {
+         set
+         {
             defaultHeight = value;
          }
       }
 
-      public Gdk.Pixbuf Icon {
-         get {
+      public Gdk.Pixbuf Icon
+      {
+         get
+         {
             return icon;
          }
-         set {
+         set
+         {
             icon = value;
             if (titleTab != null)
-               titleTab.SetTitle (widget, icon, title);
+               titleTab.SetTitle(widget, icon, title);
          }
       }
 
-      public DockItemBehavior Behavior {
-         get {
+      public DockItemBehavior Behavior
+      {
+         get
+         {
             return behavior;
          }
-         set {
+         set
+         {
             behavior = value;
             if (titleTab != null)
-               titleTab.UpdateBehavior ();
+               titleTab.UpdateBehavior();
          }
       }
 
-      public bool Expand {
-         get {
+      public bool Expand
+      {
+         get
+         {
             return expand;
          }
-         set {
+         set
+         {
             expand = value;
          }
       }
 
-      public bool DrawFrame {
-         get {
+      public bool DrawFrame
+      {
+         get
+         {
             return false;
-//				return drawFrame;
+            //				return drawFrame;
          }
-         set {
+         set
+         {
          }
       }
 
-      public void Present (bool giveFocus)
+      public void Present(bool giveFocus)
       {
          if (dockBarItem != null)
-            dockBarItem.Present (Status == DockItemStatus.AutoHide || giveFocus);
+            dockBarItem.Present(Status == DockItemStatus.AutoHide || giveFocus);
          else
-            frame.Present (this, Status == DockItemStatus.AutoHide || giveFocus);
+            frame.Present(this, Status == DockItemStatus.AutoHide || giveFocus);
       }
 
-      public bool ContentVisible {
-         get {
+      public bool ContentVisible
+      {
+         get
+         {
             if (widget == null)
                return false;
             return widget.Parent != null && widget.Visible;
          }
       }
 
-      public void SetDockLocation (string location)
+      public void SetDockLocation(string location)
       {
-         frame.SetDockLocation (this, location);
+         frame.SetDockLocation(this, location);
       }
 
-      internal void SetFocus ()
+      internal void SetFocus()
       {
-         SetFocus (Content);
+         SetFocus(Content);
       }
 
-      internal static void SetFocus (Widget w)
+      internal static void SetFocus(Widget w)
       {
-         w.ChildFocus (DirectionType.Down);
+         w.ChildFocus(DirectionType.Down);
 
          Window win = w.Toplevel as Gtk.Window;
          if (win == null)
             return;
 
          // Make sure focus is not given to internal children
-         if (win.Focus != null) {
+         if (win.Focus != null)
+         {
             Container c = win.Focus.Parent as Container;
             if (c.Children.Length == 0)
                win.Focus = c;
          }
       }
 
-      internal void UpdateVisibleStatus ()
+      internal void UpdateVisibleStatus()
       {
-         bool vis = frame.GetVisible (this);
-         if (vis != lastVisibleStatus) {
+         bool vis = frame.GetVisible(this);
+         if (vis != lastVisibleStatus)
+         {
             lastVisibleStatus = vis;
             if (VisibleChanged != null)
-               VisibleChanged (this, EventArgs.Empty);
+               VisibleChanged(this, EventArgs.Empty);
          }
-         UpdateContentVisibleStatus ();
+         UpdateContentVisibleStatus();
       }
 
-      internal void UpdateContentVisibleStatus ()
+      internal void UpdateContentVisibleStatus()
       {
          bool vis = ContentVisible;
-         if (vis != lastContentVisibleStatus) {
+         if (vis != lastContentVisibleStatus)
+         {
             lastContentVisibleStatus = vis;
             if (ContentVisibleChanged != null)
-               ContentVisibleChanged (this, EventArgs.Empty);
+               ContentVisibleChanged(this, EventArgs.Empty);
          }
       }
 
-      internal void ShowWidget ()
+      internal void ShowWidget()
       {
          if (floatingWindow != null)
-            floatingWindow.Show ();
+            floatingWindow.Show();
          if (dockBarItem != null)
-            dockBarItem.Show ();
-         Widget.Show ();
+            dockBarItem.Show();
+         Widget.Show();
       }
 
-      internal void HideWidget ()
+      internal void HideWidget()
       {
          if (floatingWindow != null)
-            floatingWindow.Hide ();
+            floatingWindow.Hide();
          else if (dockBarItem != null)
-            dockBarItem.Hide ();
+            dockBarItem.Hide();
          else if (widget != null)
-            widget.Hide ();
+            widget.Hide();
       }
 
       public bool Close()
       {
          Component component = this.Content as Component;
-         if(component!=null)
+         if (component != null)
          {
-            if(!component.IsCloseOK())
+            if (!component.IsCloseOK())
                return false; // closing has been canceled!
             component.Save();
             component.Closed();
@@ -448,28 +504,30 @@ namespace Docking
 
          Visible = false;
 
-         if((Behavior & DockItemBehavior.CloseOnHide)!=0)
+         if ((Behavior & DockItemBehavior.CloseOnHide) != 0)
             frame.RemoveItemIfInvisibleInAllLayouts(this);
 
          return true;
       }
 
-      internal void SetFloatMode (Gdk.Rectangle rect)
+      internal void SetFloatMode(Gdk.Rectangle rect)
       {
-         if (floatingWindow == null) {
-            ResetMode ();
-            SetRegionStyle (frame.GetRegionStyleForItem (this));
+         if (floatingWindow == null)
+         {
+            ResetMode();
+            SetRegionStyle(frame.GetRegionStyleForItem(this));
 
-            floatingWindow = new DockFloatingWindow ((Window)frame.Toplevel, GetTitle ());
+            floatingWindow = new DockFloatingWindow((Window)frame.Toplevel, GetTitle());
             floatingWindow.DefaultWidth = 640;
             floatingWindow.DefaultHeight = 480;
 
-            VBox box = new VBox ();
-            box.Show ();
-            box.PackStart (TitleTab, false, false, 0);
-            box.PackStart (Widget, true, true, 0);
-            floatingWindow.Add (box);
-            floatingWindow.DeleteEvent += delegate (object o, DeleteEventArgs a) {
+            VBox box = new VBox();
+            box.Show();
+            box.PackStart(TitleTab, false, false, 0);
+            box.PackStart(Widget, true, true, 0);
+            floatingWindow.Add(box);
+            floatingWindow.DeleteEvent += delegate (object o, DeleteEventArgs a)
+            {
                if (behavior == DockItemBehavior.CantClose)
                   Status = DockItemStatus.Dockable;
                else
@@ -477,77 +535,86 @@ namespace Docking
                a.RetVal = true;
             };
          }
-         floatingWindow.Move (rect.X, rect.Y);
-         floatingWindow.Resize (rect.Width, rect.Height);
-         floatingWindow.Show ();
+         floatingWindow.Move(rect.X, rect.Y);
+         floatingWindow.Resize(rect.Width, rect.Height);
+         floatingWindow.Show();
          if (titleTab != null)
-            titleTab.UpdateBehavior ();
-         Widget.Show ();
+            titleTab.UpdateBehavior();
+         Widget.Show();
       }
 
-      void ResetFloatMode ()
+      void ResetFloatMode()
       {
-         if (floatingWindow != null) {
+         if (floatingWindow != null)
+         {
             // The widgets have already been removed from the window in ResetMode
-            floatingWindow.Destroy ();
+            floatingWindow.Destroy();
             floatingWindow = null;
             if (titleTab != null)
-               titleTab.UpdateBehavior ();
+               titleTab.UpdateBehavior();
          }
       }
 
-      internal Gdk.Rectangle FloatingPosition {
-         get {
-            if (floatingWindow != null) {
-               int x,y,w,h;
-               floatingWindow.GetPosition (out x, out y);
-               floatingWindow.GetSize (out w, out h);
-               return new Gdk.Rectangle (x,y,w,h);
+      internal Gdk.Rectangle FloatingPosition
+      {
+         get
+         {
+            if (floatingWindow != null)
+            {
+               int x, y, w, h;
+               floatingWindow.GetPosition(out x, out y);
+               floatingWindow.GetSize(out w, out h);
+               return new Gdk.Rectangle(x, y, w, h);
             }
             else
                return Gdk.Rectangle.Zero;
          }
       }
 
-      internal void ResetMode ()
+      internal void ResetMode()
       {
          if (Widget.Parent != null)
-            ((Gtk.Container) Widget.Parent).Remove (Widget);
+            ((Gtk.Container)Widget.Parent).Remove(Widget);
          if (TitleTab.Parent != null)
-            ((Gtk.Container) TitleTab.Parent).Remove (TitleTab);
+            ((Gtk.Container)TitleTab.Parent).Remove(TitleTab);
 
-         ResetFloatMode ();
-         ResetBarUndockMode ();
+         ResetFloatMode();
+         ResetBarUndockMode();
       }
 
-      internal void SetAutoHideMode (Gtk.PositionType pos, int size)
+      internal void SetAutoHideMode(Gtk.PositionType pos, int size)
       {
-         ResetMode ();
-         if (widget != null) {
-            widget.Hide (); // Avoids size allocation warning
-            if (widget.Parent != null) {
-               ((Gtk.Container)widget.Parent).Remove (widget);
+         ResetMode();
+         if (widget != null)
+         {
+            widget.Hide(); // Avoids size allocation warning
+            if (widget.Parent != null)
+            {
+               ((Gtk.Container)widget.Parent).Remove(widget);
             }
          }
-         dockBarItem = frame.BarDock (pos, this, size);
+         dockBarItem = frame.BarDock(pos, this, size);
          if (titleTab != null)
-            titleTab.UpdateBehavior ();
+            titleTab.UpdateBehavior();
 
-         SetRegionStyle (frame.GetRegionStyleForItem (this));
+         SetRegionStyle(frame.GetRegionStyleForItem(this));
       }
 
-      void ResetBarUndockMode ()
+      void ResetBarUndockMode()
       {
-         if (dockBarItem != null) {
-            dockBarItem.Close ();
+         if (dockBarItem != null)
+         {
+            dockBarItem.Close();
             dockBarItem = null;
             if (titleTab != null)
-               titleTab.UpdateBehavior ();
+               titleTab.UpdateBehavior();
          }
       }
 
-      internal int AutoHideSize {
-         get {
+      internal int AutoHideSize
+      {
+         get
+         {
             if (dockBarItem != null)
                return dockBarItem.Size;
             else
@@ -555,44 +622,50 @@ namespace Docking
          }
       }
 
-      internal void Minimize ()
+      internal void Minimize()
       {
          if (dockBarItem != null)
-            dockBarItem.Minimize ();
+            dockBarItem.Minimize();
       }
 
-      internal bool IsPositionMarker {
-         get {
+      internal bool IsPositionMarker
+      {
+         get
+         {
             return isPositionMarker;
          }
-         set {
+         set
+         {
             isPositionMarker = value;
          }
       }
 
-      string GetTitle ()
+      string GetTitle()
       {
-         if (Title.IndexOf ('<') == -1)
+         if (Title.IndexOf('<') == -1)
             return Title;
-         try {
-            XmlDocument doc = new XmlDocument ();
-            doc.LoadXml ("<a>" + Title + "</a>");
+         try
+         {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml("<a>" + Title + "</a>");
             return doc.InnerText;
-         } catch {
+         }
+         catch
+         {
             return title;
          }
       }
 
-      internal bool ShowingContextMemu { get ; set; }
+      internal bool ShowingContextMemu { get; set; }
 
-      internal void ShowDockPopupMenu (uint time)
+      internal void ShowDockPopupMenu(uint time, TabStrip tabstrip = null)
       {
-         Menu menu = new Menu ();
+         Menu menu = new Menu();
 
          MenuItem citem;
 
          // Close menuitem
-         if((Behavior & DockItemBehavior.CantClose)==0)
+         if ((Behavior & DockItemBehavior.CantClose) == 0)
          {
             citem = new MenuItem(Catalog.GetString("Close"));
             citem.Activated += delegate { Close(); };
@@ -617,32 +690,48 @@ namespace Docking
          }
 #endif
 
-         if (Status != DockItemStatus.Dockable) {
+         if (Status != DockItemStatus.Dockable)
+         {
             // Dockable menuitem
-            citem = new MenuItem (Catalog.GetString("Dock"));
+            citem = new MenuItem(Catalog.GetString("Dock"));
             citem.Activated += delegate { Status = DockItemStatus.Dockable; };
-            menu.Append (citem);
+            menu.Append(citem);
          }
 
          // Floating menuitem
-         if ((Behavior & DockItemBehavior.NeverFloating) == 0 && Status != DockItemStatus.Floating) {
-            citem = new MenuItem (Catalog.GetString("Undock"));
+         if ((Behavior & DockItemBehavior.NeverFloating) == 0 && Status != DockItemStatus.Floating)
+         {
+            citem = new MenuItem(Catalog.GetString("Undock"));
             citem.Activated += delegate { Status = DockItemStatus.Floating; };
-            menu.Append (citem);
+            menu.Append(citem);
          }
 
-         if (menu.Children.Length == 0) {
-            menu.Destroy ();
+         // flip tab menuitem
+         if (tabstrip != null && (Behavior & DockItemBehavior.NeverFloating) == 0 && Status != DockItemStatus.Floating
+            && (Status == DockItemStatus.Dockable || Status == DockItemStatus.AutoHide))
+         {
+            citem = new MenuItem(Catalog.GetString("Flip tab"));
+            citem.Activated += (o, e) =>
+            {
+               tabstrip.Flip();
+            };
+            menu.Append(citem);
+         }
+
+         if (menu.Children.Length == 0)
+         {
+            menu.Destroy();
             return;
          }
 
          ShowingContextMemu = true;
 
-         menu.ShowAll ();
-         menu.Hidden += (o,e) => {
+         menu.ShowAll();
+         menu.Hidden += (o, e) =>
+         {
             ShowingContextMemu = false;
          };
-         menu.Popup (null, null, null, 3, time);
+         menu.Popup(null, null, null, 3, time);
       }
    }
 
@@ -655,7 +744,7 @@ namespace Docking
    //
    class DockFloatingWindow : Window
    {
-      public DockFloatingWindow (Window dockParent, string title) : base (title)
+      public DockFloatingWindow(Window dockParent, string title) : base(title)
       {
          TypeHint = Gdk.WindowTypeHint.Utility;
          this.DockParent = dockParent;
@@ -666,6 +755,6 @@ namespace Docking
 
    public interface IDockItemLabelProvider
    {
-      Gtk.Widget CreateLabel (Orientation orientation);
+      Gtk.Widget CreateLabel(Orientation orientation);
    }
 }
