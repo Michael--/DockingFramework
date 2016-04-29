@@ -5,45 +5,45 @@ using Docking.Tools;
 
 namespace Docking.Components
 {
-    public class MessageBox
-    {            
-       public static ComponentManager ComponentManager { get; private set; }
+   public class MessageBox
+   {
+      public static ComponentManager ComponentManager { get; private set; }
 
-       private static Gdk.Pixbuf PIXBUF_INFO;
-       private static Gdk.Pixbuf PIXBUF_WARNING;
-       private static Gdk.Pixbuf PIXBUF_QUESTION;
-       private static Gdk.Pixbuf PIXBUF_ERROR;
+      private static Gdk.Pixbuf PIXBUF_INFO;
+      private static Gdk.Pixbuf PIXBUF_WARNING;
+      private static Gdk.Pixbuf PIXBUF_QUESTION;
+      private static Gdk.Pixbuf PIXBUF_ERROR;
 
-       public static void Init(ComponentManager cm)
-       {
-          ComponentManager = cm;
+      public static void Init(ComponentManager cm)
+      {
+         ComponentManager = cm;
 
-          if(Platform.IsWindows)
-          {
-             PIXBUF_INFO     = SystemDrawing_vs_GTK_Conversion.Bitmap2Pixbuf(System.Drawing.SystemIcons.Information);
-             PIXBUF_WARNING  = SystemDrawing_vs_GTK_Conversion.Bitmap2Pixbuf(System.Drawing.SystemIcons.Warning);
-             PIXBUF_QUESTION = SystemDrawing_vs_GTK_Conversion.Bitmap2Pixbuf(System.Drawing.SystemIcons.Question);
-             PIXBUF_ERROR    = SystemDrawing_vs_GTK_Conversion.Bitmap2Pixbuf(System.Drawing.SystemIcons.Error);
-          }
-       }
+         if(Platform.IsWindows)
+         {
+            PIXBUF_INFO     = SystemDrawing_vs_GTK_Conversion.Bitmap2Pixbuf(System.Drawing.SystemIcons.Information);
+            PIXBUF_WARNING  = SystemDrawing_vs_GTK_Conversion.Bitmap2Pixbuf(System.Drawing.SystemIcons.Warning);
+            PIXBUF_QUESTION = SystemDrawing_vs_GTK_Conversion.Bitmap2Pixbuf(System.Drawing.SystemIcons.Question);
+            PIXBUF_ERROR    = SystemDrawing_vs_GTK_Conversion.Bitmap2Pixbuf(System.Drawing.SystemIcons.Error);
+         }
+      }
 
-		public static ResponseType Show(Window parent, MessageType msgtype, ButtonsType buttontype, string format, params object[] args)
-		{
+      public static ResponseType Show(Window parent, MessageType msgtype, ButtonsType buttontype, string format, params object[] args)
+      {
          if(ComponentManager!=null && !ComponentManager.IsMainThread)
             throw new Exception("message boxes may only be popped up from the main GUI thread, i.e., they need a surrounding Gtk.Application.Invoke(delegate {}); block");
 
          if(parent==null && ComponentManager!=null)
             parent = ComponentManager;
-			MessageDialog md = new MessageDialog(parent, DialogFlags.Modal, msgtype, buttontype, format, args);
+         MessageDialog md = new MessageDialog(parent, DialogFlags.Modal, msgtype, buttontype, format, args);
 
          if(Platform.IsWindows) // replace Gtk's private icons by Windows standard icons
          {
             switch(msgtype)
             {
-            case MessageType.Info:     ((Gtk.Image)md.Image).Pixbuf = PIXBUF_INFO;     break;
-            case MessageType.Warning:  ((Gtk.Image)md.Image).Pixbuf = PIXBUF_WARNING;  break;
-            case MessageType.Question: ((Gtk.Image)md.Image).Pixbuf = PIXBUF_QUESTION; break;
-            case MessageType.Error:    ((Gtk.Image)md.Image).Pixbuf = PIXBUF_ERROR;    break;
+            case MessageType.Info:     ((Gtk.Image) md.Image).Pixbuf = PIXBUF_INFO;     break;
+            case MessageType.Warning:  ((Gtk.Image) md.Image).Pixbuf = PIXBUF_WARNING;  break;
+            case MessageType.Question: ((Gtk.Image) md.Image).Pixbuf = PIXBUF_QUESTION; break;
+            case MessageType.Error:    ((Gtk.Image) md.Image).Pixbuf = PIXBUF_ERROR;    break;
             }
          }
 
@@ -67,30 +67,33 @@ namespace Docking.Components
                b.Label = b.Label.Localized("Docking.Components");
          }
 
-			ResponseType result = (ResponseType)md.Run();
-			md.Destroy();
-			return result;
-		}
+         if(ComponentManager!=null)
+            ComponentManager.MessageWriteLine(format, args);
 
-		public static ResponseType Show(MessageType msgtype, ButtonsType buttontype, string format, params object[] args)
-		{
-			return Show(null, msgtype, buttontype, format, args);
-		}
+         ResponseType result = (ResponseType) md.Run();
+         md.Destroy();
+         return result;
+      }
 
-		public static ResponseType Show(MessageType msgtype, ButtonsType buttontype, string s)
-		{
-			return Show(null, msgtype, buttontype, "{0}", s);
-		}
+      public static ResponseType Show(MessageType msgtype, ButtonsType buttontype, string format, params object[] args)
+      {
+         return Show(null, msgtype, buttontype, format, args);
+      }
 
-		public static ResponseType Show(string format, params object[] args)
-		{
-			return Show(null, MessageType.Warning, ButtonsType.Ok, format, args);
-		}
+      public static ResponseType Show(MessageType msgtype, ButtonsType buttontype, string s)
+      {
+         return Show(null, msgtype, buttontype, "{0}", s);
+      }
 
-		public static ResponseType Show(string s)
-		{
-			return Show(null, MessageType.Warning, ButtonsType.Ok, "{0}", s);
-		}
-	}
+      public static ResponseType Show(string format, params object[] args)
+      {
+         return Show(null, MessageType.Warning, ButtonsType.Ok, format, args);
+      }
+
+      public static ResponseType Show(string s)
+      {
+         return Show(null, MessageType.Warning, ButtonsType.Ok, "{0}", s);
+      }
+   }
 }
 
