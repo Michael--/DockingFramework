@@ -180,7 +180,6 @@ namespace Docking
          btnClose.Image = pixClose;
          btnClose.TooltipText = "Close";
          btnClose.CanFocus = false;
-         //       btnClose.WidthRequest = btnClose.HeightRequest = 17;
          btnClose.WidthRequest = btnDock.SizeRequest().Width;
          btnClose.Clicked += delegate { item.Close(); };
          btnClose.ButtonPressEvent += (o, args) => args.RetVal = true;
@@ -246,23 +245,25 @@ namespace Docking
 
       public void UpdateBehavior()
       {
-         if (btnClose == null)
+         if (btnDock == null)
             return;
 
          btnClose.Visible = (item.Behavior & DockItemBehavior.CantClose) == 0;
-         btnDock.Visible = (item.Behavior & DockItemBehavior.CantAutoHide) == 0;
-
          if (btnClose.Image == null)
             btnClose.Image = pixClose;
+
+         // disable button close for any HBox allignment to minimize click faults
+         btnClose.Visible = !(Parent is HBox);
+
          if (item.Status == DockItemStatus.AutoHide || item.Status == DockItemStatus.Floating)
          {
             btnDock.Image = pixDock;
             btnDock.TooltipText = "Dock";
+            btnDock.Visible = true;
          }
          else
          {
-            btnDock.Image = pixAutoHide;
-            btnDock.TooltipText = "Minimize"; // previous text "Auto Hide" was misleading
+            btnDock.Visible = false;
          }
       }
 
@@ -287,10 +288,12 @@ namespace Docking
                pressX = evnt.X;
                pressY = evnt.Y;
             }
+#if false
             else if (evnt.Type == Gdk.EventType.TwoButtonPress)
             {
                tabActivated = true;
             }
+#endif
          }
          return base.OnButtonPressEvent(evnt);
       }

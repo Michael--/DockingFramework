@@ -651,10 +651,12 @@ namespace Docking
 				DockGroupItem it = ob as DockGroupItem;
 				ts.AddTab (it.Item.TitleTab);
 			}
-
-			boundTabStrip = ts;
-         if (boundTabStrip.isVertical != isVertical)
-            boundTabStrip.Flip();
+         if (boundTabStrip != ts)
+         {
+            boundTabStrip = ts;
+            if (boundTabStrip.isVertical != isVertical)
+               boundTabStrip.Flip();
+         }
 
          if (oldpage != null) {
 				boundTabStrip.CurrentPage = oldpage;

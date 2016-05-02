@@ -80,6 +80,8 @@ namespace Docking
             var child = a.Children[0];
             a.Remove(child);
             b.Add(child);
+            if (child is DockItemTitleTab)
+               (child as DockItemTitleTab).UpdateBehavior();
          }
 
          box.Hide();
