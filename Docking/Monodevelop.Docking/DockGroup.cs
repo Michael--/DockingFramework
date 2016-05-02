@@ -42,7 +42,8 @@ namespace Docking
 		List<DockObject> dockObjects = new List<DockObject> ();
 		List<DockObject> visibleObjects;
 		AllocStatus allocStatus = AllocStatus.NotSet;
-		TabStrip boundTabStrip;
+      TabStrip boundTabStrip;
+      bool isVertical;
 		DockGroupItem tabFocus;
 		int currentTabPage;
 		
@@ -652,8 +653,10 @@ namespace Docking
 			}
 
 			boundTabStrip = ts;
-			
-			if (oldpage != null) {
+         if (boundTabStrip.isVertical != isVertical)
+            boundTabStrip.Flip();
+
+         if (oldpage != null) {
 				boundTabStrip.CurrentPage = oldpage;
 			}
 			else if (currentTabPage != -1 && currentTabPage < boundTabStrip.TabCount) {
@@ -1163,8 +1166,12 @@ namespace Docking
 		{
 			base.Write (writer);
 			writer.WriteAttributeString ("type", type.ToString ());
-			if (type == DockGroupType.Tabbed && currentTabPage != -1)
-				writer.WriteAttributeString ("currentTabPage", currentTabPage.ToString ());
+         if (type == DockGroupType.Tabbed && currentTabPage != -1)
+         {
+            writer.WriteAttributeString("currentTabPage", currentTabPage.ToString());
+            if (TabStrip != null)
+               writer.WriteAttributeString("isVertical", TabStrip.isVertical.ToString());
+         }
 			
 			foreach (DockObject ob in dockObjects) {
 				if (ob is DockGroupItem)
@@ -1180,10 +1187,15 @@ namespace Docking
 		{
 			base.Read (reader);
 			type = (DockGroupType) Enum.Parse (typeof(DockGroupType), reader.GetAttribute ("type"));
-			if (type == DockGroupType.Tabbed) {
+			if (type == DockGroupType.Tabbed)
+         {
 				string s = reader.GetAttribute ("currentTabPage");
 				if (s != null)
 					currentTabPage = int.Parse (s);
+            isVertical = false;
+            s = reader.GetAttribute("isVertical");
+            if (s != null)
+               bool.TryParse(s, out isVertical);
 			}
 			
 			reader.MoveToElement ();
