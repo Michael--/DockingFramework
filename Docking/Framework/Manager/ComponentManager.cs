@@ -1000,6 +1000,27 @@ namespace Docking.Components
          }
          else
          {
+            // open file from archive need optionally copy of file
+            if (archiveHandle != null)
+            {
+               filename = Archive.Extract(archiveHandle, filename);
+            }
+
+            if (!File.Exists(filename))
+            {
+               MessageWriteLine("File {0} does not exist".FormatLocalizedWithPrefix("Docking.Components", filename));
+               return false;
+            }
+
+            // TODO: consider all and let the user pick which one
+            /*if (!isArchive)
+            {
+               MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} as {1}..."), filename, openers[0].Value);
+               bool success = openers[0].Key.OpenFile(filename);
+               MessageWriteLine(success ? "File opened successfully" : "File opening failed");
+
+            }**/
+
             // search already created instances of components if they can handle this file:
             foreach (DockItem item in DockFrame.GetItems())
             {
@@ -1097,28 +1118,6 @@ namespace Docking.Components
                return false;
             }
          }
-
-
-         // open file from archive need optionally copy of file
-         if (archiveHandle != null)
-         {
-            filename = Archive.Extract(archiveHandle, filename);
-         }
-
-         if (!File.Exists(filename))
-         {
-            MessageWriteLine("File {0} does not exist".FormatLocalizedWithPrefix("Docking.Components", filename));
-            return false;
-         }
-
-         // TODO: consider all and let the user pick which one
-         /*if (!isArchive)
-         {
-            MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} as {1}..."), filename, openers[0].Value);
-            bool success = openers[0].Key.OpenFile(filename);
-            MessageWriteLine(success ? "File opened successfully" : "File opening failed");
-            
-         }**/
 
          // any archive opening
          if (openedArchiveFiles > 0)
