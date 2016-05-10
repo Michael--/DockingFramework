@@ -17,7 +17,6 @@ namespace Docking.Components
 
          Task.Factory.StartNew(() =>
          {
-            // must not rename the thread in a thread pool: System.Threading.Thread.CurrentThread.Name = "CommandLine.Loaded";
             if (mPersistence == null)
                mPersistence = new CommandLinePersistence() { Script = "" }; // TODO: set a default script here
 

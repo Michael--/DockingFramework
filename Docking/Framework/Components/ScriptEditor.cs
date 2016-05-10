@@ -73,7 +73,6 @@ namespace Docking.Components
             string script = m_TextEditor.Text;
             m_CompileTask = Task.Factory.StartNew(() =>
             {
-               // must not rename the thread in a thread pool: System.Threading.Thread.CurrentThread.Name = "ScriptEditor.Compile";
                CompiledCode code = null;
                try
                {
