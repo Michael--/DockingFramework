@@ -1629,10 +1629,13 @@ namespace Docking.Components
       {
          if (!mComponents.Contains(o))
             mComponents.Add(o);
+
          if(mInitialLoadOfComponentsCompleted)
          {
             foreach(var item in mComponents)
             {
+               if(item==o) // objects do not need to be notified of their own birth :)
+                  continue;
                if(item is Component)
                   (item as Component).ComponentAdded(o);
                if(o is Component)
@@ -1643,14 +1646,13 @@ namespace Docking.Components
 
       public void RemoveComponent(object o)
       {
-         if (mComponents.Contains(o))
+         if(mComponents.Contains(o))
             mComponents.Remove(o);
+
          if(mInitialLoadOfComponentsCompleted)
-         {
             foreach(object item in mComponents)
-               if(item is Component)
+               if(item!=o && (item is Component)) // // objects do not need to be notified of their own death :)
                   (item as Component).ComponentRemoved(o);
-         }
       }
 
       protected void ComponentsLoaded()
