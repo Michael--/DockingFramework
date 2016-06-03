@@ -56,15 +56,9 @@ namespace Docking.Components
             mPersistence = new CommandLinePersistence();
          mPersistence.Script = persistency.LoadSetting(instance, "Script", "");
 
-         #region support old serializer for a while, can be removed soon
-         #if ! DEBUG // for release builds, we have a strict warnings==errors policy
-         #pragma warning disable 0618 // warning CS0618: 'Docking.Components.ComponentManager.LoadObject(string, System.Type, Docking.DockItem)' is obsolete: 'Method is deprecated and will be removed soon'
-         #endif        
+         #region support old serializer for a while, replace by better implementation
          if (mPersistence.Script.Length == 0)
             mPersistence = (CommandLinePersistence)ComponentManager.LoadObject("CommandLine", typeof(CommandLinePersistence), DockItem);
-         #if ! DEBUG
-         #pragma warning restore 0618
-         #endif
          #endregion
       }
 

@@ -1868,7 +1868,7 @@ namespace Docking.Components
       /// Load an object from persistence.
       /// The optional parameter 'item' can be used to identify the proper DockItem instance.
       /// </summary>
-      [Obsolete("Method is deprecated and will be removed soon")]
+      //[Obsolete("Method is deprecated and will be removed soon")]
       public object LoadObject(String elementName, Type t, DockItem item)
       {
          String pimpedElementName = elementName;
