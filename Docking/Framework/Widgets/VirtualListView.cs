@@ -38,11 +38,6 @@ namespace Docking.Widgets
          bc.Position = 0;
          Find.Visible = false;
 
-         Find.Escaped += (o, e) =>
-         {
-            FindBoxInvisible();
-         };
-
          Find.CurrentChanged += (o, e) =>
          {
             CurrentSelectionMode = SelectionMode.None; // as a workaround to avoid selection with CTRL+F3
@@ -304,6 +299,7 @@ namespace Docking.Widgets
             b.AppendFormat("[{0} {1} {2}]", s.Key, s.Value.Visible ? 1 : 0, s.Value.Width);
 
          persistency.SaveSetting(instance, "Columns", b.ToString());
+         Find.SaveTo(persistency, instance);
       }
 
       public void LoadFrom(IPersistency persistency, string instance)
@@ -322,6 +318,7 @@ namespace Docking.Widgets
                   mColumnPersistence.Add(tag, new ColumnPersistence(visible != 0, width));
             }
          }
+         Find.LoadFrom(persistency, instance);
       }
 
       #endregion
