@@ -1691,22 +1691,30 @@ namespace Docking.Components
          // time for late initialization and/or loading persistence
          foreach(DockItem item in DockFrame.GetItems())
          {
-            if(item.Content is Component)
+            if (item.Content is Component)
             {
+               var component = item.Content as Component;
                System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
                w.Start();
-               (item.Content as Component).Loaded(item);
+               var allComponents = CollectAllComponentsOfType<Component>(component);
+               var allIPersistable = CollectAllComponentsOfType<IPersistable>(component);
+
+               foreach (var c in allComponents)
+                  c.DockItem = item;
+               foreach (var c in allIPersistable)
+                  c.LoadFrom(component.ComponentManager as IPersistency);
+               foreach (var c in allComponents)
+                  c.Loaded(item);
+
                w.Stop();
 
-               if(LicenseGroup.IsEnabled("nts")) // do not output this in customer versions
+               if (LicenseGroup.IsEnabled("nts")) // do not output this in customer versions
                {
-                  if(w.ElapsedMilliseconds>300) // goal limit: 25, 300 is just to reduce current clutter
+                  if (w.ElapsedMilliseconds > 300) // goal limit: 25, 300 is just to reduce current clutter
                      MessageWriteLine("Invoking IComponent.Loaded() for component {0} took {1:0.00}s", item.Id, w.Elapsed.TotalSeconds);
                }
+               component.VisibilityChanged(item.Content, item.Visible);
             }
-
-            if(item.Content is Component)
-               (item.Content as Component).VisibilityChanged(item.Content, item.Visible);
 
             if(item.Content is IPropertyViewer)
                mPropertyInterfaces.Add(item.Content as IPropertyViewer);
@@ -1737,10 +1745,9 @@ namespace Docking.Components
       {
          foreach(DockItem item in DockFrame.GetItems())
          {
-            if(item.Content is Component)
-            {
-               (item.Content as Component).Save();
-            }
+            var allIPersistable = CollectAllComponentsOfType<IPersistable>(item.Content);
+            foreach(var p in allIPersistable)
+               p.SaveTo(((Component)item.Content).ComponentManager as IPersistency);
          }
          SaveDockFrameLayoutsToXmlConfigurationObject();
       }
@@ -2271,9 +2278,24 @@ namespace Docking.Components
             if (item.Content is Component)
             {
                var component = item.Content as Component;
-               component.Loaded(item);
+               var allComponents = CollectAllComponentsOfType<Component>(component);
+               var allIPersistable = CollectAllComponentsOfType<IPersistable>(component);
+
+               if (component is VirtualListView)
+                  component.Visible = component.Visible;
+
+
+               foreach (var c in allComponents)
+                  c.DockItem = item;
+               foreach (var c in allIPersistable)
+                  c.LoadFrom(component.ComponentManager as IPersistency);
+               foreach (var c in allComponents)
+                  c.Loaded(item);
+
                AddComponent(component);
-               component.InitComplete();
+
+               foreach(var c in allComponents)
+                  c.InitComplete();
             }
 
             if (item.Content is IPropertyViewer)
@@ -2283,6 +2305,25 @@ namespace Docking.Components
                mScriptInterfaces.Add(item.Content as IScript);
          }
          return item;
+      }
+
+      IEnumerable<T> CollectAllComponentsOfType<T>(Widget widget)
+      {
+         var list = new List<T>();
+         CollectAllComponentsOfType<T>(widget, list);
+         return list;
+      }
+
+      void CollectAllComponentsOfType<T>(object widget, List<T> list)
+      {
+         if (widget is T)
+            list.Add((T)widget);
+         if (widget is Container)
+         {
+            foreach (var c in (widget as Container).AllChildren)
+               if (c is Container)
+                  CollectAllComponentsOfType<T>(c as Container, list);
+         }
       }
 
       private void HandleDockItemRemoved(DockItem item)

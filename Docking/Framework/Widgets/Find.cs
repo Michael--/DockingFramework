@@ -9,7 +9,7 @@ using Docking.Components;
 namespace Docking.Widgets
 {
 	[System.ComponentModel.ToolboxItem (true)]
-	public partial class Find : Gtk.Bin
+	public partial class Find : Gtk.Bin, IPersistable
 	{
       /// <summary>
       /// Called on any change in find text box, Matches should be updated by receiver of this event
@@ -67,14 +67,18 @@ namespace Docking.Widgets
 
       #region IPersistable
 
-      public void SaveTo(IPersistency persistency, string instance)
+      void IPersistable.SaveTo(IPersistency persistency)
       {
+         // TODO: get instance string not in this way, may IPersistency need a new property
+         string instance = ((Component)(this.Parent.Parent)).DockItem.Id.ToString();
          persistency.SaveSetting(instance, "ActiveText", comboFind.ActiveText);
          persistency.SaveSetting(instance, "List", GetComboListEntries().ToList());
       }
 
-      public void LoadFrom(IPersistency persistency, string instance)
+      void IPersistable.LoadFrom(IPersistency persistency)
       {
+         // TODO: get instance string not in this way, may IPersistency need a new property
+         string instance = ((Component)(this.Parent.Parent)).DockItem.Id.ToString();
          var list = persistency.LoadSetting(instance, "List", new List<string>());
          foreach (var s in list)
             comboFind.AppendText(s);

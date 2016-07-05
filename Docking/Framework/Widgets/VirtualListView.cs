@@ -11,7 +11,7 @@ using System.Diagnostics;
 namespace Docking.Widgets
 {
    [System.ComponentModel.ToolboxItem(true)]
-   public partial class VirtualListView : Component, ILocalizableWidget, ICopy
+   public partial class VirtualListView : Component, ILocalizableWidget, ICopy, IPersistable
    {
       public VirtualListView()
       {
@@ -196,7 +196,7 @@ namespace Docking.Widgets
          AddColumn(name, widget, tag, width, layout: fd != null ? NewLayout(fd) : DefaultLayout);
 
          // TODO: this is a hack
-         Find.Visible = false;
+         //Find.Visible = false;
       }
 
       void AddColumn(string name, Widget widget, int tag, int width, Pango.Layout layout)
@@ -210,7 +210,7 @@ namespace Docking.Widgets
          mColumnControl.AddColumn(name, widget, tag, layout, width);
 
          // TODO: this is a hack
-         Find.Visible = false;
+         //Find.Visible = false;
       }
 
       /// <summary>
@@ -285,10 +285,17 @@ namespace Docking.Widgets
       }
 
 
-      #region IPersistable
-
-      public void SaveTo(IPersistency persistency, string instance)
+      public override void Loaded(DockItem item)
       {
+         base.Loaded(item);
+         FindBoxVisibility(false, true);
+      }
+
+      #region IPersistency
+
+      void IPersistable.SaveTo(IPersistency persistency)
+      {
+         string instance = DockItem.Id.ToString();
          mColumnPersistence.Clear();
          var columns = mColumnControl.GetColumns();
          foreach (var c in columns)
@@ -299,11 +306,11 @@ namespace Docking.Widgets
             b.AppendFormat("[{0} {1} {2}]", s.Key, s.Value.Visible ? 1 : 0, s.Value.Width);
 
          persistency.SaveSetting(instance, "Columns", b.ToString());
-         Find.SaveTo(persistency, instance);
       }
 
-      public void LoadFrom(IPersistency persistency, string instance)
+      void IPersistable.LoadFrom(IPersistency persistency)
       {
+         string instance = DockItem.Id.ToString();
          mColumnPersistence.Clear();
          var columns = persistency.LoadSetting(instance, "Columns", "");
          var sc = columns.Split(new char[] { '[', ']' }, StringSplitOptions.RemoveEmptyEntries);
@@ -318,7 +325,6 @@ namespace Docking.Widgets
                   mColumnPersistence.Add(tag, new ColumnPersistence(visible != 0, width));
             }
          }
-         Find.LoadFrom(persistency, instance);
       }
 
       #endregion
@@ -650,29 +656,21 @@ namespace Docking.Widgets
          }
       }
 
-      void FindBoxInvisible()
+      public void FindBoxVisibility(bool visible, bool force)
       {
-         if (Find.Visible)
+         if (force || FindPossibility)
          {
-            Find.Visible = false;
-            if (!HasFocus)
-               GrabFocus();
-         }
-      }
-
-      void FindBoxFlipVisible()
-      {
-         if (FindPossibility)
-         {
-            if (!Find.Visible)
+            if (Find.Visible && (force || !visible))
+            {
+               Find.Visible = false;
+               if (!HasFocus)
+                  GrabFocus();
+            }
+            else if (!Find.Visible && (force || visible))
             {
                Find.Visible = true;
                if (!Find.HasFocus)
                   Find.GrabFocus();
-            }
-            else
-            {
-               FindBoxInvisible();
             }
          }
       }
@@ -703,7 +701,7 @@ namespace Docking.Widgets
             case Gdk.Key.f:
                if ((evnt.State & Gdk.ModifierType.ControlMask) != 0)
                {
-                  FindBoxFlipVisible();
+                  FindBoxVisibility(!Find.Visible, false);
                   return true;
                }
                break;

@@ -48,12 +48,7 @@ namespace Docking.Components
       /// Put any post-construction initialization here, i.e., avoid doing much work in the constructor.
       /// Normally, you'll load your component's persistency inside this implementation.
       /// </summary>
-      public virtual void Loaded(DockItem item)
-      {
-         this.DockItem = item;
-         if(this is IPersistable)
-            (this as IPersistable).LoadFrom(ComponentManager as IPersistency);
-      }
+      public virtual void Loaded(DockItem item) { }
 
       // Will get called when this component is about to be closed (for example by the user or on application shutdown).
       // The component shall return true when it agrees to the closure and false if not.
@@ -68,11 +63,7 @@ namespace Docking.Components
       /// Will get called to save the persistency (if any).
       /// Will be called when a component is closed by the user and on application shutdown.
       /// </summary>
-      public virtual void Save()
-      {
-         if(this is IPersistable)
-            (this as IPersistable).SaveTo(ComponentManager as IPersistency);
-      }
+      public virtual void Save() {}
 
       // Will get called immediately before this component will be destroyed.
       // Inside this function, please cleanup everything you want to do before your destructor runs,
