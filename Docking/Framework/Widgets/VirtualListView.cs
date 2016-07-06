@@ -36,7 +36,6 @@ namespace Docking.Widgets
          };
          var bc = (Box.BoxChild)vbox1[findwidget];
          bc.Position = 0;
-         Find.Visible = false;
 
          Find.CurrentChanged += (o, e) =>
          {
@@ -194,9 +193,6 @@ namespace Docking.Widgets
          if (visible)
             widget.ShowAll();
          AddColumn(name, widget, tag, width, layout: fd != null ? NewLayout(fd) : DefaultLayout);
-
-         // TODO: this is a hack
-         //Find.Visible = false;
       }
 
       void AddColumn(string name, Widget widget, int tag, int width, Pango.Layout layout)
@@ -208,9 +204,6 @@ namespace Docking.Widgets
             widget.Visible = p.Visible;
          }
          mColumnControl.AddColumn(name, widget, tag, layout, width);
-
-         // TODO: this is a hack
-         //Find.Visible = false;
       }
 
       /// <summary>
@@ -285,12 +278,6 @@ namespace Docking.Widgets
       }
 
 
-      public override void Loaded(DockItem item)
-      {
-         base.Loaded(item);
-         FindBoxVisibility(false, true);
-      }
-
       #region IPersistency
 
       void IPersistable.SaveTo(IPersistency persistency)
@@ -306,6 +293,7 @@ namespace Docking.Widgets
             b.AppendFormat("[{0} {1} {2}]", s.Key, s.Value.Visible ? 1 : 0, s.Value.Width);
 
          persistency.SaveSetting(instance, "Columns", b.ToString());
+         persistency.SaveSetting(instance, "FindVisible", Find.Visible);
       }
 
       void IPersistable.LoadFrom(IPersistency persistency)
@@ -325,6 +313,9 @@ namespace Docking.Widgets
                   mColumnPersistence.Add(tag, new ColumnPersistence(visible != 0, width));
             }
          }
+
+         bool loadedFindVisibility = persistency.LoadSetting(instance, "FindVisible", false);
+         FindBoxVisibility(loadedFindVisibility, true);
       }
 
       #endregion
@@ -660,13 +651,13 @@ namespace Docking.Widgets
       {
          if (force || FindPossibility)
          {
-            if (Find.Visible && (force || !visible))
+            if ((force || Find.Visible) && !visible)
             {
                Find.Visible = false;
                if (!HasFocus)
                   GrabFocus();
             }
-            else if (!Find.Visible && (force || visible))
+            else if ((force || !Find.Visible) || visible)
             {
                Find.Visible = true;
                if (!Find.HasFocus)
