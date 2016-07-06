@@ -2286,10 +2286,6 @@ namespace Docking.Components
                var allComponents = CollectAllComponentsOfType<Component>(component);
                var allIPersistable = CollectAllComponentsOfType<IPersistable>(component);
 
-               if (component is VirtualListView)
-                  component.Visible = component.Visible;
-
-
                foreach (var c in allComponents)
                   c.DockItem = item;
                foreach (var c in allIPersistable)
