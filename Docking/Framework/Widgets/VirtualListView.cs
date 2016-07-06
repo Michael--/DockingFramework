@@ -111,6 +111,11 @@ namespace Docking.Widgets
       public bool FindPossibility { get; set; } // true (default) if find options is possible and displayed/toggling pressing CTRL+F
 
       /// <summary>
+      /// Call if find box visibility has been changed
+      /// </summary>
+      public event EventHandler<EventArgs> FindBoxVisibility;
+
+      /// <summary>
       /// Get selection. Return the selected lines indicies.
       /// </summary>
       public IEnumerable<int> GetSelection()
@@ -315,7 +320,7 @@ namespace Docking.Widgets
          }
 
          bool loadedFindVisibility = persistency.LoadSetting(instance, "FindVisible", false);
-         FindBoxVisibility(loadedFindVisibility, true);
+         ShowFindBox(loadedFindVisibility, true);
       }
 
       #endregion
@@ -647,7 +652,12 @@ namespace Docking.Widgets
          }
       }
 
-      public void FindBoxVisibility(bool visible, bool force)
+      public void ShowFindBox(bool visible)
+      {
+         ShowFindBox(visible, false);
+      }
+
+      private void ShowFindBox(bool visible, bool force)
       {
          if (force || FindPossibility)
          {
@@ -657,13 +667,15 @@ namespace Docking.Widgets
                if (!HasFocus)
                   GrabFocus();
             }
-            else if ((force || !Find.Visible) || visible)
+            else if ((force || !Find.Visible) && visible)
             {
                Find.Visible = true;
                if (!Find.HasFocus)
                   Find.GrabFocus();
             }
          }
+         if (FindBoxVisibility != null)
+            FindBoxVisibility(this, new EventArgs());
       }
 
       protected override bool OnKeyReleaseEvent(Gdk.EventKey evnt)
@@ -692,7 +704,7 @@ namespace Docking.Widgets
             case Gdk.Key.f:
                if ((evnt.State & Gdk.ModifierType.ControlMask) != 0)
                {
-                  FindBoxVisibility(!Find.Visible, false);
+                  ShowFindBox(!Find.Visible, false);
                   return true;
                }
                break;
