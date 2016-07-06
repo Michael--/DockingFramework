@@ -12,12 +12,10 @@ namespace Docking.Components
    [System.ComponentModel.ToolboxItem(false)]
    public partial class ComponentList : Component, ILocalizableComponent, IPersistable
    {
-      public override void Loaded(DockItem item)
+      public override void Loaded()
       {
          // important to call base first to ensure loading of persistency
-         base.Loaded(item);
-
-         item.Title = "Component List";
+         DockItem.Title = "Component List";
 
          foreach (ComponentFactoryInformation cfi in ComponentManager.ComponentFinder.ComponentInfos)
          {

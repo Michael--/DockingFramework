@@ -1703,8 +1703,6 @@ namespace Docking.Components
                   c.DockItem = item;
                foreach (var c in allIPersistable)
                   c.LoadFrom(component.ComponentManager as IPersistency);
-               foreach (var c in allComponents)
-                  c.Loaded(item);
 
                w.Stop();
 
@@ -1732,9 +1730,16 @@ namespace Docking.Components
          foreach(object o in components)
             AddComponent(o);
 
-         foreach(DockItem item in DockFrame.GetItems())
-            if(item.Content is Component)
-               (item.Content as Component).InitComplete();
+         foreach (DockItem item in DockFrame.GetItems())
+         {
+            if (item.Content is Component)
+            {
+               var component = item.Content as Component;
+               var allComponents = CollectAllComponentsOfType<Component>(component);
+               foreach (var c in allComponents)
+                  c.Loaded();
+            }
+         }
 
          total.Stop();
          if(LicenseGroup.IsEnabled("nts") && total.ElapsedMilliseconds>100)
@@ -2289,13 +2294,11 @@ namespace Docking.Components
                   c.DockItem = item;
                foreach (var c in allIPersistable)
                   c.LoadFrom(component.ComponentManager as IPersistency);
-               foreach (var c in allComponents)
-                  c.Loaded(item);
 
                AddComponent(component);
 
-               foreach(var c in allComponents)
-                  c.InitComplete();
+               foreach (var c in allComponents)
+                  c.Loaded();
             }
 
             if (item.Content is IPropertyViewer)

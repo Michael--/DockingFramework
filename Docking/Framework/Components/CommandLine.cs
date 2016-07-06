@@ -10,10 +10,10 @@ namespace Docking.Components
    [System.ComponentModel.ToolboxItem(false)]
    public partial class CommandLine : Component, ILocalizableComponent, IPersistable
    {
-      public override void Loaded(DockItem item)
+      public override void Loaded()
       {
          // important to call base first to ensure loading of persistency
-         base.Loaded(item); 
+         base.Loaded(); 
 
          Task.Factory.StartNew(() =>
          {

@@ -188,9 +188,9 @@ namespace Docking.Components
       }
       #endregion
 
-      public override void Loaded(DockItem item)
+      public override void Loaded()
       {
-         base.Loaded(item);
+         base.Loaded();
 
          UpdateList();
          UpdateChangeCount();

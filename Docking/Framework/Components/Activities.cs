@@ -46,9 +46,9 @@ namespace Docking.Components
             treeview1.Selection.Changed += HandleCursorChanged; // do not use treeview1.CursorChanged - see http://ntswiki.nts.neusoft.local/wiki/Known_GTKSharp_Issues
         }
 
-        public override void Loaded(DockItem item)
+        public override void Loaded()
         {
-            base.Loaded(item);
+            base.Loaded();
 
             JobInfo.Added += HandleAdded;
             JobInfo.Removed += HandleRemoved;

@@ -48,7 +48,7 @@ namespace Docking.Components
       /// Put any post-construction initialization here, i.e., avoid doing much work in the constructor.
       /// Normally, you'll load your component's persistency inside this implementation.
       /// </summary>
-      public virtual void Loaded(DockItem item) { }
+      public virtual void Loaded() { }
 
       // Will get called when this component is about to be closed (for example by the user or on application shutdown).
       // The component shall return true when it agrees to the closure and false if not.
@@ -144,11 +144,6 @@ namespace Docking.Components
       /// Called when your property object has been changed
       /// </summary>
       public virtual void PropertyChanged() { }
-
-      /// <summary>
-      /// Called after any call for any component ( Loaded() and ComponentAdded() )
-      /// </summary>
-      public virtual void InitComplete() { }
 
       #region property convinience private details
 

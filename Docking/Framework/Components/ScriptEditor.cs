@@ -169,9 +169,9 @@ namespace Docking.Components
 
       #endregion
 
-      public override void Loaded(DockItem item)
+      public override void Loaded()
       {
-         base.Loaded(item);
+         base.Loaded();
 
          // set vpaned position delayed when really possible, TODO: find event called only once, better as ExposeEvent
          vpaned1.Position = VPanedPosition;
