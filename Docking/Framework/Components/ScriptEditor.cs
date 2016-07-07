@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using Microsoft.Scripting.Hosting;
 using Microsoft.Scripting;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Docking.Components
 {
@@ -117,12 +119,19 @@ namespace Docking.Components
 
       #endregion
 
+
       #region IScript
 
       void IScript.SetScript(object reference, string script)
       {
-         if (m_Reference == reference)
-            return;
+         // save old script if necessary
+         if (m_Reference != reference && m_Reference != null)
+         {
+            if (m_Scripts.ContainsKey(m_Reference))
+               m_Scripts[m_Reference] = m_TextEditor.Text;
+            else
+               m_Scripts.Add(m_Reference, m_TextEditor.Text);
+         }
 
          m_Reference = reference;
          if (script != null)
@@ -135,24 +144,23 @@ namespace Docking.Components
             m_TextEditor.Sensitive = false;
             m_TextEditor.Text = "# input disabled ...";
          }
+         Message("");
       }
 
-      void IScript.RemoveScript(object reference)
+      string IScript.GetScript(object reference)
       {
-         if (m_Reference != reference)
-            return;
+         if (m_Reference == reference)
+            return m_TextEditor.Text;
 
-         m_Reference = null;
-         m_TextEditor.Sensitive = false;
-         m_TextEditor.Text = "# input disabled ...";
+         if (m_Scripts.ContainsKey(reference))
+            return m_Scripts[reference];
+         return "";
       }
 
       void IScript.SetMessage(object reference, string msg)
       {
-         if (m_Reference != reference)
-            return;
-
-         Message(msg);
+         if (m_Reference == reference)
+            Message(msg);
       }
 
       /// <summary>
@@ -165,6 +173,7 @@ namespace Docking.Components
       }
 
       object m_Reference = null;
+      Dictionary<object, string> m_Scripts = new Dictionary<object, string>();
       private ScriptChangedEventHandler ScriptChangedHandler;
 
       #endregion

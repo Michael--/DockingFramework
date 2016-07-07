@@ -27,9 +27,9 @@ namespace Docking.Components
       void SetScript(object reference, string script);
 
       /// <summary>
-      /// Remove script if currently displayed by given reference
+      /// Get the current script
       /// </summary>
-      void RemoveScript(object reference);
+      string GetScript(object reference);
 
       /// <summary>
       /// Show a message in the script editor message window
