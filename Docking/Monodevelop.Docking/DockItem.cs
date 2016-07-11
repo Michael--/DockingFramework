@@ -498,7 +498,6 @@ namespace Docking
          {
             if (!component.IsCloseOK())
                return false; // closing has been canceled!
-            component.Save();
             component.Closed();
          }
 

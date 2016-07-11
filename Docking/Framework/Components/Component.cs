@@ -59,12 +59,6 @@ namespace Docking.Components
       // which will occur subsesquently.
       public virtual bool IsCloseOK() { return true; }
 
-      /// <summary>
-      /// Will get called to save the persistency (if any).
-      /// Will be called when a component is closed by the user and on application shutdown.
-      /// </summary>
-      public virtual void Save() {}
-
       // Will get called immediately before this component will be destroyed.
       // Inside this function, please cleanup everything you want to do before your destructor runs,
       // for example, stopping threads, etc.
