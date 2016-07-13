@@ -46,7 +46,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		{
 			string val;
 			if (Property.Converter.CanConvertTo (typeof(string)))
-				val = Property.Converter.ConvertToString (Value);
+				val = Property.Converter.ConvertToString (null, System.Globalization.CultureInfo.InvariantCulture, Value);
 			else
 				val = Value != null ? Value.ToString () : "";
 			

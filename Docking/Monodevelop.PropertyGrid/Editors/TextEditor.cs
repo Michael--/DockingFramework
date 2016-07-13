@@ -71,7 +71,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 				
 				//fill the list
 				foreach (object stdValue in session.Property.Converter.GetStandardValues (session)) {
-					store.AppendValues (session.Property.Converter.ConvertToString (session, stdValue));
+					store.AppendValues (session.Property.Converter.ConvertToString (session, System.Globalization.CultureInfo.InvariantCulture, stdValue));
 				}
 				
 				//a value of "--" gets rendered as a --, if typeconverter marked with UsesDashesForSeparator
@@ -131,7 +131,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			bool valid = false;
 			if (session.Property.Converter.IsValid (session, entry.Text)) {
 				try {
-					session.Property.Converter.ConvertFromString (session, entry.Text);
+					session.Property.Converter.ConvertFromString (session, System.Globalization.CultureInfo.InvariantCulture, entry.Text);
 					initialText = entry.Text;
 					if (ValueChanged != null)
 						ValueChanged (this, a);
@@ -152,10 +152,10 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		// to return values with the expected type.
 		public object Value {
 			get {
-				return session.Property.Converter.ConvertFromString (session, entry.Text);
+				return session.Property.Converter.ConvertFromString (session, System.Globalization.CultureInfo.InvariantCulture, entry.Text);
 			}
 			set {
-				string val = session.Property.Converter.ConvertToString (session, value);
+				string val = session.Property.Converter.ConvertToString (session, System.Globalization.CultureInfo.InvariantCulture, value);
 				entry.Text = val ?? string.Empty;
 				initialText = entry.Text;
 			}

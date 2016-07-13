@@ -89,7 +89,7 @@ namespace MonoDevelop.Components.PropertyGrid
 			if (obj == null) return "";
 			object val = property.GetValue (obj);
 			if (val == null) return "";
-			else return property.Converter.ConvertToString (val);
+			return property.Converter.ConvertToString (null, System.Globalization.CultureInfo.InvariantCulture, val);
 		}
 		
 		protected virtual string GetValueMarkup ()
