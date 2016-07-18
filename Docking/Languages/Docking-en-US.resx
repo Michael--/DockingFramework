@@ -189,9 +189,6 @@
   <data name="Docking.Components.Messages" xml:space="preserve">
     <value>Messages</value>
   </data>
-  <data name="Docking.Components.No component is instantiated which can handle file {0}" xml:space="preserve">
-    <value>No component is instantiated which can handle file {0}</value>
-  </data>
   <data name="Docking.Components.Open" xml:space="preserve">
     <value>Open</value>
   </data>

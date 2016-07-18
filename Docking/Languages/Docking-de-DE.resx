@@ -250,9 +250,6 @@ Es wird empfohlen, anschließend die Übersetzungen manuell zu überprüfen.</va
   <data name="Docking.Components.File {0} does not exist" xml:space="preserve">
     <value>Datei {0} nicht gefunden</value>
   </data>
-  <data name="Docking.Components.No component is instantiated which can handle file {0}" xml:space="preserve">
-    <value>Es ist aktuell kein Fenster geöffnet, das Dateien dieses Typs {0} handhaben kann</value>
-  </data>
   <data name="Docking.Components.Opening file {0} as {1}..." xml:space="preserve">
     <value>Öffne Datei {0} als {1}...</value>
   </data>
@@ -306,5 +303,16 @@ Es wird empfohlen, anschließend die Übersetzungen manuell zu überprüfen.</va
   </data>
   <data name="MENU.Quit without Saving Config" xml:space="preserve">
     <value>Beenden, ohne die aktuelle Konfiguration zu speichern</value>
+  </data>
+  <data name="Docking.Components.Could not find any component which can handle file '{0}'" xml:space="preserve">
+    <value>Keine Komponente gefunden, die Datei
+'{0}'
+verarbeiten kann.</value>
+  </data>
+  <data name="MENU.Edit" xml:space="preserve">
+    <value>Bearbeiten</value>
+  </data>
+  <data name="MENU.View" xml:space="preserve">
+    <value>Ansicht</value>
   </data>
 </root>
