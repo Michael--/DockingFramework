@@ -1114,7 +1114,7 @@ namespace Docking.Components
             }
             else // no component available at all
             {
-               MessageBox.Show("Could not find any component which can handle file {0}".FormatLocalizedWithPrefix("Docking.Components"), filename);
+               MessageBox.Show("Could not find any component which can handle file '{0}'".FormatLocalizedWithPrefix("Docking.Components"), filename);
                return false;
             }
          }

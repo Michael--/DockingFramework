@@ -310,4 +310,14 @@ It is recommended to manually check the translations afterwards.</value>
   <data name="MENU.Quit without Saving Config" xml:space="preserve">
     <value>Quit without Saving Config</value>
   </data>
+  <data name="Docking.Components.Could not find any component which can handle file '{0}'" xml:space="preserve">
+    <value>Could not find any component which can handle file
+'{0}'</value>
+  </data>
+  <data name="MENU.Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="MENU.View" xml:space="preserve">
+    <value>View</value>
+  </data>
 </root>
