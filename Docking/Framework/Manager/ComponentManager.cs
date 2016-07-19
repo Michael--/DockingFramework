@@ -1702,7 +1702,16 @@ namespace Docking.Components
                foreach (var c in allComponents)
                   c.DockItem = item;
                foreach (var c in allIPersistable)
-                  c.LoadFrom(component.ComponentManager as IPersistency);
+               {
+                  try
+                  {
+                     c.LoadFrom(component.ComponentManager as IPersistency);
+                  }
+                  catch (Exception e)
+                  {
+                     MessageWriteLine("{0}.LoadFrom() Exception:{1}", c.GetType(), e);
+                  }
+               }
 
                w.Stop();
 
@@ -1751,8 +1760,17 @@ namespace Docking.Components
          foreach(DockItem item in DockFrame.GetItems())
          {
             var allIPersistable = CollectAllComponentsOfType<IPersistable>(item.Content);
-            foreach(var p in allIPersistable)
-               p.SaveTo(((Component)item.Content).ComponentManager as IPersistency);
+            foreach (var p in allIPersistable)
+            {
+               try
+               {
+                  p.SaveTo(((Component)item.Content).ComponentManager as IPersistency);
+               }
+               catch (Exception e)
+               {
+                  MessageWriteLine("{0}.SaveTo() Exception:{1}", p.GetType(), e);
+               }
+            }
          }
          SaveDockFrameLayoutsToXmlConfigurationObject();
       }
@@ -2289,12 +2307,30 @@ namespace Docking.Components
                foreach (var c in allComponents)
                   c.DockItem = item;
                foreach (var c in allIPersistable)
-                  c.LoadFrom(component.ComponentManager as IPersistency);
+               {
+                  try
+                  {
+                     c.LoadFrom(component.ComponentManager as IPersistency);
+                  }
+                  catch (Exception e)
+                  {
+                     MessageWriteLine("{0}.LoadFrom() Exception:{1}", c.GetType(), e);
+                  }
+               }
 
                AddComponent(component);
 
                foreach (var c in allComponents)
-                  c.Loaded();
+               {
+                  try
+                  {
+                     c.Loaded();
+                  }
+                  catch (Exception e)
+                  {
+                     MessageWriteLine("{0}.Loaded() Exception:{1}", c.GetType(), e);
+                  }
+               }
             }
 
             if (item.Content is IPropertyViewer)
