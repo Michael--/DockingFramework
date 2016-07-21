@@ -308,6 +308,11 @@ namespace Docking.Widgets
          var columns = persistency.LoadSetting(instance, "Columns", "");
          var sc = columns.Split(new char[] { '[', ']' }, StringSplitOptions.RemoveEmptyEntries);
 
+         // NOTe: depending on initialization order (not determined)
+         // persistency of column could be loaded before or after column creation
+         // that behaviour is new since some last changes in component initialization
+         // may this will be refurbished infuture
+
          foreach (var c in sc)
          {
             var v = c.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -315,8 +320,15 @@ namespace Docking.Widgets
             {
                int tag, visible, width;
                if (int.TryParse(v[0], out tag) && int.TryParse(v[1], out visible) && int.TryParse(v[2], out width))
+               {
+                  // store persistency for early persistency loading
                   mColumnPersistence.Add(tag, new ColumnPersistence(visible != 0, width));
+
+                  // perform persistency for late persistency loading
+                  mColumnControl.Update(tag, width, visible != 0);
+               }
             }
+            mColumnControl.ArangeColumns();
          }
 
          bool loadedFindVisibility = persistency.LoadSetting(instance, "FindVisible", false);
@@ -928,11 +940,13 @@ namespace Docking.Widgets
          return true;
       }
 
-      private void SetColumnWidth(int index, Widget widget, int width)
+      private void SetColumnWidth(int index, Widget widget, int width, bool ?visible = null)
       {
          Column c = mColumns[widget];
          if (c != null)
          {
+            if (visible != null)
+               c.Visible = visible.Value;
             int dx = width - c.Width;
             c.Width += dx;
             Requisition r = widget.SizeRequest();
@@ -1058,6 +1072,19 @@ namespace Docking.Widgets
             if (c.Tag == tag)
                return c;
          return null;
+      }
+
+      public void Update(int tag, int width, bool visible)
+      {
+         for (int i = 0; i < mColumns.Count; i++)
+         {
+            var kvp = mColumns.ElementAt(i);
+            if (kvp.Value.Tag == tag)
+            {
+               SetColumnWidth(i, kvp.Key, width, visible);
+               break;
+            }
+         }
       }
 
       public IEnumerable<Column> GetColumns()
