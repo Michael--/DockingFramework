@@ -16,6 +16,7 @@ namespace Docking.Components
                      void  SaveSetting(string instance, string key,              string  val       );      
                      void  SaveSetting(string instance, string key,         List<string> val       );       
                      void  SaveSetting(string instance, string key, System.Drawing.Color val       ); // if you want to persist something else (e.g. Gdk.Color), first convert it to System.Drawing.Color
+                     void  SaveSetting(string instance, string key, object value);
 
                    UInt32  LoadSetting(string instance, string key,              UInt32  defaultval);
                    Int32   LoadSetting(string instance, string key,              Int32   defaultval);
@@ -25,6 +26,7 @@ namespace Docking.Components
                    string  LoadSetting(string instance, string key,              string  defaultval);      
               List<string> LoadSetting(string instance, string key,         List<string> defaultval);
       System.Drawing.Color LoadSetting(string instance, string key, System.Drawing.Color defaultval); // if you want to persist something else (e.g. Gdk.Color), first convert it to System.Drawing.Color
+                    object LoadSetting(string instance, string key, Type value);
 
               void SaveColumnWidths(string instance, Gtk.TreeView treeview); // key is automatically computed from treeview.Name
               void LoadColumnWidths(string instance, Gtk.TreeView treeview); // key is automatically computed from treeview.Name

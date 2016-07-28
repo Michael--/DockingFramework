@@ -1,7 +1,8 @@
 using System;
+using System.IO;
 using System.Diagnostics;
 using System.Xml;
-using System.IO;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Text;
 using System.Collections.Generic;
@@ -2076,6 +2077,66 @@ namespace Docking.Components
             SaveSetting(instance, treeview.Name + ".ColumnWidths", widths.ToString());
       }
 
+      public void SaveSetting(string instance, string key, object value)
+      {
+         if (ConfigurationXmlNode == null)
+            return;
+
+         if (!value.GetType().IsSerializable)
+            return;
+
+         // Serialise to the XML document        
+         XmlNode parent = ConfigurationXmlNode;
+         XmlNode node;
+
+         if (parent != null)
+         {
+            try
+            {
+               node = parent.SelectSingleNode(instance);
+            }
+            catch (System.Xml.XPath.XPathException) //only catch path exception
+            {
+               //create new node for this instance
+               node = ConfigurationXmlDocument.CreateElement(instance);
+               parent.AppendChild(node);               
+            }
+
+            //create new subKey
+            XDocument xdoc = new XDocument();
+            
+            using (XmlWriter writer = xdoc.CreateWriter())
+            {               
+               var ser = new XmlSerializer(value.GetType());
+               ser.Serialize(writer, value);
+            }
+            //Remove namespace info
+            xdoc.Descendants()
+                .Attributes()
+                .Where(x => x.IsNamespaceDeclaration)
+                .Remove();
+            
+            //remove old entry and add new
+            try
+            {
+               var elem = XElement.Parse(node.OuterXml);
+               elem.Elements().Where(itr => itr.Name == xdoc.Elements().First().Name).Remove();
+               if (key != String.Empty)
+                  xdoc.Elements().First().Name = key;
+               elem.Add(xdoc.Elements().First());
+            }
+            catch (System.Xml.XPath.XPathException) //only catch path exception
+            {
+               //create new node for this instance
+               //node = ConfigurationXmlDocument.CreateElement(instance);
+               //parent.AppendChild(node);
+            }            
+
+            return;
+         }
+      }
+
+
       #endregion
 
       #region load
@@ -2200,6 +2261,67 @@ namespace Docking.Components
                   }
                }
             }
+         }
+      }
+
+      public object LoadSetting(string instance, string key, Type value)
+      {
+         if (ConfigurationXmlNode == null)
+         {
+            try
+            {
+               //create default object type
+               return Activator.CreateInstance(value);
+            }
+            catch
+            {
+               return null;
+            }
+         }
+
+         try
+         {
+            XmlNode node = null;
+            XmlNode parent = ConfigurationXmlNode;
+
+            node = parent.SelectSingleNode(instance);
+
+            var elem = XElement.Parse(node.OuterXml);
+            XElement objectSerial;
+
+            if (key == String.Empty)
+            {
+               objectSerial = elem.Elements().Where(itr => itr.Name == value.Name).Single();
+            }
+            else
+            {
+               objectSerial = elem.Elements().Where(itr => itr.Name == key).Single();
+            }
+
+            System.Xml.Serialization.XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(value);
+            var obj = reader.Deserialize(objectSerial.CreateReader());
+            if (obj != null)
+            {
+               return obj;
+            }
+
+            return null;
+         }
+         catch (InvalidOperationException)
+         {
+            try
+            {
+               //create default object type
+               return Activator.CreateInstance(value);
+            }
+            catch
+            {
+               return null;
+            }
+         }
+         catch
+         {
+            return null;
          }
       }
 

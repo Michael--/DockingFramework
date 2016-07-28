@@ -96,6 +96,7 @@
     <Reference Include="ICSharpCode.NRefactory">
       <HintPath>Monodevelop.Texteditor\ICSharpCode.NRefactory.dll</HintPath>
     </Reference>
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="Xwt">
       <HintPath>Monodevelop.Texteditor\Xwt.dll</HintPath>
     </Reference>
