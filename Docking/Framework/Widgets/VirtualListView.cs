@@ -40,7 +40,7 @@ namespace Docking.Widgets
          Find.CurrentChanged += (o, e) =>
          {
             CurrentSelectionMode = SelectionMode.None; // as a workaround to avoid selection with CTRL+F3
-         };
+            };
          FindPossibility = true;
 
          drawingarea.Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask | Gdk.EventMask.ButtonMotionMask;
@@ -48,6 +48,7 @@ namespace Docking.Widgets
          drawingarea.ButtonPressEvent += drawingarea_ButtonPressEvent;
          drawingarea.ButtonReleaseEvent += drawingarea_ButtonReleaseEvent;
          drawingarea.MotionNotifyEvent += drawingarea_MotionNotifyEvent;
+         mColumnControl.ButtonPressEvent += not_drawingarea_ButtonPressEvent;
       }
 
       ColumnControl mColumnControl;
@@ -69,6 +70,9 @@ namespace Docking.Widgets
       // click a header at column
       public delegate void HeaderClickedEventHandler(ButtonPressEventArgs args, int column);
       public event HeaderClickedEventHandler HeaderClickedEvent;
+
+      public delegate void OwnerDrawPopupMenuHandler(Menu menu, uint time);
+      public event OwnerDrawPopupMenuHandler OwnerDrawPopupEvent;
 
       public void CallHeaderClickedEvent(ButtonPressEventArgs args, int column)
       {
@@ -489,13 +493,12 @@ namespace Docking.Widgets
          return base.OnScrollEvent(evnt);
       }
 
-      internal void ShowDockPopupMenu (uint time)
+      internal Menu PrepareHeaderSelectPopupMenu()
       {
-         Menu menu = new Menu ();
-
+         Menu menu = new Menu();
          var columns = mColumnControl.mColumns;
 
-         foreach(var column in columns)
+         foreach (var column in columns)
          {
             var widget = column.Key;
             var c = column.Value;
@@ -505,7 +508,7 @@ namespace Docking.Widgets
             TaggedLocalizedCheckedMenuItem item = new TaggedLocalizedCheckedMenuItem(name);
             item.Active = c.Visible;
             item.Tag = c;
-            item.Activated += (object sender, EventArgs e) => 
+            item.Activated += (object sender, EventArgs e) =>
             {
                var itm = sender as TaggedLocalizedCheckedMenuItem;
                var ct = itm.Tag as ColumnControl.Column;
@@ -515,16 +518,47 @@ namespace Docking.Widgets
             };
             menu.Add(item);
          }
-         
-         menu.ShowAll ();
-         menu.Popup (null, null, null, 3, time);
+         return menu;
+      }
+
+      internal void ShowDockPopupMenu(uint time)
+      {
+         var menu = PrepareHeaderSelectPopupMenu();
+         menu.ShowAll();
+         menu.Popup(null, null, null, 3, time);
+      }
+
+      private void not_drawingarea_ButtonPressEvent(object o, ButtonPressEventArgs args)
+      {
+         var evnt = args.Event;
+         if (evnt.TriggersContextMenu())
+            ShowDockPopupMenu(evnt.Time);
       }
 
       void drawingarea_ButtonPressEvent(object o, ButtonPressEventArgs args)
       {
-         if (args.Event.Button == LEFT_MOUSE_BUTTON)
+         var evnt = args.Event;
+         if (evnt.TriggersContextMenu())
          {
-            int row = (int)args.Event.Y / ConstantHeight + (int)vscrollbar1.Value;
+            if (OwnerDrawPopupEvent != null)
+            {
+               Menu menu = new Menu();
+               var item = new TaggedLocalizedMenuItem("Header");
+               var submenu = PrepareHeaderSelectPopupMenu();
+               item.Submenu = submenu;
+               menu.Add(item);
+               menu.Add(new SeparatorMenuItem());
+               OwnerDrawPopupEvent(menu, evnt.Time);
+            }
+            else
+            {
+               ShowDockPopupMenu(evnt.Time);
+            }
+         }
+
+         else if (evnt.Button == LEFT_MOUSE_BUTTON)
+         {
+            int row = (int)evnt.Y / ConstantHeight + (int)vscrollbar1.Value;
             OffsetCursor(row - CurrentRow, true);
             if (!HasFocus)
                GrabFocus();
@@ -540,7 +574,7 @@ namespace Docking.Widgets
                   int columnIndex = column.SortOrder;
                   int xwidth = column.Width + mColumnControl.GripperWidth;
 
-                  if (args.Event.X >= dx && args.Event.X <= dx + xwidth)
+                  if (evnt.X >= dx && evnt.X <= dx + xwidth)
                   {
                      ItemClickedEvent(args, CurrentRow, column.Tag);
                      break;
@@ -558,17 +592,6 @@ namespace Docking.Widgets
       void drawingarea_ButtonReleaseEvent(object o, ButtonReleaseEventArgs args)
       {
       }
-
-
-      protected override bool OnButtonPressEvent(Gdk.EventButton evnt)
-      {
-         if (evnt.TriggersContextMenu())
-         {
-            ShowDockPopupMenu(evnt.Time);
-         }
-         return base.OnButtonPressEvent(evnt);
-      }
-
 
       protected override bool OnFocusInEvent(Gdk.EventFocus evnt)
       {
@@ -874,7 +897,7 @@ namespace Docking.Widgets
          return -1;
       }
 
-      protected const int LEFT_MOUSE_BUTTON  = 1;
+      protected const int LEFT_MOUSE_BUTTON = 1;
       protected const int RIGHT_MOUSE_BUTTON = 3;
 
       void TheButtonPressEvent(object o, ButtonPressEventArgs args)
@@ -940,7 +963,7 @@ namespace Docking.Widgets
          return true;
       }
 
-      private void SetColumnWidth(int index, Widget widget, int width, bool ?visible = null)
+      private void SetColumnWidth(int index, Widget widget, int width, bool? visible = null)
       {
          Column c = mColumns[widget];
          if (c != null)
@@ -1035,7 +1058,7 @@ namespace Docking.Widgets
 
       IEnumerable<KeyValuePair<int, int>> GripperPositions()
       {
-         List<KeyValuePair<int, int>> gripper = new List<KeyValuePair<int,int>>();
+         List<KeyValuePair<int, int>> gripper = new List<KeyValuePair<int, int>>();
 
          for (int i = 0; i < mColumns.Count; i++)
          {
@@ -1068,7 +1091,7 @@ namespace Docking.Widgets
 
       public Column GetColumn(int tag)
       {
-         foreach(var c in mColumns.Values)
+         foreach (var c in mColumns.Values)
             if (c.Tag == tag)
                return c;
          return null;
