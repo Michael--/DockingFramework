@@ -20,8 +20,9 @@ namespace Docking.Components
 
         /// <summary>
         /// Load the file. Returns true on success.
+        /// If syncronous loading forced, return must wait until loading is completed
         /// </summary>
-        bool OpenFile(String filename);
+        bool OpenFile(String filename, bool syncronous);
     }
 }
 
