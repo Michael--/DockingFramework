@@ -2815,10 +2815,13 @@ namespace Docking.Components
          if (PowerDown)
             return;
 
-         Gtk.Application.Invoke(delegate
+         if (Visible)
          {
-            MessageWriteLineWithoutInvoke(s);
-         });
+            Gtk.Application.Invoke(delegate
+            {
+               MessageWriteLineWithoutInvoke(s);
+            });
+         }
       }
 
       protected void MessageWriteLineWithoutInvoke(String str)
