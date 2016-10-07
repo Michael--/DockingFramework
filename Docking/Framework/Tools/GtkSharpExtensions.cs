@@ -6,6 +6,7 @@ using Docking.Widgets;
 using Gtk;
 using Gdk;
 using System.Diagnostics;
+using System.Globalization;
 
 
 namespace Docking.Tools
@@ -160,8 +161,23 @@ namespace Docking.Tools
              if (result.Length > 0)
                 result.Append("\t");
              object o = model.GetValue(iter, i);
-             if (o != null)
-                result.Append(o.ToString());
+             if(o!=null)
+             {
+                if(o is double) // make sure we get a ".", not a "," in the result string
+                {
+                   double d = (double) o;
+                   result.Append(d.ToString(CultureInfo.InvariantCulture));
+                }
+                else if(o is float) // make sure we get a ".", not a "," in the result string
+                {
+                   float f = (float) o;
+                   result.Append(f.ToString(CultureInfo.InvariantCulture));
+                }
+                else
+                {
+                   result.Append(o.ToString());
+                }
+             }
           }
           return result.ToString();
        }
