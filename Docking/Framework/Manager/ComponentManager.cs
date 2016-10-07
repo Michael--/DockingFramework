@@ -1036,7 +1036,7 @@ namespace Docking.Components
             List<ComponentFactoryInformation> available_components = new List<ComponentFactoryInformation>();
             foreach (ComponentFactoryInformation cfi in ComponentFinder.ComponentInfos)
             {
-               if (typeof(IFileOpen).IsAssignableFrom(cfi.ComponentType) && cfi.SupportsFile(filename))
+               if (typeof(IFileOpen).IsAssignableFrom(cfi.ComponentType) && cfi.SupportsFile(filename) && LicenseGroup.IsEnabled(cfi.LicenseGroup))
                {
                   // check if this is a single instance type and an instance is already open
                   var ec = existing_components.Where(x => x.ComponentInfo.ComponentType==cfi.ComponentType && !cfi.MultiInstance);
