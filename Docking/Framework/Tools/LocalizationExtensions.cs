@@ -9,6 +9,12 @@ namespace Docking.Components
 {
    public partial class Localization
    {
+      private static string sPreferredUserCultureThreeletterISOLanguageName
+         = System.Threading.Thread.CurrentThread.CurrentCulture.ThreeLetterISOLanguageName.ToLowerInvariant();
+
+      // https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
+      public static string PreferredUserCultureThreeLetterISOLanguageName() { return sPreferredUserCultureThreeletterISOLanguageName; }
+
       public static string Format(Gtk.Bin o, string fmt, params object[] args)
       {
          return fmt.FormatLocalizedWithPrefix(o, args);
