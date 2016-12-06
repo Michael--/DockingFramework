@@ -249,6 +249,13 @@ namespace MonoDevelop.Components.PropertyGrid
 		void AppendProperty (TreeIter piter, PropertyDescriptor prop, InstanceData idata)
 		{
 			TreeIter iter;
+
+			#region this bugfix was backported to here from a newer MonoDevelop version by P.Eisenmann/S.Lohse 2016-12-06
+			// only show properties that have BrowsableAttribute set [true], or where BrowsableAttribute is not defined
+			var brows = prop.Attributes[typeof(BrowsableAttribute)] as BrowsableAttribute;
+			if (brows != null && !brows.Browsable)
+				return;
+			#endregion            
 			
 			if (piter.Equals (TreeIter.Zero))
 				iter = store.AppendValues (prop.DisplayName.Localized(), prop, false, idata);
