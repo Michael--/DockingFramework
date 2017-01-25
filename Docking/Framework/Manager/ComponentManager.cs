@@ -973,7 +973,7 @@ namespace Docking.Components
       }
 
 
-      public bool OpenFile(string filename, bool syncronous = false, object archiveHandle = null)
+      public bool OpenFile(string filename, bool synchronous = false, object archiveHandle = null)
       {
          if (archiveHandle == null && Directory.Exists(filename))
          {
@@ -993,7 +993,7 @@ namespace Docking.Components
                var files = Archive.GetFileNames(handle);
                foreach (var s in files)
                {
-                  if (OpenFile(s, syncronous, handle))
+                  if (OpenFile(s, synchronous, handle))
                      openedArchiveFiles++;
                }
                Archive.Close(handle);
@@ -1066,7 +1066,7 @@ namespace Docking.Components
                      if (component is IFileOpen)
                      {
                         MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} in component {1}..."), filename, cfi.Name );
-                        success &= (component as IFileOpen).OpenFile(filename, syncronous);
+                        success &= (component as IFileOpen).OpenFile(filename, synchronous);
                         MessageWriteLine(success ? "File opened successfully" : "File opening failed");
                      }
                   }
@@ -1075,7 +1075,7 @@ namespace Docking.Components
                   foreach (Component component in existing_components)
                   {
                      MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} in component {1}..."), filename, component.Name);
-                     success &= (component as IFileOpen).OpenFile(filename, syncronous);
+                     success &= (component as IFileOpen).OpenFile(filename, synchronous);
                      MessageWriteLine(success ? "File opened successfully" : "File opening failed");
                   }
 
@@ -1089,7 +1089,7 @@ namespace Docking.Components
             else if(existing_components.Count==1 && available_components.Count==0) // use an existing component
             {
                MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} in component {1}..."), filename, existing_components[0].Name);
-               bool success = (existing_components[0] as IFileOpen).OpenFile(filename, syncronous);
+               bool success = (existing_components[0] as IFileOpen).OpenFile(filename, synchronous);
                if (success)
                {
                   AddRecentFile(filename);
@@ -1104,7 +1104,7 @@ namespace Docking.Components
                if (component is IFileOpen)
                {
                   MessageWriteLine(Localization.Format("Docking.Components.Opening file {0} in component {1}..."), filename, available_components[0].Name);
-                  bool success = (component as IFileOpen).OpenFile(filename, syncronous);
+                  bool success = (component as IFileOpen).OpenFile(filename, synchronous);
                   if (success)
                   {
                      AddRecentFile(filename);
@@ -1330,9 +1330,9 @@ namespace Docking.Components
             {
                // treat how local filenames are encoded on Windows. Example: file:///D:/some/folder/myfile.txt
                if(filename.Length >= 3 &&
-                        filename[0] == '/' &&
-                  //filename[1]=='C' && // drive letter
-                        filename[2] == ':')
+                  filename[0]=='/' &&
+                //filename[1]=='C' && // drive letter
+                  filename[2]==':')
                {
                   filename = filename.Substring(1);
                }
