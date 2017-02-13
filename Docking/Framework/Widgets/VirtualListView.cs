@@ -120,7 +120,7 @@ namespace Docking.Widgets
       public event EventHandler<EventArgs> FindBoxVisibility;
 
       /// <summary>
-      /// Get selection. Return the selected lines indicies.
+      /// Get selection. Return the selected lines indices.
       /// </summary>
       public IEnumerable<int> GetSelection()
       {
