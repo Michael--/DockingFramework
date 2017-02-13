@@ -2916,32 +2916,32 @@ namespace Docking.Components
          return source.Compile();
       }
 
-      public dynamic Execute(CompiledCode compiled, List<KeyValuePair<string, object>> args = null)
+      public dynamic Execute(CompiledCode compiled, List<KeyValuePair<string, object>> global_variables = null)
       {
-         applyArguments(args);
+         setGlobalVariables(global_variables);
          return compiled.Execute(ScriptScope);
       }
 
-      public dynamic Execute(String code, List<KeyValuePair<string, object>> args = null)
+      public dynamic Execute(String code, List<KeyValuePair<string, object>> global_variables = null)
       {
          CompiledCode compiled = Compile(code);
          if(compiled==null)
             return null;
-         applyArguments(args);
+         setGlobalVariables(global_variables);
          try   { return compiled.Execute(ScriptScope); }
          catch { return null;                          }
       }
 
-      public dynamic ExecuteFile(String filename, List<KeyValuePair<string, object>> args = null)
+      public dynamic ExecuteFile(String filename, List<KeyValuePair<string, object>> global_variables = null)
       {
          string code = File.ReadAllText(filename, Encoding.UTF8);
-         return Execute(code, args);
+         return Execute(code, global_variables);
       }
 
-      private void applyArguments(List<KeyValuePair<string, object>> args)
+      private void setGlobalVariables(List<KeyValuePair<string, object>> global_variables)
       {
-         if(args!=null && ScriptScope!=null)
-            args.ForEach(arg => ScriptScope.SetVariable(arg.Key, arg.Value));
+         if(global_variables!=null && ScriptScope!=null)
+            global_variables.ForEach(v => ScriptScope.SetVariable(v.Key, v.Value));
       }
 
       ComponentManagerScripting m_ScriptingInstance;
