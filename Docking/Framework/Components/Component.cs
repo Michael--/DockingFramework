@@ -122,7 +122,12 @@ namespace Docking.Components
       /// <summary>
       /// set any object to display with the known property viewer
       /// </summary>
-      public void SetPropertyObject(object value) { m_PropertyObject = value; }
+      public void SetPropertyObject(object value)
+      {
+         m_PropertyObject = value;
+         foreach (IPropertyViewer p in m_PropertyViewer)
+            p.SetObject(m_PropertyObject);
+      }
 
       /// <summary>
       /// get the property object previously set
