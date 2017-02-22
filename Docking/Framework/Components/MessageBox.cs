@@ -123,6 +123,11 @@ namespace Docking.Components
          return Show(null, msgtype, buttontype, "{0}", s);
       }
 
+      public static ResponseType Show(MessageType msgtype, string s)
+      {
+         return Show(null, msgtype, ButtonsType.Ok, "{0}", s);
+      }
+
       public static ResponseType Show(string format, params object[] args)
       {
          return Show(null, MessageType.Warning, ButtonsType.Ok, format, args);
