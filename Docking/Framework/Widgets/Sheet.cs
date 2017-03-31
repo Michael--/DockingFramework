@@ -316,7 +316,7 @@ namespace Docking.Widgets
          TreeIter row;
          TreeViewColumn col;
          GetCursor(out path, out col);
-         if (Model.GetIter(out row, path) && col != null && CurrentButton != RIGHT_MOUSE_BUTTON)
+         if (Model.GetIter(out row, path) && col != null && CurrentButton != Mouse.RIGHT_MOUSE_BUTTON)
          {
             bool shiftDown = (CurrentKeyboardModifier & ModifierType.ShiftMask) != ModifierType.None;
             bool ctrlDown = (CurrentKeyboardModifier & ModifierType.ControlMask) != ModifierType.None;
@@ -405,8 +405,6 @@ namespace Docking.Widgets
 
       #endregion
 
-      protected const int LEFT_MOUSE_BUTTON  = 1;
-      protected const int RIGHT_MOUSE_BUTTON = 3;
 
       protected override bool OnButtonPressEvent(EventButton evnt)
       {

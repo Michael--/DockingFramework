@@ -28,9 +28,6 @@ namespace Docking.Components
              && ComponentManager.CurrentDockItem==this.DockItem;
       }}
 
-      protected const int LEFT_MOUSE_BUTTON  = 1; // sadly, GTK# does not define these numbers itself. we do it here so that all child classes can use them.
-      protected const int RIGHT_MOUSE_BUTTON = 3; // sadly, GTK# does not define these numbers itself. we do it here so that all child classes can use them.
-
       #region Python scripting
       /// <summary>
       /// Get an instance containing methods/getter/setter which will be available for python at runtime

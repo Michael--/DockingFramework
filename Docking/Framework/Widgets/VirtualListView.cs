@@ -7,6 +7,7 @@ using Docking.Helper;
 using System.Text;
 using System.Linq;
 using System.Diagnostics;
+using Docking.Tools;
 
 namespace Docking.Widgets
 {
@@ -556,7 +557,7 @@ namespace Docking.Widgets
             }
          }
 
-         else if (evnt.Button == LEFT_MOUSE_BUTTON)
+         else if (evnt.Button == Mouse.LEFT_MOUSE_BUTTON)
          {
             int row = (int)evnt.Y / ConstantHeight + (int)vscrollbar1.Value;
             OffsetCursor(row - CurrentRow, true);
@@ -897,9 +898,6 @@ namespace Docking.Widgets
          return -1;
       }
 
-      protected const int LEFT_MOUSE_BUTTON = 1;
-      protected const int RIGHT_MOUSE_BUTTON = 3;
-
       void TheButtonPressEvent(object o, ButtonPressEventArgs args)
       {
          for (int i = 0; i < mColumns.Count; i++)
@@ -913,7 +911,7 @@ namespace Docking.Widgets
             }
          }
 
-         if (args.Event.Button == LEFT_MOUSE_BUTTON && DragGripper < 0)
+         if (args.Event.Button == Mouse.LEFT_MOUSE_BUTTON && DragGripper < 0)
          {
             DragGripper = HitGripper((int)args.Event.X);
             LastDragX = (int)args.Event.X;
@@ -922,7 +920,7 @@ namespace Docking.Widgets
 
       void TheButtonReleaseEvent(object o, ButtonReleaseEventArgs args)
       {
-         if (args.Event.Button == LEFT_MOUSE_BUTTON && DragGripper >= 0)
+         if (args.Event.Button == Mouse.LEFT_MOUSE_BUTTON && DragGripper >= 0)
             DragGripper = -1;
       }
 
