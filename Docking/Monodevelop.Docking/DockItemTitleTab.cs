@@ -32,6 +32,7 @@ using System.Linq;
 using MonoDevelop.Ide;
 using MonoDevelop.Components;
 using Docking.Helper;
+using Docking.Tools;
 
 namespace Docking
 {
@@ -280,7 +281,7 @@ namespace Docking
             item.ShowDockPopupMenu(evnt.Time, tabStrip);
             return false;
          }
-         else if (evnt.Button == 1)
+         else if (evnt.Button == Mouse.LEFT_MOUSE_BUTTON)
          {
             if (evnt.Type == Gdk.EventType.ButtonPress)
             {
@@ -308,7 +309,7 @@ namespace Docking
             else
                item.Status = DockItemStatus.AutoHide;
          }
-         else if (!evnt.TriggersContextMenu() && evnt.Button == 1)
+         else if (!evnt.TriggersContextMenu() && evnt.Button == Mouse.LEFT_MOUSE_BUTTON)
          {
             frame.DockInPlaceholder(item);
             frame.HidePlaceholder();

@@ -304,13 +304,13 @@ namespace Docking.Helper
 		
 		public static bool IsContextMenuButton (this Gdk.EventButton evt)
 		{
-			if (evt.Button == 3 &&
+			if (evt.Button == Mouse.RIGHT_MOUSE_BUTTON &&
 					(evt.State & (Gdk.ModifierType.Button1Mask | Gdk.ModifierType.Button2Mask)) == 0)
 				return true;
 			
 			if (Platform.IsMac) {
 				if (!oldMacKeyHacks &&
-					evt.Button == 1 &&
+					evt.Button == Mouse.LEFT_MOUSE_BUTTON &&
 					(evt.State & Gdk.ModifierType.ControlMask) != 0 &&
 					(evt.State & (Gdk.ModifierType.Button2Mask | Gdk.ModifierType.Button3Mask)) == 0)
 				{

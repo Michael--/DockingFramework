@@ -33,6 +33,7 @@ using System;
 using Gtk;
 using Gdk;
 using Docking.Helper;
+using Docking.Tools;
 
 namespace Docking
 {
@@ -282,7 +283,7 @@ namespace Docking
 		
 		void OnSizeButtonPress (object ob, Gtk.ButtonPressEventArgs args)
 		{
-			if (!animating && args.Event.Button == 1 && !args.Event.TriggersContextMenu ()) {
+			if (!animating && args.Event.Button == Mouse.LEFT_MOUSE_BUTTON && !args.Event.TriggersContextMenu ()) {
 				int n;
 				if (horiz) {
 					Toplevel.GetPointer (out resizePos, out n);

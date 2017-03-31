@@ -34,6 +34,7 @@ using Gtk;
 using Xwt.Motion;
 using Animations = Xwt.Motion.AnimationExtensions;
 using Docking.Helper;
+using Docking.Tools;
 
 namespace Docking
 {
@@ -480,7 +481,7 @@ namespace Docking
          {
             it.ShowDockPopupMenu(evnt.Time);
          }
-         else if (evnt.Button == 1)
+         else if (evnt.Button == Mouse.LEFT_MOUSE_BUTTON)
          {
 #if false
             if (evnt.Type == Gdk.EventType.TwoButtonPress)

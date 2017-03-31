@@ -24,6 +24,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System;
+using Docking.Tools;
 using MonoDevelop.Ide;
 
 namespace Docking.Helper
@@ -113,7 +114,7 @@ namespace Docking.Helper
 
 		protected override bool OnButtonReleaseEvent (Gdk.EventButton evnt)
 		{
-			if (pressed && evnt.Button == 1 && new Gdk.Rectangle (0, 0, Allocation.Width, Allocation.Height).Contains ((int)evnt.X, (int)evnt.Y)) {
+			if (pressed && evnt.Button == Mouse.LEFT_MOUSE_BUTTON && new Gdk.Rectangle (0, 0, Allocation.Width, Allocation.Height).Contains ((int)evnt.X, (int)evnt.Y)) {
 				hover = false;
 				LoadImage ();
 				if (Clicked != null)
