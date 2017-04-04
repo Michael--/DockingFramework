@@ -492,9 +492,10 @@ namespace Docking.Components
      {
          Menu filemenu = FindMenu("File", true);
 
+         // step 1/2: completely remove all old recent file menu entries
+
          List<Widget> oldstuff = new List<Widget>();
          oldstuff.AddRange(filemenu.Children);
-
          if(mRecentFilesBegin!=null)
          {
             bool deletionmode = false;
@@ -508,40 +509,47 @@ namespace Docking.Components
          }
          mRecentFilesBegin = null;
 
-         if(mRecentLogFiles.Count > 0 || mRecentDbFiles.Count > 0 || mRecentMiscFiles.Count > 0)
-         {
-            mRecentFilesBegin = new SeparatorMenuItem();
-            filemenu.Append(mRecentFilesBegin);
-            mRecentFilesBegin.ShowAll();
+         // step 2/2: reconstruct recent files menu
 
+         if(mRecentLogFiles.Count>0)
+         {
+            SeparatorMenuItem sep1 = new SeparatorMenuItem();
+            filemenu.Append(sep1);
+            sep1.ShowAll();
+            if(mRecentFilesBegin==null)
+               mRecentFilesBegin = sep1;
             foreach(TaggedImageMenuItem r in mRecentLogFiles)
             {
                filemenu.Append(r);
                r.ShowAll();
             }
+         }
 
-            if (mRecentDbFiles.Count > 0)
+         if(mRecentDbFiles.Count>0)
+         {
+            SeparatorMenuItem sep2 = new SeparatorMenuItem();
+            filemenu.Append(sep2);
+            sep2.ShowAll();
+            if(mRecentFilesBegin==null)
+               mRecentFilesBegin = sep2;
+            foreach (TaggedImageMenuItem r in mRecentDbFiles)
             {
-               SeparatorMenuItem sep = new SeparatorMenuItem();
-               filemenu.Append(sep);
-               sep.ShowAll();
-               foreach (TaggedImageMenuItem r in mRecentDbFiles)
-               {
-                  filemenu.Append(r);
-                  r.ShowAll();
-               }
+               filemenu.Append(r);
+               r.ShowAll();
             }
+         }
 
-            if (mRecentMiscFiles.Count > 0)
+         if(mRecentMiscFiles.Count>0)
+         {
+            SeparatorMenuItem sep3 = new SeparatorMenuItem();
+            filemenu.Append(sep3);
+            sep3.ShowAll();
+            if(mRecentFilesBegin==null)
+               mRecentFilesBegin = sep3;
+            foreach (TaggedImageMenuItem r in mRecentMiscFiles)
             {
-               SeparatorMenuItem sep2 = new SeparatorMenuItem();
-               filemenu.Append(sep2);
-               sep2.ShowAll();
-               foreach (TaggedImageMenuItem r in mRecentMiscFiles)
-               {
-                  filemenu.Append(r);
-                  r.ShowAll();
-               }
+               filemenu.Append(r);
+               r.ShowAll();
             }
          }
       }
