@@ -406,16 +406,30 @@ namespace Docking.Components
 
       public  int                       MaxRecentFiles    = 9;
       private SeparatorMenuItem         mRecentFilesBegin = null;
-      private List<TaggedImageMenuItem> mRecentFiles      = new List<TaggedImageMenuItem>();
+      private List<TaggedImageMenuItem> mRecentLogFiles   = new List<TaggedImageMenuItem>();
+      private List<TaggedImageMenuItem> mRecentDbFiles    = new List<TaggedImageMenuItem>();
+      private List<TaggedImageMenuItem> mRecentMiscFiles  = new List<TaggedImageMenuItem>();
+
+      private enum FileType { DLT, NDS, MISC }
+
+      private FileType checkFileType(String filename)
+      {
+         FileInfo fi = new FileInfo(filename);
+         String ext = fi.Extension.ToLower();
+         if (".dlt" == ext) return FileType.DLT;
+         if (".nds" == ext) return FileType.NDS;
+         return FileType.MISC;
+      }
 
       public void AddRecentFile(string filename, bool do_update_menu = true)
       {
-         if(string.IsNullOrEmpty(filename))
+         if (string.IsNullOrEmpty(filename))
             return;
 
          string filename_normalized = Platform.AdjustDirectorySeparators(filename);
+         FileType ftype = checkFileType(filename);
 
-         RemoveRecentFile(filename_normalized, false);
+         RemoveRecentFile(filename_normalized, ftype, false);
          var filename_shortened = StringTools.ShrinkPath(filename_normalized, 80);
 
          TaggedImageMenuItem newitem = new TaggedImageMenuItem(filename_shortened);
@@ -424,31 +438,55 @@ namespace Docking.Components
          newitem.Activated += OnRecentFileActivated;
          (newitem.Child as Label).UseUnderline = false;
 
-         mRecentFiles.Insert(0, newitem);
-         if(mRecentFiles.Count>MaxRecentFiles)
-            mRecentFiles.RemoveRange(MaxRecentFiles, mRecentFiles.Count-MaxRecentFiles);
+         List<TaggedImageMenuItem> refList = findRecentList(ftype);
 
-         if(do_update_menu)
+         refList.Insert(0, newitem);
+         if (refList.Count > MaxRecentFiles)
+            refList.RemoveRange(MaxRecentFiles, refList.Count - MaxRecentFiles);
+
+         if (do_update_menu)
             UpdateRecentFilesMenu();
-     }
+      }
 
-     public void RemoveRecentFile(string filename, bool do_update_menu = true)
-     {
+      private List<TaggedImageMenuItem> findRecentList(FileType ftype)
+      {
+         List<TaggedImageMenuItem> refList = null;
+         switch (ftype)
+         {
+            case FileType.DLT: refList = mRecentLogFiles; break;
+            case FileType.NDS: refList = mRecentDbFiles; break;
+            case FileType.MISC: refList = mRecentMiscFiles; break;
+         }
+
+         return refList;
+      }
+
+
+      private void RemoveRecentFile(string filename)
+      {
+         FileType ftype = checkFileType(filename);
+         RemoveRecentFile(filename, ftype, true);
+      }
+
+
+      private void RemoveRecentFile(string filename, FileType ftype,  bool do_update_menu = true)
+      {
          List<TaggedImageMenuItem> founditems = new List<TaggedImageMenuItem>();
+         List<TaggedImageMenuItem> refList = findRecentList(ftype);
 
          StringComparison mode = Platform.IsWindows
                                ? StringComparison.InvariantCultureIgnoreCase
                                : StringComparison.InvariantCulture;
-         foreach(TaggedImageMenuItem item in mRecentFiles)
+         foreach(TaggedImageMenuItem item in refList)
             if(((string)item.Tag).Equals(filename, mode))
                founditems.Add(item);
 
          foreach(TaggedImageMenuItem item in founditems)
-            mRecentFiles.Remove(item);
+            refList.Remove(item);
 
          if(do_update_menu)
             UpdateRecentFilesMenu();
-     }
+      }
 
      private void UpdateRecentFilesMenu()
      {
@@ -470,17 +508,41 @@ namespace Docking.Components
          }
          mRecentFilesBegin = null;
 
-         if(mRecentFiles.Count>0)
+         if(mRecentLogFiles.Count > 0 || mRecentDbFiles.Count > 0 || mRecentMiscFiles.Count > 0)
          {
             mRecentFilesBegin = new SeparatorMenuItem();
             filemenu.Append(mRecentFilesBegin);
             mRecentFilesBegin.ShowAll();
 
-            foreach(TaggedImageMenuItem r in mRecentFiles)
+            foreach(TaggedImageMenuItem r in mRecentLogFiles)
             {
                filemenu.Append(r);
                r.ShowAll();
-             }
+            }
+
+            if (mRecentDbFiles.Count > 0)
+            {
+               SeparatorMenuItem sep = new SeparatorMenuItem();
+               filemenu.Append(sep);
+               sep.ShowAll();
+               foreach (TaggedImageMenuItem r in mRecentDbFiles)
+               {
+                  filemenu.Append(r);
+                  r.ShowAll();
+               }
+            }
+
+            if (mRecentMiscFiles.Count > 0)
+            {
+               SeparatorMenuItem sep2 = new SeparatorMenuItem();
+               filemenu.Append(sep2);
+               sep2.ShowAll();
+               foreach (TaggedImageMenuItem r in mRecentMiscFiles)
+               {
+                  filemenu.Append(r);
+                  r.ShowAll();
+               }
+            }
          }
       }
 
@@ -516,7 +578,7 @@ namespace Docking.Components
          // no call AddToRecentFiles() is necessary here, OpenFile() already takes care of that
       }
 
-      #region cut, copy, paste
+#region cut, copy, paste
 
       ImageMenuItem mMenuCut, mMenuCopy, mMenuPaste;
 
@@ -595,7 +657,7 @@ namespace Docking.Components
          }
       }
 
-      #endregion
+#endregion
 
       /// <summary>
       /// Add all component start/create menu entries
@@ -802,9 +864,9 @@ namespace Docking.Components
             this.Show();
       }
 
-      #endregion
+#endregion
 
-      #region private properties
+#region private properties
 
       private Statusbar      StatusBar                { get; set; }
       private Toolbar        ToolBar                  { get; set; }
@@ -813,9 +875,9 @@ namespace Docking.Components
       private XmlDocument    ConfigurationXmlDocument { get; set; }
       private XmlNode        ConfigurationXmlNode     { get; set; }
 
-      #endregion
+#endregion
 
-      #region public properties
+#region public properties
 
       public DockFrame       DockFrame                { get; private set; }
       public ComponentFinder ComponentFinder          { get; private set; }
@@ -910,9 +972,9 @@ namespace Docking.Components
          }
       }
 
-      #endregion
+#endregion
 
-      #region OpenFile
+#region OpenFile
 
       protected IArchive Archive { get; set; }
 
@@ -936,10 +998,10 @@ namespace Docking.Components
                if(d.Content is IFileOpen)
                {
                   List<FileFilterExt> morefilters = (d.Content as IFileOpen).SupportedFileTypes();
-                  #if DEBUG
+#if DEBUG
                   foreach(FileFilterExt f in morefilters)
                      MessageWriteLine("{0} supports opening {1}", d.Content.Name, f.Name);
-                  #endif
+#endif
                   filters.AddRange(morefilters);
                }
             }
@@ -1306,12 +1368,12 @@ namespace Docking.Components
             dlg.AddFilter(new FileFilterExt("*", "All Files".L()) { Name = "All Files".L() });
          }
 
-         #if false
+#if false
          // we sadly cannot do this here, because we need the getters inside dlg (like .Filename), and they will no longer have proper contents after .Destroy()
          int result = dlg.Run();
          dlg.Destroy();
          return result;
-         #endif
+#endif
 
          return dlg.Run();
       }
@@ -1392,9 +1454,9 @@ namespace Docking.Components
          return false;
       }
 
-      #endregion
+#endregion
 
-      #region drag+drop
+#region drag+drop
 
       // our own enum to which we map the various MIME types we receive via drag+drop
       enum DragDropDataType
@@ -1483,9 +1545,9 @@ namespace Docking.Components
             Gtk.Drag.Finish(args.Context, success, false, args.Time);
       }
 
-      #endregion
+#endregion
 
-      #region Configuration
+#region Configuration
 
       // In case a component has changed its namespace or class name, this function can massage the config to map the old name to the new one.
       protected void RemapComponent(string from, string to)
@@ -1846,7 +1908,11 @@ namespace Docking.Components
          persistency.SaveSetting(instance, "layout", DockFrame.CurrentLayout);
 
          List<string> recentfiles = new List<string>();
-         foreach(TaggedImageMenuItem item in mRecentFiles)
+         foreach (TaggedImageMenuItem item in mRecentLogFiles)
+            recentfiles.Add((string)item.Tag);
+         foreach (TaggedImageMenuItem item in mRecentDbFiles)
+            recentfiles.Add((string)item.Tag);
+         foreach (TaggedImageMenuItem item in mRecentMiscFiles)
             recentfiles.Add((string)item.Tag);
 
          persistency.SaveSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", Docking.Widgets.FileChooserDialogLocalized.InitialFolderToShow);
@@ -1890,9 +1956,9 @@ namespace Docking.Components
          a.RetVal = true;
       }
 
-      #endregion
+#endregion
 
-      #region Binary Persistency
+#region Binary Persistency
 
       // TODO It does not really make sense to but binary blobs into XML... this way the file is not really editable/parsable anymore. Suggestion: Prefer using IPersistency.
       /// <summary>
@@ -1971,12 +2037,12 @@ namespace Docking.Components
             bytes[i] = Convert.ToByte(s.Substring(i * 2, 2), 16);
          return bytes;
       }
-      #endregion
+#endregion
 
 
-      #region IPersistency
+#region IPersistency
 
-      #region save
+#region save
 
       public void SaveSetting(string instance, string key, string val)
       {
@@ -2137,9 +2203,9 @@ namespace Docking.Components
       }
 
 
-      #endregion
+#endregion
 
-      #region load
+#region load
 
       public string LoadSetting(string instance, string key, string defaultval)
       {
@@ -2325,11 +2391,11 @@ namespace Docking.Components
          }
       }
 
-      #endregion
+#endregion
 
-      #endregion
+#endregion
 
-      #region Docking
+#region Docking
 
       /// <summary>
       /// Searches for requested type in all available components DLLs
@@ -2604,9 +2670,9 @@ namespace Docking.Components
          return CreateItem(cfi, id);
       }
 
-      #endregion
+#endregion
 
-      #region Select current DockItem
+#region Select current DockItem
 
       /// <summary>
       /// Relation between any object and its parent DockItem
@@ -2710,9 +2776,9 @@ namespace Docking.Components
          }
       }
 
-      #endregion
+#endregion
 
-      #region Status Bar
+#region Status Bar
 
       uint mStatusBarUniqueId = 0;
       // helper to generate unique IDs
@@ -2736,9 +2802,9 @@ namespace Docking.Components
             StatusBar.Pop(id);
       }
 
-      #endregion
+#endregion
 
-      #region Toolbar
+#region Toolbar
 
       public void AddToolItem(ToolItem item)
       {
@@ -2756,7 +2822,7 @@ namespace Docking.Components
          ToolBar.Remove(item);
       }
 
-      #endregion
+#endregion
 
       TextWriter LogFile = null;
 
@@ -2783,7 +2849,7 @@ namespace Docking.Components
          return true;
       }
 
-      #region IMessageWriteLine
+#region IMessageWriteLine
 
       public void MessageWriteLine(String format, params object[] args)
       {
@@ -2837,9 +2903,9 @@ namespace Docking.Components
       List<String> mMessageQueue = new List<string>();
       Dictionary<string, IMessage> mMessage = new Dictionary<string, IMessage>();
 
-      #endregion
+#endregion
 
-      #region Python
+#region Python
 
       private ScriptEngine ScriptEngine { get; set; }
 
@@ -3113,7 +3179,7 @@ namespace Docking.Components
          }
       }
 
-      #endregion
+#endregion
 
       // TODO this currently lacks the OS's window decoration (icon, window title text, buttons)
       public Gdk.Pixbuf Screenshot()
