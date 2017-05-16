@@ -2450,6 +2450,7 @@ namespace Docking.Components
             {
                if(!di.Visible)
                   di.Visible = true;
+               di.Present(true);
                return di;
             }
             
