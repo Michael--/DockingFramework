@@ -376,21 +376,35 @@ namespace Docking.Components
 
       private void InstallQuitMenu(bool minimalistic = false)
       {
-         if(!minimalistic)
+         if(ConfigurationIsReadonly)
          {
-            ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit without Saving Config");
-          //item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png")); // no icon intentionally to make the normal "Quit" easier to catch with the eye
-            item.Activated += OnQuitAndDoNotSaveConfigActionActivated;
-            AppendMenuItem("File", item);
+            {
+               ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit without Saving Config (Config is Read-Only)");
+               item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png"));
+               item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.F4, Gdk.ModifierType.Mod1Mask, AccelFlags.Visible));
+               item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
+               item.Activated += OnQuitAndDoNotSaveConfigActionActivated;
+               AppendMenuItem("File", item);
+            }
          }
-
+         else
          {
-            ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit");
-            item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png"));
-            item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.F4, Gdk.ModifierType.Mod1Mask, AccelFlags.Visible));
-            item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
-            item.Activated += OnQuitActionActivated;
-            AppendMenuItem("File", item);
+            if(!minimalistic)
+            {
+               ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit without Saving Config");
+               item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png"));
+               item.Activated += OnQuitAndDoNotSaveConfigActionActivated;
+               AppendMenuItem("File", item);
+            }
+
+            {
+               ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit");
+               item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png"));
+               item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.F4, Gdk.ModifierType.Mod1Mask, AccelFlags.Visible));
+               item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
+               item.Activated += OnQuitActionActivated;
+               AppendMenuItem("File", item);
+            }
          }
       }
 
@@ -880,6 +894,7 @@ namespace Docking.Components
       private Toolbar        ToolBar                  { get; set; }
       private MenuBar        MenuBar                  { get; set; }
       private String         ConfigurationFilename    { get; set; }
+      private bool           ConfigurationIsReadonly  { get; set; }
       private XmlDocument    ConfigurationXmlDocument { get; set; }
       private XmlNode        ConfigurationXmlNode     { get; set; }
 
@@ -1622,6 +1637,8 @@ namespace Docking.Components
             ConfigurationXmlNode = ConfigurationXmlDocument.AppendChild(ConfigurationXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT));
 
          PerformDownwardsCompatibilityTweaksOnConfigurationFile();
+
+         ConfigurationIsReadonly = LoadSetting("", "readonly", false);
       }
 
       protected void LoadLayout()
@@ -1860,6 +1877,8 @@ namespace Docking.Components
          string instance = "MainWindow";
          IPersistency persistency = this as IPersistency;
 
+         //ConfigurationIsReadonly = persistency.LoadSetting("", "readonly", false); // exceptionally read earlier in LoadConfigurationFile(), not here
+
          int    windowstate = persistency.LoadSetting(instance, "windowstate", 0);
          int    x           = persistency.LoadSetting(instance, "x",           -9999999);
          int    y           = persistency.LoadSetting(instance, "y",           -9999999);
@@ -1902,6 +1921,7 @@ namespace Docking.Components
          string instance = "MainWindow";
 
          persistency.SaveSetting("", "ConfigSavedByVersion", Assembly.GetCallingAssembly().GetName().Version.ToString());
+         persistency.SaveSetting("", "readonly", ConfigurationIsReadonly);
 
          int x, y, w, h;
          GetPosition(out x, out y);
@@ -1941,7 +1961,10 @@ namespace Docking.Components
          if(save_persistency)
          {
             SavePersistency();
-            SaveConfigurationFile();
+            if(ConfigurationIsReadonly)
+               MessageWriteLine("skipping configuration saving because it is readonly");
+            else
+               SaveConfigurationFile();
             ComponentsRemove();
          }
 
