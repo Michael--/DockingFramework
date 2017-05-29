@@ -161,6 +161,20 @@ namespace Docking.Components
          MenuBar.ShowAll();
       }
 
+      public Menu FindOrCreateExportSubmenu(String text)
+      {
+         foreach (TaggedImageMenuItem m in mExportSubmenu.Children)
+         {
+            if (m.LabelText == text)
+               return m.Submenu as Menu;
+         }
+
+         var submenuItem = new TaggedLocalizedImageMenuItem(text);
+         submenuItem.Submenu = new Menu();
+         AppendExportMenuQuickHack(submenuItem);
+         return submenuItem.Submenu as Menu;
+      }
+
       protected void AppendMenuItem(String path, MenuItem item)
       {
          Menu menu = FindMenu(path, true);
