@@ -1853,7 +1853,7 @@ namespace Docking.Components
          }
 
          total.Stop();
-         if(LicenseGroup.IsEnabled("nts") && total.ElapsedMilliseconds>100)
+         if(LicenseGroup.IsEnabled("nts") && total.ElapsedMilliseconds>1500)
             MessageWriteLine("ComponentsLoaded() total time = {0}s", total.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture));
       }
 
