@@ -197,24 +197,31 @@ namespace Docking.Components
             Languages.Add(code, lang);
          }
 
-         ResXResourceReader rr = new ResXResourceReader(filename);
-         rr.UseResXDataNodes = true;
-         IDictionaryEnumerator dict = rr.GetEnumerator();
-         while (dict.MoveNext())
+         try
          {
-            ResXDataNode node = dict.Value as ResXDataNode;
-            string key = node.Name;
-            object obj = node.GetValue((ITypeResolutionService)null);
-            Debug.Assert(obj is string);
-            string value = obj as string;
-            string comment = node.Comment;
+            ResXResourceReader rr = new ResXResourceReader(filename);
+            rr.UseResXDataNodes = true;
+            IDictionaryEnumerator dict = rr.GetEnumerator();
+            while (dict.MoveNext())
+            {
+               ResXDataNode node = dict.Value as ResXDataNode;
+               string key = node.Name;
+               object obj = node.GetValue((ITypeResolutionService)null);
+               Debug.Assert(obj is string);
+               string value = obj as string;
+               string comment = node.Comment;
 
-            Node n = new Node(key, value, comment, basename, value, comment);
-            if (!lang.Nodes.ContainsKey(key))
-               lang.Nodes.Add(key, n);
-            else
-                if (Localization.DbgOut != null)
-                    Localization.DbgOut.MessageWriteLine("Localization: Key '{0}' already exists", key);
+               Node n = new Node(key, value, comment, basename, value, comment);
+               if (!lang.Nodes.ContainsKey(key))
+                  lang.Nodes.Add(key, n);
+               else
+                   if (Localization.DbgOut != null)
+                       Localization.DbgOut.MessageWriteLine("Localization: Key '{0}' already exists", key);
+            }
+         }
+         catch(Exception)
+         {
+            System.Console.Error.WriteLine("invalid localization file {0}", filename);
          }
       }
 
