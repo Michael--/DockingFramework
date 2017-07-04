@@ -1548,7 +1548,7 @@ namespace Docking.Components
             if(line.StartsWith("#"))
                continue;
             string s = line.Trim();
-            if(s == "\0")
+            if(s == "\0" || string.IsNullOrEmpty(s))
                continue;
             result.Add(s);
          }
@@ -1557,29 +1557,23 @@ namespace Docking.Components
 
       void OnDragDataReceived(object sender, DragDataReceivedArgs args)
       {
-         bool success = false;
+         bool ok = false;
          if(args != null && args.SelectionData != null)
          {
             switch((DragDropDataType) args.Info)
             {
             case DragDropDataType.Text:
-            case DragDropDataType.URL:
-               {
-                  string url = Encoding.UTF8.GetString(args.SelectionData.Data).Trim();
-                  success = OpenURL(url);
-                  break;
-               }
+            case DragDropDataType.URL:    
             case DragDropDataType.URLList:
                {
                   List<string> uris = ParseURLListRFC2483(args.SelectionData.Data);
                   foreach(string uri in uris)
-                     success |= OpenURL(uri);
+                     ok = OpenURL(uri);
                   break;
                }
             }
+            Gtk.Drag.Finish(args.Context, true, false, args.Time);
          }
-         if(success)
-            Gtk.Drag.Finish(args.Context, success, false, args.Time);
       }
 
 #endregion
