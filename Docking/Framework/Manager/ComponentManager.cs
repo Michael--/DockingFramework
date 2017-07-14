@@ -1928,7 +1928,7 @@ namespace Docking.Components
          IPersistency persistency = this as IPersistency;
          string instance = "MainWindow";
 
-         persistency.SaveSetting("", "ConfigSavedByVersion", Assembly.GetCallingAssembly().GetName().Version.ToString());
+         persistency.SaveSetting("", "ConfigSavedByVersion", AssemblyInfoExt.Version.ToString());
          persistency.SaveSetting("", "readonly", ConfigurationIsReadonly);
 
          int x, y, w, h;
