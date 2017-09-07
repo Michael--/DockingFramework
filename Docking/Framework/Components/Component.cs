@@ -111,8 +111,16 @@ namespace Docking.Components
       {
          if (component == this && m_PropertyObject != null)
          {
-            foreach (IPropertyViewer p in m_PropertyViewer)
-               p.SetObject(m_PropertyObject);
+            if (m_PropertyObject.GetType().IsArray)
+            {
+               foreach (IPropertyViewer p in m_PropertyViewer)
+                  p.SetObject(m_PropertyObject, (object[])m_PropertyObject);
+            }
+            else
+            {
+               foreach (IPropertyViewer p in m_PropertyViewer)
+                  p.SetObject(m_PropertyObject);
+            }
          }
       }
 
@@ -122,9 +130,19 @@ namespace Docking.Components
       public void SetPropertyObject(object value)
       {
          m_PropertyObject = value;
-         foreach (IPropertyViewer p in m_PropertyViewer)
-            p.SetObject(m_PropertyObject);
+
+         if (m_PropertyObject.GetType().IsArray)
+         {
+            foreach (IPropertyViewer p in m_PropertyViewer)
+               p.SetObject(m_PropertyObject, (object[])m_PropertyObject);
+         }
+         else
+         {
+            foreach (IPropertyViewer p in m_PropertyViewer)
+               p.SetObject(m_PropertyObject);
+         }
       }
+
 
       /// <summary>
       /// get the property object previously set
