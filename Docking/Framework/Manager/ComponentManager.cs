@@ -2137,12 +2137,39 @@ namespace Docking.Components
          }
       }
 
+      public void SaveSetting(string instance, string key, IEnumerable<float> val)
+      {
+         int count = val == null ? 0 : val.Count();
+         SaveSetting(instance, key + ".Count", count);
+         for (int i = 0; i < count; i++)
+         {
+            SaveSetting(instance, key + "." + i, val.ElementAt(i));
+         }
+      }
+
+      public void SaveSetting(string instance, string key, IEnumerable<double> val)
+      {
+         int count = val == null ? 0 : val.Count();
+         SaveSetting(instance, key + ".Count", count);
+         for (int i = 0; i < count; i++)
+         {
+            SaveSetting(instance, key + "." + i, val.ElementAt(i));
+         }
+      }
+
+
+
       public void SaveSetting(string instance, string key, UInt32 val)
       {
          SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
       }
 
       public void SaveSetting(string instance, string key, Int32 val)
+      {
+         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
+      }
+
+      public void SaveSetting(string instance, string key, float val)
       {
          SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
       }
@@ -2299,6 +2326,29 @@ namespace Docking.Components
          return result;
       }
 
+      public IEnumerable<float> LoadSetting(string instance, string key, IEnumerable<float> defaultval)
+      {
+         int count = LoadSetting(instance, key + ".Count", -1);
+         if (count < 0)
+            return defaultval;
+         List<float> result = new List<float>();
+         for (int i = 0; i < count; i++)
+            result.Add(LoadSetting(instance, key + "." + i, 0.0f));
+         return result;
+      }
+
+      public IEnumerable<double> LoadSetting(string instance, string key, IEnumerable<double> defaultval)
+      {
+         int count = LoadSetting(instance, key + ".Count", -1);
+         if (count < 0)
+            return defaultval;
+         List<double> result = new List<double>();
+         for (int i = 0; i < count; i++)
+            result.Add(LoadSetting(instance, key + "." + i, 0.0));
+         return result;
+      }
+
+
       public UInt32 LoadSetting(string instance, string key, UInt32 defaultval)
       {
          string s = LoadSetting(instance, key, "");
@@ -2312,6 +2362,14 @@ namespace Docking.Components
          string s = LoadSetting(instance, key, "");
          Int32 result;
          return (s != "" && Int32.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
+                ? result : defaultval;
+      }
+
+      public float LoadSetting(string instance, string key, float defaultval)
+      {
+         string s = LoadSetting(instance, key, "");
+         float result;
+         return (s != "" && float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out result))
                 ? result : defaultval;
       }
 
