@@ -131,7 +131,7 @@ namespace Docking.Components
       {
          m_PropertyObject = value;
 
-         if (m_PropertyObject.GetType().IsArray)
+         if (m_PropertyObject != null && m_PropertyObject.GetType().IsArray)
          {
             foreach (IPropertyViewer p in m_PropertyViewer)
                p.SetObject(m_PropertyObject, (object[])m_PropertyObject);
