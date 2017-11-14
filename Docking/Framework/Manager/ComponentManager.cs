@@ -393,7 +393,7 @@ namespace Docking.Components
          if(ConfigurationIsReadonly)
          {
             {
-               ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit without Saving Config (Config is Read-Only)");
+               ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit Without Saving Config (Config is Read-Only)");
                item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png"));
                item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.F4, Gdk.ModifierType.Mod1Mask, AccelFlags.Visible));
                item.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
@@ -405,7 +405,7 @@ namespace Docking.Components
          {
             if(!minimalistic)
             {
-               ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit without Saving Config");
+               ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit Without Saving Config");
                item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png"));
                item.Activated += OnQuitAndDoNotSaveConfigActionActivated;
                AppendMenuItem("File", item);
@@ -1142,11 +1142,11 @@ namespace Docking.Components
                   if (ec.Count() == 0)
                      available_components.Add(cfi);
                }
-            } 
+            }
 
             if(available_components.Count + existing_components.Count > 1) // show a dialog and let the user choose
             {
-			      bool success = true;
+         bool success = true;
 
                // create a dialog and update the internal component model
                ComponentSelectorDialog dlg = new ComponentSelectorDialog(this, available_components, existing_components);
@@ -1183,7 +1183,7 @@ namespace Docking.Components
                      AddRecentFile(filename);
                   }
                   return success;
-               }               
+               }
             }
             else if(existing_components.Count==1 && available_components.Count==0) // use an existing component
             {
@@ -1563,7 +1563,7 @@ namespace Docking.Components
             switch((DragDropDataType) args.Info)
             {
             case DragDropDataType.Text:
-            case DragDropDataType.URL:    
+            case DragDropDataType.URL:
             case DragDropDataType.URLList:
                {
                   List<string> uris = ParseURLListRFC2483(args.SelectionData.Data);
@@ -2217,7 +2217,7 @@ namespace Docking.Components
          if (!value.GetType().IsSerializable)
             return;
 
-         // Serialise to the XML document        
+         // Serialise to the XML document
          XmlNode parent = ConfigurationXmlNode;
          XmlNode node;
 
@@ -2231,14 +2231,14 @@ namespace Docking.Components
             {
                //create new node for this instance
                node = ConfigurationXmlDocument.CreateElement(instance);
-               parent.AppendChild(node);               
+               parent.AppendChild(node);
             }
 
             //create new subKey
             XDocument xdoc = new XDocument();
-            
+
             using (XmlWriter writer = xdoc.CreateWriter())
-            {               
+            {
                var ser = new XmlSerializer(value.GetType());
                ser.Serialize(writer, value);
             }
@@ -2247,7 +2247,7 @@ namespace Docking.Components
                 .Attributes()
                 .Where(x => x.IsNamespaceDeclaration)
                 .Remove();
-            
+
             //remove old entry and add new
             try
             {
@@ -2262,7 +2262,7 @@ namespace Docking.Components
                //create new node for this instance
                //node = ConfigurationXmlDocument.CreateElement(instance);
                //parent.AppendChild(node);
-            }            
+            }
 
             return;
          }
@@ -2542,7 +2542,7 @@ namespace Docking.Components
                di.Present(true);
                return di;
             }
-            
+
          }
          else
          {
