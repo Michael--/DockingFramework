@@ -20,11 +20,14 @@ namespace Docking.Components
        public static bool ComplainAboutMissingLocalizations;
        public static IMessageWriteLine DbgOut;
 
-       public Localization()
-       {}
-
-       public Localization(IMessageWriteLine dbgout)
+       public Localization(string default_language = "en-US")
        {
+          mDefaultLanguageCode = mDefaultLanguageName = default_language;
+       }
+
+       public Localization(string default_language, IMessageWriteLine dbgout)
+       : this(default_language)
+       {          
           DbgOut = dbgout;
        }
 
@@ -165,8 +168,7 @@ namespace Docking.Components
          string[] files = Directory.GetFiles(mFolder, name);
          foreach (string f in files)
             Read(f);
-
-         mDefaultLanguageCode = mDefaultLanguageName = "en-US";
+         
          Languages.TryGetValue(mDefaultLanguageCode, out mDefaultLanguage);
          if (mDefaultLanguage != null)
          {

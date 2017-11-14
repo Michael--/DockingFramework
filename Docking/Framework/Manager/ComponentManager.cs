@@ -59,7 +59,7 @@ namespace Docking.Components
       }
 
       // make sure that you construct this class from the main thread!
-      public ComponentManager(string[] args, string application_name, string pythonApplicationObjectName = null)
+      public ComponentManager(string[] args, string default_language, string application_name, string pythonApplicationObjectName = null)
       : base(WindowType.Toplevel)
       {
          Clock = new Stopwatch();
@@ -71,7 +71,7 @@ namespace Docking.Components
 
          ApplicationName = application_name;
 
-         Localization = new Components.Localization(this);
+         Localization = new Components.Localization(default_language, this);
          Localization.SearchForResources(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Languages", "*.resx"));
 
          AccelGroup = new AccelGroup();
