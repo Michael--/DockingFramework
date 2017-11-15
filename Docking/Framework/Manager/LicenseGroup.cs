@@ -23,32 +23,35 @@ namespace Docking.Components
 
       public enum State
       {
-         NONE,       // group is not registered and state is unknown
-         DISABLED,   // group is registered as disabled
-         ENABLED,    // group is registered as enabled
+         UNKNOWN,    // group is unknown and state is unknown
+         DISABLED,   // group is registered and disabled
+         ENABLED,    // group is registered and enabled
       }
 
       private State GetState(string group)
-      {
-         State result;
-         lock (m_Groups)
+      {         
+         if(!string.IsNullOrEmpty(group))
          {
-            if (group != null && m_Groups.TryGetValue(group.ToLowerInvariant(), out result))
-               return result;
+            lock (m_Groups)
+            {
+               State result;
+               if(m_Groups.TryGetValue(group.ToLowerInvariant(), out result))
+                  return result;
+            }
          }
-         return State.NONE;
+         return State.UNKNOWN;
       }
 
       /// <summary>
-      /// return true if any group in given string is enabled
+      /// return true if any group in given multiple-groups string is enabled
       /// </summary>
       public bool IsEnabled(string groups)
       {
-         if (groups != null)
+         if(!string.IsNullOrEmpty(groups))
          {
-            foreach (var s in groups.Split(new char[] { '|', ' ', '\t', ',' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var group in groups.Split(new char[] { '|', ' ', '\t', ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
-               var st = GetState(s);
+               var st = GetState(group);
                if (st == State.ENABLED)
                   return true;
                if (st == State.DISABLED)
@@ -61,11 +64,10 @@ namespace Docking.Components
       /// <summary>
       /// Enable/Disable a group
       /// </summary>
-      public void SetGroup(string group, bool enabled)
+      public void SetEnabling(string group, bool enabled)
       {
          lock (m_Groups)
          {
-            // change existing or add new
             State result;
             if (m_Groups.TryGetValue(group.ToLowerInvariant(), out result))
                result = enabled ? State.ENABLED : State.DISABLED;
@@ -75,7 +77,7 @@ namespace Docking.Components
       }
 
       /// <summary>
-      /// All existing group names and its current enabling state
+      /// All existing groups and their current enabling state
       /// </summary>
       Dictionary<string, State> m_Groups = new Dictionary<string, State>();
    }
