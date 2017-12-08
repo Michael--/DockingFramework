@@ -27,34 +27,57 @@
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //
-using Gtk; 
+using Gtk;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Docking.Helper;
 
 namespace Docking
 {
-   class TabStrip : Gtk.EventBox
+   interface ITabStrip
+   {
+      Widget Parent { get; set; }
+      void Unparent();
+      void Show();
+      void Hide();
+      DockVisualStyle VisualStyle { get; set; }
+      void Clear();
+      void Destroy();
+      int CurrentTab { get; set; }
+      Requisition SizeRequest();
+      void SizeAllocate(Gdk.Rectangle allocation);
+      void QueueDraw();
+      bool isVertical { get; }
+      void AddTab(DockItemTitleTab tab);
+      void Flip();
+      int TabCount { get; }
+      int BottomPadding { get; set; }
+      void SetTabLabel(Gtk.Widget page, Gdk.Pixbuf icon, string label);
+      void UpdateStyle(DockItem item);
+   }
+
+
+   class TabStrip : Gtk.EventBox, ITabStrip
    {
       int currentTab = -1;
-      Box box, vBox, hBox, xbox;
+
+      ITabStripBox box, vBox, hBox;
       Label bottomFiller = new Label();
       DockVisualStyle visualStyle;
 
-      public TabStrip(DockFrame frame)
+      internal TabStrip()
       {
-         xbox = new HBox();
+         var xbox = new HBox();
          Add(xbox);
 
          vBox = new TabStripVBox() { TabStrip = this };
          hBox = new TabStripHBox() { TabStrip = this };
-
          box = hBox;
 
-
-         xbox.PackStart(hBox, false, false, 0);
-         xbox.PackStart(vBox, false, false, 0);
+         xbox.PackStart(hBox as Widget, false, false, 0);
+         xbox.PackStart(vBox as Widget, false, false, 0);
 
          ShowAll();
          vBox.Hide();
@@ -62,22 +85,22 @@ namespace Docking
          BottomPadding = 3;
          WidthRequest = 0;
 
-         box.Removed += HandleRemoved;
+         box.TabRemoved += HandleRemoved;
       }
 
 
-      public bool isVertical  { get { return box == vBox; } }
+      public bool isVertical { get { return box == vBox; } }
 
       public void Flip()
       {
-         Box a = isVertical ? vBox : hBox;
-         Box b = isVertical ? hBox : vBox;
+         var a = isVertical ? vBox : hBox;
+         var b = isVertical ? hBox : vBox;
 
-         a.Removed -= HandleRemoved;
+         a.TabRemoved -= HandleRemoved;
 
          while (a.Children.Count() > 0)
          {
-            var child = a.Children[0];
+            var child = a.Children.First();
             a.Remove(child);
             b.Add(child);
             if (child is DockItemTitleTab)
@@ -86,7 +109,7 @@ namespace Docking
 
          box.Hide();
          box = b;
-         box.Removed += HandleRemoved;
+         box.TabRemoved += HandleRemoved;
          box.Show();
          box.QueueDraw();
          QueueResize();
@@ -121,10 +144,10 @@ namespace Docking
          if (tab.Parent != null)
             ((Gtk.Container)tab.Parent).Remove(tab);
 
-         box.PackStart(tab, false, false, 0);
+         box.Add(tab); // box.PackStart(tab, false, false, 0);
          tab.WidthRequest = tab.LabelWidth;
          if (currentTab == -1)
-            CurrentTab = box.Children.Length - 1;
+            CurrentTab = box.Children.Count() - 1;
          else
          {
             tab.Active = false;
@@ -134,12 +157,12 @@ namespace Docking
          tab.ButtonPressEvent += OnTabPress;
       }
 
-      void HandleRemoved(object o, RemovedArgs args)
+      void HandleRemoved(object o, TabRemovedArgs args)
       {
          Gtk.Widget w = args.Widget;
          w.ButtonPressEvent -= OnTabPress;
-         if (currentTab >= box.Children.Length)
-            currentTab = box.Children.Length - 1;
+         if (currentTab >= box.Children.Count())
+            currentTab = box.Children.Count() - 1;
       }
 
       public void SetTabLabel(Gtk.Widget page, Gdk.Pixbuf icon, string label)
@@ -162,7 +185,7 @@ namespace Docking
 
       public int TabCount
       {
-         get { return box.Children.Length; }
+         get { return box.Children.Count(); }
       }
 
       public int CurrentTab
@@ -174,48 +197,17 @@ namespace Docking
                return;
             if (currentTab != -1)
             {
-               DockItemTitleTab t = (DockItemTitleTab)box.Children[currentTab];
+               DockItemTitleTab t = (DockItemTitleTab)box.Children.ElementAt(currentTab);
                t.Page.Hide();
                t.Active = false;
             }
             currentTab = value;
             if (currentTab != -1)
             {
-               DockItemTitleTab t = (DockItemTitleTab)box.Children[currentTab];
+               DockItemTitleTab t = (DockItemTitleTab)box.Children.ElementAt(currentTab);
                t.Active = true;
                t.Page.Show();
             }
-         }
-      }
-
-      public Gtk.Widget CurrentPage
-      {
-         get
-         {
-            if (currentTab != -1)
-            {
-               DockItemTitleTab t = (DockItemTitleTab)box.Children[currentTab];
-               return t.Page;
-            }
-            else
-               return null;
-         }
-         set
-         {
-            if (value != null)
-            {
-               Gtk.Widget[] tabs = box.Children;
-               for (int n = 0; n < tabs.Length; n++)
-               {
-                  DockItemTitleTab tab = (DockItemTitleTab)tabs[n];
-                  if (tab.Page == value)
-                  {
-                     CurrentTab = n;
-                     return;
-                  }
-               }
-            }
-            CurrentTab = -1;
          }
       }
 
@@ -228,7 +220,7 @@ namespace Docking
 
       void OnTabPress(object s, Gtk.ButtonPressEventArgs args)
       {
-         CurrentTab = Array.IndexOf(box.Children, s);
+         CurrentTab = Array.IndexOf(box.Children.ToArray(), s);
          DockItemTitleTab t = (DockItemTitleTab)s;
          DockItem.SetFocus(t.Page);
          QueueDraw();
@@ -251,18 +243,18 @@ namespace Docking
 
          var totalWidth = allocation.Width;
 
-         int[] sizes = new int[children.Length];
+         int[] sizes = new int[children.Count()];
          double ratio = (double)allocation.Width / (double)tabsSize;
 
          if (ratio > 1 && visualStyle.ExpandedTabs.Value)
          {
             // The tabs have to fill all the available space. To get started, assume that all tabs with have the same size 
-            var tsize = totalWidth / children.Length;
+            var tsize = totalWidth / children.Count();
             // Maybe the assigned size is too small for some tabs. If it happens the extra space it requires has to be taken
             // from tabs which have surplus of space. To calculate it, first get the difference beteen the assigned space
             // and the required space.
-            for (int n = 0; n < children.Length; n++)
-               sizes[n] = tsize - ((DockItemTitleTab)children[n]).LabelWidth;
+            for (int n = 0; n < children.Count(); n++)
+               sizes[n] = tsize - ((DockItemTitleTab)children.ElementAt(n)).LabelWidth;
 
             // If all is positive, nothing is left to do (all tabs have enough space). If there is any negative, it means
             // that space has to be reassigned. The negative space has to be turned into positive by reducing space from other tabs
@@ -275,9 +267,9 @@ namespace Docking
                }
             }
             // Now calculate the final space assignment of each tab
-            for (int n = 0; n < children.Length; n++)
+            for (int n = 0; n < children.Count(); n++)
             {
-               sizes[n] += ((DockItemTitleTab)children[n]).LabelWidth;
+               sizes[n] += ((DockItemTitleTab)children.ElementAt(n)).LabelWidth;
                totalWidth -= sizes[n];
             }
          }
@@ -285,23 +277,23 @@ namespace Docking
          {
             if (ratio > 1)
                ratio = 1;
-            for (int n = 0; n < children.Length; n++)
+            for (int n = 0; n < children.Count(); n++)
             {
-               var s = (int)((double)((DockItemTitleTab)children[n]).LabelWidth * ratio);
+               var s = (int)((double)((DockItemTitleTab)children.ElementAt(n)).LabelWidth * ratio);
                sizes[n] = s;
                totalWidth -= s;
             }
          }
 
          // There may be some remaining space due to rounding. Spread it
-         for (int n = 0; n < children.Length && totalWidth > 0; n++)
+         for (int n = 0; n < children.Count() && totalWidth > 0; n++)
          {
             sizes[n]++;
             totalWidth--;
          }
          // Assign the sizes
-         for (int n = 0; n < children.Length; n++)
-            children[n].WidthRequest = sizes[n];
+         for (int n = 0; n < children.Count(); n++)
+            children.ElementAt(n).WidthRequest = sizes[n];
       }
 
       void ReduceSizes(int[] sizes, int amout)
@@ -355,33 +347,75 @@ namespace Docking
          }
       }
 
-      internal interface ITabStripBox
-      {
-         TabStrip TabStrip { get; }
-         Widget[] Children { get; }
-      }
-
       class TabStripVBox : VBox, ITabStripBox
       {
-         public TabStrip TabStrip { get; set; }
+         public TabStripVBox()
+         {
+            Removed += (o, e) =>
+            {
+               if (TabRemoved != null)
+                  TabRemoved(this, new TabRemovedArgs(e.Widget));
+            };
+         }
+
+         public Widget TabStrip { get; set; }
 
          protected override bool OnExposeEvent(Gdk.EventExpose evnt)
          {
-            TabStrip.drawHVBox(evnt, GdkWindow, Allocation);
+            (TabStrip as TabStrip).drawHVBox(evnt, GdkWindow, Allocation);
             return base.OnExposeEvent(evnt);
          }
+
+         public event TabRemovedHandler TabRemoved;
       }
       class TabStripHBox : HBox, ITabStripBox
       {
-         public TabStrip TabStrip { get; set; }
+         public TabStripHBox()
+         {
+            Removed += (o, e) =>
+            {
+               if (TabRemoved != null)
+                  TabRemoved(this, new TabRemovedArgs(e.Widget));
+            };
+         }
+
+         public Widget TabStrip { get; set; }
 
          protected override bool OnExposeEvent(Gdk.EventExpose evnt)
          {
-            TabStrip.drawHVBox(evnt, GdkWindow, Allocation);
+            (TabStrip as TabStrip).drawHVBox(evnt, GdkWindow, Allocation);
             return base.OnExposeEvent(evnt);
          }
+
+         public event TabRemovedHandler TabRemoved;
       }
    }
+
+   public class TabRemovedArgs : EventArgs
+   {
+      public TabRemovedArgs(Widget widget)
+      {
+         Widget = widget;
+      }
+      public Widget Widget { get; private set; }
+   }
+
+   public delegate void TabRemovedHandler(object o, TabRemovedArgs args);
+
+   public interface ITabStripBox
+   {
+      Widget TabStrip { get; }
+      Widget[] Children { get; }
+
+      void Add(Widget widget);
+      void Remove(Widget widget);
+      void Show();
+      void Hide();
+      void QueueDraw();
+
+      event TabRemovedHandler TabRemoved;
+   }
+
 }
-                    
-            
+
+

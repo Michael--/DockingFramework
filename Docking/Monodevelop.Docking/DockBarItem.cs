@@ -171,19 +171,22 @@ namespace Docking
          lastFrameSize = bar.Frame.Allocation.Size;
          bar.Frame.SizeAllocated += HandleBarFrameSizeAllocated;
 
-         tracker = new MouseTracker(this);
-         tracker.TrackMotion = false;
-         tracker.HoveredChanged += (sender, e) =>
+         tracker = new MouseTracker(this) { EnterLeaveEvents = true };
+         tracker.EnterNotify += (sender, e) =>
          {
-
-            if (crossfade == null)
-               return;
-
-            AnimateHover(tracker.Hovered);
-            if (tracker.Hovered)
+            if (crossfade != null)
+            {
+               AnimateHover(tracker.Hovered);
                crossfade.ShowSecondary();
-            else
+            }
+         };
+         tracker.LeaveNotify += (sender, e) =>
+         {
+            if (crossfade != null)
+            {
+               AnimateHover(tracker.Hovered);
                crossfade.ShowPrimary();
+            }
          };
       }
 

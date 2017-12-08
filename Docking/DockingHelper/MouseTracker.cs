@@ -28,61 +28,128 @@ using Gtk;
 
 namespace Docking.Helper
 {
-	public class MouseTracker
-	{
-		public bool Hovered { get; private set; }
-		public Gdk.Point MousePosition { get; private set; }
-		public bool TrackMotion { 
-			get { return trackMotion; }
-			set { 
-				if (value == trackMotion)
-					return;
-				trackMotion = value; 
-				OnTrackMotionChanged (); 
-			} 
-		}
+   public class MouseTracker
+   {
+      public bool Hovered { get; private set; }
+      public Gdk.Point MousePosition { get; private set; }
 
-		public event EventHandler MouseMoved;
-		public event EventHandler HoveredChanged;
+      /// <summary>
+      /// Enable MouseMoved events
+      /// </summary>
+      public bool MotionEvents
+      {
+         get { return mTrackMotion; }
+         set
+         {
+            if (value != mTrackMotion)
+            {
+               mTrackMotion = value;
+               UpdateEventFlags();
+            }
+         }
+      }
 
-		bool trackMotion;
-		Gtk.Widget owner;
+      /// <summary>
+      /// Enable EnterNotify and LeaveNotify events
+      /// </summary>
+      public bool EnterLeaveEvents
+      {
+         get { return mEnterLeave; }
+         set
+         {
+            if (value != mEnterLeave)
+            {
+               mEnterLeave = value;
+               UpdateEventFlags();
+            }
+         }
+      }
 
-		public MouseTracker (Gtk.Widget owner)
-		{
-			this.owner = owner;
-			Hovered = false;
-			MousePosition = new Gdk.Point(0, 0);
+      /// <summary>
+      /// Enable ButtonPressed and ButtonReleased events
+      /// </summary>
+      public bool ButtonPressedEvents
+      {
+         get { return mButtonPressed; }
+         set
+         {
+            if (value != mButtonPressed)
+            {
+               mButtonPressed = value;
+               UpdateEventFlags();
+            }
+         }
+      }
 
-			owner.Events = owner.Events | Gdk.EventMask.PointerMotionMask;
+      public event MotionNotifyEventHandler MouseMoved;
+      public event EnterNotifyEventHandler EnterNotify;
+      public event LeaveNotifyEventHandler LeaveNotify;
+      public event ButtonPressEventHandler ButtonPressed;
+      public event ButtonReleaseEventHandler ButtonReleased;
 
-			owner.MotionNotifyEvent += (object o, MotionNotifyEventArgs args) => {
-				MousePosition = new Gdk.Point ((int)args.Event.X, (int)args.Event.Y);
-				if (MouseMoved != null)
-					MouseMoved (this, EventArgs.Empty);
-			};
+      bool mEnterLeave = false;
+      bool mTrackMotion = false;
+      bool mButtonPressed = false;
+      Gtk.Widget mOwner;
 
-			owner.EnterNotifyEvent += (o, args) => {
-				Hovered = true;
-				if (HoveredChanged != null)
-					HoveredChanged (this, EventArgs.Empty);
-			};
+      public MouseTracker(Gtk.Widget owner)
+      {
+         this.mOwner = owner;
+         Hovered = false;
+         MousePosition = new Gdk.Point(0, 0);
+         UpdateEventFlags();
 
-			owner.LeaveNotifyEvent += (o, args) => {
-				Hovered = false;
-				if (HoveredChanged != null)
-					HoveredChanged (this, EventArgs.Empty);
-			};
-		}
+         owner.MotionNotifyEvent += (o, args) =>
+         {
+            MousePosition = new Gdk.Point((int)args.Event.X, (int)args.Event.Y);
+            if (MouseMoved != null)
+               MouseMoved(this, args);
+         };
 
-		void OnTrackMotionChanged ()
-		{
-			if (TrackMotion)
-				owner.Events = owner.Events | Gdk.EventMask.PointerMotionMask;
-			else
-				owner.Events = owner.Events & ~Gdk.EventMask.PointerMotionMask;
+         owner.EnterNotifyEvent += (o, args) =>
+         {
+            Hovered = true;
+            if (EnterNotify != null)
+               EnterNotify(this, args);
+         };
 
-		}
-	}
+         owner.LeaveNotifyEvent += (o, args) =>
+         {
+            Hovered = false;
+            if (LeaveNotify != null)
+               LeaveNotify(this, args);
+         };
+
+         owner.ButtonPressEvent += (o, args) =>
+         {
+            if (ButtonPressed != null)
+               ButtonPressed(this, args);
+         };
+
+         owner.ButtonReleaseEvent += (o, args) =>
+         {
+            if (ButtonPressed != null)
+               ButtonReleased(this, args);
+         };
+      }
+
+      void UpdateEventFlags()
+      {
+         if (MotionEvents)
+            mOwner.Events |= Gdk.EventMask.PointerMotionMask;
+         else
+            mOwner.Events &= ~Gdk.EventMask.PointerMotionMask;
+
+         if (mEnterLeave)
+            mOwner.Events |= Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask;
+         else
+            mOwner.Events &= ~(Gdk.EventMask.EnterNotifyMask | Gdk.EventMask.LeaveNotifyMask);
+
+         if (mButtonPressed)
+            mOwner.Events |= Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask;
+         else
+            mOwner.Events &= ~(Gdk.EventMask.ButtonPressMask | Gdk.EventMask.ButtonReleaseMask);
+      }
+   }
 }
 

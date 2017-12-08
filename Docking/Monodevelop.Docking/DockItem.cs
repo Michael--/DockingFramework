@@ -39,7 +39,7 @@ namespace Docking
 {
    public class DockItem
    {
-      Widget content;
+      Component content;
       DockItemContainer widget;
       string defaultLocation;
       bool defaultVisible = true;
@@ -57,7 +57,7 @@ namespace Docking
       bool lastVisibleStatus;
       bool lastContentVisibleStatus;
       bool gettingContent;
-      bool isPositionMarker;
+      //      bool isPositionMarker;
       bool stickyVisible;
       IDockItemLabelProvider dockLabelProvider;
       DockItemToolbar toolbarTop;
@@ -77,14 +77,23 @@ namespace Docking
 
       public DockFrame DockFrame { get { return frame; } }
 
-      internal DockItem(DockFrame frame, string id)
+      internal DockItem(DockFrame frame, string id, Component component = null)
       {
          this.frame = frame;
          this.id = id;
+         Content = component;
+         if (Content != null)
+            Icon = Content.ComponentInfo.Icon;
+         UpdateTitle();
          currentVisualStyle = regionStyle = frame.GetRegionStyleForItem(this);
+
+         titleTab = new DockItemTitleTab(this);
+         titleTab.VisualStyle = currentVisualStyle;
+         titleTab.SetTitle(Widget, Icon, Title);
+         titleTab.ShowAll();
       }
 
-      internal DockItem(DockFrame frame, Widget w, string id) : this(frame, id)
+      internal DockItem(DockFrame frame, Component w, string id) : this(frame, id)
       {
          content = w;
       }
@@ -131,14 +140,22 @@ namespace Docking
 
       public void UpdateTitle()
       {
-         if (this.Content == null)
-            return;
+         var title = CalculateLocalizedTitle();
+         if (title != null)
+            Title = title;
+      }
+
+      public string CalculateLocalizedTitle()
+      {
+         if (Content == null)
+            return null;
+
          string newtitle = (this.Content is ILocalizableComponent)
                          ? (this.Content as ILocalizableComponent).Name.Localized(this.Content)
                          : this.Content.Name;
          if (InstanceIndex >= 2)
             newtitle += " " + InstanceIndex;
-         this.Title = newtitle;
+         return newtitle;
       }
 
       public bool Visible
@@ -164,13 +181,6 @@ namespace Docking
       {
          get
          {
-            if (titleTab == null)
-            {
-               titleTab = new DockItemTitleTab(this, frame);
-               titleTab.VisualStyle = currentVisualStyle;
-               titleTab.SetTitle(Widget, icon, title);
-               titleTab.ShowAll();
-            }
             return titleTab;
          }
       }
@@ -199,7 +209,7 @@ namespace Docking
          {
             if (widget == null)
             {
-               widget = new DockItemContainer(frame, this);
+               widget = new DockItemContainer(this);
                widget.VisualStyle = currentVisualStyle;
                widget.Visible = false; // Required to ensure that the Shown event is fired
                widget.Shown += SetupContent;
@@ -267,7 +277,7 @@ namespace Docking
          UpdateContentVisibleStatus();
       }
 
-      public Widget Content
+      public Component Content
       {
          get
          {
@@ -626,19 +636,6 @@ namespace Docking
          if (dockBarItem != null)
             dockBarItem.Minimize();
       }
-
-      internal bool IsPositionMarker
-      {
-         get
-         {
-            return isPositionMarker;
-         }
-         set
-         {
-            isPositionMarker = value;
-         }
-      }
-
       string GetTitle()
       {
          if (Title.IndexOf('<') == -1)
@@ -657,7 +654,7 @@ namespace Docking
 
       internal bool ShowingContextMemu { get; set; }
 
-      internal void ShowDockPopupMenu(uint time, TabStrip tabstrip = null)
+      internal void ShowDockPopupMenu(uint time, ITabStrip tabstrip = null)
       {
          Menu menu = new Menu();
 
@@ -672,15 +669,15 @@ namespace Docking
          }
 
          {
-            citem = new MenuItem(this.Status==DockItemStatus.AutoHide
-                                 ? Catalog.GetString("Restore" )
+            citem = new MenuItem(this.Status == DockItemStatus.AutoHide
+                                 ? Catalog.GetString("Restore")
                                  : Catalog.GetString("Minimize"));
             citem.Activated += (o, e) =>
             {
                TitleTab.OnClickDock(o, e);
-               if(this.Status==DockItemStatus.AutoHide)
-                  (o as MenuItem).Name = this.Status==DockItemStatus.AutoHide
-                                       ? Catalog.GetString("Restore" )
+               if (this.Status == DockItemStatus.AutoHide)
+                  (o as MenuItem).Name = this.Status == DockItemStatus.AutoHide
+                                       ? Catalog.GetString("Restore")
                                        : Catalog.GetString("Minimize");
             };
             menu.Append(citem);

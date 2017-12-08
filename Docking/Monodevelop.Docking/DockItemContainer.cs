@@ -44,7 +44,7 @@ namespace Docking
       Box contentBox;
       VBox mainBox;
       
-      public DockItemContainer (DockFrame frame, DockItem item)
+      public DockItemContainer (DockItem item)
       {
          this.item = item;
          

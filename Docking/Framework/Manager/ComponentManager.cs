@@ -263,6 +263,59 @@ namespace Docking.Components
          MenuBar.ShowAll();
       }
 
+
+      TaggedLocalizedCheckedMenuItem mTA_Proven;
+      TaggedLocalizedCheckedMenuItem mTA_Smooth;
+      TaggedLocalizedCheckedMenuItem mTA_Active;
+
+      public void InstallTabAlgorithmMenu(string baseMenu)
+      {
+         mTA_Proven = new TaggedLocalizedCheckedMenuItem(DockFrame.TabAlgorithm.Proven.ToString()) { IgnoreLocalization = true };
+         mTA_Smooth = new TaggedLocalizedCheckedMenuItem(DockFrame.TabAlgorithm.Smooth.ToString()) { IgnoreLocalization = true };
+         mTA_Active = new TaggedLocalizedCheckedMenuItem(DockFrame.TabAlgorithm.Active.ToString()) { IgnoreLocalization = true };
+         mTA_Proven.Activated += (o, e) =>
+         {
+            if (IsActive)
+            {
+               mTA_Smooth.Active = false;
+               mTA_Active.Active = false;
+               DockFrame.ChangeTabAlgorithm(DockFrame.TabAlgorithm.Proven);
+            }
+         };
+         mTA_Smooth.Activated += (o, e) =>
+         {
+            if (IsActive)
+            {
+               mTA_Proven.Active = false;
+               mTA_Active.Active = false;
+               DockFrame.ChangeTabAlgorithm(DockFrame.TabAlgorithm.Smooth);
+            }
+         };
+         mTA_Active.Activated += (o, e) =>
+         {
+            if (IsActive)
+            {
+               mTA_Proven.Active = false;
+               mTA_Smooth.Active = false;
+               DockFrame.ChangeTabAlgorithm(DockFrame.TabAlgorithm.Active);
+            }
+         };
+         AppendMenuItem(string.Format("{0}\\Tab Algorithm", baseMenu), mTA_Proven);
+         AppendMenuItem(string.Format("{0}\\Tab Algorithm", baseMenu), mTA_Smooth);
+         AppendMenuItem(string.Format("{0}\\Tab Algorithm", baseMenu), mTA_Active);
+         UpdateTabAlgorithmMenu();
+      }
+
+      void UpdateTabAlgorithmMenu()
+      {
+         if (mTA_Proven == null)
+            return;
+
+         mTA_Proven.Active = DockFrame.TabType == DockFrame.TabAlgorithm.Proven;
+         mTA_Smooth.Active = DockFrame.TabType == DockFrame.TabAlgorithm.Smooth;
+         mTA_Active.Active = DockFrame.TabType == DockFrame.TabAlgorithm.Active;
+      }
+
       private void CheckMenuItem(object baseMenu, string name)
       {
          recursionWorkaround = true;
@@ -1651,6 +1704,11 @@ namespace Docking.Components
 
       protected void LoadLayout()
       {
+         string instance = "MainWindow";
+         IPersistency persistency = this as IPersistency;
+         DockFrame.TabType = (DockFrame.TabAlgorithm)persistency.LoadSetting(instance, "TabAlgorithm", (int)DockFrame.TabAlgorithm.Proven);
+         UpdateTabAlgorithmMenu();
+
          // load XML node "layouts" in a memory file
          // we should leave the implementation of the Mono Develop Docking as it is
          // to make it easier to update with newest version
@@ -1942,6 +2000,7 @@ namespace Docking.Components
          persistency.SaveSetting(instance, "h",           h);
 
          persistency.SaveSetting(instance, "layout", DockFrame.CurrentLayout);
+         persistency.SaveSetting(instance, "TabAlgorithm", (int)DockFrame.TabType);
 
          List<string> recentfiles = new List<string>();
          foreach (TaggedImageMenuItem item in mRecentLogFiles)
@@ -2709,7 +2768,7 @@ namespace Docking.Components
       /// DO NOT INVOKE THIS METHOD from outside the component manager.
       /// If you want to create a component from outside, use ComponentManager.CreateComponent() instead!
       /// </summary>
-      private DockItem CreateItem(ComponentFactoryInformation cfi, String name)
+      private DockItem CreateItem(ComponentFactoryInformation cfi, String id)
       {
          Component component = cfi.CreateInstance(this);
          if(component==null)
@@ -2718,14 +2777,12 @@ namespace Docking.Components
          // keep component factory info of creation
          component.ComponentInfo = cfi;
 
-         DockItem item = DockFrame.AddItem(name);
-         AddSelectNotifier(item, component);
+         DockItem item = new DockItem(DockFrame, id, component);
+         DockFrame.AddItem(item);
+
+         AddSelectNotifier(item, item.Content);
          AddSelectNotifier(item, item.TitleTab);
-         item.Content = component;
-         if(item.Content is ILocalizableComponent)
-            item.Content.Name = (item.Content as ILocalizableComponent).Name.Localized(item.Content);
-         item.UpdateTitle();
-         item.Icon = cfi.Icon;
+
          item.DefaultVisible = false;
          item.VisibleChanged += HandleVisibleChanged;
 

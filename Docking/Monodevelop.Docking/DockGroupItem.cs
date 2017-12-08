@@ -204,7 +204,7 @@ namespace Docking
 		internal override void Read (XmlReader reader)
 		{
 			base.Read (reader);
-			visibleFlag = bool.Parse (reader.GetAttribute ("visible")) && !item.IsPositionMarker;
+			visibleFlag = bool.Parse (reader.GetAttribute ("visible"));
 			status = (DockItemStatus) Enum.Parse (typeof (DockItemStatus), reader.GetAttribute ("status"));
 			int fx=0, fy=0, fw=0, fh=0;
 			string s = reader.GetAttribute ("floatX");

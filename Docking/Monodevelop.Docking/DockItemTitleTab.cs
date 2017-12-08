@@ -36,20 +36,19 @@ using Docking.Tools;
 
 namespace Docking
 {
-
-   class DockItemTitleTab : Gtk.EventBox
+   public class DockItemTitleTab : Gtk.EventBox
    {
       bool active;
       Gtk.Widget page;
       ExtendedLabel labelWidget;
       int labelWidth;
       DockVisualStyle visualStyle;
-      Image tabIcon;
-      DockFrame frame;
-      string label;
+      internal Image tabIcon;
+      internal DockFrame frame;
+      internal string label;
       ImageButton btnDock;
       ImageButton btnClose;
-      DockItem item;
+      internal DockItem item;
       bool allowPlaceholderDocking;
 
       static Gdk.Cursor fleurCursor = new Gdk.Cursor(Gdk.CursorType.Fleur);
@@ -72,10 +71,10 @@ namespace Docking
          pixDock = Gdk.Pixbuf.LoadFromResource("stock-dock.png");
       }
 
-      public DockItemTitleTab(DockItem item, DockFrame frame)
+      public DockItemTitleTab(DockItem item)
       {
          this.item = item;
-         this.frame = frame;
+         this.frame = item.DockFrame;
          this.VisibleWindow = false;
          UpdateVisualStyle();
          NoShowAll = true;
@@ -111,7 +110,7 @@ namespace Docking
             if (visualStyle.ExpandedTabs.Value)
                labelWidget.Xalign = 0.5f;
 
-            if (!(Parent is TabStrip.ITabStripBox))
+            if (!(Parent is ITabStripBox))
                labelWidget.Xalign = 0;
          }
 
@@ -275,9 +274,9 @@ namespace Docking
       {
          if (evnt.TriggersContextMenu())
          {
-            TabStrip tabStrip = null;
-            if (Parent is TabStrip.ITabStripBox)
-               tabStrip = ((TabStrip.ITabStripBox)Parent).TabStrip;
+            ITabStrip tabStrip = null;
+            if (Parent is ITabStripBox)
+               tabStrip = ((ITabStripBox)Parent).TabStrip as ITabStrip;
             item.ShowDockPopupMenu(evnt.Time, tabStrip);
             return false;
          }
@@ -317,6 +316,10 @@ namespace Docking
                GdkWindow.Cursor = null;
             frame.Toplevel.KeyPressEvent -= HeaderKeyPress;
             frame.Toplevel.KeyReleaseEvent -= HeaderKeyRelease;
+
+            // sometimes the layout need recalc from scratch, this is a workaround for a layout mistake
+            // for testing you can disable this method and show the behaviour after some docking changes
+            frame.ReloadCurrentLayout();
          }
          tabPressed = false;
          return base.OnButtonReleaseEvent(evnt);
@@ -447,14 +450,14 @@ namespace Docking
          bgc.RgbFgColor = c;
          bool first = true;
          bool last = true;
-         TabStrip tabStrip = null;
-         if (Parent is TabStrip.ITabStripBox)
+         ITabStrip tabStrip = null;
+         if (Parent is ITabStripBox)
          {
-            var tsb = (TabStrip.ITabStripBox)Parent;
+            var tsb = (ITabStripBox)Parent;
             var cts = tsb.Children;
             first = cts[0] == this;
             last = cts[cts.Length - 1] == this;
-            tabStrip = tsb.TabStrip;
+            tabStrip = tsb.TabStrip as ITabStrip;
          }
 
          if (Active || (first && last))

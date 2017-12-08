@@ -44,8 +44,8 @@ namespace Docking
       DockLayout layout;
       DockFrame frame;
 
-      List<TabStrip> notebooks = new List<TabStrip>();
-      List<DockItem> items = new List<DockItem>();
+      List<ITabStrip> notebooks = new List<ITabStrip>();
+      Dictionary<string, DockItem> items = new Dictionary<string, DockItem>();
 
       List<SplitterWidget> splitters = new List<SplitterWidget>();
 
@@ -62,6 +62,12 @@ namespace Docking
          this.frame = frame;
       }
 
+      public void RecalcDockFrame()
+      {
+         ClearNotebooks();
+         RelayoutWidgets();
+      }
+
       internal DockGroupItem FindDockGroupItem(string id)
       {
          if (layout == null)
@@ -70,9 +76,28 @@ namespace Docking
             return layout.FindDockGroupItem(id);
       }
 
-      public List<DockItem> Items
+      internal void Add(DockItem item)
       {
-         get { return items; }
+         if (items.ContainsKey(item.Id))
+            throw new InvalidOperationException("An item with id '" + item.Id + "' already exists.");
+         items.Add(item.Id, item);
+      }
+
+      internal void Remove(DockItem item)
+      {
+         items.Remove(item.Id);
+      }
+
+      internal DockItem Get(string id)
+      {
+         if (items.ContainsKey(id))
+            return items[id];
+         return null;
+      }
+
+      internal IEnumerable<DockItem> Items
+      {
+         get { return items.Values; }
       }
 
       public DockLayout Layout
@@ -93,7 +118,7 @@ namespace Docking
          // Sticky items currently selected in notebooks will remain
          // selected after switching the layout
          List<DockItem> stickyOnTop = new List<DockItem>();
-         foreach (DockItem it in items)
+         foreach (DockItem it in Items)
          {
             if ((it.Behavior & DockItemBehavior.Sticky) != 0)
             {
@@ -109,7 +134,7 @@ namespace Docking
          layout.RestoreAllocation();
 
          // Make sure items not present in this layout are hidden
-         foreach (DockItem it in items)
+         foreach (DockItem it in Items)
          {
             if ((it.Behavior & DockItemBehavior.Sticky) != 0)
                it.Visible = it.StickyVisible;
@@ -189,7 +214,7 @@ namespace Docking
          List<Widget> widgets = new List<Widget>();
          foreach (Widget w in notebooks)
             widgets.Add(w);
-         foreach (DockItem it in items)
+         foreach (DockItem it in Items)
          {
             if (it.HasWidget && it.Widget.Parent == this)
             {
@@ -252,12 +277,25 @@ namespace Docking
             dockGroup.ResetVisibleGroups();
       }
 
+      void ClearNotebooks()
+      {
+         for (int n = notebooks.Count - 1; n >= 0; n--)
+         {
+            ITabStrip ts = notebooks[n];
+            notebooks.RemoveAt(n);
+            ts.Clear();
+            ts.Unparent();
+            ts.Destroy();
+         }
+      }
 
       void LayoutWidgets()
       {
          if (!needsRelayout)
             return;
          needsRelayout = false;
+
+         // RemoveNotebooks();
 
          // Create the needed notebooks and place the widgets in there
 
@@ -267,14 +305,26 @@ namespace Docking
          for (int n = 0; n < tabbedGroups.Count; n++)
          {
             DockGroup grp = tabbedGroups[n];
-            TabStrip ts;
+            ITabStrip ts = null;
             if (n < notebooks.Count)
             {
                ts = notebooks[n];
             }
             else
             {
-               ts = new TabStrip(frame);
+               switch (frame.TabType)
+               {
+                  case DockFrame.TabAlgorithm.Proven:
+                     ts = new TabStrip();
+                     break;
+                  case DockFrame.TabAlgorithm.Smooth:
+                     ts = ts = new TabSelector(false);
+                     break;
+                  case DockFrame.TabAlgorithm.Active:
+                     ts = ts = new TabSelector(true);
+                     break;
+               }
+
                ts.Show();
                notebooks.Add(ts);
                ts.Parent = this;
@@ -287,7 +337,7 @@ namespace Docking
          // Remove spare tab strips
          for (int n = notebooks.Count - 1; n >= tabbedGroups.Count; n--)
          {
-            TabStrip ts = notebooks[n];
+            ITabStrip ts = notebooks[n];
             notebooks.RemoveAt(n);
             ts.Clear();
             ts.Unparent();
