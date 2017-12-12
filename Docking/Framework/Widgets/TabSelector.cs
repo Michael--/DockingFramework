@@ -177,7 +177,8 @@ namespace Docking
          {
             DockItemTitleTab = value;
             Label = DockItemTitleTab.label;
-            Image = DockItemTitleTab.tabIcon.Pixbuf;
+            if (DockItemTitleTab.tabIcon != null)
+               Image = DockItemTitleTab.tabIcon.Pixbuf;
          }
 
          public DockItemTitleTab DockItemTitleTab { get; private set; }
