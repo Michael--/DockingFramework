@@ -34,183 +34,106 @@ using Gtk;
 
 namespace Docking
 {
-	internal class PlaceholderWindow: Gtk.Window
-	{
-		Gdk.GC redgc;
-		uint anim;
-		int rx, ry, rw, rh;
-		bool allowDocking;
-		
-		public bool AllowDocking {
-			get {
-				return allowDocking;
-			}
-			set {
-				allowDocking = value;
-			}
-		}
-		
-		public PlaceholderWindow (DockFrame frame): base (Gtk.WindowType.Popup)
-		{
-			SkipTaskbarHint = true;
-			Decorated = false;
-			TransientFor = (Gtk.Window) frame.Toplevel;
-			TypeHint = WindowTypeHint.Utility;
-			
-			// Create the mask for the arrow
-			
-			Realize ();
-			redgc = new Gdk.GC (GdkWindow);
-	   		redgc.RgbFgColor = frame.Style.Background (StateType.Selected);
-		}
-		
-		protected override void OnRealized ()
-		{
-			base.OnRealized ();
-			GdkWindow.Opacity = 0.6;
-		}
-		
-		void CreateShape (int width, int height)
-		{
-			Gdk.Color black, white;
-			black = new Gdk.Color (0, 0, 0);
-			black.Pixel = 1;
-			white = new Gdk.Color (255, 255, 255);
-			white.Pixel = 0;
-			
-			Gdk.Pixmap pm = new Pixmap (this.GdkWindow, width, height, 1);
-			Gdk.GC gc = new Gdk.GC (pm);
-			gc.Background = white;
-			gc.Foreground = white;
-			pm.DrawRectangle (gc, true, 0, 0, width, height);
-			
-			gc.Foreground = black;
-			pm.DrawRectangle (gc, false, 0, 0, width - 1, height - 1);
-			pm.DrawRectangle (gc, false, 1, 1, width - 3, height - 3);
-			
-			this.ShapeCombineMask (pm, 0, 0);
-		}
-		
-		protected override void OnSizeAllocated (Rectangle allocation)
-		{
-			base.OnSizeAllocated (allocation);
-			CreateShape (allocation.Width, allocation.Height);
-		}
+   internal class PlaceholderWindow : Gtk.Window
+   {
+      Gdk.GC redgc;
+      int rx, ry, rw, rh;
 
-		
-		protected override bool OnExposeEvent (Gdk.EventExpose args)
-		{
-			//base.OnExposeEvent (args);
-			int w, h;
-			this.GetSize (out w, out h);
-			this.GdkWindow.DrawRectangle (redgc, false, 0, 0, w-1, h-1);
-			this.GdkWindow.DrawRectangle (redgc, false, 1, 1, w-3, h-3);
-	  		return true;
-		}
-		
-		public void Relocate (int x, int y, int w, int h, bool animate)
-		{
-            Gdk.Rectangle geometry = Docking.Helper.GtkWorkarounds.GetUsableMonitorGeometry (Screen, Screen.GetMonitorAtPoint (x, y));
-			if (x < geometry.X)
-				x = geometry.X;
-			if (x + w > geometry.Right)
-				x = geometry.Right - w;
-			if (y < geometry.Y)
-				y = geometry.Y;
-			if (y > geometry.Bottom - h)
-				y = geometry.Bottom - h;
+      public bool AllowDocking { get; set; }
 
-			if (x != rx || y != ry || w != rw || h != rh) {
-				Resize (w, h);
-				Move (x, y);
-				
-				rx = x; ry = y; rw = w; rh = h;
-				
-				if (anim != 0) {
-					GLib.Source.Remove (anim);
-					anim = 0;
-				}
-				if (animate && w < 150 && h < 150) {
-					int sa = 7;
-					Move (rx-sa, ry-sa);
-					Resize (rw+sa*2, rh+sa*2);
-					anim = GLib.Timeout.Add (10, RunAnimation);
-				}
-			}
-		}
-		
-		bool RunAnimation ()
-		{
-			int cx, cy, ch, cw;
-			GetSize (out cw, out ch);
-			GetPosition	(out cx, out cy);
-			
-			if (cx != rx) {
-				cx++; cy++;
-				ch-=2; cw-=2;
-				Move (cx, cy);
-				Resize (cw, ch);
-				return true;
-			}
-			anim = 0;
-			return false;
-		}
+      public PlaceholderWindow(DockFrame frame) : base(Gtk.WindowType.Popup)
+      {
+         SkipTaskbarHint = true;
+         Decorated = false;
+         TransientFor = (Gtk.Window)frame.Toplevel;
+         TypeHint = WindowTypeHint.Utility;
 
-		public DockDelegate DockDelegate { get; private set; }
-		public Gdk.Rectangle DockRect { get; private set; }
+         Realize();
+         redgc = new Gdk.GC(GdkWindow);
+         redgc.RgbFgColor = frame.Style.Background(StateType.Selected);
+      }
 
-		public void SetDockInfo (DockDelegate dockDelegate, Gdk.Rectangle rect)
-		{
-			DockDelegate = dockDelegate;
-			DockRect = rect;
-		}
-	}
+      protected override void OnRealized()
+      {
+         base.OnRealized();
+         GdkWindow.Opacity = 0.5;
+      }
 
-	class PadTitleWindow: Gtk.Window
-	{
-		public PadTitleWindow (DockFrame frame, DockItem draggedItem): base (Gtk.WindowType.Popup)
-		{
-			SkipTaskbarHint = true;
-			Decorated = false;
-			TransientFor = (Gtk.Window) frame.Toplevel;
-			TypeHint = WindowTypeHint.Utility;
+      protected override void OnSizeAllocated(Rectangle allocation)
+      {
+         base.OnSizeAllocated(allocation);
+      }
 
-			VBox mainBox = new VBox ();
+      protected override bool OnExposeEvent(Gdk.EventExpose args)
+      {
+         int w, h;
+         GetSize(out w, out h);
+         GdkWindow.DrawRectangle(redgc, true, 0, 0, w, h);
 
-			HBox box = new HBox (false, 3);
-			if (draggedItem.Icon != null) {
-				Gtk.Image img = new Gtk.Image (draggedItem.Icon);
-				box.PackStart (img, false, false, 0);
-			}
-			Gtk.Label la = new Label ();
-			la.Markup = draggedItem.Title;
-			box.PackStart (la, false, false, 0);
+         return true;
+      }
 
-			mainBox.PackStart (box, false, false, 0);
+      public void Relocate(int x, int y, int w, int h)
+      {
+         Gdk.Rectangle geometry = Docking.Helper.GtkWorkarounds.GetUsableMonitorGeometry(Screen, Screen.GetMonitorAtPoint(x, y));
+         if (x < geometry.X)
+            x = geometry.X;
+         if (x + w > geometry.Right)
+            x = geometry.Right - w;
+         if (y < geometry.Y)
+            y = geometry.Y;
+         if (y > geometry.Bottom - h)
+            y = geometry.Bottom - h;
 
-/*			if (draggedItem.Widget.IsRealized) {
-				var win = draggedItem.Widget.GdkWindow;
-				var alloc = draggedItem.Widget.Allocation;
-				Gdk.Pixbuf img = Gdk.Pixbuf.FromDrawable (win, win.Colormap, alloc.X, alloc.Y, 0, 0, alloc.Width, alloc.Height);
+         if (x != rx || y != ry || w != rw || h != rh)
+         {
+            Resize(w, h);
+            Move(x, y);
 
-				double mw = 140, mh = 140;
-				if (img.Width > img.Height)
-					mw *= 2;
-				else
-					mh *= 2;
+            rx = x; ry = y; rw = w; rh = h;
+         }
+      }
 
-				double r = Math.Min (mw / img.Width, mh / img.Height);
-				img = img.ScaleSimple ((int)(img.Width * r), (int)(img.Height * r), Gdk.InterpType.Hyper);
-				mainBox.PackStart (new Gtk.Image (img), false, false, 0);
-			}*/
+      public DockDelegate DockDelegate { get; private set; }
+      public Gdk.Rectangle DockRect { get; private set; }
 
-			CustomFrame f = new CustomFrame ();
-			f.SetPadding (12, 12, 12, 12);
-			f.SetMargins (1, 1, 1, 1);
-			f.Add (mainBox);
+      public void SetDockInfo(DockDelegate dockDelegate, Gdk.Rectangle rect)
+      {
+         DockDelegate = dockDelegate;
+         DockRect = rect;
+      }
+   }
 
-			Add (f);
-			ShowAll ();
-		}
-	}
+   class PadTitleWindow : Gtk.Window
+   {
+      public PadTitleWindow(DockFrame frame, DockItem draggedItem) : base(Gtk.WindowType.Popup)
+      {
+         SkipTaskbarHint = true;
+         Decorated = false;
+         TransientFor = (Gtk.Window)frame.Toplevel;
+         TypeHint = WindowTypeHint.Utility;
+
+         VBox mainBox = new VBox();
+
+         HBox box = new HBox(false, 3);
+         if (draggedItem.Icon != null)
+         {
+            Gtk.Image img = new Gtk.Image(draggedItem.Icon);
+            box.PackStart(img, false, false, 0);
+         }
+         Gtk.Label la = new Label();
+         la.Markup = draggedItem.Title;
+         box.PackStart(la, false, false, 0);
+
+         mainBox.PackStart(box, false, false, 0);
+
+         CustomFrame f = new CustomFrame();
+         f.SetPadding(12, 12, 12, 12);
+         f.SetMargins(2, 2, 2, 2);
+         f.Add(mainBox);
+
+         Add(f);
+         ShowAll();
+      }
+   }
 }

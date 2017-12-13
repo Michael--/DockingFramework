@@ -197,13 +197,13 @@ namespace Docking
          var s = splitters[usedSplitters++];
          if (a.Height > a.Width)
          {
-            a.Width = 5;
-            a.X -= 2;
+            a.Width = 7;
+            a.X -= 3;
          }
          else
          {
-            a.Height = 5;
-            a.Y -= 2;
+            a.Height = 7;
+            a.Y -= 3;
          }
          s.SizeAllocate(a);
          s.Init(grp, index);
@@ -496,7 +496,7 @@ namespace Docking
          Gdk.Rectangle rect;
          if (allowDocking && layout.GetDockTarget(item, px, py, out dockDelegate, out rect))
          {
-            placeholderWindow.Relocate(ox + rect.X, oy + rect.Y, rect.Width, rect.Height, true);
+            placeholderWindow.Relocate(ox + rect.X, oy + rect.Y, rect.Width, rect.Height);
             placeholderWindow.Show();
             placeholderWindow.SetDockInfo(dockDelegate, rect);
             return true;
@@ -515,7 +515,7 @@ namespace Docking
                w = item.DefaultWidth;
                h = item.DefaultHeight;
             }
-            placeholderWindow.Relocate(ox + px - w / 2, oy + py - h / 2, w, h, false);
+            placeholderWindow.Relocate(ox + px - w / 2, oy + py - h / 2, w, h);
             placeholderWindow.Show();
             placeholderWindow.AllowDocking = false;
          }
