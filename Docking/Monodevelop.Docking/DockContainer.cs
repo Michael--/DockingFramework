@@ -318,10 +318,10 @@ namespace Docking
                      ts = new TabStrip();
                      break;
                   case DockFrame.TabAlgorithm.Smooth:
-                     ts = ts = new TabSelector(false);
+                     ts = new TabSelector(false);
                      break;
                   case DockFrame.TabAlgorithm.Active:
-                     ts = ts = new TabSelector(true);
+                     ts = new TabSelector(true);
                      break;
                }
 
