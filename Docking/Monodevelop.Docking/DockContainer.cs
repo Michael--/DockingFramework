@@ -187,7 +187,7 @@ namespace Docking
          layout.SizeAllocate(rect);
 
          usedSplitters = 0;
-         layout.DrawSeparators(Gdk.Rectangle.Zero, null, 0, DrawSeparatorOperation.Allocate, null);
+         layout.DrawSeparators(Gdk.Rectangle.Zero, null, 0, DrawSeparatorOperation.Allocate);
       }
 
       int usedSplitters;
@@ -654,7 +654,6 @@ namespace Docking
    {
       Draw,
       Invalidate,
-      Allocate,
-      CollectAreas
+      Allocate
    }
 }

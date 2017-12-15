@@ -954,7 +954,7 @@ namespace Docking
       {
          if (type != DockGroupType.Tabbed)
          {
-            DrawSeparators(exposedArea, currentHandleGrp, currentHandleIndex, DrawSeparatorOperation.Draw, false, null);
+            DrawSeparators(exposedArea, currentHandleGrp, currentHandleIndex, DrawSeparatorOperation.Draw, false);
             foreach (DockObject it in VisibleObjects)
             {
                DockGroup grp = it as DockGroup;
@@ -964,12 +964,12 @@ namespace Docking
          }
       }
 
-      public void DrawSeparators(Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, DrawSeparatorOperation oper, List<Gdk.Rectangle> areasList)
+      public void DrawSeparators(Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, DrawSeparatorOperation oper)
       {
-         DrawSeparators(exposedArea, currentHandleGrp, currentHandleIndex, oper, true, areasList);
+         DrawSeparators(exposedArea, currentHandleGrp, currentHandleIndex, oper, true);
       }
 
-      void DrawSeparators(Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, DrawSeparatorOperation oper, bool drawChildrenSep, List<Gdk.Rectangle> areasList)
+      void DrawSeparators(Gdk.Rectangle exposedArea, DockGroup currentHandleGrp, int currentHandleIndex, DrawSeparatorOperation oper, bool drawChildrenSep)
       {
          if (type == DockGroupType.Tabbed || VisibleObjects.Count == 0)
             return;
@@ -984,7 +984,7 @@ namespace Docking
 
          Gdk.GC hgc = null;
 
-         if (areasList == null && oper == DrawSeparatorOperation.Draw)
+         if (oper == DrawSeparatorOperation.Draw)
          {
             hgc = new Gdk.GC(Frame.Container.GdkWindow);
             hgc.RgbFgColor = Styles.DockSeparatorColor;
@@ -995,7 +995,7 @@ namespace Docking
             DockObject ob = VisibleObjects[n];
             DockGroup grp = ob as DockGroup;
             if (grp != null && drawChildrenSep)
-               grp.DrawSeparators(exposedArea, currentHandleGrp, currentHandleIndex, oper, areasList);
+               grp.DrawSeparators(exposedArea, currentHandleGrp, currentHandleIndex, oper);
             if (ob != last)
             {
                if (horiz)
@@ -1005,10 +1005,6 @@ namespace Docking
 
                switch (oper)
                {
-                  case DrawSeparatorOperation.CollectAreas:
-                     if (Frame.ShadedSeparators)
-                        areasList.Add(new Gdk.Rectangle(x, y, hw, hh));
-                     break;
                   case DrawSeparatorOperation.Invalidate:
                      Frame.Container.QueueDrawArea(x, y, hw, hh);
                      break;
