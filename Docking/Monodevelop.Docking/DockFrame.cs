@@ -50,17 +50,9 @@ namespace Docking
 
       DockContainer container;
 
-      int handleSize = 1;
-      int handlePadding = 0;
-      int defaultItemWidth = 300;
-      int defaultItemHeight = 250;
-      uint autoShowDelay = 400;
-      uint autoHideDelay = 500;
-
       SortedDictionary<string, DockLayout> layouts = new SortedDictionary<string, DockLayout>();
       List<DockFrameTopLevel> topLevels = new List<DockFrameTopLevel>();
       string currentLayout;
-      int compactGuiLevel = 3;
 
       DockBar dockBarTop, dockBarBottom, dockBarLeft, dockBarRight;
       VBox mainBox;
@@ -78,6 +70,12 @@ namespace Docking
 
       public DockFrame()
       {
+         HandleSize = 4;
+         HandlePadding = 2;
+         DefaultItemWidth = 300;
+         DefaultItemHeight = 250;
+         AutoShowDelay = 400;
+         AutoHideDelay = 500;
          TabType = TabAlgorithm.Proven;
          Docking.Helper.GtkWorkarounds.FixContainerLeak(this);
 
@@ -98,7 +96,6 @@ namespace Docking
          Add(mainBox);
          mainBox.ShowAll();
          mainBox.NoShowAll = true;
-         CompactGuiLevel = 2;
          dockBarTop.UpdateVisibility();
          dockBarBottom.UpdateVisibility();
          dockBarLeft.UpdateVisibility();
@@ -117,30 +114,10 @@ namespace Docking
       }
 
       /// <summary>
-      /// Compactness level of the gui, from 1 (not compact) to 5 (very compact).
+      /// Compactness level of the gui [deprecated]
       /// </summary>
-      public int CompactGuiLevel
-      {
-         get { return compactGuiLevel; }
-         set
-         {
-            compactGuiLevel = value;
-            /*				switch (compactGuiLevel) {
-                           case 1: handleSize = 6; break;
-                           case 2: 
-                           case 3: handleSize = IsWindows ? 4 : 6; break;
-                           case 4:
-                           case 5: handleSize = 3; break;
-                        }
-            */
-            handlePadding = 0;
-            dockBarTop.OnCompactLevelChanged();
-            dockBarBottom.OnCompactLevelChanged();
-            dockBarLeft.OnCompactLevelChanged();
-            dockBarRight.OnCompactLevelChanged();
-            container.RelayoutWidgets();
-         }
-      }
+      // [Obsolete("Will not supported anymore")]
+      public int CompactGuiLevel { get; set; }
 
       internal bool OverlayWidgetVisible { get; set; }
 
@@ -476,62 +453,17 @@ namespace Docking
          get { return container; }
       }
 
-      public int HandleSize
-      {
-         get
-         {
-            return handleSize;
-         }
-         set
-         {
-            handleSize = value;
-         }
-      }
+      public int HandleSize { get; set; }
 
-      public int HandlePadding
-      {
-         get
-         {
-            return handlePadding;
-         }
-         set
-         {
-            handlePadding = value;
-         }
-      }
+      public int HandlePadding { get; set; }
 
-      public int DefaultItemWidth
-      {
-         get
-         {
-            return defaultItemWidth;
-         }
-         set
-         {
-            defaultItemWidth = value;
-         }
-      }
+      public int DefaultItemWidth { get; set; }
 
-      public int DefaultItemHeight
-      {
-         get
-         {
-            return defaultItemHeight;
-         }
-         set
-         {
-            defaultItemHeight = value;
-         }
-      }
+      public int DefaultItemHeight { get; set; }
 
       internal int TotalHandleSize
       {
-         get { return handleSize + handlePadding * 2; }
-      }
-
-      internal int TotalSensitiveHandleSize
-      {
-         get { return 6; }
+         get { return HandleSize + HandlePadding * 2; }
       }
 
       internal void AddItem(DockItem item)
@@ -669,29 +601,9 @@ namespace Docking
          }
       }
 
-      public uint AutoShowDelay
-      {
-         get
-         {
-            return autoShowDelay;
-         }
-         set
-         {
-            autoShowDelay = value;
-         }
-      }
+      public uint AutoShowDelay { get; set; }
 
-      public uint AutoHideDelay
-      {
-         get
-         {
-            return autoHideDelay;
-         }
-         set
-         {
-            autoHideDelay = value;
-         }
-      }
+      public uint AutoHideDelay { get; set; }
 
       public void SaveLayouts(string file)
       {

@@ -197,13 +197,13 @@ namespace Docking
          var s = splitters[usedSplitters++];
          if (a.Height > a.Width)
          {
-            a.Width = 7;
-            a.X -= 3;
+            a.Width = frame.TotalHandleSize;
+            a.X -= frame.TotalHandleSize / 4;
          }
          else
          {
-            a.Height = 7;
-            a.Y -= 3;
+            a.Height = frame.TotalHandleSize;
+            a.Y -= frame.TotalHandleSize / 4;
          }
          s.SizeAllocate(a);
          s.Init(grp, index);

@@ -41,7 +41,6 @@ namespace Docking
       Gtk.PositionType position;
       Box box;
       DockFrame frame;
-      Label filler;
       bool alwaysVisible;
       bool showBorder = true;
       
@@ -58,12 +57,7 @@ namespace Docking
          
          al.Add (box);
          Add (al);
-         
-         filler = new Label ();
-         filler.WidthRequest = 4;
-         filler.HeightRequest = 4;
-         box.PackEnd (filler);
-         
+        
          ShowAll ();
          UpdateVisibility ();
       }
@@ -145,13 +139,12 @@ namespace Docking
       
       internal void UpdateVisibility ()
       {
-         filler.Visible = (Frame.CompactGuiLevel < 3);
          int visibleCount = 0;
          foreach (Gtk.Widget w in box.Children) {
             if (w.Visible)
                visibleCount++;
          }
-         Visible = alwaysVisible || filler.Visible || visibleCount > 0;
+         Visible = alwaysVisible || visibleCount > 0;
       }
       
       internal void RemoveItem (DockBarItem it)

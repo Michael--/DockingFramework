@@ -739,10 +739,6 @@ namespace Docking
             else
                boundTabStrip.CurrentTab = 0;
          }
-         if (Frame.CompactGuiLevel == 3 && IsNextToMargin(PositionType.Bottom, true))
-            boundTabStrip.BottomPadding = 3;
-         else
-            boundTabStrip.BottomPadding = 0;
       }
 
       internal void Present(DockItem it, bool giveFocus)
@@ -991,7 +987,7 @@ namespace Docking
          if (areasList == null && oper == DrawSeparatorOperation.Draw)
          {
             hgc = new Gdk.GC(Frame.Container.GdkWindow);
-            hgc.RgbFgColor = Styles.DockFrameBackground;
+            hgc.RgbFgColor = Styles.DockSeparatorColor;
          }
 
          for (int n = 0; n < VisibleObjects.Count; n++)
@@ -1017,6 +1013,7 @@ namespace Docking
                      Frame.Container.QueueDrawArea(x, y, hw, hh);
                      break;
                   case DrawSeparatorOperation.Draw:
+                     // TODO: a "gripper" could be painted when size sufficient enough
                      Frame.Container.GdkWindow.DrawRectangle(hgc, true, x, y, hw, hh);
                      break;
                   case DrawSeparatorOperation.Allocate:
