@@ -1361,7 +1361,7 @@ namespace Docking.Components
 
       void InstallExportMenu()
       {
-         if(LicenseGroup.IsEnabled("nts"))
+         if(LicenseGroup.IsEnabled("neusoft"))
          {
             MenuItem menuItem = new TaggedLocalizedImageMenuItem("Export");
             menuItem.Submenu = mExportSubmenu;
@@ -1869,7 +1869,7 @@ namespace Docking.Components
 
                w.Stop();
 
-               if (LicenseGroup.IsEnabled("nts")) // do not output this in customer versions
+               if (LicenseGroup.IsEnabled("neusoft")) // do not output this in customer versions
                {
                   if (w.ElapsedMilliseconds > 300) // goal limit: 25, 300 is just to reduce current clutter
                      MessageWriteLine("Invoking IComponent.Loaded() for component {0} took {1:0.00}s", item.Id, w.Elapsed.TotalSeconds);
@@ -1905,7 +1905,7 @@ namespace Docking.Components
          }
 
          total.Stop();
-         if(LicenseGroup.IsEnabled("nts") && total.ElapsedMilliseconds>1500)
+         if(LicenseGroup.IsEnabled("neusoft") && total.ElapsedMilliseconds>1500)
             MessageWriteLine("ComponentsLoaded() total time = {0}s", total.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture));
       }
 
