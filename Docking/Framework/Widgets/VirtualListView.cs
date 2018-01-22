@@ -64,9 +64,13 @@ namespace Docking.Widgets
       public ColorDelegate GetColorDelegate { private get; set; }
       public delegate void ColorDelegate(int row, ref System.Drawing.Color background, ref System.Drawing.Color foreground);
 
-      // click a element at row/column
+      // click an element at row/column
       public delegate void ItemClickedEventHandler(ButtonPressEventArgs args, int row, int column);
       public event ItemClickedEventHandler ItemClickedEvent;
+
+      // hover over an element at row/column
+      public delegate void ItemHovereredEventHandler(int row, int column);
+      public event ItemHovereredEventHandler ItemHoveredEvent;
 
       // click a header at column
       public delegate void HeaderClickedEventHandler(ButtonPressEventArgs args, int column);
@@ -74,6 +78,11 @@ namespace Docking.Widgets
 
       public delegate void OwnerDrawPopupMenuHandler(Menu menu, uint time);
       public event OwnerDrawPopupMenuHandler OwnerDrawPopupEvent;
+
+      public void SetTooltipText(string text)
+      {
+         drawingarea.TooltipText = text;
+      }
 
       public void CallHeaderClickedEvent(ButtonPressEventArgs args, int column)
       {
@@ -588,6 +597,28 @@ namespace Docking.Widgets
 
       void drawingarea_MotionNotifyEvent(object o, MotionNotifyEventArgs args)
       {
+         var evnt = args.Event;
+         int row = (int)evnt.Y / ConstantHeight + (int)vscrollbar1.Value;
+
+         if (ItemHoveredEvent != null)
+         {
+            // genereate event ItemClicked(row, column)
+            ColumnControl.Column[] columns = mColumnControl.GetVisibleColumnsInDrawOrder();
+            int dx = -(int)hscrollbar1.Value;
+            for (int c = 0; c < columns.Length; c++)
+            {
+               ColumnControl.Column column = columns[c];
+               int columnIndex = column.SortOrder;
+               int xwidth = column.Width + mColumnControl.GripperWidth;
+
+               if (evnt.X >= dx && evnt.X <= dx + xwidth)
+               {
+                  ItemHoveredEvent(row, column.Tag);
+                  break;
+               }
+               dx += xwidth;
+            }
+         }
       }
 
       void drawingarea_ButtonReleaseEvent(object o, ButtonReleaseEventArgs args)
