@@ -58,6 +58,10 @@ namespace Docking.Components
          PowerDown = false;
       }
 
+      public ComponentManager()
+      : this(new List<string>().ToArray())
+      {}
+                                           
       public ComponentManager(string[] args)
       : this(args, "en-US", Assembly.GetCallingAssembly().GetName().Name, null)
       {}
@@ -1686,8 +1690,13 @@ namespace Docking.Components
       {
       }
 
-      protected void LoadConfigurationFile(String filename)
+      protected void LoadConfigurationFile(String filename = null)
       {
+         if(string.IsNullOrEmpty(filename))
+         {
+            filename = System.IO.Path.Combine(AssemblyInfoExt.LocalSettingsFolder, "config.xml");
+         }
+
          ConfigurationFilename = filename;
          ConfigurationXmlDocument = new XmlDocument();
 
