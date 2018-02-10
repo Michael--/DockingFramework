@@ -112,9 +112,9 @@ namespace Docking.Components
    /// </summary>
    public abstract class ComponentFactory : IComponentFactory
    {
-      public abstract String Comment { get; }
-      public abstract String     MenuPath       { get;                      }
-      public abstract Type       TypeOfInstance { get;                      }
+      public abstract String MenuPath       { get;               }
+      public abstract Type   TypeOfInstance { get;               }
+      public virtual  String Comment        { get { return ""; } }
 
       /// <summary>
       /// List of file which can opened by this component. The component factory use this 
