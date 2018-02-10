@@ -58,6 +58,10 @@ namespace Docking.Components
          PowerDown = false;
       }
 
+      public ComponentManager(string[] args)
+      : this(args, "en-US", Assembly.GetCallingAssembly().GetName().Name, null)
+      {}
+
       // make sure that you construct this class from the main thread!
       public ComponentManager(string[] args, string default_language, string application_name, string pythonApplicationObjectName = null)
       : base(WindowType.Toplevel)
@@ -69,7 +73,7 @@ namespace Docking.Components
 
          CommandLineArguments = args;
 
-         ApplicationName = application_name;
+         this.Title = ApplicationName = application_name;
 
          Localization = new Components.Localization(default_language, this);
          Localization.SearchForResources(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Languages", "*.resx"));
@@ -86,6 +90,8 @@ namespace Docking.Components
          MakeWidgetReceiveDropEvents(Toplevel, OnDragDataReceived);
 
          this.WindowStateEvent += OnWindowStateChanged;
+
+         MessageBox.Init(this);
       }
 
       public Gdk.WindowState WindowState { get; protected set; }
