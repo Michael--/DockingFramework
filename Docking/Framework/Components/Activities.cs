@@ -43,7 +43,7 @@ namespace Docking.Components
 
             listStore = new Gtk.ListStore (typeof(JobInfo), typeof (string), typeof (string), typeof (int));
             treeview1.Model = listStore;
-            treeview1.Selection.Changed += HandleCursorChanged; // do not use treeview1.CursorChanged - see http://ntswiki.nts.neusoft.local/wiki/Known_GTKSharp_Issues
+            treeview1.Selection.Changed += HandleCursorChanged; // do not use treeview1.CursorChanged
         }
 
         public override void Loaded()
@@ -69,11 +69,11 @@ namespace Docking.Components
         void Initialize()
         {
            lock(listStore)
-           { 
+           {
               listStore.Clear();
                JobInfo[] jobs = JobInfo.GetJobs();
                foreach(JobInfo job in jobs)
-                  AddJob(job);            
+                  AddJob(job);
            }
         }
 
@@ -90,13 +90,13 @@ namespace Docking.Components
         {
             Gtk.TreeModel model;
             Gtk.TreeIter iter;
-            return (selection!=null && selection.GetSelected(out model, out iter)) ? iter : TreeIter.Zero;        
+            return (selection!=null && selection.GetSelected(out model, out iter)) ? iter : TreeIter.Zero;
         }
 
         void HandleCursorChanged(object sender, EventArgs e)
         {
            lock(listStore)
-           { 
+           {
                Gtk.TreeIter iter = FindJob(treeview1.Selection);
                if(!iter.Equals(TreeIter.Zero))
                {
@@ -125,14 +125,14 @@ namespace Docking.Components
            lock(listStore)
            {
               Gtk.TreeIter iter = listStore.AppendValues(job, job.Name, job.Description, 0);
-              job.ProgressChanged += HandleProgressChanged; 
+              job.ProgressChanged += HandleProgressChanged;
            }
         }
 
         void RemoveJob(JobInfo job)
         {
            lock(listStore)
-           { 
+           {
                TreeIter iter = FindJob(job);
                if(!iter.Equals(TreeIter.Zero))
                   listStore.Remove(ref iter);
@@ -155,7 +155,7 @@ namespace Docking.Components
         protected void OnButtonCancelClicked(object sender, EventArgs e)
         {
            lock(listStore)
-           { 
+           {
               Gtk.TreeIter iter = FindJob(treeview1.Selection);
               if(!iter.Equals(TreeIter.Zero))
               {

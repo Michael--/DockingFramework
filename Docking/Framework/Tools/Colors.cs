@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Xml.Serialization;
 using System;
 
@@ -20,8 +20,8 @@ namespace Docking.Tools
         public static UInt32 RGBA_to_UInt32(byte r, byte g, byte b, byte a)
         {
            return ( ((UInt32) r) << 24 )
-                | ( ((UInt32) g) << 16 )	
-                | ( ((UInt32) b) <<  8 )	
+                | ( ((UInt32) g) << 16 )
+                | ( ((UInt32) b) <<  8 )
                 | ( ((UInt32) a) <<  0 );
         }
 
@@ -33,51 +33,51 @@ namespace Docking.Tools
            a = (byte)( (rgba>> 0) & 0xFF );
         }
 
-		public static string RGB_to_RGBString(byte r, byte g, byte b)
-		{
-			return string.Format("#{0:X2}{1:X2}{2:X2}", r, g, b);
-		}
+      public static string RGB_to_RGBString(byte r, byte g, byte b)
+      {
+         return string.Format("#{0:X2}{1:X2}{2:X2}", r, g, b);
+      }
 
-		public static string RGBA_to_RGBAString(byte r, byte g, byte b, byte a)
-		{
-			return a==0xFF ? string.Format("#{0:X2}{1:X2}{2:X2}",       r, g, b   )
-				            : string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", r, g, b, a);
-		}
+      public static string RGBA_to_RGBAString(byte r, byte g, byte b, byte a)
+      {
+         return a==0xFF ? string.Format("#{0:X2}{1:X2}{2:X2}",       r, g, b   )
+                        : string.Format("#{0:X2}{1:X2}{2:X2}{3:X2}", r, g, b, a);
+      }
 
       public static string Color_to_RGBAString(System.Drawing.Color color)
       {
          return RGBA_to_RGBAString(color.R, color.G, color.B, color.A);
       }
 
-		public static string UInt32_to_RGBString(UInt32 rgba)
-		{
-			byte r, g, b, a;
-			UInt32_to_RGBA(rgba, out r, out g, out b, out a);
-			return RGB_to_RGBString(r, g, b);
-		}
+      public static string UInt32_to_RGBString(UInt32 rgba)
+      {
+         byte r, g, b, a;
+         UInt32_to_RGBA(rgba, out r, out g, out b, out a);
+         return RGB_to_RGBString(r, g, b);
+      }
 
-		public static string UInt32_to_RGBAString(UInt32 rgba)
-		{
-			byte r, g, b, a;
-			UInt32_to_RGBA(rgba, out r, out g, out b, out a);
-			return RGBA_to_RGBAString(r, g, b, a);
-		}
+      public static string UInt32_to_RGBAString(UInt32 rgba)
+      {
+         byte r, g, b, a;
+         UInt32_to_RGBA(rgba, out r, out g, out b, out a);
+         return RGBA_to_RGBAString(r, g, b, a);
+      }
 
-		static int hexnibble(char c)
-		{
-		   if(c >= '0' && c <= '9')
-				return c - '0';
-		   if(c >= 'A' && c <= 'F')
-				return (c - 'A')+10;
-    		if(c >= 'a' && c <= 'f')
-				return (c - 'a')+10;
-			return -1;
+      static int hexnibble(char c)
+      {
+         if(c >= '0' && c <= '9')
+            return c - '0';
+         if(c >= 'A' && c <= 'F')
+            return (c - 'A')+10;
+         if(c >= 'a' && c <= 'f')
+            return (c - 'a')+10;
+         return -1;
         }
 
-		public static bool RGBAString_to_RGBA(string s, out byte r, out byte g, out byte b, out byte a)
-		{
-			r = g = b = 0;
-			a = 0xFF;
+      public static bool RGBAString_to_RGBA(string s, out byte r, out byte g, out byte b, out byte a)
+      {
+         r = g = b = 0;
+         a = 0xFF;
 
          if((s.Length!=7 && s.Length!=9) || s[0]!='#')
             return false;
@@ -106,7 +106,7 @@ namespace Docking.Tools
          }
 
          return true;
-		}
+      }
 
       public static bool RGBAString_to_Color(string s, out System.Drawing.Color color)
       {
@@ -116,13 +116,13 @@ namespace Docking.Tools
          return ok;
       }
 
-		public static bool RGBAString_to_UInt32(string s, out UInt32 rgba)
-		{
-			byte r, g, b, a;
-			bool ok = RGBAString_to_RGBA(s, out r, out g, out b, out a);
+      public static bool RGBAString_to_UInt32(string s, out UInt32 rgba)
+      {
+         byte r, g, b, a;
+         bool ok = RGBAString_to_RGBA(s, out r, out g, out b, out a);
          rgba = RGBA_to_UInt32(r, g, b, a);
-			return ok;
-		}
+         return ok;
+      }
 
         // TODO maybe inject this function into existing class System.Drawing.Color?
         // Strangely, Microsoft has decided to offer System.Drawing.Color.FromArgb(...) instead of .FromRgba(...)
@@ -130,7 +130,7 @@ namespace Docking.Tools
         {
            byte r, g, b, a;
            UInt32_to_RGBA(rgba, out r, out g, out b, out a);
-           return System.Drawing.Color.FromArgb(a, r, g, b); 
+           return System.Drawing.Color.FromArgb(a, r, g, b);
         }
 
         // TODO maybe inject this function into existing class Cairo.Color?
@@ -181,13 +181,13 @@ namespace Docking.Tools
            button.Alpha = (ushort)(color.A<<8);
         }
 
-		public static void FromUInt32(this Gtk.ColorButton button, UInt32 rgba)
-		{
-			byte r, g, b, a;
-			UInt32_to_RGBA(rgba, out r, out g, out b, out a);
-			button.Color = new Gdk.Color(r, g, b);
-			button.Alpha = (ushort)(a<<8);
-		}
+      public static void FromUInt32(this Gtk.ColorButton button, UInt32 rgba)
+      {
+         byte r, g, b, a;
+         UInt32_to_RGBA(rgba, out r, out g, out b, out a);
+         button.Color = new Gdk.Color(r, g, b);
+         button.Alpha = (ushort)(a<<8);
+      }
 
         public static void FromRGB(this Gtk.ColorButton button, byte r, byte g, byte b)
         {
@@ -280,8 +280,6 @@ namespace Docking.Tools
 
     public class Colors
     {
-        public static Color COLOR_NEUSOFT_BLUE = Color.FromArgb(24, 91, 159);
-
         // Will return a good contrasting background color for a given color.
         // Depending on the input, either black or white will be returned.
         public static Color GetContrastColorBlackOrWhite(Color input)

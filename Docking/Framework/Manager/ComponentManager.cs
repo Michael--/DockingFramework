@@ -1875,11 +1875,13 @@ namespace Docking.Components
 
                w.Stop();
 
-               if (LicenseGroup.IsEnabled("neusoft")) // do not output this in customer versions
+               #if DEBUG
                {
                   if (w.ElapsedMilliseconds > 300) // goal limit: 25, 300 is just to reduce current clutter
                      MessageWriteLine("Invoking IComponent.Loaded() for component {0} took {1:0.00}s", item.Id, w.Elapsed.TotalSeconds);
                }
+               #endif
+
                component.VisibilityChanged(item.Content, item.Visible);
             }
 
@@ -1911,8 +1913,11 @@ namespace Docking.Components
          }
 
          total.Stop();
-         if(LicenseGroup.IsEnabled("neusoft") && total.ElapsedMilliseconds>1500)
+
+         #if DEBUG
+         if(total.ElapsedMilliseconds>1500)
             MessageWriteLine("ComponentsLoaded() total time = {0}s", total.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture));
+         #endif
       }
 
       private void ComponentsSave()

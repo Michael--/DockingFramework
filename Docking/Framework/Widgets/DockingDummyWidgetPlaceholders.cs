@@ -1,4 +1,4 @@
-﻿// "Stetic" is the name of the GTK GUI editor contained in
+// "Stetic" is the name of the GTK GUI editor contained in
 // - MonoDevelop
 // - Xamarin Studio
 // It operates on its central input file, gui.stetic, which is an XML file and represents the GUI you edit.
@@ -10,7 +10,6 @@
 // This library is only intended to be given to the "Stetic" Toolbox, so it knows these classes.
 // It can then happily generate its GUI code.
 // In the final build result, not the dummy placeholder classes, but the real ones will run.
-// http://jira.nts.neusoft.local/browse/TEMPO-16
 
 
 using System;

@@ -100,7 +100,7 @@ namespace Docking.Components
          listStore = new Gtk.ListStore(typeof(ComponentFactoryInformation), typeof(int), typeof(string), typeof(string));
          treeview1.Model = listStore;
 
-         treeview1.Selection.Changed += HandleCursorChanged; // do not use treeview1.CursorChanged - see http://ntswiki.nts.neusoft.local/wiki/Known_GTKSharp_Issues
+         treeview1.Selection.Changed += HandleCursorChanged; // do not use treeview1.CursorChanged
       }
 
       void ChangeInstanceCount(object item, int dcount)
