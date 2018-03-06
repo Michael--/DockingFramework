@@ -598,7 +598,11 @@ namespace Docking.Widgets
       void drawingarea_MotionNotifyEvent(object o, MotionNotifyEventArgs args)
       {
          var evnt = args.Event;
-         int row = (int)evnt.Y / ConstantHeight + (int)vscrollbar1.Value;
+
+         int h = ConstantHeight + (int)vscrollbar1.Value;
+         if(h==0)
+            return;       
+         int row = (int)evnt.Y / h;
 
          if (ItemHoveredEvent != null)
          {
