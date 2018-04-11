@@ -166,7 +166,6 @@ namespace Docking.Components
 
       public Type[] SearchForTypes(Type search)
       {
-         TypeFilter TypeFilter = new TypeFilter(InterfaceFilterCallback);
          List<Type> theList = new List<Type>();
          foreach (Type type in mTypes)
          {
@@ -175,7 +174,7 @@ namespace Docking.Components
                // check if requested interface implemented
                if (search.IsInterface)
                {
-                  if (type.FindInterfaces(TypeFilter, search).Length > 0)
+                  if (search.IsAssignableFrom(type))
                   {
                      if (!theList.Contains(type)) // avoid duplicates
                         theList.Add(type);
