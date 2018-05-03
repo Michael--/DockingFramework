@@ -72,12 +72,23 @@ namespace Docking.Helper
 		
 		[DllImport (LIBGTK, CallingConvention=CallingConvention.Cdecl)]
 		static extern IntPtr gtk_print_context_create_pango_layout (IntPtr context);
+
+      /// <summary>
+      /// Same as GetPixelSize(), but return result as tuple.
+      /// </summary>
+      public static Tuple<int, int> GetDimension(this Pango.Layout value)
+      {
+         int width, height;
+         value.GetPixelSize(out width, out height);
+         return new Tuple<int, int>(width, height);
+      }
+
 	}
-	
-	/// <summary>
-	/// This creates a Pango list and applies attributes to it with *much* less overhead than the GTK# version.
-	/// </summary>
-	class FastPangoAttrList : IDisposable
+
+   /// <summary>
+   /// This creates a Pango list and applies attributes to it with *much* less overhead than the GTK# version.
+   /// </summary>
+   class FastPangoAttrList : IDisposable
 	{
 		IntPtr list;
 		
