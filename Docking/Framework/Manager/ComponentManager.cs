@@ -1824,6 +1824,14 @@ namespace Docking.Components
                   (item as Component).ComponentRemoved(o);
       }
 
+      // This function is an ugly workaround for GTK:
+      // After modifying a menu, you need to call .ShowAll() on its root element to properly make all menus and submenus show up.
+      // Without this call, some of them may not be visible.
+      protected void ModifyingTheMenuIsFinished()
+      {        
+         MenuBar.ShowAll();
+      }
+
       protected void ComponentsLoaded()
       {
          mDisableHandleVisibleChanged = false;
