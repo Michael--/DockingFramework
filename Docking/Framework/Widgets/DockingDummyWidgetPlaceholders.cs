@@ -108,6 +108,21 @@ namespace Docking.Widgets
       public ComboBoxEntryLocalized(TreeModel model, int text_column)  : base(model, text_column) {}
    }
 
+   [System.ComponentModel.ToolboxItem(true)]
+   public class ExpanderLocalized : Gtk.Expander
+   {
+      public ExpanderLocalized(IntPtr raw) : base(raw) {}
+      public ExpanderLocalized(string s)   : base(s)   {}
+   }   
+
+   [System.ComponentModel.ToolboxItem(true)]
+   public class DialogLocalized : Gtk.Dialog
+   {
+      public DialogLocalized()           : base()    {}
+      public DialogLocalized(IntPtr raw) : base(raw) {}
+      public DialogLocalized(string title, Window parent, DialogFlags flags, params object[] button_data) : base(title, parent, flags, button_data) {}
+   }
+
    // TODO SLohse: this class currently is IMHO inherited currently from the wrong parent class ("Component" which inherits from Gtk.Bin),
    // but instead should inherit from Gtk.Widget
    [System.ComponentModel.ToolboxItem(true)]
@@ -156,18 +171,5 @@ namespace Florence.GtkSharp
    {
       public PlotWidget() : base() {}
       public PlotWidget(IntPtr raw) : base(raw) {}
-   }
-}
-
-// TODO relocate that custom control to Docking Framework
-namespace TempoGiusto.Guidance
-{
-   [System.ComponentModel.ToolboxItem(true)]
-   public class FieldInfoViewer : Gtk.TreeView
-   {
-      public FieldInfoViewer(TreeModel model) : base(model) {}
-//    public FieldInfoViewer(NodeStore store) : base(store) {}
-      public FieldInfoViewer()                : base()      {}
-      public FieldInfoViewer(IntPtr raw)      : base(raw)   {}
    }
 }
