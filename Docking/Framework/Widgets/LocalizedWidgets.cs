@@ -37,6 +37,34 @@ namespace Docking.Widgets
 
 
    [System.ComponentModel.ToolboxItem(true)]
+   public class ExpanderLocalized : Gtk.Expander, ILocalizableWidget
+   {
+      public ExpanderLocalized(IntPtr raw) : base(raw) {}
+      public ExpanderLocalized(string s)   : base(s)   {}
+
+      private string mLocalizationKey;
+      public string LocalizationKey
+      {
+         set { mLocalizationKey = value; }
+         get
+         {
+            if(mLocalizationKey==null || mLocalizationKey.Length<=0)            
+            {
+               if(this.LabelWidget!=null && this.LabelWidget is Gtk.Label)
+                  mLocalizationKey = StringTools.StripSpecialCharacters((this.LabelWidget as Gtk.Label).LabelProp);
+            }
+            return mLocalizationKey;
+         }
+      }
+
+      void ILocalizableWidget.Localize(string namespc)
+      {
+         if(this.LabelWidget!=null && this.LabelWidget is Gtk.Label)
+            (this.LabelWidget as Gtk.Label).LabelProp = LocalizationKey.Localized(namespc);
+      }
+   }
+
+   [System.ComponentModel.ToolboxItem(true)]
    public class ButtonLocalized : Gtk.Button, ILocalizableWidget
    {
       public ButtonLocalized()                  : base()         {}
@@ -397,5 +425,37 @@ namespace Docking.Widgets
       public string LocalizationKey { get; set; }
 
       public bool IgnoreLocalization { get; set; }
+   }
+
+   [System.ComponentModel.ToolboxItem(true)]
+   public class DialogLocalized : Gtk.Dialog, ILocalizableWidget
+   {
+      public DialogLocalized()           : base()    {}
+      public DialogLocalized(IntPtr raw) : base(raw) {}
+      public DialogLocalized(string title, Window parent, DialogFlags flags, params object[] button_data) : base(title, parent, flags, button_data) {}
+
+      private string mLocalizationKey;
+      public string LocalizationKey
+      {
+         set { mLocalizationKey = value; }
+         get
+         {
+            if(mLocalizationKey==null || mLocalizationKey.Length<=0)
+               mLocalizationKey = StringTools.StripSpecialCharacters(this.Title);
+            return mLocalizationKey;
+         }
+      }
+
+      // invoke this method directly after Build()
+      protected void Localize()
+      {
+         Localize(this.GetType().ToString());
+      }
+
+      public virtual void Localize(string namespc)
+      {
+         this.Title = LocalizationKey.Localized(namespc);
+         Localization.LocalizeControls(namespc, this);
+      }
    }
 }
