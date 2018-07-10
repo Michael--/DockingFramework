@@ -254,21 +254,11 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Content Include="Monodevelop.Texteditor\ICSharpCode.NRefactory.CSharp.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Monodevelop.Texteditor\ICSharpCode.NRefactory.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Monodevelop.Texteditor\Mono.TextEditor.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Monodevelop.Texteditor\Mono.TextEditor.dll.mdb">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Monodevelop.Texteditor\Xwt.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Monodevelop.Texteditor\ICSharpCode.NRefactory.CSharp.dll" />
+    <Content Include="Monodevelop.Texteditor\ICSharpCode.NRefactory.dll" />
+    <Content Include="Monodevelop.Texteditor\Mono.TextEditor.dll" />
+    <Content Include="Monodevelop.Texteditor\Mono.TextEditor.dll.mdb" />
+    <Content Include="Monodevelop.Texteditor\Xwt.dll" />
     <EmbeddedResource Include="Framework\Resources\Activities-16.png" />
     <EmbeddedResource Include="Framework\Resources\Component-16.png" />
     <EmbeddedResource Include="Framework\Resources\Copy-16.png" />
@@ -331,9 +321,7 @@
     <Folder Include="IronPython\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Monodevelop.Texteditor\Mono.TextEditor.dll.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Monodevelop.Texteditor\Mono.TextEditor.dll.config" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
