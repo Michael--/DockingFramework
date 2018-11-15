@@ -139,6 +139,9 @@ namespace Docking.Components
 
       public bool SetLanguage(string code)
       {
+         if(code=="default")
+            code = DefaultLanguageCode;
+
          Language newLanguage;
          if (code != mCurrentLanguageCode && Languages.TryGetValue(code, out newLanguage))
          {
