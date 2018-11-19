@@ -77,7 +77,7 @@ namespace Docking
          AutoShowDelay = 400;
          AutoHideDelay = 500;
          TabType = TabAlgorithm.Proven;
-         Docking.Helper.GtkWorkarounds.FixContainerLeak(this);
+         //Docking.Helper.GtkWorkarounds.FixContainerLeak(this);
 
          dockBarTop = new DockBar(this, Gtk.PositionType.Top);
          dockBarBottom = new DockBar(this, Gtk.PositionType.Bottom);

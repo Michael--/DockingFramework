@@ -744,27 +744,40 @@ namespace Docking.Helper
 		{
 			return rect.Y + rect.Height - 1;
 		}
-		
+
+// the following code (using ILGenerator) seemingly relies on a very specific binary version of GLib
+// and produces a null object exception on Ubuntu 18.04
+#if false		
 		static HashSet<Type> fixedContainerTypes = new HashSet<Type>();
 		static ForallDelegate forallCallback;
 		
 		// Works around BXC #3801 - Managed Container subclasses are incorrectly resurrected, then leak.
-		// It does this by registering an alternative callback for gtksharp_container_override_forall, which
-		// ignores callbacks if the wrapper no longer exists. This means that the objects no longer enter a
-		// finalized->release->dispose->re-wrap resurrection cycle.
-		// We use a dynamic method to access internal/private GTK# API in a performant way without having to track
-		// per-instance delegates.
-		public static void FixContainerLeak<T> (T c)
-		{
-			var t = typeof (T);
-			if (fixedContainerTypes.Add (t)) {
-				if (forallCallback == null) {
-					forallCallback = CreateForallCallback ();
-				}
-				var gt = (GLib.GType) t.GetMethod ("LookupGType", BindingFlags.Instance | BindingFlags.NonPublic).Invoke (c, null);
-				gtksharp_container_override_forall (gt.Val, forallCallback);
-			}
-		}
+        // It does this by registering an alternative callback for gtksharp_container_override_forall, which
+        // ignores callbacks if the wrapper no longer exists. This means that the objects no longer enter a
+        // finalized->release->dispose->re-wrap resurrection cycle.
+        // We use a dynamic method to access internal/private GTK# API in a performant way without having to track
+        // per-instance delegates.
+        public static void FixContainerLeak<T> (T c)
+        {
+           var t = typeof (T);
+           try
+           {
+              if (fixedContainerTypes.Add (t)) {
+                 if (forallCallback == null) {
+                    forallCallback = CreateForallCallback ();
+                 }
+                 var gt = (GLib.GType) t.GetMethod ("LookupGType", BindingFlags.Instance | BindingFlags.NonPublic).Invoke (c, null);
+                 gtksharp_container_override_forall (gt.Val, forallCallback);
+              }
+           }
+           catch(Exception e)
+           {
+              #if DEBUG
+              System.Console.Error.WriteLine("FixContainerLeak: cannot set forallCallback for type '{0}'", t);
+              #endif
+              string exception_text = e.ToString();
+           }
+        }
 		
 		static ForallDelegate CreateForallCallback ()
 		{
@@ -856,6 +869,7 @@ namespace Docking.Helper
 		
 		[DllImport("gtksharpglue-2", CallingConvention=CallingConvention.Cdecl)]
 		static extern void gtksharp_container_override_forall (IntPtr gtype, ForallDelegate cb);
+#endif
 
 		static string MatchToUrl (System.Text.RegularExpressions.Match m)
 		{

@@ -56,7 +56,7 @@ namespace Docking
 
       public DockContainer(DockFrame frame)
       {
-         Docking.Helper.GtkWorkarounds.FixContainerLeak(this);
+         //Docking.Helper.GtkWorkarounds.FixContainerLeak(this);
 
          this.Events = EventMask.ButtonPressMask | EventMask.ButtonReleaseMask | EventMask.PointerMotionMask | EventMask.LeaveNotifyMask;
          this.frame = frame;
