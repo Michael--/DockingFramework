@@ -10,8 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DummyWidgetPlaceholdersForStetic")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCopyright("Copyright (C)")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

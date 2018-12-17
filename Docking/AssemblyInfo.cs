@@ -10,7 +10,6 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
 [assembly: AssemblyCopyright("Michael")]
-[assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // The assembly version has the format "{Major}.{Minor}.{Build}.{Revision}".
