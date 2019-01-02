@@ -1004,7 +1004,7 @@ namespace Docking.Components
                // https://en.wikipedia.org/wiki/Microsoft_YaHei
                // https://www.microsoft.com/typography/Fonts/family.aspx?FID=350
                // Therefore it is the best candidate to use here.
-               // Fortunately, this font also properly supports European characters like äöüß etc., so we can use the same for CHN and non-CHN :)
+               // Fortunately, this font also properly supports European characters like ï¿½ï¿½ï¿½ï¿½ etc., so we can use the same for CHN and non-CHN :)
                // (We may not rely on "Office XYZ installed" here etc. -
                // If the Win7 standard fonts are not enough, TG will have to deliver its own, which we currently try to avoid.)
                // https://en.wikipedia.org/wiki/List_of_typefaces_included_with_Microsoft_Windows
@@ -1209,7 +1209,7 @@ namespace Docking.Components
 
             if(available_components.Count + existing_components.Count > 1) // show a dialog and let the user choose
             {
-         bool success = true;
+               bool success = true;
 
                // create a dialog and update the internal component model
                ComponentSelectorDialog dlg = new ComponentSelectorDialog(this, available_components, existing_components);

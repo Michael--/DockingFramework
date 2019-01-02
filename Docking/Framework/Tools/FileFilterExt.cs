@@ -91,13 +91,24 @@ namespace Docking.Tools
       // returns true if a given filename matches one of the patterns of this filter
       public bool Matches(string filename)
       {
+         string filename_without_path = System.IO.Path.GetFileName(filename).ToLowerInvariant();
+
+         foreach(string p in m_Pattern)
+         {
+            if(!p.Contains("*"))
+            {
+               if(filename_without_path==p.ToLowerInvariant())
+                  return true;
+            }
+         }
+
          FileFilterInfo info = new FileFilterInfo
          {
             Contains    = FileFilterFlags.Filename | FileFilterFlags.DisplayName,
             Filename    = filename,
             DisplayName = filename
          };
- 
+
          return this.Filter(info);
       }
    }
