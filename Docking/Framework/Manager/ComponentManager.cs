@@ -1013,10 +1013,9 @@ namespace Docking.Components
             }
             else if(osid.Contains("ubuntu"))
             {
-               // "Droid Sans" is a font coming by default with Ubuntu 14.04 LTS ("Trusty Tahr")
-               // http://packages.ubuntu.com/trusty/fonts/
-               // https://en.wikipedia.org/wiki/Droid_Sans
-               return "Droid Sans Fallback";
+               // "Noto Mono" is a font coming by default with Ubuntu 18.04 LTS
+               // https://packages.ubuntu.com/bionic/fonts-noto-mono
+               return "Noto Mono";
             }
             else
             {
