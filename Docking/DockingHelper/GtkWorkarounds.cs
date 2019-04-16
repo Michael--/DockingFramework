@@ -79,7 +79,7 @@ namespace Docking.Helper
 		
 		static GtkWorkarounds ()
 		{
-			if (Platform.IsMac) {
+			if (Platform.IsMacOS) {
 				InitMac ();
 			}
 			
@@ -263,7 +263,7 @@ namespace Docking.Helper
 			if (Platform.IsWindows)
 				return WindowsGetUsableMonitorGeometry (screen, monitor);
 
-			if (Platform.IsMac)
+			if (Platform.IsMacOS)
 				return MacGetUsableMonitorGeometry (screen, monitor);
 			
 			return screen.GetMonitorGeometry (monitor);
@@ -271,7 +271,7 @@ namespace Docking.Helper
 		
 		public static int RunDialogWithNotification (Gtk.Dialog dialog)
 		{
-			if (Platform.IsMac)
+			if (Platform.IsMacOS)
 				MacRequestAttention (dialog.Modal);
 			
 			return dialog.Run ();
@@ -281,7 +281,7 @@ namespace Docking.Helper
 		{
 			window.Present ();
 			
-			if (Platform.IsMac) {
+			if (Platform.IsMacOS) {
 				var dialog = window as Gtk.Dialog;
 				MacRequestAttention (dialog == null? false : dialog.Modal);
 			}
@@ -308,7 +308,7 @@ namespace Docking.Helper
 					(evt.State & (Gdk.ModifierType.Button1Mask | Gdk.ModifierType.Button2Mask)) == 0)
 				return true;
 			
-			if (Platform.IsMac) {
+			if (Platform.IsMacOS) {
 				if (!oldMacKeyHacks &&
 					evt.Button == Mouse.LEFT_MOUSE_BUTTON &&
 					(evt.State & Gdk.ModifierType.ControlMask) != 0 &&
@@ -323,7 +323,7 @@ namespace Docking.Helper
 
 		public static Gdk.ModifierType GetCurrentKeyModifiers ()
 		{
-			if (Platform.IsMac) {
+			if (Platform.IsMacOS) {
 				Gdk.ModifierType mtype = Gdk.ModifierType.None;
 				int mod = objc_msgSend_int (cls_NSEvent, sel_modifierFlags);
 				if ((mod & (1 << 17)) != 0)
@@ -463,7 +463,7 @@ namespace Docking.Helper
 			
 			//HACK: work around GTK menu issues on mac when passing button to menu.Popup
 			//some menus appear and immediately hide, and submenus don't activate
-			if (Platform.IsMac) {
+			if (Platform.IsMacOS) {
 				button = 0;
 			}
 			

@@ -40,19 +40,19 @@ namespace Docking.Tools
          IsWindows = System.IO.Path.DirectorySeparatorChar=='\\';
          IsUNIX    = System.Environment.OSVersion.Platform==PlatformID.Unix ||
                      System.Environment.OSVersion.Platform==PlatformID.MacOSX;
-         IsMac     = IsUNIX && IsRunningOnMac();
+         IsMacOS   = IsUNIX && IsRunningOnMacOS();
 
          OSIDString = ComputeOSIDString();
       }
 
       public static bool IsWindows    { get; private set; }
       public static bool IsUNIX       { get; private set; }
-      public static bool IsMac        { get; private set; }
+      public static bool IsMacOS      { get; private set; }
 
       public static string OSIDString { get; private set; }
 
       //From Managed.Windows.Forms/XplatUI
-      static bool IsRunningOnMac()
+      static bool IsRunningOnMacOS()
       {
          IntPtr buf = IntPtr.Zero;
          try

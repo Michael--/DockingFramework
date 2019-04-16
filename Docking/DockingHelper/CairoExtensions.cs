@@ -621,7 +621,7 @@ namespace Docking.Helper
 
       public SurfaceWrapper (Cairo.Context similar, int width, int height)
       {
-         if (Platform.IsMac) {
+         if (Platform.IsMacOS) {
             Surface = new QuartzSurface (Cairo.Format.ARGB32, width, height);
          } else if (Platform.IsWindows) {
             using (var target = similar.GetTarget ()) {
@@ -640,7 +640,7 @@ namespace Docking.Helper
 
          Cairo.Surface surface;
          // There is a bug in Cairo for OSX right now that prevents creating additional accellerated surfaces.
-         if (Platform.IsMac) {
+         if (Platform.IsMacOS) {
             surface = new QuartzSurface (Format.ARGB32, source.Width, source.Height);
          } else if (Platform.IsWindows) {
             using (var t = similar.GetTarget ()) {
@@ -688,7 +688,7 @@ namespace Docking.Helper
       static extern CGRect64 CGContextConvertRectToDeviceSpace64 (IntPtr contextRef, CGRect64 cgrect);
 
       public static double GetRetinaScale (Cairo.Context context)  {
-         if (!Platform.IsMac)
+         if (!Platform.IsMacOS)
             return 1;
 
          // Use C call to avoid dispose bug in cairo bindings for OSX
