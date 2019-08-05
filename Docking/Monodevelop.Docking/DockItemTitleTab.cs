@@ -119,7 +119,10 @@ namespace Docking
          if (IsRealized)
          {
             if (labelWidget != null)
-               labelWidget.ModifyFg(StateType.Normal, visualStyle.PadTitleLabelColor.Value);
+            {
+               labelWidget.ModifyFg(StateType.Normal, Style.Foreground(StateType.Active));
+               labelWidget.ModifyBg(StateType.Normal, Style.Background(StateType.Active));
+            }
          }
          var r = WidthRequest;
          WidthRequest = -1;
@@ -445,7 +448,7 @@ namespace Docking
          var alloc = Allocation;
 
          Gdk.GC bgc = new Gdk.GC(GdkWindow);
-         var c = new HslColor(VisualStyle.PadBackgroundColor.Value);
+         var c = new HslColor(Style.Background(StateType.Normal));
          c.L *= 0.7;
          bgc.RgbFgColor = c;
          bool first = true;
@@ -463,19 +466,18 @@ namespace Docking
          if (Active || (first && last))
          {
             Gdk.GC gc = new Gdk.GC(GdkWindow);
-            gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value;
+            gc.RgbFgColor = Style.Background(StateType.Selected); 
             evnt.Window.DrawRectangle(gc, true, alloc);
             if (!first)
                evnt.Window.DrawLine(bgc, alloc.X, alloc.Y, alloc.X, alloc.Y + alloc.Height - 1);
             if (!(last && first) && !(tabStrip != null && tabStrip.VisualStyle.ExpandedTabs.Value && last))
                evnt.Window.DrawLine(bgc, alloc.X + alloc.Width - 1, alloc.Y, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);
             gc.Dispose();
-
          }
          else
          {
             Gdk.GC gc = new Gdk.GC(GdkWindow);
-            gc.RgbFgColor = tabStrip != null ? tabStrip.VisualStyle.InactivePadBackgroundColor.Value : frame.DefaultVisualStyle.InactivePadBackgroundColor.Value;
+            gc.RgbFgColor = Style.Background(StateType.Normal);
             evnt.Window.DrawRectangle(gc, true, alloc);
             gc.Dispose();
             evnt.Window.DrawLine(bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);

@@ -304,15 +304,25 @@ namespace Docking
             cairo.Rectangle(cliprect.ToCairoRect());
             cairo.Clip();
 
-            Color color;
+            Color colorBG;
+            Color colorFG;
             if (i == ActiveIndex && t.DockItemTitleTab.Active)
-               color = Style.Background(StateType.Selected);
+            {
+               colorBG = Style.Background(StateType.Selected);
+               colorFG = Style.Foreground(StateType.Selected);
+            }
             else if (i == currentTab)
-               color = Style.Background(StateType.Normal);
+            {
+               colorBG = Style.Background(StateType.Prelight);
+               colorFG = Style.Foreground(StateType.Prelight);
+            }
             else
-               color = Style.Mid(StateType.Normal);
+            {
+               colorBG = Style.Background(StateType.Insensitive);
+               colorFG = Style.Foreground(StateType.Insensitive);
+            }
 
-            DrawRectangle(cairo, cliprect.X, cliprect.Y, cliprect.Width, cliprect.Height, color.ToCairo(), true);
+            DrawRectangle(cairo, cliprect.X, cliprect.Y, cliprect.Width, cliprect.Height, colorBG.ToCairo(), true);
 
             x1 += space;
             if (t.Image != null)
@@ -323,7 +333,7 @@ namespace Docking
             }
 
             la.SetMarkup(t.Label);
-            DrawText(win, gc, x1, ty, System.Drawing.Color.Black.ToGdk(), la);
+            DrawText(win, gc, x1, ty, colorFG, la);
             left += t.CurrentWidth;
 
             gc.ClipRectangle = new Gdk.Rectangle(0, 0, Allocation.Width, Allocation.Height);
