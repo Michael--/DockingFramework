@@ -51,8 +51,13 @@ namespace Docking.Widgets
          drawingarea.MotionNotifyEvent += drawingarea_MotionNotifyEvent;
          mColumnControl.ButtonPressEvent += not_drawingarea_ButtonPressEvent;
 
+#if false
          mStyleBg = Style.Background(StateType.Normal).ToSystemDrawingColor();
          mStyleFg = Style.Foreground(StateType.Normal).ToSystemDrawingColor();
+#else
+         mStyleBg = System.Drawing.Color.White;
+         mStyleFg = System.Drawing.Color.Black;
+#endif
       }
 
       ColumnControl mColumnControl;
@@ -302,7 +307,7 @@ namespace Docking.Widgets
       }
 
 
-      #region IPersistency
+#region IPersistency
 
       void IPersistable.SaveTo(IPersistency persistency)
       {
@@ -354,7 +359,7 @@ namespace Docking.Widgets
          ShowFindBox(loadedFindVisibility, true);
       }
 
-      #endregion
+#endregion
 
       private void DetermineLayout()
       {
