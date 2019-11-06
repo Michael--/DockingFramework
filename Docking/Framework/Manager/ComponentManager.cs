@@ -112,15 +112,14 @@ namespace Docking.Components
          DockFrame.CreateItem = this.CreateItem;
 
          DockVisualStyle style = new DockVisualStyle();
-         style.PadTitleLabelColor = Style.Foreground(StateType.Normal); 
-         style.PadBackgroundColor = Style.Background(StateType.Normal);
-         style.InactivePadBackgroundColor = Style.Background(StateType.Insensitive);
+         style.PadTitleLabelColor = Styles.PadLabelColor;
+         style.PadBackgroundColor = Styles.PadBackground;
+         style.InactivePadBackgroundColor = Styles.InactivePadBackground;
          DockFrame.DefaultVisualStyle = style;
 
          mNormalStyle = DockFrame.DefaultVisualStyle;
          mSelectedStyle = DockFrame.DefaultVisualStyle.Clone();
-         mSelectedStyle.PadBackgroundColor = Style.Background(StateType.Selected);
-         mSelectedStyle.PadBackgroundColor = Style.Background(StateType.Selected);
+         mSelectedStyle.PadBackgroundColor = new Gdk.Color(100, 160, 255);
       }
 
       public void SetStatusBar(Statusbar sb)

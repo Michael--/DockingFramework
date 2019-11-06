@@ -452,7 +452,7 @@ namespace Docking
 
          //GdkWindow.SetBackPixmap (null, true);
 
-         ModifyBase(StateType.Normal, Style.Background(StateType.Normal));
+         ModifyBase(StateType.Normal, Styles.DockFrameBackground);
       }
 
       protected override void OnUnrealized()

@@ -333,13 +333,13 @@ namespace Docking
          if (VisualStyle.TabStyle == DockTabStyle.Normal)
          {
             Gdk.GC gc = new Gdk.GC(GdkWindow);
-            gc.RgbFgColor = Style.Background(StateType.Insensitive); 
+            gc.RgbFgColor = VisualStyle.InactivePadBackgroundColor.Value;
 
             evnt.Window.DrawRectangle(gc, true, alloc);
             gc.Dispose();
 
             Gdk.GC bgc = new Gdk.GC(GdkWindow);
-            var c = new HslColor(Style.Foreground(StateType.Insensitive));
+            var c = new HslColor(VisualStyle.PadBackgroundColor.Value);
             c.L *= 0.7;
             bgc.RgbFgColor = c;
             evnt.Window.DrawLine(bgc, alloc.X, alloc.Y + alloc.Height - 1, alloc.X + alloc.Width - 1, alloc.Y + alloc.Height - 1);

@@ -163,12 +163,12 @@ namespace Docking
       {
          if (VisualStyle.TabStyle == DockTabStyle.Normal) {
             Gdk.GC gc = new Gdk.GC (GdkWindow);
-            gc.RgbFgColor = Style.Background(StateType.Normal);
+            gc.RgbFgColor = VisualStyle.PadBackgroundColor.Value;
             evnt.Window.DrawRectangle (gc, true, Allocation);
             gc.Dispose ();
          }
          bool result = base.OnExposeEvent(evnt);
-         Gdk.Color? col = Style.Background(StateType.Normal);
+         Gdk.Color? col = VisualStyle.PadBackgroundColor;
          if (col.HasValue)
          {
             DrawFocus(evnt.Window, Color.FromArgb(255, col.Value.Red / 256, col.Value.Green / 256, col.Value.Blue / 256));
@@ -343,7 +343,7 @@ namespace Docking
          //Gdk.Rectangle.Right and Bottom are inconsistent
          int right = rect.X + rect.Width, bottom = rect.Y + rect.Height;
          
-         var bcolor = backgroundColorSet ? BackgroundColor : Style.Background (Gtk.StateType.Active);
+         var bcolor = backgroundColorSet ? BackgroundColor : Style.Background (Gtk.StateType.Normal);
 
          using (Cairo.Context cr = Gdk.CairoHelper.Create (evnt.Window)) {
          

@@ -50,20 +50,10 @@ namespace Docking.Widgets
          drawingarea.ButtonReleaseEvent += drawingarea_ButtonReleaseEvent;
          drawingarea.MotionNotifyEvent += drawingarea_MotionNotifyEvent;
          mColumnControl.ButtonPressEvent += not_drawingarea_ButtonPressEvent;
-
-#if false
-         mStyleBg = Style.Background(StateType.Normal).ToSystemDrawingColor();
-         mStyleFg = Style.Foreground(StateType.Normal).ToSystemDrawingColor();
-#else
-         mStyleBg = System.Drawing.Color.White;
-         mStyleFg = System.Drawing.Color.Black;
-#endif
       }
 
       ColumnControl mColumnControl;
       Dictionary<int, ColumnPersistence> mColumnPersistence = new Dictionary<int, ColumnPersistence>();
-      System.Drawing.Color mStyleBg;
-      System.Drawing.Color mStyleFg;
 
       /// <summary>
       /// Sets the get content delegate. Will be called for any content request.
@@ -307,7 +297,7 @@ namespace Docking.Widgets
       }
 
 
-#region IPersistency
+      #region IPersistency
 
       void IPersistable.SaveTo(IPersistency persistency)
       {
@@ -359,7 +349,7 @@ namespace Docking.Widgets
          ShowFindBox(loadedFindVisibility, true);
       }
 
-#endregion
+      #endregion
 
       private void DetermineLayout()
       {
@@ -415,36 +405,20 @@ namespace Docking.Widgets
             int dx = -(int)hscrollbar1.Value;
             Gdk.Rectangle rect = new Gdk.Rectangle(dx, dy, 0, ConstantHeight);
 
-            Gdk.Color backColor;
-            Gdk.Color textColor;
+            System.Drawing.Color backColor = System.Drawing.Color.WhiteSmoke;
+            System.Drawing.Color textColor = System.Drawing.Color.Black;
 
             if (row == CurrentRow)
-            {
-               backColor = Style.Background(StateType.Active);
-               textColor = Style.Foreground(StateType.Active);
-            }
+               backColor = System.Drawing.Color.DarkGray;
+
             else if (m_Selection.Contains(row))
-            {
-               backColor = Style.Background(StateType.Selected);
-               textColor = Style.Foreground(StateType.Selected);
-            }
+               backColor = System.Drawing.Color.LightGray;
+
             else if (GetColorDelegate != null)
-            {
-               System.Drawing.Color bgColor = mStyleBg;
-               System.Drawing.Color fgColor = mStyleFg;
+               GetColorDelegate(row, ref backColor, ref textColor);
 
-               GetColorDelegate(row, ref bgColor, ref fgColor);
-               backColor = bgColor.ToGdk();
-               textColor = fgColor.ToGdk();
-            }
-            else
-            {
-               backColor = mStyleBg.ToGdk();
-               textColor = mStyleFg.ToGdk();
-            }
-
-            background.RgbFgColor = backColor;
-            text.RgbFgColor = textColor;
+            background.RgbFgColor = new Gdk.Color(backColor.R, backColor.G, backColor.B);
+            text.RgbFgColor = new Gdk.Color(textColor.R, textColor.G, textColor.B);
             int totalwidth = 0;
             for (int c = 0; c < columns.Length; c++)
             {
@@ -876,7 +850,7 @@ namespace Docking.Widgets
          ((ILocalizableWidget)mColumnControl).Localize(namespc);
       }
 
-#region ICopy
+      #region ICopy
 
       void ICopy.Copy()
       {
@@ -905,7 +879,7 @@ namespace Docking.Widgets
                this.GetClipboard(Gdk.Selection.Clipboard).Text = result.ToString();
          }
       }
-#endregion
+      #endregion
    }
 
    public class VirtualListViewEventArgs : EventArgs
