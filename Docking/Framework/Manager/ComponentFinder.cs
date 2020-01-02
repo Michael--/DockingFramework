@@ -102,25 +102,23 @@ namespace Docking.Components
          }
       }
 
-      public void SearchForComponents(String search)
+      public void SearchForComponents(String[] list_of_pathes_with_wildcards = null)
       {
-         SearchForComponents(new String[] { search });
-      }
-
-      public void SearchForComponents(String[] search)
-      {
-         List<String> componentFiles = new List<string>();
-         foreach (String s in search)
+         if(list_of_pathes_with_wildcards==null)
          {
-            String folder = Path.GetDirectoryName(s);
-            String name = Path.GetFileName(s);
-
-            string[] files = Directory.GetFiles(folder, name);
-            componentFiles.AddRange(files);
+            list_of_pathes_with_wildcards = new string[] { Path.Combine(AssemblyInfoExt.Directory, "*.exe"),
+                                                           Path.Combine(AssemblyInfoExt.Directory, "*.dll")  };
          }
-         foreach (String s in componentFiles)
+         List<String> found_files = new List<string>();
+         foreach (String s in list_of_pathes_with_wildcards)
+         {
+            String folder   = Path.GetDirectoryName(s);
+            String wildcard = Path.GetFileName(s);
+            string[] files = Directory.GetFiles(folder, wildcard);
+            found_files.AddRange(files);
+         }
+         foreach (String s in found_files)
             CollectTypes(Path.GetFullPath(s));
-
          SearchComponents();
       }
 
