@@ -758,10 +758,16 @@ namespace Docking.Components
 
 #endregion
 
+      protected void SearchLoadAndInitializeComponentsFromDLLs(bool minimalistic = false)
+      {
+         this.ComponentFinder.SearchForComponents();
+         AddComponentMenus(minimalistic);
+      }
+
       /// <summary>
       /// Add all component start/create menu entries
       /// </summary>
-      protected void AddComponentMenus(bool minimalistic = false)
+      private void AddComponentMenus(bool minimalistic = false)
       {
          InstallFileOpenMenu();
 
