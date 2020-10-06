@@ -47,7 +47,8 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 		protected override void Initialize ()
 		{
 			IComponent comp = Instance as IComponent;
-			evtBind = (IEventBindingService) comp.Site.GetService (typeof (IEventBindingService));
+         if(comp!=null)
+			   evtBind = (IEventBindingService) comp.Site.GetService (typeof (IEventBindingService));
 			base.Initialize ();
 		}
 		
