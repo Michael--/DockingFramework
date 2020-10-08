@@ -172,10 +172,18 @@ namespace Docking.Components
                // check if requested interface implemented
                if (search.IsInterface)
                {
-                  if (search.IsAssignableFrom(type))
+                  try 
                   {
-                     if (!theList.Contains(type)) // avoid duplicates
-                        theList.Add(type);
+                     if (search.IsAssignableFrom(type))
+                     {
+                        if (!theList.Contains(type)) // avoid duplicates
+                           theList.Add(type);
+                     }
+                  }
+                  catch(Exception)
+                  { 
+                     // This is a workaround to catch the exception:
+                     // Could not load type of field 'Docking.Components.ScriptEditor:m_TextEditor' (0) due to: Could not load file or assembly 'Mono.TextEditor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null' or one of its dependencies.
                   }
                }
 
