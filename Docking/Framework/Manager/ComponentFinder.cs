@@ -274,7 +274,7 @@ namespace Docking.Components
       }
 
       public Type   FactoryType    { get { return ComponentFactory.GetType(); } }
-      public Type   ComponentType  { get { return ComponentFactory.TypeOfInstance; } }
+      public Type   ComponentType  { get { try { return ComponentFactory.TypeOfInstance; } catch(Exception) { return null; } } }
       public String Comment        { get { return ComponentFactory.Comment; } }
       public String MenuPath       { get { return ComponentFactory.MenuPath; } }
       public String LicenseGroup   { get { return ComponentFactory.LicenseGroup; } }
