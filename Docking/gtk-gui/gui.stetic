@@ -5,6 +5,7 @@
     <target-gtk-version>2.12</target-gtk-version>
   </configuration>
   <import>
+    <widget-library name="../Monodevelop.Texteditor/Mono.TextEditor.dll" />
     <widget-library name="../bin/x86/Debug/Docking.dll" internal="true" />
   </import>
   <widget class="Gtk.Bin" id="Docking.Components.ComponentList" design-size="300 300">
