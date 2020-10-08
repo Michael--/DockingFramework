@@ -30,8 +30,17 @@ namespace Docking.Components
       public ComponentFactoryInformation FindComponent(String typename)
       {
          foreach (ComponentFactoryInformation info in mComponents)
-            if (typename == info.ComponentType.ToString())
-               return info;
+         {
+            try 
+            {
+               if (typename == info.ComponentType.ToString())
+                  return info;
+            }
+            catch(Exception)
+            {
+                // NOP
+            }
+         }
          return null;
       }
 
