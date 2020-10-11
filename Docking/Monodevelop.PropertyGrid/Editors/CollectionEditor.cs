@@ -153,7 +153,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			#region Events
 
 			addButton.Clicked += delegate {
-				//create the object
+				// create the object
 				object instance = System.Activator.CreateInstance (types[0]);
 				
 				//get existing selection and insert after it
@@ -256,7 +256,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			
 			grid.Changed += delegate {
 				TreeIter iter;
-				if (itemTree.Selection.GetSelected (out iter))
+				if (itemTree.Selection!=null && itemTree.Selection.GetSelected (out iter))
 					UpdateName (itemStore, iter);
 			};
 			
@@ -269,7 +269,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 			#endregion
 			
 			//if 'OK' put items back in collection
-#if false
+#if true
 			if (MonoDevelop.Ide.MessageService.ShowCustomDialog (dialog, toplevel) == (int)ResponseType.Ok)
 			{
 				DesignerTransaction tran = CreateTransaction (Instance);
@@ -340,7 +340,7 @@ namespace MonoDevelop.Components.PropertyGrid.PropertyEditors
 				return;
 
 			object item = itemStore.GetValue (iter, 0);
-			string name = item.ToString ();
+			string name = item==null ? null : item.ToString();
 			if (string.IsNullOrEmpty (name))
 				name = "(Empty)";
 
