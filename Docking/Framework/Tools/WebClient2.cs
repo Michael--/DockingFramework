@@ -35,14 +35,21 @@ namespace Docking.Tools
 
       static WebClient2()
       {
-         if(Platform.IsWindows)
-         {
-            // This is necessary for .NET 4.5 on Win10 https://stackoverflow.com/a/2904963
-            // Without it, you get as exception in https queries:
-            //    System.Net.WebException: The request was aborted: Could not create SSL/TLS secure channel.
-            ServicePointManager.Expect100Continue = true;
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-         }
+         // Enable TLS 1.1 and TLS 1.2 (which are NOT enabled by default in .NET 4.5 on Windows 10!).
+         // The default value there is:
+         //    ServicePointManager.SecurityProtocol = Ssl3 | Tls;
+         // Without this enabling, you will get this exception from some https sites
+         // which require TLS 1.1 or TLS 1.2:
+         //    System.Net.WebException: The request was aborted: Could not create SSL/TLS secure channel
+         // https://docs.microsoft.com/windows/win32/secauthn/protocols-in-tls-ssl--schannel-ssp-
+         // https://de.wikipedia.org/wiki/Transport_Layer_Security#Versionen
+         // Note that there is lots of wrong information in the internet regarding this topic.
+         ServicePointManager.SecurityProtocol |= (
+            SecurityProtocolType.Ssl3   // just in case that the default in future lacks this
+          | SecurityProtocolType.Tls    // just in case that the default in future lacks this
+          | SecurityProtocolType.Tls11  // not really needed, is already superceded by TLS 1.2
+          | SecurityProtocolType.Tls12  // THESE are the important flags
+         );
       }
 
       public WebClient2(bool withUserAgent = false)
