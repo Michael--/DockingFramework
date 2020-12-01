@@ -33,6 +33,18 @@ namespace Docking.Tools
       public CookieContainer CookieContainer { get; set; } // default: null - if needed, set this before making a request
       public string          Referer         { get; set; } // default: null - if needed, set this before making a request
 
+      static WebClient2()
+      {
+         if(Platform.IsWindows)
+         {
+            // This is necessary for .NET 4.5 on Win10 https://stackoverflow.com/a/2904963
+            // Without it, you get as exception in https queries:
+            //    System.Net.WebException: The request was aborted: Could not create SSL/TLS secure channel.
+            ServicePointManager.Expect100Continue = true;
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+         }
+      }
+
       public WebClient2(bool withUserAgent = false)
       {
          if (withUserAgent && UserAgent != null && UserAgent.Length > 0)
