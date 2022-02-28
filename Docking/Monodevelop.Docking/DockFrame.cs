@@ -615,11 +615,11 @@ namespace Docking
 
       public void SaveLayouts(XmlWriter writer)
       {
-         if (container.Layout != null)
+         if(container!=null && container.Layout!=null)
             container.Layout.StoreAllocation();
          writer.WriteStartElement("layouts");
-         foreach (DockLayout la in layouts.Values)
-            la.Write(writer);
+         foreach(DockLayout layout in layouts.Values)
+            layout.Write(writer);
          writer.WriteEndElement();
       }
 

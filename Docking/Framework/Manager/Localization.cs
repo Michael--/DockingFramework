@@ -33,54 +33,57 @@ namespace Docking.Components
 
       public static void LocalizeMenu(Gtk.Container container)
       {
-         foreach(Gtk.Widget w in container.AllChildren) // .AllChildren here really is necessary, otherwise e.g. Gtk.Notebook will not properly recursed
+         if(container!=null)
          {
-            MenuItem item = w as MenuItem;
-
-            if (item != null && item.Submenu != null)
-               LocalizeMenu(item.Submenu as Menu);
-
-            if (w is Gtk.Container)
-               LocalizeMenu((w as Gtk.Container));
-
-            if (w is ILocalizableWidget)
-               (w as ILocalizableWidget).Localize("MENU");
-
-            if(w is ImageMenuItem) 
-            {
-               ImageMenuItem imi =  w as ImageMenuItem;
-               Image img = imi.Image as Image;
-               if(img!=null)
-               {
-                  string stockicon = img.Stock;
-                  if(stockicon=="gtk-cut")
-                  {
-                     imi.Image = Docking.Tools.ResourceLoader_Docking.LoadImage("Cut-16.png");
-                     (imi.Child as Label).LabelProp = "Cut".Localized("MENU");
-                  }
-                  else if(stockicon=="gtk-copy")
-                  {
-                     imi.Image = Docking.Tools.ResourceLoader_Docking.LoadImage("Copy-16.png");
-                     (imi.Child as Label).LabelProp = "Copy".Localized("MENU");
-                  }
-                  else if(stockicon=="gtk-paste")
-                  {
-                     imi.Image = Docking.Tools.ResourceLoader_Docking.LoadImage("Paste-16.png");
-                     (imi.Child as Label).LabelProp = "Paste".Localized("MENU");
-                  }
-                  else if(stockicon=="gtk-delete")
-                  {
-                     imi.Image = null; // Docking.Tools.ResourceLoader_Docking.LoadImage("Delete-16.png");
-                     (imi.Child as Label).LabelProp = "Delete".Localized("MENU");
-                  }
-                  else if(stockicon=="gtk-select-all")
-                  {
-                     imi.Image = null; // Docking.Tools.ResourceLoader_Docking.LoadImage("SelectAll-16.png");
-                     (imi.Child as Label).LabelProp = "Select All".Localized("MENU");
-                  }
-               }
-            }
-         }
+             foreach(Gtk.Widget w in container.AllChildren) // .AllChildren here really is necessary, otherwise e.g. Gtk.Notebook will not properly recursed
+             {
+                MenuItem item = w as MenuItem;
+    
+                if (item != null && item.Submenu != null)
+                   LocalizeMenu(item.Submenu as Menu);
+    
+                if (w is Gtk.Container)
+                   LocalizeMenu((w as Gtk.Container));
+    
+                if (w is ILocalizableWidget)
+                   (w as ILocalizableWidget).Localize("MENU");
+    
+                if(w is ImageMenuItem) 
+                {
+                   ImageMenuItem imi =  w as ImageMenuItem;
+                   Image img = imi.Image as Image;
+                   if(img!=null)
+                   {
+                      string stockicon = img.Stock;
+                      if(stockicon=="gtk-cut")
+                      {
+                         imi.Image = Docking.Tools.ResourceLoader_Docking.LoadImage("Cut-16.png");
+                         (imi.Child as Label).LabelProp = "Cut".Localized("MENU");
+                      }
+                      else if(stockicon=="gtk-copy")
+                      {
+                         imi.Image = Docking.Tools.ResourceLoader_Docking.LoadImage("Copy-16.png");
+                         (imi.Child as Label).LabelProp = "Copy".Localized("MENU");
+                      }
+                      else if(stockicon=="gtk-paste")
+                      {
+                         imi.Image = Docking.Tools.ResourceLoader_Docking.LoadImage("Paste-16.png");
+                         (imi.Child as Label).LabelProp = "Paste".Localized("MENU");
+                      }
+                      else if(stockicon=="gtk-delete")
+                      {
+                         imi.Image = null; // Docking.Tools.ResourceLoader_Docking.LoadImage("Delete-16.png");
+                         (imi.Child as Label).LabelProp = "Delete".Localized("MENU");
+                      }
+                      else if(stockicon=="gtk-select-all")
+                      {
+                         imi.Image = null; // Docking.Tools.ResourceLoader_Docking.LoadImage("SelectAll-16.png");
+                         (imi.Child as Label).LabelProp = "Select All".Localized("MENU");
+                      }
+                   }
+                }
+             }
+          }
       }
 
       public static void LocalizeControls(string prefix, Gtk.Container container)

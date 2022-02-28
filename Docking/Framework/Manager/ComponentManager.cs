@@ -63,7 +63,7 @@ namespace Docking.Components
       {}
                                            
       public ComponentManager(string[] args)
-      : this(args, "en-US", Assembly.GetCallingAssembly().GetName().Name, null)
+      : this(args, "en-US", Assembly.GetEntryAssembly().GetName().Name, null)
       {}
 
       // make sure that you construct this class from the main thread!
@@ -137,8 +137,8 @@ namespace Docking.Components
          // the last name is the menu name, all others are menu/sub-menu names
          String[] m = path.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
 
-         // as a minimum 1 submenu name must exist where to append the new entry
-         Debug.Assert(m.Length >= 1);
+         if (m.Length <= 0)
+            return null;
 
          MenuShell menuShell = MenuBar;
          Menu foundmenu = null;
@@ -154,7 +154,6 @@ namespace Docking.Components
                menuShell = foundmenu;
             }
          }
-
          return foundmenu;
       }
 
@@ -318,7 +317,7 @@ namespace Docking.Components
 
       void UpdateTabAlgorithmMenu()
       {
-         if (mTA_Proven == null)
+         if (mTA_Proven==null || mTA_Smooth==null || mTA_Active==null)
             return;
 
          mTA_Proven.Active = DockFrame.TabType == DockFrame.TabAlgorithm.Proven;
@@ -439,7 +438,7 @@ namespace Docking.Components
 
       private void AddLayout(string name, bool copyCurrent)
       {
-         if(!DockFrame.HasLayout(name))
+         if(DockFrame!=null && !DockFrame.HasLayout(name))
             DockFrame.CreateLayout(name, copyCurrent);
       }
 
@@ -936,20 +935,23 @@ namespace Docking.Components
 
          try
          {
-            foreach(DockItem item in DockFrame.GetItems())
+            if(DockFrame!=null)
             {
-               if(item.Content != null)
-               {
-                  Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
-
-                  if(item.Content is ILocalizableComponent)
-                  {
-                     ILocalizableComponent il = item.Content as ILocalizableComponent;
-                     il.LocalizationChanged(item);
-                     item.Content.Name = il.Name.Localized(item.Content);
-                  }
-               }
-               item.UpdateTitle();
+                foreach(DockItem item in DockFrame.GetItems())
+                {
+                   if(item.Content != null)
+                   {
+                      Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
+    
+                      if(item.Content is ILocalizableComponent)
+                      {
+                         ILocalizableComponent il = item.Content as ILocalizableComponent;
+                         il.LocalizationChanged(item);
+                         item.Content.Name = il.Name.Localized(item.Content);
+                      }
+                   }
+                   item.UpdateTitle();
+                }
             }
 
             Localization.LocalizeMenu(MenuBar);
@@ -1726,7 +1728,8 @@ namespace Docking.Components
       {
          string instance = "MainWindow";
          IPersistency persistency = this as IPersistency;
-         DockFrame.TabType = (DockFrame.TabAlgorithm)persistency.LoadSetting(instance, "TabAlgorithm", (int)DockFrame.TabAlgorithm.Proven);
+         if(DockFrame!=null)
+            DockFrame.TabType = (DockFrame.TabAlgorithm)persistency.LoadSetting(instance, "TabAlgorithm", (int)DockFrame.TabAlgorithm.Proven);
          UpdateTabAlgorithmMenu();
 
          // load XML node "layouts" in a memory file
@@ -1775,13 +1778,15 @@ namespace Docking.Components
 
       private void SaveDockFrameLayoutsToXmlConfigurationObject()
       {
-         // save first DockFrame persistence in own (memory) file
-         MemoryStream ms = new MemoryStream();
+         if(DockFrame==null)
+            return;
+
+         // step 1: save DockFrame layouts in memory file
+         MemoryStream ms = new MemoryStream();         
          XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
          DockFrame.SaveLayouts(xmlWriter);
          xmlWriter.Flush();
-
-         // re-load as XmlDocument
+         // step 2: re-load as XmlDocument:
          XmlDocument doc = new XmlDocument();
          doc.Load(new XmlTextReader(new MemoryStream(ms.ToArray())));
 
@@ -1868,53 +1873,56 @@ namespace Docking.Components
                }
             }
          }
-
+         
          // tell all components about load state
          // time for late initialization and/or loading persistence
-         foreach(DockItem item in DockFrame.GetItems())
+         if(DockFrame!=null)
          {
-            if (item.Content is Component)
-            {
-               var component = item.Content as Component;
-               System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
-               w.Start();
-               var allComponents = CollectAllComponentsOfType<Component>(component);
-               var allIPersistable = CollectAllComponentsOfType<IPersistable>(component);
-
-               foreach (var c in allComponents)
-                  c.DockItem = item;
-               foreach (var c in allIPersistable)
-               {
-                  try
-                  {
-                     c.LoadFrom(component.ComponentManager as IPersistency);
-                  }
-                  catch (Exception e)
-                  {
-                     MessageWriteLine("{0}.LoadFrom() Exception:{1}", c.GetType(), e);
-                  }
-               }
-
-               w.Stop();
-
-               #if DEBUG
-               {
-                  if (w.ElapsedMilliseconds > 300) // goal limit: 25, 300 is just to reduce current clutter
-                     MessageWriteLine("Invoking IComponent.Loaded() for component {0} took {1:0.00}s", item.Id, w.Elapsed.TotalSeconds);
-               }
-               #endif
-
-               component.VisibilityChanged(item.Content, item.Visible);
-            }
-
-            if(item.Content is IPropertyViewer)
-               mPropertyInterfaces.Add(item.Content as IPropertyViewer);
-
-            if(item.Content is IScript)
-               mScriptInterfaces.Add(item.Content as IScript);
-
-            if(item.Content is Component)
-               AddComponent(item.Content as Component);
+             foreach(DockItem item in DockFrame.GetItems())
+             {
+                if (item.Content is Component)
+                {
+                   var component = item.Content as Component;
+                   System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
+                   w.Start();
+                   var allComponents = CollectAllComponentsOfType<Component>(component);
+                   var allIPersistable = CollectAllComponentsOfType<IPersistable>(component);
+    
+                   foreach (var c in allComponents)
+                      c.DockItem = item;
+                   foreach (var c in allIPersistable)
+                   {
+                      try
+                      {
+                         c.LoadFrom(component.ComponentManager as IPersistency);
+                      }
+                      catch (Exception e)
+                      {
+                         MessageWriteLine("{0}.LoadFrom() Exception:{1}", c.GetType(), e);
+                      }
+                   }
+    
+                   w.Stop();
+    
+                   #if DEBUG
+                   {
+                      if (w.ElapsedMilliseconds > 300) // goal limit: 25, 300 is just to reduce current clutter
+                         MessageWriteLine("Invoking IComponent.Loaded() for component {0} took {1:0.00}s", item.Id, w.Elapsed.TotalSeconds);
+                   }
+                   #endif
+    
+                   component.VisibilityChanged(item.Content, item.Visible);
+                }
+    
+                if(item.Content is IPropertyViewer)
+                   mPropertyInterfaces.Add(item.Content as IPropertyViewer);
+    
+                if(item.Content is IScript)
+                   mScriptInterfaces.Add(item.Content as IScript);
+    
+                if(item.Content is Component)
+                   AddComponent(item.Content as Component);
+             }
          }
 
          mInitialLoadOfComponentsCompleted = true;
@@ -1923,15 +1931,18 @@ namespace Docking.Components
          foreach(object o in components)
             AddComponent(o);
 
-         foreach (DockItem item in DockFrame.GetItems())
+         if(DockFrame!=null)
          {
-            if (item.Content is Component)
-            {
-               var component = item.Content as Component;
-               var allComponents = CollectAllComponentsOfType<Component>(component);
-               foreach (var c in allComponents)
-                  c.Loaded();
-            }
+             foreach (DockItem item in DockFrame.GetItems())
+             {
+                if (item.Content is Component)
+                {
+                   var component = item.Content as Component;
+                   var allComponents = CollectAllComponentsOfType<Component>(component);
+                   foreach (var c in allComponents)
+                      c.Loaded();
+                }
+             }
          }
 
          total.Stop();
@@ -1944,31 +1955,35 @@ namespace Docking.Components
 
       private void ComponentsSave()
       {
-         foreach(DockItem item in DockFrame.GetItems())
+         if(DockFrame!=null)
          {
-            var allIPersistable = CollectAllComponentsOfType<IPersistable>(item.Content);
-            foreach (var p in allIPersistable)
-            {
-               try
-               {
-                  p.SaveTo(((Component)item.Content).ComponentManager as IPersistency);
-               }
-               catch (Exception e)
-               {
-                  MessageWriteLine("{0}.SaveTo() Exception:{1}", p.GetType(), e);
-               }
-            }
+             foreach(DockItem item in DockFrame.GetItems())
+             {
+                var allIPersistable = CollectAllComponentsOfType<IPersistable>(item.Content);
+                foreach (var p in allIPersistable)
+                {
+                   try
+                   {
+                      p.SaveTo(((Component)item.Content).ComponentManager as IPersistency);
+                   }
+                   catch (Exception e)
+                   {
+                      MessageWriteLine("{0}.SaveTo() Exception:{1}", p.GetType(), e);
+                   }
+                }
+             }
          }
          SaveDockFrameLayoutsToXmlConfigurationObject();
       }
 
       private void ComponentsRemove()
       {
-         foreach(DockItem item in DockFrame.GetItems())
-            if(item.Content is Component)
-               foreach(DockItem other in DockFrame.GetItems())
-                  if(other != item)
-                     (item.Content as Component).ComponentRemoved(other);
+         if(DockFrame!=null)
+            foreach(DockItem item in DockFrame.GetItems())
+               if(item.Content is Component)
+                  foreach(DockItem other in DockFrame.GetItems())
+                     if(other != item)
+                        (item.Content as Component).ComponentRemoved(other);
       }
 
       protected virtual void LoadPersistency(bool installLayoutMenu) // TODO abolish, replace by implementing IPersistable
@@ -1994,7 +2009,8 @@ namespace Docking.Components
             this.Maximize();
 
          AddLayout(DEFAULT_LAYOUT_NAME, false);
-         DockFrame.CurrentLayout = !String.IsNullOrEmpty(layout) ? layout : DEFAULT_LAYOUT_NAME;
+         if(DockFrame!=null)
+            DockFrame.CurrentLayout = !String.IsNullOrEmpty(layout) ? layout : DEFAULT_LAYOUT_NAME;
 
          if (installLayoutMenu)
             InstallLayoutMenu(layout);
@@ -2032,16 +2048,22 @@ namespace Docking.Components
          persistency.SaveSetting(instance, "w",           w);
          persistency.SaveSetting(instance, "h",           h);
 
-         persistency.SaveSetting(instance, "layout", DockFrame.CurrentLayout);
-         persistency.SaveSetting(instance, "TabAlgorithm", (int)DockFrame.TabType);
+         if(DockFrame!=null)
+         {
+            persistency.SaveSetting(instance, "layout", DockFrame.CurrentLayout);
+            persistency.SaveSetting(instance, "TabAlgorithm", (int)DockFrame.TabType);
+         }
 
          List<string> recentfiles = new List<string>();
-         foreach (TaggedImageMenuItem item in mRecentLogFiles)
-            recentfiles.Add((string)item.Tag);
-         foreach (TaggedImageMenuItem item in mRecentDbFiles)
-            recentfiles.Add((string)item.Tag);
-         foreach (TaggedImageMenuItem item in mRecentMiscFiles)
-            recentfiles.Add((string)item.Tag);
+         if(mRecentLogFiles!=null)
+            foreach (TaggedImageMenuItem item in mRecentLogFiles)
+               recentfiles.Add((string)item.Tag);
+         if(mRecentDbFiles!=null)
+            foreach (TaggedImageMenuItem item in mRecentDbFiles)
+               recentfiles.Add((string)item.Tag);
+         if(mRecentMiscFiles!=null)
+            foreach (TaggedImageMenuItem item in mRecentMiscFiles)
+               recentfiles.Add((string)item.Tag);
 
          persistency.SaveSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", Docking.Widgets.FileChooserDialogLocalized.InitialFolderToShow);
 
@@ -2051,10 +2073,11 @@ namespace Docking.Components
 
       public bool Quit(bool save_persistency, System.Action thingsToDoBeforeShutdown = null)
       {
-         foreach(DockItem item in DockFrame.GetItems())
-            if((item.Content!=null) && (item.Content is Component))
-               if(!(item.Content as Component).IsCloseOK())
-                  return false; // close has been canceled, for example by a dialog prompt which asks for saving an edited document
+         if(DockFrame!=null)
+            foreach(DockItem item in DockFrame.GetItems())
+               if((item.Content!=null) && (item.Content is Component))
+                  if(!(item.Content as Component).IsCloseOK())
+                     return false; // close has been canceled, for example by a dialog prompt which asks for saving an edited document
 
          // from here on, shutdown activity goes on, so returning false must not happen from here on!
 
@@ -2068,9 +2091,10 @@ namespace Docking.Components
             ComponentsRemove();
          }
 
-         foreach(DockItem item in DockFrame.GetItems())
-            if((item.Content!=null) && (item.Content is Component))
-               (item.Content as Component).Closed();
+         if(DockFrame!=null)
+            foreach(DockItem item in DockFrame.GetItems())
+               if((item.Content!=null) && (item.Content is Component))
+                  (item.Content as Component).Closed();
 
          PowerDown = true;
 
