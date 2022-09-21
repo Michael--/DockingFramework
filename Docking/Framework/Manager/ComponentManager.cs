@@ -21,6 +21,7 @@ using Docking.Widgets;
 using Docking.Framework;
 using Gtk;
 using Docking.Helper;
+using Application = Docking.Framework.Tools.Application;
 
 
 namespace Docking.Components
@@ -40,11 +41,9 @@ namespace Docking.Components
 
       #region Initialization
 
-      private static int mMainThreadID;
-
       public bool IsMainThread
       {
-         get { return Thread.CurrentThread.ManagedThreadId == mMainThreadID; }
+         get { return Application.IsMainThread; }
       }
 
       public readonly Stopwatch Clock; // A global clock. Useful for many purposes. This way you don't need to create own clocks to just measure time intervals.
@@ -61,7 +60,7 @@ namespace Docking.Components
       public ComponentManager()
       : this(new List<string>().ToArray())
       {}
-                                           
+
       public ComponentManager(string[] args)
       : this(args, "en-US", Assembly.GetEntryAssembly().GetName().Name, null)
       {}
@@ -73,7 +72,8 @@ namespace Docking.Components
          Clock = new Stopwatch();
          Clock.Start();
 
-         mMainThreadID = Thread.CurrentThread.ManagedThreadId; // make sure that you construct this class from the main thread!
+         // make sure that you construct this class from the main thread!
+         Application.mMainThreadID = Thread.CurrentThread.ManagedThreadId;
 
          CommandLineArguments = args;
 
@@ -942,7 +942,7 @@ namespace Docking.Components
                    if(item.Content != null)
                    {
                       Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
-    
+
                       if(item.Content is ILocalizableComponent)
                       {
                          ILocalizableComponent il = item.Content as ILocalizableComponent;
@@ -1782,7 +1782,7 @@ namespace Docking.Components
             return;
 
          // step 1: save DockFrame layouts in memory file
-         MemoryStream ms = new MemoryStream();         
+         MemoryStream ms = new MemoryStream();
          XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
          DockFrame.SaveLayouts(xmlWriter);
          xmlWriter.Flush();
@@ -1838,7 +1838,7 @@ namespace Docking.Components
       // After modifying a menu, you need to call .ShowAll() on its root element to properly make all menus and submenus show up.
       // Without this call, some of them may not be visible.
       protected void ModifyingTheMenuIsFinished()
-      {        
+      {
          MenuBar.ShowAll();
       }
 
@@ -1873,7 +1873,7 @@ namespace Docking.Components
                }
             }
          }
-         
+
          // tell all components about load state
          // time for late initialization and/or loading persistence
          if(DockFrame!=null)
@@ -1887,7 +1887,7 @@ namespace Docking.Components
                    w.Start();
                    var allComponents = CollectAllComponentsOfType<Component>(component);
                    var allIPersistable = CollectAllComponentsOfType<IPersistable>(component);
-    
+
                    foreach (var c in allComponents)
                       c.DockItem = item;
                    foreach (var c in allIPersistable)
@@ -1901,25 +1901,25 @@ namespace Docking.Components
                          MessageWriteLine("{0}.LoadFrom() Exception:{1}", c.GetType(), e);
                       }
                    }
-    
+
                    w.Stop();
-    
+
                    #if DEBUG
                    {
                       if (w.ElapsedMilliseconds > 300) // goal limit: 25, 300 is just to reduce current clutter
                          MessageWriteLine("Invoking IComponent.Loaded() for component {0} took {1:0.00}s", item.Id, w.Elapsed.TotalSeconds);
                    }
                    #endif
-    
+
                    component.VisibilityChanged(item.Content, item.Visible);
                 }
-    
+
                 if(item.Content is IPropertyViewer)
                    mPropertyInterfaces.Add(item.Content as IPropertyViewer);
-    
+
                 if(item.Content is IScript)
                    mScriptInterfaces.Add(item.Content as IScript);
-    
+
                 if(item.Content is Component)
                    AddComponent(item.Content as Component);
              }
@@ -3095,10 +3095,7 @@ namespace Docking.Components
 
          if (Visible)
          {
-            Gtk.Application.Invoke(delegate
-            {
-               MessageWriteLineWithoutInvoke(s);
-            });
+            Application.Invoke(() => MessageWriteLineWithoutInvoke(s));
          }
       }
 
@@ -3241,10 +3238,7 @@ namespace Docking.Components
          /// </summary>
          public void Quit()
          {
-            Gtk.Application.Invoke(delegate
-            {
-               ComponentManager.Quit(true);
-            });
+            Application.Invoke(() => ComponentManager.Quit(true));
          }
 
          /// <summary>

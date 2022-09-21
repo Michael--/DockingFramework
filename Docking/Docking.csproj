@@ -130,6 +130,7 @@
     <Compile Include="Framework\Tools\DispenseInvoke.cs" />
     <Compile Include="Framework\Tools\ResourceLoader_Docking.cs" />
     <Compile Include="Framework\Tools\MD5Helper.cs" />
+    <Compile Include="Framework\Tools\Application.cs" />
     <Compile Include="Framework\Widgets\LocalizedWidgets.cs" />
     <Compile Include="Framework\Widgets\Sheet.cs" />
     <Compile Include="gtk-gui\generated.cs" />
