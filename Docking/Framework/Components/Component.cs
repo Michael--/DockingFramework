@@ -3,11 +3,24 @@ using System.Collections.Generic;
 namespace Docking.Components
 {
 	public class Component : Gtk.Bin
-	{
+   {
+      private ComponentManager mComponentManager;
+
       // The component manager is the main host application.
       // By operating with this instance, you can get access to it.
-      public ComponentManager ComponentManager { get; set; }
- 
+      public ComponentManager ComponentManager
+      {
+         get { return mComponentManager;}
+         set
+         {
+            if (ComponentManager != value)
+            {
+               mComponentManager = value;
+               OnAssignComponentManagerOverride(mComponentManager);
+            }
+         }
+      }
+
       // The parent DockItem inside the ComponentManager (if any) which hosts this component.
       // Gets set by the docking framework.
       // Your component derived from this class will only do read access, if any.
@@ -20,13 +33,14 @@ namespace Docking.Components
 
       // Returns true if this component currently is selected inits containing ComponentManager.
       // Note that this is something different than the focus.
-      // The focus can be at some text edit control etc.      
+      // The focus can be at some text edit control etc.
       public bool IsCurrentDockItem { get
       {
          return ComponentManager!=null
              && ComponentManager.CurrentDockItem!=null
              && ComponentManager.CurrentDockItem==this.DockItem;
       }}
+
 
       #region Python scripting
       /// <summary>
@@ -158,6 +172,15 @@ namespace Docking.Components
       /// Called when your property object has been changed
       /// </summary>
       public virtual void PropertyChanged() { }
+
+      /// <summary>
+      /// Invoked when ComponentManager instance updated. May pass a null reference.
+      /// </summary>
+      /// <param name="manager">The newly set ComponentManager instance</param>
+      protected virtual void OnAssignComponentManagerOverride(ComponentManager manager)
+      {
+         //nothing to do here
+      }
 
       #region property convinience private details
 
