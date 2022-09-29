@@ -85,8 +85,8 @@ namespace Docking.Components
          AccelGroup = new AccelGroup();
          AddAccelGroup(AccelGroup);
 
-         LicenseGroup = new LicenseGroup();
-         ComponentFinder = new Docking.Components.ComponentFinder();
+         LicenseGroup    = new LicenseGroup();
+         ComponentFinder = ComponentFinderHelper.Instance;
 
          if(!string.IsNullOrEmpty(pythonApplicationObjectName))
             InitPythonEngine(pythonApplicationObjectName);
