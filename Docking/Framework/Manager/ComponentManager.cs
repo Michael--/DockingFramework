@@ -19,9 +19,9 @@ using IronPython.Runtime;
 using Docking.Tools;
 using Docking.Widgets;
 using Docking.Framework;
+using Docking.Framework.Tools;
 using Gtk;
 using Docking.Helper;
-using Application = Docking.Framework.Tools.Application;
 
 
 namespace Docking.Components
@@ -43,7 +43,7 @@ namespace Docking.Components
 
       public bool IsMainThread
       {
-         get { return Application.IsMainThread; }
+         get { return GtkDispatcher.Instance.IsMainThread; }
       }
 
       public readonly Stopwatch Clock; // A global clock. Useful for many purposes. This way you don't need to create own clocks to just measure time intervals.
@@ -71,9 +71,6 @@ namespace Docking.Components
       {
          Clock = new Stopwatch();
          Clock.Start();
-
-         // make sure that you construct this class from the main thread!
-         Application.mMainThreadID = Thread.CurrentThread.ManagedThreadId;
 
          CommandLineArguments = args;
 
@@ -2101,7 +2098,7 @@ namespace Docking.Components
          if(thingsToDoBeforeShutdown!=null)
             thingsToDoBeforeShutdown();
 
-         Application.Quit();
+         Gtk.Application.Quit();
          return true;
       }
 
@@ -3095,7 +3092,7 @@ namespace Docking.Components
 
          if (Visible)
          {
-            Application.Invoke(() => MessageWriteLineWithoutInvoke(s));
+            GtkDispatcher.Instance.Invoke(() => MessageWriteLineWithoutInvoke(s));
          }
       }
 
@@ -3238,7 +3235,7 @@ namespace Docking.Components
          /// </summary>
          public void Quit()
          {
-            Application.Invoke(() => ComponentManager.Quit(true));
+            GtkDispatcher.Instance.Invoke(() => ComponentManager.Quit(true));
          }
 
          /// <summary>
