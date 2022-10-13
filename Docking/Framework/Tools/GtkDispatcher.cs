@@ -27,6 +27,8 @@ namespace Docking.Framework.Tools
          }
 
          mMainThreadID        = Thread.CurrentThread.ManagedThreadId;
+
+         SynchronizationContext.SetSynchronizationContext(new SynchronizationContext());
          mMainTaskScheduler = TaskScheduler.FromCurrentSynchronizationContext();
       }
 

@@ -3037,7 +3037,7 @@ namespace Docking.Components
 
       protected bool SetLogFile(string filename, bool clobber)
       {
-         if(filename!=null && filename.Length>=0)
+         if(filename!=null && filename.Length > 0)
          {
             try
             {
