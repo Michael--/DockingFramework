@@ -4,6 +4,7 @@ using MonoDevelop.Components;
 using System.Threading;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Docking.Framework.Tools;
 
 namespace Docking.Components
 {
@@ -13,7 +14,7 @@ namespace Docking.Components
       public override void Loaded()
       {
          // important to call base first to ensure loading of persistency
-         base.Loaded(); 
+         base.Loaded();
 
          Task.Factory.StartNew(() =>
          {
@@ -33,8 +34,8 @@ namespace Docking.Components
             m_ScriptingInstance = new CommandScript(this, consoleview, ComponentManager);
 
             // output can be redirected to any object which implements method write and property softspace
-            string[] phython_script_for_redirecting_stdout_and_stderr = new string[] 
-            { 
+            string[] phython_script_for_redirecting_stdout_and_stderr = new string[]
+            {
                "import sys",
                "cmd=app().GetInstance(\""+(this as ILocalizableComponent).Name+"\")",
                "sys.stderr=cmd",
@@ -201,21 +202,21 @@ namespace Docking.Components
          }
 
          string inputL = input.Trim().ToLowerInvariant();
-         if(inputL=="help"   || 
+         if(inputL=="help"   ||
             inputL=="help()" ||
-            inputL.StartsWith("?")) 
+            inputL.StartsWith("?"))
          {
             // treat this input specially to help the user. we do not pass this line to the python interpreter.
 
             consoleview.WriteOutput("Congratulations, you have found the help function :)"                             + "\n" +
-                                    "This window is an interactive Python command line. You can input Python commands" + "\n" + 
-                                    "and will see their outputs directly." + "\n" + 
-                                    "To get more help, use the help() function, taking 1 parameter."                   + "\n" + 
-                                    "It will show help for that parameter, including for example all its methods etc." + "\n" + 
+                                    "This window is an interactive Python command line. You can input Python commands" + "\n" +
+                                    "and will see their outputs directly." + "\n" +
+                                    "To get more help, use the help() function, taking 1 parameter."                   + "\n" +
+                                    "It will show help for that parameter, including for example all its methods etc." + "\n" +
                                     "To get a list of all available such parameters, you can use"                      + "\n" +
                                     "   print dir()"                                                                   + "\n" +
                                     "That command returns a list of all available global objects. The most interesting one in there is" + "\n" +
-                                    "app(), which is the invocation of a getter for the main application object." + "\n" + 
+                                    "app(), which is the invocation of a getter for the main application object." + "\n" +
                                     "To see which methods that object offers, run" + "\n" +
                                     "   help(app())"+ "\n" +
                                     "Especially, this object has 4 interesting methods:" + "\n" +
@@ -240,7 +241,7 @@ namespace Docking.Components
          try { ComponentManager.Execute(input); }
          catch(Exception ex)
          {
-            consoleview.WriteOutput("Error: " + ex.Message);               
+            consoleview.WriteOutput("Error: " + ex.Message);
             ok = false;
          }
          DisableInvokeOnAccessingConsoleView = false;

@@ -52,11 +52,6 @@ namespace Docking.Components
 
       public string ApplicationName { get; private set; }
 
-      static ComponentManager()
-      {
-         PowerDown = false;
-      }
-
       public ComponentManager()
       : this(new List<string>().ToArray())
       {}
@@ -91,6 +86,8 @@ namespace Docking.Components
          MakeWidgetReceiveDropEvents(Toplevel, OnDragDataReceived);
 
          this.WindowStateEvent += OnWindowStateChanged;
+
+         GtkDispatcher.Instance.RegisterShutdownHandler(QuitInternal);
 
          MessageBox.Init(this);
       }
@@ -987,9 +984,13 @@ namespace Docking.Components
       public DockFrame       DockFrame                { get; private set; }
       public ComponentFinder ComponentFinder          { get; private set; }
       public LicenseGroup    LicenseGroup             { get; private set; }
-      public static bool     PowerDown                { get; private set; }
+
       public Localization    Localization             { get; private set; }
       public bool            OperateInBatchMode       { get; set;         }
+      public bool PowerDown
+      {
+         get { return GtkDispatcher.Instance.IsShutdown; }
+      }
 
       // default font for all languages except Arabic and Hebrew
       // @see DEFAULT_FONT_ARAB
@@ -2068,7 +2069,12 @@ namespace Docking.Components
          persistency.SaveSetting(instance, "RecentFiles", recentfiles);
       }
 
-      public bool Quit(bool save_persistency, System.Action thingsToDoBeforeShutdown = null)
+      public void Quit(bool save_persistency, System.Action beforeShutdownAction = null)
+      {
+         GtkDispatcher.Instance.InitiateShutdown(save_persistency, beforeShutdownAction);
+      }
+
+      private bool QuitInternal(bool save_persistency, System.Action thingsToDoBeforeShutdown = null)
       {
          if(DockFrame!=null)
             foreach(DockItem item in DockFrame.GetItems())
@@ -2093,7 +2099,7 @@ namespace Docking.Components
                if((item.Content!=null) && (item.Content is Component))
                   (item.Content as Component).Closed();
 
-         PowerDown = true;
+         GtkDispatcher.Instance.IsShutdown = true;
 
          if(thingsToDoBeforeShutdown!=null)
             thingsToDoBeforeShutdown();
@@ -3235,7 +3241,7 @@ namespace Docking.Components
          /// </summary>
          public void Quit()
          {
-            GtkDispatcher.Instance.Invoke(() => ComponentManager.Quit(true));
+            ComponentManager.Quit(true);
          }
 
          /// <summary>

@@ -11,11 +11,14 @@ namespace Docking.Framework.Tools
    /// </summary>
    public class GtkDispatcher
    {
-      private int mMainThreadID = 0;
-      private TaskScheduler mMainTaskScheduler = null;
+      private int                      mMainThreadID      = 0;
+      private TaskScheduler            mMainTaskScheduler = null;
+      private Func<bool, Action, bool> mShutdownAction;
 
       private GtkDispatcher()
-      { }
+      {
+         IsShutdown = false;
+      }
 
       public static readonly GtkDispatcher Instance = new GtkDispatcher();
 
@@ -37,6 +40,20 @@ namespace Docking.Framework.Tools
          get { return Thread.CurrentThread.ManagedThreadId == mMainThreadID; }
       }
 
+      public bool IsShutdown { get; internal set; }
+
+      internal void RegisterShutdownHandler(Func<bool, Action, bool> shutdownAction)
+      {
+         mShutdownAction += shutdownAction;
+      }
+
+      public void InitiateShutdown(bool savePersistence, Action action = null)
+      {
+         if (!IsShutdown)
+         {
+            Invoke(() => mShutdownAction(savePersistence, action));
+         }
+      }
 
       public void Invoke(Action handler, [CallerFilePath] string callerFileName = "", [CallerLineNumber] int callerLineNumber = 0)
       {
