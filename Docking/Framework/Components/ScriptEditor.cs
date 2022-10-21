@@ -78,7 +78,7 @@ namespace Docking.Components
                CompiledCode code = null;
                try
                {
-                  code = ComponentManager.Compile(script);
+                  code = ComponentManager.ScriptEngine.Compile(script);
                   Message("");
                }
                catch (SyntaxErrorException ex)

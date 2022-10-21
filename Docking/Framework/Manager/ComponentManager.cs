@@ -1,27 +1,18 @@
 using System;
 using System.IO;
 using System.Diagnostics;
-using System.Xml;
-using System.Xml.Linq;
-using System.Xml.Serialization;
 using System.Text;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Reflection;
 using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Globalization;
-using Microsoft.Scripting;
-using Microsoft.Scripting.Hosting;
-using IronPython.Hosting;
-using IronPython.Runtime;
 using Docking.Tools;
 using Docking.Widgets;
 using Docking.Framework;
 using Docking.Framework.Tools;
 using Gtk;
 using Docking.Helper;
+
 
 
 namespace Docking.Components
@@ -36,7 +27,7 @@ namespace Docking.Components
       }
    }
 
-   public class ComponentManager : Gtk.Window, IPersistency, IMessageWriteLine, ICut, ICopy, IPaste
+   public class ComponentManager : Gtk.Window, IMessageWriteLine, ICut, ICopy, IPaste
    {
 
       #region Initialization
@@ -49,6 +40,8 @@ namespace Docking.Components
       public readonly Stopwatch Clock; // A global clock. Useful for many purposes. This way you don't need to create own clocks to just measure time intervals.
 
       public string[] CommandLineArguments;
+
+      public PythonScriptEngine ScriptEngine { get; private set; }
 
       public string ApplicationName { get; private set; }
 
@@ -70,6 +63,9 @@ namespace Docking.Components
          CommandLineArguments = args;
 
          this.Title = ApplicationName = application_name;
+         Settings1  = new TGSettings();
+
+         Settings1.TweakConfigurationFileAction = PerformDownwardsCompatibilityTweaksOnConfigurationFile;
 
          Localization = new Components.Localization(default_language, this);
          Localization.SearchForResources(System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Languages", "*.resx"));
@@ -79,9 +75,12 @@ namespace Docking.Components
 
          LicenseGroup    = new LicenseGroup();
          ComponentFinder = ComponentFinderHelper.Instance;
+         ScriptEngine    = new PythonScriptEngine();
 
-         if(!string.IsNullOrEmpty(pythonApplicationObjectName))
-            InitPythonEngine(pythonApplicationObjectName);
+         if (!string.IsNullOrEmpty(pythonApplicationObjectName))
+         {
+            ScriptEngine.Initialize(pythonApplicationObjectName, this);
+         }
 
          MakeWidgetReceiveDropEvents(Toplevel, OnDragDataReceived);
 
@@ -192,9 +191,6 @@ namespace Docking.Components
 
       public AccelGroup AccelGroup { get; private set; }
 
-      const string CONFIG_ROOT_ELEMENT = "DockingConfiguration";
-      const string DEFAULT_LAYOUT_NAME = "Default"; // TODO can we localize this string? Careful, the name is persisted...
-
       ImageMenuItem m_DeleteLayout;
 
       /// <summary>
@@ -208,7 +204,7 @@ namespace Docking.Components
          m_DeleteLayout = new TaggedLocalizedImageMenuItem("Delete Current Layout");
          m_DeleteLayout.Activated += (object sender, EventArgs e) =>
          {
-            if(DockFrame.CurrentLayout != DEFAULT_LAYOUT_NAME)
+            if(DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME)
             {
                ResponseType result = MessageBox.Show(this, MessageType.Question,
                                          ButtonsType.YesNo,
@@ -219,9 +215,9 @@ namespace Docking.Components
                   MenuItem nitem = sender as MenuItem;
                   DockFrame.DeleteLayout(DockFrame.CurrentLayout);
                   RemoveMenuItem(nitem.Parent, DockFrame.CurrentLayout);
-                  DockFrame.CurrentLayout = DEFAULT_LAYOUT_NAME;
+                  DockFrame.CurrentLayout = TGSettings.DEFAULT_LAYOUT_NAME;
                   CheckMenuItem(nitem.Parent, DockFrame.CurrentLayout);
-                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != DEFAULT_LAYOUT_NAME);
+                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
                }
             }
          };
@@ -251,7 +247,7 @@ namespace Docking.Components
                DockFrame.CreateLayout(newLayoutName, !createEmptyLayout);
                DockFrame.CurrentLayout = newLayoutName;
                AppendLayoutMenu(newLayoutName, false);
-               m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != DEFAULT_LAYOUT_NAME);
+               m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
             }
          };
 
@@ -262,7 +258,7 @@ namespace Docking.Components
          foreach(String s in DockFrame.Layouts)
             AppendLayoutMenu(s, true);
 
-         m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != DEFAULT_LAYOUT_NAME);
+         m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
          MenuBar.ShowAll();
       }
 
@@ -414,7 +410,7 @@ namespace Docking.Components
                   if(!nitem.Active)
                      nitem.Active = true;
                   MessageWriteLine(String.Format("CurrentLayout={0}", label));
-                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != DEFAULT_LAYOUT_NAME);
+                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
                }
                else
                   if(!nitem.Active)
@@ -446,7 +442,7 @@ namespace Docking.Components
 
       private void InstallQuitMenu(bool minimalistic = false)
       {
-         if(ConfigurationIsReadonly)
+         if(Settings1.IsReadonly)
          {
             {
                ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit Without Saving Config (Config is Read-Only)");
@@ -640,7 +636,7 @@ namespace Docking.Components
 
       protected void OnRecentFileActivated(object sender, EventArgs args)
       {
-         TaggedImageMenuItem item = sender as TaggedImageMenuItem;
+         var item = sender as TaggedImageMenuItem;
          if(item==null)
          {
             return;
@@ -670,7 +666,7 @@ namespace Docking.Components
          // no call AddToRecentFiles() is necessary here, OpenFile() already takes care of that
       }
 
-#region cut, copy, paste
+      #region cut, copy, paste
 
       ImageMenuItem mMenuCut, mMenuCopy, mMenuPaste;
 
@@ -749,7 +745,7 @@ namespace Docking.Components
          }
       }
 
-#endregion
+      #endregion
 
       protected void SearchLoadAndInitializeComponentsFromDLLs(bool minimalistic = false)
       {
@@ -798,7 +794,7 @@ namespace Docking.Components
             }
 
             // use last entry as menu name and create
-            TaggedLocalizedImageMenuItem item = new TaggedLocalizedImageMenuItem(m[m.Length - 1]);
+            var item = new TaggedLocalizedImageMenuItem(m[m.Length - 1]);
             item.Tag = cfi;
             // TODO: make the menu image visible if you know how
             Gdk.Pixbuf pb = cfi.Icon;
@@ -885,7 +881,7 @@ namespace Docking.Components
             string code = split[0];
             string name = split[1];
 
-            TaggedLocalizedCheckedMenuItem item = new TaggedLocalizedCheckedMenuItem(name) { IgnoreLocalization = true };
+            var item = new TaggedLocalizedCheckedMenuItem(name) { IgnoreLocalization = true };
             item.Activated += OnLanguageActivated;
             item.Tag = code;
             AppendMenuItem(string.Format("{0}\\Language", baseMenu, name), item);
@@ -902,7 +898,7 @@ namespace Docking.Components
          if(recursionWorkaround)
             return;
 
-         TaggedLocalizedCheckedMenuItem nitem = sender as TaggedLocalizedCheckedMenuItem;
+         var nitem = sender as TaggedLocalizedCheckedMenuItem;
          string code = nitem.Tag as string;
          SetLanguage(code, false, true);
       }
@@ -965,21 +961,21 @@ namespace Docking.Components
             this.Show();
       }
 
-#endregion
+      #endregion
 
-#region private properties
+      #region private properties
 
       private Statusbar      StatusBar                { get; set; }
       private Toolbar        ToolBar                  { get; set; }
       private MenuBar        MenuBar                  { get; set; }
-      private String         ConfigurationFilename    { get; set; }
-      private bool           ConfigurationIsReadonly  { get; set; }
-      private XmlDocument    ConfigurationXmlDocument { get; set; }
-      private XmlNode        ConfigurationXmlNode     { get; set; }
 
-#endregion
+      internal TGSettings Settings1 { get; set; }
 
-#region public properties
+      public IPersistency Persistence {get{return Settings1 as IPersistency;}}
+
+      #endregion
+
+      #region public properties
 
       public DockFrame       DockFrame                { get; private set; }
       public ComponentFinder ComponentFinder          { get; private set; }
@@ -1077,15 +1073,15 @@ namespace Docking.Components
          }
       }
 
-#endregion
+      #endregion
 
-#region OpenFile
+      #region OpenFile
 
       protected IArchive Archive { get; set; }
 
       void InstallFileOpenMenu()
       {
-         TaggedLocalizedImageMenuItem menuItem = new TaggedLocalizedImageMenuItem("Open...");
+         var menuItem = new TaggedLocalizedImageMenuItem("Open...");
          menuItem.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.File-16.png"));
          menuItem.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.O, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          menuItem.Activated += (sender, e) =>
@@ -1120,7 +1116,7 @@ namespace Docking.Components
 
       void InstallFileSaveConfigMenu()
       {
-         TaggedLocalizedImageMenuItem menuItem = new TaggedLocalizedImageMenuItem("Save Config As...");
+         var menuItem = new TaggedLocalizedImageMenuItem("Save Config As...");
          menuItem.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Save-16.png"));
          menuItem.AddAccelerator("activate", AccelGroup, new AccelKey(Gdk.Key.S, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          menuItem.Activated += (sender, e) =>
@@ -1128,11 +1124,11 @@ namespace Docking.Components
             string filename = SaveFileDialog("Save Config As...", new List<FileFilterExt>()
             {
                new FileFilterExt("*.xml", "Config File")
-            }, ConfigurationFilename);
+            }, Settings1.ConfigurationFilename);
 
             if (filename != null)
             {
-               ConfigurationFilename = filename;
+               Settings1.ConfigurationFilename = filename;
                SaveConfigurationFile();
             }
          };
@@ -1217,7 +1213,7 @@ namespace Docking.Components
                bool success = true;
 
                // create a dialog and update the internal component model
-               ComponentSelectorDialog dlg = new ComponentSelectorDialog(this, available_components, existing_components);
+               var dlg = new ComponentSelectorDialog(this, available_components, existing_components);
                int result = dlg.Run();
                dlg.GetSelectedComponents(ref available_components, ref existing_components);
                dlg.Hide();
@@ -1298,7 +1294,7 @@ namespace Docking.Components
       {
          String result = null;
 
-         FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.SelectFolder,
+         var dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.SelectFolder,
                                               "Select".L(), ResponseType.Accept,
                                               "Cancel".L(), ResponseType.Cancel);
 
@@ -1324,7 +1320,7 @@ namespace Docking.Components
       {
          string result = null;
 
-         FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
+         var dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
                                               "Open".L(),   ResponseType.Accept,
                                               "Cancel".L(), ResponseType.Cancel);
          if(!String.IsNullOrEmpty(startFolder))
@@ -1352,7 +1348,7 @@ namespace Docking.Components
       {
          string[] result = null;
 
-         FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
+         var dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Open,
                                               "Open".L(),   ResponseType.Accept,
                                               "Cancel".L(), ResponseType.Cancel);
          if(!String.IsNullOrEmpty(startFolder))
@@ -1396,7 +1392,7 @@ namespace Docking.Components
       {
          string result = null;
 
-         FileChooserDialogLocalized dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Save,
+         var dlg = new FileChooserDialogLocalized(title, this, FileChooserAction.Save,
                                               "Save".L(),   ResponseType.Accept,
                                               "Cancel".L(), ResponseType.Cancel);
          if (currentFilename != null)
@@ -1559,9 +1555,9 @@ namespace Docking.Components
          return false;
       }
 
-#endregion
+      #endregion
 
-#region drag+drop
+      #region drag+drop
 
       // our own enum to which we map the various MIME types we receive via drag+drop
       enum DragDropDataType
@@ -1644,159 +1640,37 @@ namespace Docking.Components
          }
       }
 
-#endregion
+      #endregion
 
-#region Configuration
+      #region Configuration
 
       // In case a component has changed its namespace or class name, this function can massage the config to map the old name to the new one.
       protected void RemapComponent(string from, string to)
       {
-         XmlNode layouts = ConfigurationXmlNode.SelectSingleNode("layouts");
-         if(layouts!=null)
-         {
-            XmlNodeList nodes = layouts.SelectNodes(@"//item[@id]"); // selects all nodes named "item" with attribute "id"
-            foreach(XmlNode node in nodes)
-            {
-               foreach(XmlAttribute attr in node.Attributes)
-               {
-                  if(attr.Name=="id")
-                  {
-                     if(attr.Value==from)
-                        attr.Value = to;
-                     else if(attr.Value.StartsWith(from+"-"))
-                        attr.Value = to+"-"+attr.Value.Substring(from.Length+1);
-                  }
-
-               }
-            }
-         }
-
-         List<XmlNode> todo = new List<XmlNode>();
-         foreach(XmlNode node in ConfigurationXmlNode.ChildNodes)
-            if(node.Name==from || node.Name.StartsWith(from+"-"))
-               todo.Add(node);
-         foreach(XmlNode oldnode in todo)
-         {
-            string newname;
-            if(oldnode.Name==from)
-               newname = to;
-            else if(oldnode.Name.StartsWith(from+"-"))
-               newname = to+"-"+oldnode.Name.Substring(from.Length+1);
-            else
-               throw new InvalidDataException(); // we should never get here
-            XmlNode newnode = ConfigurationXmlDocument.CreateNode(XmlNodeType.Element, newname, "");
-            newnode.InnerXml = oldnode.InnerXml;
-            ConfigurationXmlNode.InsertAfter(newnode, oldnode);
-            ConfigurationXmlNode.RemoveChild(oldnode);
-         }
+         Settings1.RemapComponent(from, to);
       }
 
       protected virtual void PerformDownwardsCompatibilityTweaksOnConfigurationFile()
       {
+         //nothing to do here
       }
 
       protected void LoadConfigurationFile(String filename = null)
       {
-         if(string.IsNullOrEmpty(filename))
-         {
-            filename = System.IO.Path.Combine(AssemblyInfoExt.LocalSettingsFolder, "config.xml");
-         }
-
-         ConfigurationFilename = filename;
-         ConfigurationXmlDocument = new XmlDocument();
-
-         if(!File.Exists(filename))
-         {
-            ConfigurationXmlNode = ConfigurationXmlDocument.AppendChild(ConfigurationXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT));
-            return;
-         }
-
-         try { ConfigurationXmlDocument.Load(filename); } catch { ConfigurationXmlDocument = new XmlDocument(); }
-
-         ConfigurationXmlNode = ConfigurationXmlDocument.SelectSingleNode(CONFIG_ROOT_ELEMENT);
-         if(ConfigurationXmlNode==null)
-            ConfigurationXmlNode = ConfigurationXmlDocument.AppendChild(ConfigurationXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT));
-
-         PerformDownwardsCompatibilityTweaksOnConfigurationFile();
-
-         ConfigurationIsReadonly = LoadSetting("", "readonly", false);
+         Settings1.LoadConfigurationFile(filename);
       }
 
       protected void LoadLayout()
       {
          string instance = "MainWindow";
-         IPersistency persistency = this as IPersistency;
-         if(DockFrame!=null)
-            DockFrame.TabType = (DockFrame.TabAlgorithm)persistency.LoadSetting(instance, "TabAlgorithm", (int)DockFrame.TabAlgorithm.Proven);
+
+         if (DockFrame != null)
+         {
+            DockFrame.TabType = (DockFrame.TabAlgorithm)Settings1.LoadSetting(instance, "TabAlgorithm", (int)DockFrame.TabAlgorithm.Proven);
+         }
          UpdateTabAlgorithmMenu();
 
-         // load XML node "layouts" in a memory file
-         // we should leave the implementation of the Mono Develop Docking as it is
-         // to make it easier to update with newest version
-         XmlNode layouts = ConfigurationXmlNode.SelectSingleNode("layouts");
-         if(layouts!=null)
-         {
-            MemoryStream ms = new MemoryStream();
-            XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
-            layouts.WriteTo(xmlWriter);
-            xmlWriter.Flush();
-            XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
-            DockFrame.LoadLayouts(xmlReader);
-         }
-      }
-
-      protected void SaveConfigurationFile()
-      {
-         ComponentsSave();
-
-         Localization.WriteChangedResourceFiles();
-
-         if (!string.IsNullOrEmpty(ConfigurationFilename))
-         {
-            try
-            {
-               string dir = System.IO.Path.GetDirectoryName(ConfigurationFilename);
-               if(!System.IO.Directory.Exists(dir))
-                  System.IO.Directory.CreateDirectory(dir);
-
-               using(FileStream f = new FileStream(ConfigurationFilename, FileMode.Create, FileAccess.ReadWrite,
-                                                   FileShare.None // open the file exclusively for writing, i.e., prevent other instances of us from interfering!
-                                                  ))
-               {
-                  ConfigurationXmlDocument.Save(f);
-               }
-
-            }
-            catch(Exception e)
-            {
-               this.MessageWriteLine("Failed to save configuration file '{0}': {1}", ConfigurationFilename, e.ToString());
-            }
-         }
-      }
-
-      private void SaveDockFrameLayoutsToXmlConfigurationObject()
-      {
-         if(DockFrame==null)
-            return;
-
-         // step 1: save DockFrame layouts in memory file
-         MemoryStream ms = new MemoryStream();
-         XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
-         DockFrame.SaveLayouts(xmlWriter);
-         xmlWriter.Flush();
-         // step 2: re-load as XmlDocument:
-         XmlDocument doc = new XmlDocument();
-         doc.Load(new XmlTextReader(new MemoryStream(ms.ToArray())));
-
-         // select layouts and replace in XmlConfiguration
-         // note that a node from other document must imported before use for add/replace
-         XmlNode layouts = doc.SelectSingleNode("layouts");
-         XmlNode newLayouts = ConfigurationXmlDocument.ImportNode(layouts, true);
-         XmlNode oldLayouts = ConfigurationXmlNode.SelectSingleNode("layouts");
-         if(oldLayouts != null)
-            ConfigurationXmlNode.ReplaceChild(newLayouts, oldLayouts);
-         else
-            ConfigurationXmlNode.AppendChild(newLayouts);
+         Settings1.LoadLayout(DockFrame);
       }
 
       private bool mInitialLoadOfComponentsCompleted = false;
@@ -1892,7 +1766,7 @@ namespace Docking.Components
                    {
                       try
                       {
-                         c.LoadFrom(component.ComponentManager as IPersistency);
+                         c.LoadFrom(Settings1);
                       }
                       catch (Exception e)
                       {
@@ -1962,7 +1836,7 @@ namespace Docking.Components
                 {
                    try
                    {
-                      p.SaveTo(((Component)item.Content).ComponentManager as IPersistency);
+                      p.SaveTo(Settings1);
                    }
                    catch (Exception e)
                    {
@@ -1970,8 +1844,9 @@ namespace Docking.Components
                    }
                 }
              }
+
+             Settings1.SaveLayout(DockFrame);
          }
-         SaveDockFrameLayoutsToXmlConfigurationObject();
       }
 
       private void ComponentsRemove()
@@ -1984,19 +1859,27 @@ namespace Docking.Components
                         (item.Content as Component).ComponentRemoved(other);
       }
 
+      private void SaveConfigurationFile()
+      {
+         ComponentsSave();
+         Localization.WriteChangedResourceFiles();
+
+         Settings1.SaveConfigurationFile();
+      }
+
+
       protected virtual void LoadPersistency(bool installLayoutMenu) // TODO abolish, replace by implementing IPersistable
       {
          string instance = "MainWindow";
-         IPersistency persistency = this as IPersistency;
 
-         //ConfigurationIsReadonly = persistency.LoadSetting("", "readonly", false); // exceptionally read earlier in LoadConfigurationFile(), not here
+         //IsReadonly = persistency.LoadSetting("", "readonly", false); // exceptionally read earlier in LoadConfigurationFile(), not here
 
-         int    windowstate = persistency.LoadSetting(instance, "windowstate", 0);
-         int    x           = persistency.LoadSetting(instance, "x",           -9999999);
-         int    y           = persistency.LoadSetting(instance, "y",           -9999999);
-         int    w           = persistency.LoadSetting(instance, "w",           -9999999);
-         int    h           = persistency.LoadSetting(instance, "h",           -9999999);
-         string layout      = persistency.LoadSetting(instance, "layout",      "");
+         int    windowstate = Settings1.LoadSetting(instance, "windowstate", 0);
+         int    x           = Settings1.LoadSetting(instance, "x",           -9999999);
+         int    y           = Settings1.LoadSetting(instance, "y",           -9999999);
+         int    w           = Settings1.LoadSetting(instance, "w",           -9999999);
+         int    h           = Settings1.LoadSetting(instance, "h",           -9999999);
+         string layout      = Settings1.LoadSetting(instance, "layout",      "");
 
          if(x!=-9999999 && y!=-9999999 && w!=-9999999 && h!=-9999999)
          {
@@ -2006,19 +1889,20 @@ namespace Docking.Components
          if((windowstate & (int)Gdk.WindowState.Maximized)!=0)
             this.Maximize();
 
-         AddLayout(DEFAULT_LAYOUT_NAME, false);
+         AddLayout(TGSettings.DEFAULT_LAYOUT_NAME, false);
          if(DockFrame!=null)
-            DockFrame.CurrentLayout = !String.IsNullOrEmpty(layout) ? layout : DEFAULT_LAYOUT_NAME;
+            DockFrame.CurrentLayout = !String.IsNullOrEmpty(layout) ? layout : TGSettings.DEFAULT_LAYOUT_NAME;
 
          if (installLayoutMenu)
             InstallLayoutMenu(layout);
 
-         string dir = LoadSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", "");
-         if(!string.IsNullOrEmpty(dir) && Directory.Exists(dir))
+         string dir = Settings1.LoadSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", "");
+
+         if (!string.IsNullOrEmpty(dir) && Directory.Exists(dir))
             Docking.Widgets.FileChooserDialogLocalized.InitialFolderToShow = dir;
 
-         MaxRecentFiles = persistency.LoadSetting(instance, "MaxRecentFiles", 9);
-         List<string> recentfiles = persistency.LoadSetting(instance, "RecentFiles", new List<string>());
+         MaxRecentFiles = Settings1.LoadSetting(instance, "MaxRecentFiles", 9);
+         List<string> recentfiles = Settings1.LoadSetting(instance, "RecentFiles", new List<string>());
          recentfiles.Reverse();
          if(recentfiles.Count>0)
          {
@@ -2030,26 +1914,25 @@ namespace Docking.Components
 
       protected virtual void SavePersistency() // TODO abolish, replace by implementing IPersistable
       {
-         IPersistency persistency = this as IPersistency;
          string instance = "MainWindow";
 
-         persistency.SaveSetting("", "ConfigSavedByVersion", AssemblyInfoExt.Version.ToString());
-         persistency.SaveSetting("", "readonly", ConfigurationIsReadonly);
+         Settings1.SaveSetting("", "ConfigSavedByVersion", AssemblyInfoExt.Version.ToString());
+         Settings1.SaveSetting("", "readonly", Settings1.IsReadonly);
 
          int x, y, w, h;
          GetPosition(out x, out y);
          GetSize(out w, out h);
 
-         persistency.SaveSetting(instance, "windowstate", (int)WindowState);
-         persistency.SaveSetting(instance, "x",           x);
-         persistency.SaveSetting(instance, "y",           y);
-         persistency.SaveSetting(instance, "w",           w);
-         persistency.SaveSetting(instance, "h",           h);
+         Settings1.SaveSetting(instance, "windowstate", (int)WindowState);
+         Settings1.SaveSetting(instance, "x",           x);
+         Settings1.SaveSetting(instance, "y",           y);
+         Settings1.SaveSetting(instance, "w",           w);
+         Settings1.SaveSetting(instance, "h",           h);
 
          if(DockFrame!=null)
          {
-            persistency.SaveSetting(instance, "layout", DockFrame.CurrentLayout);
-            persistency.SaveSetting(instance, "TabAlgorithm", (int)DockFrame.TabType);
+            Settings1.SaveSetting(instance, "layout", DockFrame.CurrentLayout);
+            Settings1.SaveSetting(instance, "TabAlgorithm", (int)DockFrame.TabType);
          }
 
          List<string> recentfiles = new List<string>();
@@ -2063,10 +1946,10 @@ namespace Docking.Components
             foreach (TaggedImageMenuItem item in mRecentMiscFiles)
                recentfiles.Add((string)item.Tag);
 
-         persistency.SaveSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", Docking.Widgets.FileChooserDialogLocalized.InitialFolderToShow);
+         Settings1.SaveSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", Docking.Widgets.FileChooserDialogLocalized.InitialFolderToShow);
 
-         persistency.SaveSetting(instance, "MaxRecentFiles", MaxRecentFiles);
-         persistency.SaveSetting(instance, "RecentFiles", recentfiles);
+         Settings1.SaveSetting(instance, "MaxRecentFiles", MaxRecentFiles);
+         Settings1.SaveSetting(instance, "RecentFiles", recentfiles);
       }
 
       public void Quit(bool save_persistency, System.Action beforeShutdownAction = null)
@@ -2087,7 +1970,7 @@ namespace Docking.Components
          if(save_persistency)
          {
             SavePersistency();
-            if(ConfigurationIsReadonly)
+            if(Settings1.IsReadonly)
                MessageWriteLine("skipping configuration saving because it is readonly");
             else
                SaveConfigurationFile();
@@ -2114,9 +1997,9 @@ namespace Docking.Components
          a.RetVal = true;
       }
 
-#endregion
+      #endregion
 
-#region Binary Persistency
+      #region Binary Persistency
 
       // TODO It does not really make sense to but binary blobs into XML... this way the file is not really editable/parsable anymore. Suggestion: Prefer using IPersistency.
       /// <summary>
@@ -2126,492 +2009,12 @@ namespace Docking.Components
       //[Obsolete("Method is deprecated and will be removed soon")]
       public object LoadObject(String elementName, Type t, DockItem item)
       {
-         String pimpedElementName = elementName;
-         if(item != null)
-            pimpedElementName += "_" + item.Id.ToString();
-
-         if(ConfigurationXmlNode == null || pimpedElementName == null)
-            return null;
-
-         XmlNode element = ConfigurationXmlNode.SelectSingleNode(pimpedElementName);
-         if(element == null)
-            return null;
-
-         // deserialize new method
-         XmlNode node = element.SelectSingleNode(t.Name + "_FMT");
-         if(node != null)
-         {
-            MemoryStream formattedStream = new MemoryStream();
-
-            byte[] data = FromHexString(node.InnerText);
-            formattedStream.Write(data, 0, data.Length);
-            formattedStream.Flush();
-            formattedStream.Seek(0, SeekOrigin.Begin);
-
-            try
-            {
-               System.Runtime.Serialization.IFormatter formatter = new BinaryFormatter();
-               object result = (object) formatter.Deserialize(formattedStream);
-               return result;
-            }
-            catch
-            {
-               return null;
-            }
-         }
-
-         // deserialize old method, only necessary to read old persistence, can be removed in some weeks
-         node = element.SelectSingleNode(t.Name);
-         if(node == null)
-            return null;
-
-         MemoryStream ms = new MemoryStream();
-         XmlTextWriter xmlWriter = new XmlTextWriter(ms, System.Text.Encoding.UTF8);
-
-         node.WriteTo(xmlWriter);
-         xmlWriter.Flush();
-         XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
-
-         try
-         {
-            // TODO: construction of XmlSerializer(type) needs a lot of time totally unexpected, an optimization rergarding persistence could be necessary ...
-            XmlSerializer serializer = new XmlSerializer(t);
-            return serializer.Deserialize(xmlReader);
-         }
-         catch
-         {
-            return null;
-         }
+         return Settings1.LoadObject(elementName, t, item);
       }
 
-      // Byte array from hexdump string
-      // TODO this code is misplaced in this class, move it to somewhere else, e.g. "Tools"
-      private static Byte[] FromHexString(String s)
-      {
-         if(s == null || (s.Length % 2) != 0)
-            return null;
-         Byte[] bytes = new Byte[s.Length / 2];
-         for(int i = 0; i < s.Length / 2; i++)
-            bytes[i] = Convert.ToByte(s.Substring(i * 2, 2), 16);
-         return bytes;
-      }
-#endregion
+      #endregion
 
-
-#region IPersistency
-
-#region save
-
-      public void SaveSetting(string instance, string key, string val)
-      {
-         if(ConfigurationXmlNode == null)
-            return;
-
-         List<string> portions = new List<string>();
-         if(!string.IsNullOrEmpty(instance))
-            portions.AddRange(instance.Split('/'));
-         portions.Add(key);
-         if(portions.Count<=0)
-            return;
-
-         XmlNode N = null;
-         XmlNode parent = ConfigurationXmlNode;
-         foreach(string p in portions)
-         {
-            try
-            {
-               N = parent.SelectSingleNode(p);
-            }
-            catch
-            {
-               N = null;
-            }
-            if(N == null)
-            {
-               N = ConfigurationXmlDocument.CreateElement(p);
-               parent.AppendChild(N);
-            }
-            parent = N;
-         }
-         N.InnerText = String.IsNullOrEmpty(val) ? "" : val; // note that this does XML-Escaping, for example > becomes &gt; , so you do not have to care what is inside 'val'; anything can be stored
-      }
-
-      public void SaveSetting(string instance, string key, List<string> val)
-      {
-         int count = val == null ? 0 : val.Count;
-         SaveSetting(instance, key + ".Count", count);
-         for(int i = 0; i < count; i++)
-         {
-            SaveSetting(instance, key + "." + i, val[i]);
-         }
-      }
-
-      public void SaveSetting(string instance, string key, List<bool> val)
-      {
-         int count = val == null ? 0 : val.Count;
-         SaveSetting(instance, key + ".Count", count);
-         for(int i = 0; i < count; i++)
-         {
-            SaveSetting(instance, key + "." + i, val[i]);
-         }
-      }
-
-      public void SaveSetting(string instance, string key, IEnumerable<float> val)
-      {
-         int count = val == null ? 0 : val.Count();
-         SaveSetting(instance, key + ".Count", count);
-         for (int i = 0; i < count; i++)
-         {
-            SaveSetting(instance, key + "." + i, val.ElementAt(i));
-         }
-      }
-
-      public void SaveSetting(string instance, string key, IEnumerable<double> val)
-      {
-         int count = val == null ? 0 : val.Count();
-         SaveSetting(instance, key + ".Count", count);
-         for (int i = 0; i < count; i++)
-         {
-            SaveSetting(instance, key + "." + i, val.ElementAt(i));
-         }
-      }
-
-
-
-      public void SaveSetting(string instance, string key, UInt32 val)
-      {
-         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
-      }
-
-      public void SaveSetting(string instance, string key, Int32 val)
-      {
-         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
-      }
-
-      public void SaveSetting(string instance, string key, float val)
-      {
-         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
-      }
-
-      public void SaveSetting(string instance, string key, double val)
-      {
-         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
-      }
-
-      public void SaveSetting(string instance, string key, bool val)
-      {
-         SaveSetting(instance, key, val.ToString(CultureInfo.InvariantCulture));
-      }
-
-      public void SaveSetting(string instance, string key, System.Drawing.Color val)
-      {
-         SaveSetting(instance, key, ColorConverter.Color_to_RGBAString(val));
-      }
-
-      public void SaveColumnWidths(string instance, Gtk.TreeView treeview)
-      {
-         int okcount = 0;
-         StringBuilder widths = new StringBuilder();
-         foreach(TreeViewColumn col in treeview.Columns)
-         {
-            int w = col.Width;
-            if (w != 0)
-               okcount++;
-            if(widths.Length > 0)
-               widths.Append(";");
-            string title = (col is TreeViewColumnLocalized) ? (col as TreeViewColumnLocalized).LocalizationKey : col.Title;
-            title = Regex.Replace(title, "[=;]", "");
-            if(!string.IsNullOrEmpty(title))
-               widths.Append(title).Append("=").Append(col.Width);
-         }
-         if (okcount == treeview.Columns.Count())
-            SaveSetting(instance, treeview.Name + ".ColumnWidths", widths.ToString());
-      }
-
-      public void SaveSetting(string instance, string key, object value)
-      {
-         if (ConfigurationXmlNode == null)
-            return;
-
-         if (!value.GetType().IsSerializable)
-            return;
-
-         // Serialise to the XML document
-         XmlNode parent = ConfigurationXmlNode;
-         XmlNode node;
-
-         if (parent != null)
-         {
-            try
-            {
-               node = parent.SelectSingleNode(instance);
-            }
-            catch (System.Xml.XPath.XPathException) //only catch path exception
-            {
-               //create new node for this instance
-               node = ConfigurationXmlDocument.CreateElement(instance);
-               parent.AppendChild(node);
-            }
-
-            //create new subKey
-            XDocument xdoc = new XDocument();
-
-            using (XmlWriter writer = xdoc.CreateWriter())
-            {
-               var ser = new XmlSerializer(value.GetType());
-               ser.Serialize(writer, value);
-            }
-            //Remove namespace info
-            xdoc.Descendants()
-                .Attributes()
-                .Where(x => x.IsNamespaceDeclaration)
-                .Remove();
-
-            //remove old entry and add new
-            try
-            {
-               var elem = XElement.Parse(node.OuterXml);
-               elem.Elements().Where(itr => itr.Name == xdoc.Elements().First().Name).Remove();
-               if (key != String.Empty)
-                  xdoc.Elements().First().Name = key;
-               elem.Add(xdoc.Elements().First());
-            }
-            catch (System.Xml.XPath.XPathException) //only catch path exception
-            {
-               //create new node for this instance
-               //node = ConfigurationXmlDocument.CreateElement(instance);
-               //parent.AppendChild(node);
-            }
-
-            return;
-         }
-      }
-
-
-#endregion
-
-#region load
-
-      public string LoadSetting(string instance, string key, string defaultval)
-      {
-         if(ConfigurationXmlNode == null)
-            return defaultval;
-
-         List<string> portions = new List<string>();
-         if(!string.IsNullOrEmpty(instance))
-            portions.AddRange(instance.Split('/'));
-         portions.Add(key);
-         if(portions.Count <= 0)
-            return defaultval;
-
-         try
-         {
-            XmlNode N = null;
-            XmlNode parent = ConfigurationXmlNode;
-            foreach(string p in portions)
-            {
-               N = parent.SelectSingleNode(p);
-               if(N == null)
-                  return defaultval;
-               parent = N;
-            }
-            return N.InnerText;
-         }
-         catch
-         {
-            return defaultval;
-         }
-      }
-
-      public List<string> LoadSetting(string instance, string key, List<string> defaultval)
-      {
-         int count = LoadSetting(instance, key + ".Count", -1);
-         if(count < 0)
-            return defaultval;
-         List<string> result = new List<string>();
-         for(int i = 0; i < count; i++)
-            result.Add(LoadSetting(instance, key + "." + i, ""));
-         return result;
-      }
-
-      public List<bool> LoadSetting(string instance, string key, List<bool> defaultval)
-      {
-         int count = LoadSetting(instance, key + ".Count", -1);
-         if(count < 0)
-            return defaultval;
-         List<bool> result = new List<bool>();
-         for(int i = 0; i < count; i++)
-            result.Add(LoadSetting(instance, key + "." + i, false));
-         return result;
-      }
-
-      public IEnumerable<float> LoadSetting(string instance, string key, IEnumerable<float> defaultval)
-      {
-         int count = LoadSetting(instance, key + ".Count", -1);
-         if (count < 0)
-            return defaultval;
-         List<float> result = new List<float>();
-         for (int i = 0; i < count; i++)
-            result.Add(LoadSetting(instance, key + "." + i, 0.0f));
-         return result;
-      }
-
-      public IEnumerable<double> LoadSetting(string instance, string key, IEnumerable<double> defaultval)
-      {
-         int count = LoadSetting(instance, key + ".Count", -1);
-         if (count < 0)
-            return defaultval;
-         List<double> result = new List<double>();
-         for (int i = 0; i < count; i++)
-            result.Add(LoadSetting(instance, key + "." + i, 0.0));
-         return result;
-      }
-
-
-      public UInt32 LoadSetting(string instance, string key, UInt32 defaultval)
-      {
-         string s = LoadSetting(instance, key, "");
-         UInt32 result;
-         return (s != "" && UInt32.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
-                ? result : defaultval;
-      }
-
-      public Int32 LoadSetting(string instance, string key, Int32 defaultval)
-      {
-         string s = LoadSetting(instance, key, "");
-         Int32 result;
-         return (s != "" && Int32.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out result))
-                ? result : defaultval;
-      }
-
-      public float LoadSetting(string instance, string key, float defaultval)
-      {
-         string s = LoadSetting(instance, key, "");
-         float result;
-         return (s != "" && float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out result))
-                ? result : defaultval;
-      }
-
-      public double LoadSetting(string instance, string key, double defaultval)
-      {
-         string s = LoadSetting(instance, key, "");
-         double result;
-         return (s != "" && Double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out result))
-                ? result : defaultval;
-      }
-
-      public bool LoadSetting(string instance, string key, bool defaultval)
-      {
-         string s = LoadSetting(instance, key, "").ToLowerInvariant();
-         if(s == "true")
-            return true;
-         else
-            if(s == "false")
-               return false;
-            else
-               return defaultval;
-      }
-
-      public System.Drawing.Color LoadSetting(string instance, string key, System.Drawing.Color defaultval)
-      {
-         string s = LoadSetting(instance, key, "");
-         System.Drawing.Color result;
-         return (s != "" && ColorConverter.RGBAString_to_Color(s, out result))
-                ? result : defaultval;
-      }
-
-      public void LoadColumnWidths(string instance, Gtk.TreeView treeview)
-      {
-         string columnwidths = LoadSetting(instance, treeview.Name + ".ColumnWidths", "");
-         string[] all = columnwidths.Split(';');
-         foreach(string s in all)
-         {
-            string[] one = s.Split('=');
-            if(one.Length == 2)
-            {
-               int width;
-               if(Int32.TryParse(one[1], out width))
-               {
-                  if(width == 0) // quickfix: make sure no columns become invisible
-                     continue;
-                  foreach(TreeViewColumn col in treeview.Columns)
-                  {
-                     string title = (col is TreeViewColumnLocalized) ? (col as TreeViewColumnLocalized).LocalizationKey : col.Title;
-                     title = Regex.Replace(title, "[=;]", "");
-                     if(!string.IsNullOrEmpty(title) && title.ToLowerInvariant()==one[0].ToLowerInvariant())
-                        col.SetWidth(width);
-                  }
-               }
-            }
-         }
-      }
-
-      public object LoadSetting(string instance, string key, Type value)
-      {
-         if (ConfigurationXmlNode == null)
-         {
-            try
-            {
-               //create default object type
-               return Activator.CreateInstance(value);
-            }
-            catch
-            {
-               return null;
-            }
-         }
-
-         try
-         {
-            XmlNode node = null;
-            XmlNode parent = ConfigurationXmlNode;
-
-            node = parent.SelectSingleNode(instance);
-
-            var elem = XElement.Parse(node.OuterXml);
-            XElement objectSerial;
-
-            if (key == String.Empty)
-            {
-               objectSerial = elem.Elements().Where(itr => itr.Name == value.Name).Single();
-            }
-            else
-            {
-               objectSerial = elem.Elements().Where(itr => itr.Name == key).Single();
-            }
-
-            System.Xml.Serialization.XmlSerializer reader = new System.Xml.Serialization.XmlSerializer(value);
-            var obj = reader.Deserialize(objectSerial.CreateReader());
-            if (obj != null)
-            {
-               return obj;
-            }
-
-            return null;
-         }
-         catch (InvalidOperationException)
-         {
-            try
-            {
-               //create default object type
-               return Activator.CreateInstance(value);
-            }
-            catch
-            {
-               return null;
-            }
-         }
-         catch
-         {
-            return null;
-         }
-      }
-
-#endregion
-
-#endregion
-
-#region Docking
+      #region Docking
 
       /// <summary>
       /// Searches for requested type in all available components DLLs
@@ -2715,7 +2118,7 @@ namespace Docking.Components
                {
                   try
                   {
-                     c.LoadFrom(component.ComponentManager as IPersistency);
+                     c.LoadFrom(Settings1);
                   }
                   catch (Exception e)
                   {
@@ -2885,9 +2288,9 @@ namespace Docking.Components
          return CreateItem(cfi, id);
       }
 
-#endregion
+      #endregion
 
-#region Select current DockItem
+      #region Select current DockItem
 
       /// <summary>
       /// Relation between any object and its parent DockItem
@@ -2991,9 +2394,9 @@ namespace Docking.Components
          }
       }
 
-#endregion
+      #endregion
 
-#region Status Bar
+      #region Status Bar
 
       uint mStatusBarUniqueId = 0;
       // helper to generate unique IDs
@@ -3017,9 +2420,9 @@ namespace Docking.Components
             StatusBar.Pop(id);
       }
 
-#endregion
+      #endregion
 
-#region Toolbar
+      #region Toolbar
 
       public void AddToolItem(ToolItem item)
       {
@@ -3037,7 +2440,7 @@ namespace Docking.Components
          ToolBar.Remove(item);
       }
 
-#endregion
+      #endregion
 
       TextWriter LogFile = null;
 
@@ -3064,7 +2467,7 @@ namespace Docking.Components
          return true;
       }
 
-#region IMessageWriteLine
+      #region IMessageWriteLine
 
       public void MessageWriteLine(String format, params object[] args)
       {
@@ -3115,282 +2518,26 @@ namespace Docking.Components
       List<String> mMessageQueue = new List<string>();
       Dictionary<string, IMessage> mMessage = new Dictionary<string, IMessage>();
 
-#endregion
+      #endregion
 
-#region Python
-
-      private ScriptEngine ScriptEngine { get; set; }
-
-      private ScriptScope ScriptScope { get; set; }
-
-      private void InitPythonEngine(string pythonBaseVariableName)
+      public string ReadResource(String id)
       {
-         ScriptEngine = Python.CreateEngine();
-         ScriptScope = ScriptEngine.CreateScope();
-
-         // override import
-         //ScriptScope scope = IronPython.Hosting.Python.GetBuiltinModule(ScriptEngine);
-         //scope.SetVariable("__import__", new ImportDelegate(DoPythonModuleImport));
-
-         // access to this using "ComponentManager"
-         m_ScriptingInstance = new ComponentManagerScripting(this);
-         ScriptScope.SetVariable(pythonBaseVariableName, m_ScriptingInstance);
-
-         try
+         Assembly asm = Assembly.GetCallingAssembly();
+         Stream s = asm.GetManifestResourceStream(id);
+         if (s == null)
          {
-            // add Python commands like "message(...)"
-            Execute(ReadResource("cm.py").Replace("[INSTANCE]", pythonBaseVariableName));
+            return null;
          }
-         catch(Exception e)
+
+         StreamReader reader = new StreamReader(s);
+         if (reader == null)
          {
-            MessageWriteLine("Error in cm.py:\n"+e.ToString());
+            return null;
          }
-      }
 
-      delegate object ImportDelegate(CodeContext context, string moduleName, PythonDictionary globals, PythonDictionary locals, PythonTuple tuple);
-
-      protected object DoPythonModuleImport(CodeContext context, string moduleName, PythonDictionary globals, PythonDictionary locals, PythonTuple tuple)
-      {
-         // test, may useful to import py from embedded resource
-#if false
-            string py = ReadResource(moduleName);
-            if (py != null)
-            {
-                //var scope = Execute(py);
-                //ScriptSource source = ScriptEngine.CreateScriptSourceFromString(py);
-                //ScriptScope scope = ScriptEngine.CreateScope();
-                var scope = ScriptScope;
-                ScriptEngine.Execute(py, scope);
-                Microsoft.Scripting.Runtime.Scope ret = Microsoft.Scripting.Hosting.Providers.HostingHelpers.GetScope(scope);
-                ScriptScope.SetVariable(moduleName, ret);
-                return ret;
-            }
-            else
-            {   // fall back on the built-in method
-                return IronPython.Modules.Builtin.__import__(context, moduleName);
-            }
-#else
-         return IronPython.Modules.Builtin.__import__(context, moduleName);
-#endif
-      }
-
-      public String ReadResource(String id)
-      {
-         Assembly asm = System.Reflection.Assembly.GetCallingAssembly();
-         System.IO.Stream s = asm.GetManifestResourceStream(id);
-         if(s == null)
-            return null;
-         System.IO.StreamReader reader = new System.IO.StreamReader(s);
-         if(reader == null)
-            return null;
          return reader.ReadToEnd();
       }
 
-      public CompiledCode Compile(String code)
-      {
-         if(ScriptEngine==null)
-            return null;
-         ScriptSource source = ScriptEngine.CreateScriptSourceFromString(code, SourceCodeKind.AutoDetect);
-         return source.Compile();
-      }
-
-      public dynamic Execute(CompiledCode compiled, List<KeyValuePair<string, object>> global_variables = null)
-      {
-         setGlobalVariables(global_variables);
-         return compiled.Execute(ScriptScope);
-      }
-
-      public dynamic Execute(String code, List<KeyValuePair<string, object>> global_variables = null)
-      {
-         CompiledCode compiled = Compile(code);
-         if(compiled==null)
-            return null;
-         setGlobalVariables(global_variables);
-         try   { return compiled.Execute(ScriptScope); }
-         catch { return null;                          }
-      }
-
-      public dynamic ExecuteFile(String filename, List<KeyValuePair<string, object>> global_variables = null)
-      {
-         string code = File.ReadAllText(filename, Encoding.UTF8);
-         return Execute(code, global_variables);
-      }
-
-      private void setGlobalVariables(List<KeyValuePair<string, object>> global_variables)
-      {
-         if(global_variables!=null && ScriptScope!=null)
-            global_variables.ForEach(v => ScriptScope.SetVariable(v.Key, v.Value));
-      }
-
-      ComponentManagerScripting m_ScriptingInstance;
-
-      /// <summary>
-      /// Adapter class encapsulate access to Docking.Components.ComponentManager
-      /// </summary>
-      public class ComponentManagerScripting
-      {
-         public ComponentManagerScripting(ComponentManager cm)
-         {
-            ComponentManager = cm;
-         }
-
-         private ComponentManager ComponentManager { get; set; }
-
-         /// <summary>
-         /// exit application immediately
-         /// </summary>
-         public void Quit()
-         {
-            ComponentManager.Quit(true);
-         }
-
-         /// <summary>
-         /// set the visibility of the main window
-         /// </summary>
-         public bool Visible
-         {
-            get { return ComponentManager.Visible;  }
-            set { ComponentManager.Visible = value; }
-         }
-
-         /// <summary>
-         /// Write a message to the message window (if exist)
-         /// </summary>
-         public void MessageWriteLine(String message)
-         {
-            ComponentManager.MessageWriteLine(message);
-         }
-
-         /// <summary>
-         /// Opens the file.
-         /// </summary>
-         public bool OpenFile(string filename, bool syncronous = false)
-         {
-            return ComponentManager.OpenFile(filename, syncronous);
-         }
-
-         /// <summary>
-         /// Opens the file dialog.
-         /// </summary>
-         public String OpenFileDialog(string prompt)
-         {
-            return ComponentManager.OpenFileDialog(prompt);
-         }
-
-         /// <summary>
-         /// Gets a simple component instance identification string.
-         /// This normally is identical to the component window title.
-         /// For non-multi-instance components, this normally is a human-readable text like "Map Explorer".
-         /// For multi-instance components, this at the end has a number, for example "Map Explorer 2".
-         /// </summary>
-         private string GetComponentIdentifier(DockItem item)
-         {
-            if(item==null)
-               return null;
-            Component comp = item.Content as Component;
-            if(comp==null)
-               return null;
-
-            string name = comp is ILocalizableComponent
-                        ? (comp as ILocalizableComponent).Name
-                        : item.Content.Name;
-
-            return item.InstanceIndex>1
-                 ? (name + " " + item.InstanceIndex)
-                 : name;
-         }
-
-         /// lists all available component types which you can instantiate using CreateComponent()
-         public List<string> ListComponentTypes()
-         {
-            List<string> result = new List<string>();
-            foreach(ComponentFactoryInformation info in ComponentManager.ComponentFinder.ComponentInfos)
-               result.Add(info.ComponentType.ToString());
-            return result;
-         }
-
-         /// Creates a new component instance. The given parameter must be one of the available types returned by ListAvailableComponentTypes().
-         /// Returned is the unique instance identification string.
-         public string CreateComponent(string s)
-         {
-            foreach(ComponentFactoryInformation info in ComponentManager.ComponentFinder.ComponentInfos)
-            {
-               if(info.ComponentType.ToString()==s)
-               {
-                  DockItem item = ComponentManager.CreateComponent(info, true);
-                  return GetComponentIdentifier(item);
-               }
-            }
-            return null;
-         }
-
-         /// <summary>
-         /// Returns a list of all currently instantiated components (including hidden ones).
-         /// </summary>
-         public List<string> ListInstances()
-         {
-            List<string> result = new List<string>();
-            foreach(DockItem item in ComponentManager.DockFrame.GetItems())
-            {
-               if(item.Content==null)
-                  continue;
-               Component component = item.Content as Component;
-               if(component==null || component.GetScriptingInstance()==null)
-                  continue;
-
-               string cid = GetComponentIdentifier(item);
-               if(cid!=null)
-                  result.Add(cid);
-            }
-            return result;
-         }
-
-         /// <summary>
-         /// Returns a specific component instance, identified by its brief, unique instance identifier string.
-         /// </summary>
-         public object GetInstance(string identifier)
-         {
-            foreach(DockItem item in ComponentManager.DockFrame.GetItems())
-            {
-               if(item.Content==null)
-                  continue;
-               Component component = item.Content as Component;
-               if(component==null || component.GetScriptingInstance()==null)
-                  continue;
-
-               string cid = GetComponentIdentifier(item);
-               if(cid != null && cid == identifier)
-                  return component.GetScriptingInstance();
-            }
-            return null;
-         }
-
-         /// <summary>
-         /// Get an array with the names of all available python scripting objects
-         /// </summary>
-         /// <returns></returns>
-         public string[] GetInstances()
-         {
-            List<string> result = new List<string>();
-            foreach(DockItem item in ComponentManager.DockFrame.GetItems())
-            {
-               if(item.Content == null)
-                  continue;
-               Component component = item.Content as Component;
-               if(component.GetScriptingInstance() == null)
-                  continue;
-
-               string cid = GetComponentIdentifier(item);
-               if(cid != null)
-                  result.Add(cid);
-            }
-            return result.ToArray();
-         }
-      }
-
-#endregion
-
-      // TODO this currently lacks the OS's window decoration (icon, window title text, buttons)
       public Gdk.Pixbuf Screenshot()
       {
          return Gdk.Pixbuf.FromDrawable(GdkWindow, GdkWindow.Colormap, 0, 0, 0, 0, (this as Gtk.Widget).Allocation.Width, (this as Gtk.Widget).Allocation.Height);

@@ -124,6 +124,8 @@
     <Compile Include="Framework\Interfaces\IScript.cs" />
     <Compile Include="Framework\Manager\LicenseGroup.cs" />
     <Compile Include="Framework\Manager\Localization.cs" />
+    <Compile Include="Framework\Manager\Settings.cs" />
+    <Compile Include="Framework\Manager\Scripting.cs" />
     <Compile Include="Framework\Tools\AssemblyInfoExt.cs" />
     <Compile Include="Framework\Tools\Mouse.cs" />
     <Compile Include="Framework\Tools\QueueInvoke.cs" />

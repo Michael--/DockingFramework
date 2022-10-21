@@ -23,7 +23,7 @@ namespace Docking.Components
 
             try
             {
-               ComponentManager.Execute(mPersistence.Script);
+               ComponentManager.ScriptEngine.Execute(mPersistence.Script);
             }
             catch (Exception ex)
             {
@@ -42,7 +42,7 @@ namespace Docking.Components
                "sys.stdout=cmd"
             };
 
-            ComponentManager.Execute(String.Join("\r\n", phython_script_for_redirecting_stdout_and_stderr));
+            ComponentManager.ScriptEngine.Execute(String.Join("\r\n", phython_script_for_redirecting_stdout_and_stderr));
          });
       }
 
@@ -182,7 +182,7 @@ namespace Docking.Components
             try
             {
                if (e.Code != null)
-                  ComponentManager.Execute(e.Code);
+                  ComponentManager.ScriptEngine.Execute(e.Code);
             }
             catch (Exception ex)
             {
@@ -238,7 +238,7 @@ namespace Docking.Components
          bool ok = true;
 
          DisableInvokeOnAccessingConsoleView = true;
-         try { ComponentManager.Execute(input); }
+         try { ComponentManager.ScriptEngine.Execute(input); }
          catch(Exception ex)
          {
             consoleview.WriteOutput("Error: " + ex.Message);
