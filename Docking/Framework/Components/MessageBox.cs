@@ -41,7 +41,7 @@ namespace Docking.Components
             switch(buttontype)
             {
             case ButtonsType.None:
-               ComponentManager.MessageWriteLine("[NONE]"); 
+               ComponentManager.MessageWriteLine("[NONE]");
                return ResponseType.None;
 
             case ButtonsType.Ok:
@@ -49,14 +49,14 @@ namespace Docking.Components
                return ResponseType.Ok;
 
             case ButtonsType.Close:
-               ComponentManager.MessageWriteLine("[CLOSE]"); 
+               ComponentManager.MessageWriteLine("[CLOSE]");
                return ResponseType.Close;
 
             case ButtonsType.Cancel:
                ComponentManager.MessageWriteLine("[CANCEL]");
                return ResponseType.Cancel;
 
-            case ButtonsType.YesNo:    
+            case ButtonsType.YesNo:
                throw new Exception("sorry, but a yes/no messagebox cannot be decided in batch mode :(");
 
             case ButtonsType.OkCancel:
@@ -65,16 +65,19 @@ namespace Docking.Components
                #else
                // be BOLD and assume an automated "OK" in script mode???? hmmm........... might be dangerous.....
                // "Do you really want to delete the internet? [OK]/[CANCEL]"......
-               ComponentManager.MessageWriteLine("[OK]");               
+               ComponentManager.MessageWriteLine("[OK]");
                return ResponseType.Ok;
-               #endif               
+               #endif
             }
             throw new Exception("unknown message box button type");
          }
          #endregion
 
-         if(parent==null && ComponentManager!=null)
-            parent = ComponentManager;
+         if (parent == null && ComponentManager != null)
+         {
+            parent = ComponentManager.MainWindow;
+         }
+
          MessageDialog md = new MessageDialog(parent, DialogFlags.Modal, msgtype, buttontype, format, args);
 
          if(Platform.IsWindows) // replace Gtk's private icons by Windows standard icons
@@ -92,7 +95,7 @@ namespace Docking.Components
          if(ComponentManager!=null)
          {
             md.Title = ComponentManager.ApplicationName;
-            md.Icon  = ComponentManager.Icon;
+            md.Icon  = ComponentManager.MainWindow.Icon;
          }
          else
          {

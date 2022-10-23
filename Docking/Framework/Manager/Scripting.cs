@@ -177,7 +177,7 @@ namespace Docking.Components
       /// </summary>
       public String OpenFileDialog(string prompt)
       {
-         return ComponentManager.OpenFileDialog(prompt);
+         return ComponentManager.DialogProvider.OpenFileDialog(prompt);
       }
 
       /// lists all available component types which you can instantiate using CreateComponent()

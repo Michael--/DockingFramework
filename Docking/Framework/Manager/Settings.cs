@@ -16,10 +16,11 @@ using Gtk;
 
 namespace Docking.Components
 {
-   internal class TGSettings : IPersistency
+   public class TGSettings : IPersistency
    {
       public const string CONFIG_ROOT_ELEMENT = "DockingConfiguration";
       public const string DEFAULT_LAYOUT_NAME = "Default"; // TODO can we localize this string? Careful, the name is persisted...
+
 
       private XmlDocument mXmlDocument;
       private XmlNode     mXmlNode;
@@ -30,7 +31,13 @@ namespace Docking.Components
       public TGSettings()
       {
          TweakConfigurationFileAction = () => { };
+
+         CONFIGFILE        = System.IO.Path.Combine(AssemblyInfoExt.LocalSettingsFolder, "config.xml");
+         DEFAULTCONFIGFILE = System.IO.Path.Combine(AssemblyInfoExt.Directory, "defaultconfig.xml");
       }
+
+      public string CONFIGFILE { get; private set; }
+      public string DEFAULTCONFIGFILE { get; private set; }
 
       public String ConfigurationFilename { get; set; }
       public bool IsReadonly { get; private set; }
@@ -38,6 +45,10 @@ namespace Docking.Components
 
       public System.Action TweakConfigurationFileAction { get; set; }
 
+      public void SetFilename(string filename)
+      {
+         ValidateConfigFilename(filename);
+      }
 
       public string LoadSetting(string instance, string key, string defaultval)
       {
@@ -782,5 +793,39 @@ namespace Docking.Components
       }
 
       #endregion
+
+      public void ValidateConfigFilename(string configfile)
+      {
+         if (!string.IsNullOrEmpty(configfile))
+         {
+            if (!File.Exists(configfile))
+            {
+               throw new Exception(string.Format("config file '{0}' not found", configfile));
+            }
+
+            CONFIGFILE = configfile;
+         }
+         else if (!File.Exists(CONFIGFILE))
+         {
+            string dir = System.IO.Path.GetDirectoryName(CONFIGFILE);
+            if (!string.IsNullOrEmpty(dir))
+            {
+               if (!Directory.Exists(dir))
+               {
+                  Directory.CreateDirectory(dir);
+               }
+
+               if (!Directory.Exists(dir))
+               {
+                  throw new Exception("cannot create local user data directory");
+               }
+            }
+
+            if (File.Exists(DEFAULTCONFIGFILE))
+            {
+               File.Copy(DEFAULTCONFIGFILE, CONFIGFILE);
+            }
+         }
+      }
    }
 }

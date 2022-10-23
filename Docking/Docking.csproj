@@ -135,6 +135,7 @@
     <Compile Include="Framework\Tools\GtkDispatcher.cs" />
     <Compile Include="Framework\Widgets\LocalizedWidgets.cs" />
     <Compile Include="Framework\Widgets\Sheet.cs" />
+    <Compile Include="Framework\Widgets\WindowBase.cs" />
     <Compile Include="gtk-gui\generated.cs" />
     <Compile Include="gtk-gui\Docking.Components.Activities.cs" />
     <Compile Include="Framework\Components\Activities.cs" />
