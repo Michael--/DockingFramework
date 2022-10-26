@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using IronPython.Hosting;
 using IronPython.Runtime;
@@ -13,19 +12,20 @@ namespace Docking.Components
 {
    public class PythonScriptEngine
    {
-      private  ComponentManagerScripting m_ScriptingInstance;
-      private ScriptEngine              mScriptEngine;
-      private ScriptScope               mScriptScope;
+      private          ComponentManagerScripting m_ScriptingInstance;
+      private          ScriptEngine              mScriptEngine;
+      private          ScriptScope               mScriptScope;
+      private readonly ComponentManager          mManager;
 
       /// <summary>
       /// Initializes a new instance
       /// </summary>
-      public PythonScriptEngine()
+      internal PythonScriptEngine(ComponentManager manager)
       {
-         //nothing to do
+         mManager = manager;
       }
 
-      public void Initialize(string pythonBaseVariableName, ComponentManager cm)
+      public void Initialize(string pythonBaseVariableName)
       {
          mScriptEngine = Python.CreateEngine();
          mScriptScope  = mScriptEngine.CreateScope();
@@ -35,17 +35,17 @@ namespace Docking.Components
          //scope.SetVariable("__import__", new ImportDelegate(DoPythonModuleImport));
 
          // access to this using "ComponentManager"
-         m_ScriptingInstance = new ComponentManagerScripting(cm);
+         m_ScriptingInstance = new ComponentManagerScripting(mManager);
          mScriptScope.SetVariable(pythonBaseVariableName, m_ScriptingInstance);
 
          try
          {
             // add Python commands like "message(...)"
-            Execute(cm.ReadResource("cm.py").Replace("[INSTANCE]", pythonBaseVariableName));
+            Execute(mManager.ReadResource("cm.py").Replace("[INSTANCE]", pythonBaseVariableName));
          }
          catch(Exception e)
          {
-            cm.MessageWriteLine("Error in cm.py:\n" + e.ToString());
+            mManager.MessageWriteLine("Error in cm.py:\n" + e.ToString());
          }
       }
 

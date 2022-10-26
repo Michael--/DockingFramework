@@ -49,19 +49,27 @@ namespace Docking.Widgets
       protected MainWindowBase(string[] args, string default_language, string application_name, string pythonApplicationObjectName = null)
          : base(WindowType.Toplevel)
       {
-         mCmdLineArgs                    = args;
-         ComponentManager                = new ComponentManager(args, default_language, application_name, pythonApplicationObjectName);
-         ComponentManager.MainWindowBase = this;
-         ComponentManager.DialogProvider = new DialogProvider(this);
-
          Title                            = ApplicationName = application_name;
+         mCmdLineArgs                     = args;
+         ComponentManager                 = new ComponentManager();
+         ComponentManager.MainWindowBase  = this;
          ComponentManager.LogWriter.Title = Title;
+         ComponentManager.DialogProvider  = new DialogProvider(this);
+         ComponentManager.Localization    = new Components.Localization(default_language, ComponentManager.LogWriter);
+         ComponentManager.Localization.SearchForResources(
+            System.IO.Path.Combine(
+               System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Languages", "*.resx"));
+
+         if (!string.IsNullOrEmpty(pythonApplicationObjectName))
+         {
+            ComponentManager.ScriptEngine.Initialize(pythonApplicationObjectName);
+         }
 
          AddAccelGroup(ComponentManager.AccelGroup);
 
          MakeWidgetReceiveDropEvents(Toplevel, OnDragDataReceived);
 
-         this.WindowStateEvent += OnWindowStateChanged;
+         WindowStateEvent += OnWindowStateChanged;
 
          MessageBox.Init(ComponentManager);
       }
@@ -1253,7 +1261,7 @@ namespace Docking.Widgets
    {
       private readonly MainWindowBase mMainWindowBase;
 
-      public DialogProvider(MainWindowBase mainWindowBase)
+      internal DialogProvider(MainWindowBase mainWindowBase)
       {
          mMainWindowBase = mainWindowBase;
       }

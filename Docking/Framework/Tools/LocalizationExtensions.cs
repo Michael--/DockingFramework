@@ -1,44 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿
+using System;
 using Docking.Components;
-using Docking.Tools;
-
-namespace Docking.Components
-{
-   public partial class Localization
-   {
-      private static string sPreferredUserCultureThreeletterISOLanguageName
-         = System.Threading.Thread.CurrentThread.CurrentCulture.ThreeLetterISOLanguageName.ToLowerInvariant();
-
-      // https://en.wikipedia.org/wiki/List_of_ISO_639-2_codes
-      public static string PreferredUserCultureThreeLetterISOLanguageName() { return sPreferredUserCultureThreeletterISOLanguageName; }
-
-      public static string Format(Gtk.Bin o, string fmt, params object[] args)
-      {
-         return fmt.FormatLocalizedWithPrefix(o, args);
-      }
-
-      // special case: no fmt string arguments
-      public static string Format(Gtk.Bin o, string fmt)
-      {
-         return fmt.FormatLocalizedWithPrefix(o);
-      }
-
-      public static string Format(string fmt, params object[] args)
-      {
-         return fmt.FormatLocalized(args);
-      }
-
-      // special case: no fmt string arguments
-      public static string Format(string fmt)
-      {
-         return fmt.FormatLocalized();
-      }
-   }
-}
-
 
 namespace Docking.Tools
 {
@@ -68,8 +30,8 @@ namespace Docking.Tools
          }
          catch (FormatException)
          {
-             if (Localization.DbgOut != null)
-                 Localization.DbgOut.MessageWriteLine("FormatLocalized Exception: key='{0}' fmt='{1}'", key, Localized(key));
+             if (Localization.mLogger != null)
+                 Localization.mLogger.MessageWriteLine("FormatLocalized Exception: key='{0}' fmt='{1}'", key, Localized(key));
             return Localized(key);
          }
       }

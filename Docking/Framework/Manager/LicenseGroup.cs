@@ -1,7 +1,7 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 
 namespace Docking.Components
 {
@@ -17,8 +17,9 @@ namespace Docking.Components
          DefaultState = State.DISABLED;
       }
 
-      public LicenseGroup()
+      internal LicenseGroup()
       {
+         //nothing to do
       }
 
       public enum State
@@ -29,7 +30,7 @@ namespace Docking.Components
       }
 
       private State GetState(string group)
-      {         
+      {
          if(!string.IsNullOrEmpty(group))
          {
             lock (m_Groups)
@@ -81,6 +82,6 @@ namespace Docking.Components
       /// </summary>
       Dictionary<string, State> m_Groups = new Dictionary<string, State>();
    }
-  
+
 
 }

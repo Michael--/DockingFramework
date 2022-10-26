@@ -1,7 +1,6 @@
 
 using System;
 using System.IO;
-using System.Diagnostics;
 using System.Text;
 using System.Collections.Generic;
 using System.Reflection;
@@ -18,7 +17,7 @@ namespace Docking.Components
 {
    // This is a workaround for the problem that we cannot write "blablabla".Localized(this) inside class "ComponentManager",
    // Because that would yield the wrong namespace: not "Docking.Components", but the one of the inherited main application class.
-   static class StringLoc
+   internal static class StringLoc
    {
       public static string L(this string s)
       {
@@ -28,67 +27,36 @@ namespace Docking.Components
 
    public class ComponentManager : IMessageWriteLine, ICut, ICopy, IPaste
    {
+      public  int             MaxRecentFiles                    = 9;
+      private bool            mInitialLoadOfComponentsCompleted = false;
+
+      private DockVisualStyle mSelectedStyle;
+      private DockVisualStyle mNormalStyle;
       /// <summary>
       /// Relation between any object and its parent DockItem
       /// Need to find fast the DockItem for any user selection of an object
       /// Objects are normally widgets and similar
       /// </summary>
-      private Dictionary<object, DockItem> mSelectRelation = new Dictionary<object, DockItem>();
+      private readonly Dictionary<object, DockItem> mSelectRelation = new Dictionary<object, DockItem>();
 
-      private DockVisualStyle       mNormalStyle, mSelectedStyle;
-      private List<IPropertyViewer> mPropertyInterfaces = new List<IPropertyViewer>();
-      private List<IScript>         mScriptInterfaces   = new List<IScript>();
+      private readonly List<IPropertyViewer> mPropertyInterfaces = new List<IPropertyViewer>();
+      private readonly List<IScript>         mScriptInterfaces   = new List<IScript>();
 
-      private readonly List<object> mComponents                       = new List<object>();
-      public           int          MaxRecentFiles                    = 9;
-      private          bool         mInitialLoadOfComponentsCompleted = false;
-
-      /// <summary>
-      /// Initializes a new instance
-      /// </summary>
-      public ComponentManager()
-      : this(new List<string>().ToArray())
-      { }
-
-      /// <summary>
-      /// Initializes a new instance.
-      /// </summary>
-      /// <param name="args"></param>
-      public ComponentManager(string[] args)
-      : this(args, "en-US", Assembly.GetEntryAssembly().GetName().Name, null)
-      { }
+      private readonly List<object> mComponents = new List<object>();
 
       /// <summary>
       /// Initializes a new instance
       /// Note: Make sure that you construct this class from the main thread!
       /// </summary>
-      /// <param name="args"></param>
-      /// <param name="default_language"></param>
-      /// <param name="application_name"></param>
-      /// <param name="pythonApplicationObjectName"></param>
-      public ComponentManager(string[] args, string default_language, string application_name, string pythonApplicationObjectName = null)
+      internal ComponentManager()
       {
-         Clock = new Stopwatch();
-         Clock.Start();
-
          Settings1 = new TGSettings();
-
-         Localization = new Components.Localization(default_language, this);
-         Localization.SearchForResources(
-            System.IO.Path.Combine(
-               System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Languages", "*.resx"));
 
          AccelGroup      = new AccelGroup();
          LicenseFile     = new LicenseFile();
          LicenseGroup    = new LicenseGroup();
          ComponentFinder = ComponentFinderHelper.Instance;
-         ScriptEngine    = new PythonScriptEngine();
-
-         if (!string.IsNullOrEmpty(pythonApplicationObjectName))
-         {
-            ScriptEngine.Initialize(pythonApplicationObjectName, this);
-         }
-
+         ScriptEngine    = new PythonScriptEngine(this);
          LogWriter       = new LogWriter();
 
          GtkDispatcher.Instance.RegisterShutdownHandler(QuitInternal);
@@ -102,8 +70,6 @@ namespace Docking.Components
       public LogWriter LogWriter { get; private set; }
 
       public LicenseFile LicenseFile { get; set; }
-
-      public readonly Stopwatch Clock; // A global clock. Useful for many purposes. This way you don't need to create own clocks to just measure time intervals.
 
       public PythonScriptEngine ScriptEngine { get; private set; }
 
@@ -149,7 +115,7 @@ namespace Docking.Components
       public ComponentFinder ComponentFinder { get; private set; }
       public LicenseGroup LicenseGroup { get; private set; }
 
-      public Localization Localization { get; private set; }
+      public Localization Localization { get; internal set; }
       public bool OperateInBatchMode { get; set; }
 
       public bool PowerDown
@@ -182,7 +148,7 @@ namespace Docking.Components
          DockFrame.DockItemRemoved += HandleDockItemRemoved;
          DockFrame.CreateItem = this.CreateItem;
 
-         DockVisualStyle style = new DockVisualStyle();
+         var style = new DockVisualStyle();
          style.PadTitleLabelColor = Styles.PadLabelColor;
          style.PadBackgroundColor = Styles.PadBackground;
          style.InactivePadBackgroundColor = Styles.InactivePadBackground;
@@ -224,8 +190,10 @@ namespace Docking.Components
 
       public void AddLayout(string name, bool copyCurrent)
       {
-         if(DockFrame!=null && !DockFrame.HasLayout(name))
+         if (!DockFrame.HasLayout(name))
+         {
             DockFrame.CreateLayout(name, copyCurrent);
+         }
       }
 
       private void DeleteLayout(string name)
@@ -496,75 +464,73 @@ namespace Docking.Components
 
          // tell all components about load state
          // time for late initialization and/or loading persistence
-         if(DockFrame!=null)
-         {
-             foreach(DockItem item in DockFrame.GetItems())
+          foreach(DockItem item in DockFrame.GetItems())
+          {
+             if (item.Content is Component)
              {
-                if (item.Content is Component)
+                var component = item.Content as Component;
+                System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
+                w.Start();
+                var allComponents = CollectAllComponentsOfType<Component>(component);
+                var allIPersistable = CollectAllComponentsOfType<IPersistable>(component);
+
+                foreach (var c in allComponents)
+                   c.DockItem = item;
+                foreach (var c in allIPersistable)
                 {
-                   var component = item.Content as Component;
-                   System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
-                   w.Start();
-                   var allComponents = CollectAllComponentsOfType<Component>(component);
-                   var allIPersistable = CollectAllComponentsOfType<IPersistable>(component);
-
-                   foreach (var c in allComponents)
-                      c.DockItem = item;
-                   foreach (var c in allIPersistable)
+                   try
                    {
-                      try
-                      {
-                         c.LoadFrom(Settings1);
-                      }
-                      catch (Exception e)
-                      {
-                         MessageWriteLine("{0}.LoadFrom() Exception:{1}", c.GetType(), e);
-                      }
+                      c.LoadFrom(Settings1);
                    }
-
-                   w.Stop();
-
-                   #if DEBUG
+                   catch (Exception e)
                    {
-                      if (w.ElapsedMilliseconds > 300) // goal limit: 25, 300 is just to reduce current clutter
-                         MessageWriteLine("Invoking IComponent.Loaded() for component {0} took {1:0.00}s", item.Id, w.Elapsed.TotalSeconds);
+                      MessageWriteLine("{0}.LoadFrom() Exception:{1}", c.GetType(), e);
                    }
-                   #endif
-
-                   component.VisibilityChanged(item.Content, item.Visible);
                 }
 
-                if(item.Content is IPropertyViewer)
-                   mPropertyInterfaces.Add(item.Content as IPropertyViewer);
+                w.Stop();
 
-                if(item.Content is IScript)
-                   mScriptInterfaces.Add(item.Content as IScript);
+                #if DEBUG
+                {
+                   if (w.ElapsedMilliseconds > 300) // goal limit: 25, 300 is just to reduce current clutter
+                      MessageWriteLine("Invoking IComponent.Loaded() for component {0} took {1:0.00}s", item.Id, w.Elapsed.TotalSeconds);
+                }
+                #endif
 
-                if(item.Content is Component)
-                   AddComponent(item.Content as Component);
+                component.VisibilityChanged(item.Content, item.Visible);
              }
-         }
+
+             if(item.Content is IPropertyViewer)
+                mPropertyInterfaces.Add(item.Content as IPropertyViewer);
+
+             if(item.Content is IScript)
+                mScriptInterfaces.Add(item.Content as IScript);
+
+             if(item.Content is Component)
+                AddComponent(item.Content as Component);
+          }
 
          mInitialLoadOfComponentsCompleted = true;
          List<object> components = new List<object>(mComponents);
 
          mComponents.Clear();
 
-         foreach(object o in components)
-            AddComponent(o);
-
-         if(DockFrame!=null)
+         foreach (object o in components)
          {
-             foreach (DockItem item in DockFrame.GetItems())
-             {
-                if (item.Content is Component)
-                {
-                   var component = item.Content as Component;
-                   var allComponents = CollectAllComponentsOfType<Component>(component);
-                   foreach (var c in allComponents)
-                      c.Loaded();
-                }
-             }
+            AddComponent(o);
+         }
+
+         foreach (DockItem item in DockFrame.GetItems())
+         {
+            if (item.Content is Component)
+            {
+               var component = item.Content as Component;
+               var allComponents = CollectAllComponentsOfType<Component>(component);
+               foreach (var c in allComponents)
+               {
+                  c.Loaded();
+               }
+            }
          }
 
          total.Stop();
@@ -577,36 +543,40 @@ namespace Docking.Components
 
       private void ComponentsSave()
       {
-         if(DockFrame!=null)
+         foreach (DockItem item in DockFrame.GetItems())
          {
-             foreach(DockItem item in DockFrame.GetItems())
-             {
-                var allIPersistable = CollectAllComponentsOfType<IPersistable>(item.Content);
-                foreach (var p in allIPersistable)
-                {
-                   try
-                   {
-                      p.SaveTo(Settings1);
-                   }
-                   catch (Exception e)
-                   {
-                      MessageWriteLine("{0}.SaveTo() Exception:{1}", p.GetType(), e);
-                   }
-                }
-             }
-
-             Settings1.SaveLayout(DockFrame);
+            var allIPersistable = CollectAllComponentsOfType<IPersistable>(item.Content);
+            foreach (var p in allIPersistable)
+            {
+               try
+               {
+                  p.SaveTo(Settings1);
+               }
+               catch (Exception e)
+               {
+                  MessageWriteLine("{0}.SaveTo() Exception:{1}", p.GetType(), e);
+               }
+            }
          }
+
+         Settings1.SaveLayout(DockFrame);
       }
 
       private void ComponentsRemove()
       {
-         if(DockFrame!=null)
-            foreach(DockItem item in DockFrame.GetItems())
-               if(item.Content is Component)
-                  foreach(DockItem other in DockFrame.GetItems())
-                     if(other != item)
-                        (item.Content as Component).ComponentRemoved(other);
+         foreach (DockItem item in DockFrame.GetItems())
+         {
+            if (item.Content is Component)
+            {
+               foreach (DockItem other in DockFrame.GetItems())
+               {
+                  if (other != item)
+                  {
+                     (item.Content as Component).ComponentRemoved(other);
+                  }
+               }
+            }
+         }
       }
 
       public void LoadConfigurationFile()
@@ -629,15 +599,14 @@ namespace Docking.Components
 
       private bool QuitInternal(bool save_persistency, System.Action thingsToDoBeforeShutdown = null)
       {
-         if(DockFrame!=null)
-            foreach(DockItem item in DockFrame.GetItems())
-               if((item.Content!=null) && (item.Content is Component))
-                  if(!(item.Content as Component).IsCloseOK())
-                     return false; // close has been canceled, for example by a dialog prompt which asks for saving an edited document
+         foreach (DockItem item in DockFrame.GetItems())
+            if ((item.Content != null) && (item.Content is Component))
+               if (!(item.Content as Component).IsCloseOK())
+                  return false; // close has been canceled, for example by a dialog prompt which asks for saving an edited document
 
          // from here on, shutdown activity goes on, so returning false must not happen from here on!
 
-         if(save_persistency)
+         if (save_persistency)
          {
             MainWindowBase.SavePersistency();
 
@@ -648,10 +617,9 @@ namespace Docking.Components
             ComponentsRemove();
          }
 
-         if(DockFrame!=null)
-            foreach(DockItem item in DockFrame.GetItems())
-               if((item.Content!=null) && (item.Content is Component))
-                  (item.Content as Component).Closed();
+         foreach (DockItem item in DockFrame.GetItems())
+            if ((item.Content != null) && (item.Content is Component))
+               (item.Content as Component).Closed();
 
          GtkDispatcher.Instance.IsShutdown = true;
 
@@ -1088,7 +1056,7 @@ namespace Docking.Components
       private readonly List<String>                 mMessageQueue = new List<string>();
       private readonly Dictionary<string, IMessage> mReceivers    = new Dictionary<string, IMessage>();
 
-      public LogWriter()
+      internal LogWriter()
       {
          Title         = String.Empty;
          EnableLogging = false;
@@ -1198,7 +1166,7 @@ namespace Docking.Components
 
    public class LicenseFile
    {
-      public LicenseFile()
+      internal LicenseFile()
       {
          LICENSEFILE = System.IO.Path.Combine(AssemblyInfoExt.LocalSettingsFolder, "license.txt");
       }
