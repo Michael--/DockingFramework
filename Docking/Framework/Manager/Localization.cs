@@ -398,7 +398,7 @@ namespace Docking.Components
             return node.Value as string;
          }
 
-         if (mLogger != null && ComplainAboutMissingLocalizations)
+         if (ComplainAboutMissingLocalizations)
          {
             mLogger.MessageWriteLine("Missing localization key '{0}'", key2);
          }
@@ -444,11 +444,12 @@ namespace Docking.Components
                string comment = node.Comment;
 
                Node n = new Node(key, value, comment, basename, value, comment);
+
                if (!lang.Nodes.ContainsKey(key))
                {
                   lang.Nodes.Add(key, n);
                }
-               else if (mLogger != null)
+               else
                {
                   mLogger.MessageWriteLine("Localization: Key '{0}' already exists", key);
                }

@@ -59,7 +59,7 @@ namespace Docking.Components
 
          #region support old serializer for a while, replace by better implementation
          if (mPersistence.Script.Length == 0)
-            mPersistence = (CommandLinePersistence)ComponentManager.LoadObject("CommandLine", typeof(CommandLinePersistence), DockItem);
+            mPersistence = (CommandLinePersistence)ComponentManager.Settings1.LoadObject("CommandLine", typeof(CommandLinePersistence), DockItem);
          #endregion
       }
 

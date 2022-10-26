@@ -8,10 +8,11 @@ using Gtk;
 using Docking.Tools;
 using System.Diagnostics;
 using System.IO;
+using Docking.Framework.Interfaces;
 
 namespace Docking.Widgets
 {
-   public class MainWindowBase : Gtk.Window
+   public class MainWindowBase : Gtk.Window, IMenuService
    {
       private enum FileType { DLT, NDS, MISC }
 
@@ -25,6 +26,7 @@ namespace Docking.Widgets
       private Menu          mLanguageBaseMenu = null;
       private ImageMenuItem m_DeleteLayout;
       private Menu          mExportSubmenu = new Menu();
+      private DockFrame     mDockFrame;
 
       private TaggedLocalizedCheckedMenuItem mTA_Proven;
       private TaggedLocalizedCheckedMenuItem mTA_Smooth;
@@ -55,7 +57,7 @@ namespace Docking.Widgets
          ComponentManager.MainWindowBase  = this;
          ComponentManager.LogWriter.Title = Title;
          ComponentManager.DialogProvider  = new DialogProvider(this);
-         ComponentManager.Localization    = new Components.Localization(default_language, ComponentManager.LogWriter);
+         ComponentManager.Localization    = new Localization(default_language, ComponentManager.LogWriter);
          ComponentManager.Localization.SearchForResources(
             System.IO.Path.Combine(
                System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Languages", "*.resx"));
@@ -80,13 +82,11 @@ namespace Docking.Widgets
 
       public string ApplicationName { get; private set; }
 
-      private DockFrame DockFrame { get; set; }
-
       public ComponentManager ComponentManager { get; private set; }
 
       protected void SetDockFrame(DockFrame frame)
       {
-         DockFrame = frame;
+         mDockFrame = frame;
       }
 
       protected void SetMenuBar(MenuBar menuBar)
@@ -162,14 +162,14 @@ namespace Docking.Widgets
       {
          string instance = "MainWindow";
 
-         if (DockFrame != null)
+         if (mDockFrame != null)
          {
-            DockFrame.TabType = (DockFrame.TabAlgorithm)ComponentManager.Settings1.LoadSetting(instance, "TabAlgorithm", (int)DockFrame.TabAlgorithm.Proven);
+            mDockFrame.TabType = (DockFrame.TabAlgorithm)ComponentManager.Settings1.LoadSetting(instance, "TabAlgorithm", (int)DockFrame.TabAlgorithm.Proven);
          }
 
          UpdateTabAlgorithmMenu();
 
-         ComponentManager.Settings1.LoadLayout(DockFrame);
+         ComponentManager.Settings1.LoadLayout(mDockFrame);
       }
 
       public void SearchLoadAndInitializeComponentsFromDLLs(bool minimalistic = false)
@@ -237,9 +237,9 @@ namespace Docking.Widgets
 
          try
          {
-            if (DockFrame != null)
+            if (mDockFrame != null)
             {
-               foreach (DockItem item in DockFrame.GetItems())
+               foreach (DockItem item in mDockFrame.GetItems())
                {
                   if (item.Content != null)
                   {
@@ -267,7 +267,7 @@ namespace Docking.Widgets
          }
 
          // after localization change, the child elements may need re-layouting
-         //DockFrame.ResizeChildren(); // TODO this breaks VirtualListView layout, commented it out
+         //mDockFrame.ResizeChildren(); // TODO this breaks VirtualListView layout, commented it out
 
          if (isvis && triggerRedraw)
             Show();
@@ -426,7 +426,7 @@ namespace Docking.Widgets
          m_DeleteLayout = new TaggedLocalizedImageMenuItem("Delete Current Layout");
          m_DeleteLayout.Activated += (object sender, EventArgs e) =>
          {
-            if (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME)
+            if (mDockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME)
             {
                ResponseType result = MessageBox.Show(this, MessageType.Question,
                                          ButtonsType.YesNo,
@@ -435,11 +435,11 @@ namespace Docking.Widgets
                if (result == ResponseType.Yes)
                {
                   MenuItem nitem = sender as MenuItem;
-                  DockFrame.DeleteLayout(DockFrame.CurrentLayout);
-                  RemoveMenuItem(nitem.Parent, DockFrame.CurrentLayout);
-                  DockFrame.CurrentLayout = TGSettings.DEFAULT_LAYOUT_NAME;
-                  CheckMenuItem(nitem.Parent, DockFrame.CurrentLayout);
-                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
+                  mDockFrame.DeleteLayout(mDockFrame.CurrentLayout);
+                  RemoveMenuItem(nitem.Parent, mDockFrame.CurrentLayout);
+                  mDockFrame.CurrentLayout = TGSettings.DEFAULT_LAYOUT_NAME;
+                  CheckMenuItem(nitem.Parent, mDockFrame.CurrentLayout);
+                  m_DeleteLayout.Sensitive = (mDockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
                }
             }
          };
@@ -464,12 +464,12 @@ namespace Docking.Widgets
             if (newLayoutName == null)
                return;
 
-            if (!DockFrame.HasLayout(newLayoutName))
+            if (!mDockFrame.HasLayout(newLayoutName))
             {
-               DockFrame.CreateLayout(newLayoutName, !createEmptyLayout);
-               DockFrame.CurrentLayout = newLayoutName;
+               mDockFrame.CreateLayout(newLayoutName, !createEmptyLayout);
+               mDockFrame.CurrentLayout = newLayoutName;
                AppendLayoutMenu(newLayoutName, false);
-               m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
+               m_DeleteLayout.Sensitive = (mDockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
             }
          };
 
@@ -477,10 +477,10 @@ namespace Docking.Widgets
          AppendMenuItem(@"Options\Layout", m_DeleteLayout);
          AppendMenuItem(@"Options\Layout", new SeparatorMenuItem());
 
-         foreach (String s in DockFrame.Layouts)
+         foreach (String s in mDockFrame.Layouts)
             AppendLayoutMenu(s, true);
 
-         m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
+         m_DeleteLayout.Sensitive = (mDockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
          mMenuBar.ShowAll();
       }
 
@@ -499,7 +499,7 @@ namespace Docking.Widgets
                filters.AddRange(morefilters);
             }
 
-            foreach (DockItem d in DockFrame.GetItems())
+            foreach (DockItem d in mDockFrame.GetItems())
             {
                if (d.Content is IFileOpen)
                {
@@ -561,7 +561,7 @@ namespace Docking.Widgets
             {
                mTA_Smooth.Active = false;
                mTA_Active.Active = false;
-               DockFrame.ChangeTabAlgorithm(DockFrame.TabAlgorithm.Proven);
+               mDockFrame.ChangeTabAlgorithm(DockFrame.TabAlgorithm.Proven);
             }
          };
          mTA_Smooth.Activated += (o, e) =>
@@ -570,7 +570,7 @@ namespace Docking.Widgets
             {
                mTA_Proven.Active = false;
                mTA_Active.Active = false;
-               DockFrame.ChangeTabAlgorithm(DockFrame.TabAlgorithm.Smooth);
+               mDockFrame.ChangeTabAlgorithm(DockFrame.TabAlgorithm.Smooth);
             }
          };
          mTA_Active.Activated += (o, e) =>
@@ -579,7 +579,7 @@ namespace Docking.Widgets
             {
                mTA_Proven.Active = false;
                mTA_Smooth.Active = false;
-               DockFrame.ChangeTabAlgorithm(DockFrame.TabAlgorithm.Active);
+               mDockFrame.ChangeTabAlgorithm(DockFrame.TabAlgorithm.Active);
             }
          };
          AppendMenuItem(string.Format("{0}\\Tab Algorithm", baseMenu), mTA_Proven);
@@ -638,9 +638,9 @@ namespace Docking.Widgets
          if (mTA_Proven == null || mTA_Smooth == null || mTA_Active == null)
             return;
 
-         mTA_Proven.Active = DockFrame.TabType == DockFrame.TabAlgorithm.Proven;
-         mTA_Smooth.Active = DockFrame.TabType == DockFrame.TabAlgorithm.Smooth;
-         mTA_Active.Active = DockFrame.TabType == DockFrame.TabAlgorithm.Active;
+         mTA_Proven.Active = mDockFrame.TabType == DockFrame.TabAlgorithm.Proven;
+         mTA_Smooth.Active = mDockFrame.TabType == DockFrame.TabAlgorithm.Smooth;
+         mTA_Active.Active = mDockFrame.TabType == DockFrame.TabAlgorithm.Active;
       }
 
       protected void AppendMenuItem(String path, MenuItem item)
@@ -812,19 +812,19 @@ namespace Docking.Widgets
             String label = (nitem.Child as Label).Text;
 
             // double check
-            if (DockFrame.HasLayout(label))
+            if (mDockFrame.HasLayout(label))
             {
-               if (DockFrame.CurrentLayout != label)
+               if (mDockFrame.CurrentLayout != label)
                {
                   // uncheck all other
                   UncheckMenuChildren(nitem.Parent, nitem);
 
                   // before check selected layout
-                  DockFrame.CurrentLayout = label;
+                  mDockFrame.CurrentLayout = label;
                   if (!nitem.Active)
                      nitem.Active = true;
                   ComponentManager.MessageWriteLine(String.Format("CurrentLayout={0}", label));
-                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
+                  m_DeleteLayout.Sensitive = (mDockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
                }
                else
                   if (!nitem.Active)
@@ -839,7 +839,7 @@ namespace Docking.Widgets
          {
             UncheckMenuChildren(item.Parent, item);
          }
-         item.Active = (name == DockFrame.CurrentLayout);
+         item.Active = (name == mDockFrame.CurrentLayout);
          item.ShowAll();
       }
 
@@ -985,9 +985,9 @@ namespace Docking.Widgets
          }
 
          ComponentManager.AddLayout(TGSettings.DEFAULT_LAYOUT_NAME, false);
-         if (DockFrame != null)
+         if (mDockFrame != null)
          {
-            DockFrame.CurrentLayout = !String.IsNullOrEmpty(layout) ? layout : TGSettings.DEFAULT_LAYOUT_NAME;
+            mDockFrame.CurrentLayout = !String.IsNullOrEmpty(layout) ? layout : TGSettings.DEFAULT_LAYOUT_NAME;
          }
 
          bool installLayoutMenu = ComponentManager.LicenseGroup.IsEnabled("MENU_Layout");
@@ -1028,10 +1028,10 @@ namespace Docking.Widgets
          ComponentManager.Settings1.SaveSetting(instance, "w", w);
          ComponentManager.Settings1.SaveSetting(instance, "h", h);
 
-         if (DockFrame != null)
+         if (mDockFrame != null)
          {
-            ComponentManager.Settings1.SaveSetting(instance, "layout", DockFrame.CurrentLayout);
-            ComponentManager.Settings1.SaveSetting(instance, "TabAlgorithm", (int)DockFrame.TabType);
+            ComponentManager.Settings1.SaveSetting(instance, "layout", mDockFrame.CurrentLayout);
+            ComponentManager.Settings1.SaveSetting(instance, "TabAlgorithm", (int)mDockFrame.TabType);
          }
 
          ComponentManager.Settings1.SaveSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", Docking.Widgets.FileChooserDialogLocalized.InitialFolderToShow);
@@ -1225,7 +1225,7 @@ namespace Docking.Widgets
          URLList
       }
 
-      private static TargetEntry[] sMapMIMEtoEnum = new TargetEntry[] {
+      private readonly static TargetEntry[] sMapMIMEtoEnum = new TargetEntry[] {
          new TargetEntry("text/plain", 0, (uint)DragDropDataType.Text),            // does not work yet, we don't get drop events for this type currently >:(
          new TargetEntry("STRING", 0, (uint)DragDropDataType.Text),                // does not work yet, we don't get drop events for this type currently >:(
          new TargetEntry("text/x-uri", 0, (uint)DragDropDataType.URL),             // does not work yet, we don't get drop events for this type currently >:(

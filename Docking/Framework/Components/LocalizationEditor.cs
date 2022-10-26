@@ -42,7 +42,7 @@ namespace Docking.Components
          localValueColumn.AddAttribute(localValueCell, "text", localValueIndex);
 
          // Create a model that will hold the content, assign the model to the TreeView
-         listStore = new Gtk.ListStore(typeof(Localization.Node), typeof(string), typeof(string), typeof(string)); 
+         listStore = new Gtk.ListStore(typeof(Localization.Node), typeof(string), typeof(string), typeof(string));
          treeview1.Model = listStore;
          treeview1.GetColumn(0).Click(); // enable sorting 1st column ascending as default
 
@@ -98,7 +98,7 @@ namespace Docking.Components
                ComponentManager.Localization.AddNewCurrentNode(newNode);
             }
          }
-         ComponentManager.UpdateLanguage(true);
+         ComponentManager.MenuService.UpdateLanguage(true);
          UpdateChangeCount();
       }
 
@@ -141,7 +141,7 @@ namespace Docking.Components
                Localization.Node newNode = new Localization.Node(usNode.Key, translation, "", usNode.Base, "", "");
                ComponentManager.Localization.AddNewCurrentNode(newNode);
             }
-            ComponentManager.UpdateLanguage(true);
+            ComponentManager.MenuService.UpdateLanguage(true);
             UpdateChangeCount();
          }
       }
@@ -164,7 +164,7 @@ namespace Docking.Components
                Localization.Node newNode = new Localization.Node(node.Key, args.NewText, "", node.Base, "", "");
                ComponentManager.Localization.AddNewCurrentNode(newNode);
             }
-            ComponentManager.UpdateLanguage(true);
+            ComponentManager.MenuService.UpdateLanguage(true);
             UpdateChangeCount();
          }
       }
@@ -245,7 +245,7 @@ namespace Docking.Components
          fromCulture = fromCulture.ToLower();
          toCulture = toCulture.ToLower();
 
-         // normalize the culture in case something like en-us was passed 
+         // normalize the culture in case something like en-us was passed
          // retrieve only en since Google doesn't support sub-locales
          string[] tokens = fromCulture.Split('-');
          if (tokens.Length > 1)

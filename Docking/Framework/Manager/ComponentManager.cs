@@ -9,6 +9,7 @@ using System.Globalization;
 using Docking.Tools;
 using Docking.Widgets;
 using Docking.Framework;
+using Docking.Framework.Interfaces;
 using Docking.Framework.Tools;
 using Gtk;
 using Docking.Helper;
@@ -87,11 +88,11 @@ namespace Docking.Components
 
       public IReadOnlyCollection<object> Components { get { return mComponents; } }
 
-      public DockItem CurrentDockItem { get; set; }
-
       public Gtk.Window MainWindow { get { return MainWindowBase; } }
 
       internal MainWindowBase MainWindowBase { get; set; }
+
+      public IMenuService MenuService { get { return MainWindowBase; } }
 
       #region private properties
 
@@ -109,9 +110,11 @@ namespace Docking.Components
       #endregion
 
       #region public properties
-      public AccelGroup AccelGroup { get; private set; }
 
-      public DockFrame DockFrame { get; private set; }
+      public AccelGroup AccelGroup { get; private set; }
+      internal DockItem CurrentDockItem { get; private set; }
+      internal DockFrame DockFrame { get; private set; }
+
       public ComponentFinder ComponentFinder { get; private set; }
       public LicenseGroup LicenseGroup { get; private set; }
 
@@ -159,35 +162,6 @@ namespace Docking.Components
          mSelectedStyle.PadBackgroundColor = new Gdk.Color(100, 160, 255);
       }
 
-      public Menu FindOrCreateExportSubmenu(String text)
-      {
-         return MainWindowBase.FindOrCreateExportSubmenu(text);
-      }
-
-      public void AddToolItem(ToolItem item)
-      {
-         MainWindowBase.AddToolItem(item);
-      }
-
-      public uint PushStatusbar(String txt)
-      {
-         return MainWindowBase.PushStatusbar(txt);
-      }
-
-      /// <summary>
-      /// Pop a message from the statusbar.
-      /// </summary>
-      public void PopStatusbar(uint id)
-      {
-         MainWindowBase.PopStatusbar(id);
-      }
-
-      public void RemoveToolItem(ToolItem item)
-      {
-         MainWindowBase.RemoveToolItem(item);
-      }
-
-
       public void AddLayout(string name, bool copyCurrent)
       {
          if (!DockFrame.HasLayout(name))
@@ -202,16 +176,6 @@ namespace Docking.Components
          {
             DockFrame.DeleteLayout(name);
          }
-      }
-
-      public void AddRecentFile(string filename, bool do_update_menu = true)
-      {
-         MainWindowBase.AddRecentFile(filename, do_update_menu);
-      }
-
-      public void UpdateLanguage(bool triggerRedraw)
-      {
-         MainWindowBase.UpdateLanguage(triggerRedraw);
       }
 
       void ICut.Cut()
@@ -351,7 +315,7 @@ namespace Docking.Components
 
                   if (success)
                   {
-                     AddRecentFile(filename);
+                     MenuService.AddRecentFile(filename);
                   }
                   return success;
                }
@@ -362,7 +326,7 @@ namespace Docking.Components
                bool success = (existing_components[0] as IFileOpen).OpenFile(filename, synchronous);
                if (success)
                {
-                  AddRecentFile(filename);
+                  MenuService.AddRecentFile(filename);
                }
                MessageWriteLine(success ? "File opened successfully" : "File opening failed");
                return success;
@@ -377,7 +341,7 @@ namespace Docking.Components
                   bool success = (component as IFileOpen).OpenFile(filename, synchronous);
                   if (success)
                   {
-                     AddRecentFile(filename);
+                     MenuService.AddRecentFile(filename);
                   }
                   MessageWriteLine(success ? "File opened successfully" : "File opening failed");
                   return success;
@@ -392,7 +356,7 @@ namespace Docking.Components
 
          // any archive opening
          if (openedArchiveFiles > 0)
-            AddRecentFile(filename);
+            MenuService.AddRecentFile(filename);
 
          return openedArchiveFiles > 0;
       }
@@ -634,21 +598,6 @@ namespace Docking.Components
       {
          Quit(true);
          a.RetVal = true;
-      }
-
-      #endregion
-
-      #region Binary Persistency
-
-      // TODO It does not really make sense to but binary blobs into XML... this way the file is not really editable/parsable anymore. Suggestion: Prefer using IPersistency.
-      /// <summary>
-      /// Load an object from persistence.
-      /// The optional parameter 'item' can be used to identify the proper DockItem instance.
-      /// </summary>
-      //[Obsolete("Method is deprecated and will be removed soon")]
-      public object LoadObject(String elementName, Type t, DockItem item)
-      {
-         return Settings1.LoadObject(elementName, t, item);
       }
 
       #endregion
@@ -932,6 +881,7 @@ namespace Docking.Components
       {
          if(mSelectRelation.ContainsKey(w))
             return;
+
          mSelectRelation.Add(w, item);
          w.CanFocus = true;
          w.Events |= Gdk.EventMask.FocusChangeMask;

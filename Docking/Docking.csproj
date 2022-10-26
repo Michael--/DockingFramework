@@ -118,6 +118,7 @@
     <Compile Include="Framework\Interfaces\IArchive.cs" />
     <Compile Include="Framework\Interfaces\ICutCopyPaste.cs" />
     <Compile Include="Framework\Interfaces\ILocalizable.cs" />
+    <Compile Include="Framework\Interfaces\IMenuService.cs" />
     <Compile Include="Framework\Interfaces\IMessageWriteLine.cs" />
     <Compile Include="Framework\Interfaces\IPersistable.cs" />
     <Compile Include="Framework\Interfaces\IPersistency.cs" />
