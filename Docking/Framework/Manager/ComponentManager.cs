@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using Docking.Tools;
 using Docking.Widgets;
 using Docking.Framework;
@@ -578,6 +579,7 @@ namespace Docking.Components
                MessageWriteLine("skipping configuration saving because it is readonly");
             else
                SaveConfigurationFile();
+
             ComponentsRemove();
          }
 
@@ -1114,8 +1116,12 @@ namespace Docking.Components
       #endregion
    }
 
+
+
    public class LicenseFile
    {
+      public delegate TResult DecodeFunc<T1, T2, T3, T4, T5, T6, out TResult>(T1 arg1, out T2 arg2, out T3 arg3, out T4 arg4, out T5 arg5, out T6 arg6);
+
       internal LicenseFile()
       {
          LICENSEFILE = System.IO.Path.Combine(AssemblyInfoExt.LocalSettingsFolder, "license.txt");
@@ -1123,6 +1129,39 @@ namespace Docking.Components
 
       public string LicenseContent { get; set; }
       public static string LICENSEFILE { get; private set; }
+
+
+      public void Decode(DecodeFunc<string, bool, bool, string, string, string, bool> decoder, out List<KeyValuePair<string, bool>> licenseOptions, out DateTime expireDate)
+      {
+         licenseOptions = new List<KeyValuePair<string, bool>>();
+         expireDate     = DateTime.MinValue;
+
+         bool expired;
+         bool wrongUserOrMacAddress;
+         string expiration;
+         string options;
+         string commitID;
+         bool syntax_ok = decoder(LicenseContent, out expired, out wrongUserOrMacAddress, out expiration, out options, out commitID);
+
+         if (syntax_ok && !wrongUserOrMacAddress && !expired)
+         {
+            LicenseGroup.DefaultState = LicenseGroup.State.DISABLED;
+            foreach (string licOptionLine in options.Split(new char[] { '|', ' ', '\t', ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+               var licOption = licOptionLine.Split(new char[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+               if (licOption.Length == 2)
+               {
+                  bool flag;
+                  if (bool.TryParse(licOption[1], out flag))
+                  {
+                     licenseOptions.Add(new KeyValuePair<string, bool>(licOption[0], flag));
+                  }
+               }
+            }
+
+            expireDate = DateTime.ParseExact(expiration, "yyyy-MM", CultureInfo.InvariantCulture);
+         }
+      }
 
       public bool Save()
       {

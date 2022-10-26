@@ -162,20 +162,31 @@ namespace Docking.Widgets
       {
          string instance = "MainWindow";
 
-         if (mDockFrame != null)
-         {
-            mDockFrame.TabType = (DockFrame.TabAlgorithm)ComponentManager.Settings1.LoadSetting(instance, "TabAlgorithm", (int)DockFrame.TabAlgorithm.Proven);
-         }
+         mDockFrame.TabType = (DockFrame.TabAlgorithm)ComponentManager.Settings1.LoadSetting(instance, "TabAlgorithm", (int)DockFrame.TabAlgorithm.Proven);
 
          UpdateTabAlgorithmMenu();
 
          ComponentManager.Settings1.LoadLayout(mDockFrame);
       }
 
-      public void SearchLoadAndInitializeComponentsFromDLLs(bool minimalistic = false)
+
+      public void InstallOptionsMenu(Image pic, EventHandler onOptionsActivated)
       {
-         ComponentManager.ComponentFinder.SearchForComponents();
-         AddComponentMenus(minimalistic);
+         ImageMenuItem item = new TaggedLocalizedImageMenuItem("Options");
+         item.Image = pic;
+         item.AddAccelerator("activate", ComponentManager.AccelGroup, new AccelKey(Gdk.Key.o, Gdk.ModifierType.Mod1Mask, AccelFlags.Visible));
+         item.Activated += onOptionsActivated;
+
+         AppendMenuItem("Options", item);
+      }
+
+      public void InstallAboutMenu(Image pic, EventHandler onAboutActivated)
+      {
+         var item       = new TaggedLocalizedImageMenuItem("About");
+         item.Image = pic;
+         item.AddAccelerator("activate", ComponentManager.AccelGroup, new AccelKey(Gdk.Key.F1, Gdk.ModifierType.None, AccelFlags.Visible));
+         item.Activated += onAboutActivated;
+         AppendMenuItem("Help", item);
       }
 
       public void InstallLanguageMenu(string baseMenu)
@@ -237,23 +248,20 @@ namespace Docking.Widgets
 
          try
          {
-            if (mDockFrame != null)
+            foreach (DockItem item in mDockFrame.GetItems())
             {
-               foreach (DockItem item in mDockFrame.GetItems())
+               if (item.Content != null)
                {
-                  if (item.Content != null)
-                  {
-                     Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
+                  Localization.LocalizeControls(item.Content.GetType().Namespace, item.Widget);
 
-                     if (item.Content is ILocalizableComponent)
-                     {
-                        ILocalizableComponent il = item.Content as ILocalizableComponent;
-                        il.LocalizationChanged(item);
-                        item.Content.Name = il.Name.Localized(item.Content);
-                     }
+                  if (item.Content is ILocalizableComponent)
+                  {
+                     ILocalizableComponent il = item.Content as ILocalizableComponent;
+                     il.LocalizationChanged(item);
+                     item.Content.Name = il.Name.Localized(item.Content);
                   }
-                  item.UpdateTitle();
                }
+               item.UpdateTitle();
             }
 
             Localization.LocalizeMenu(mMenuBar);
@@ -322,7 +330,7 @@ namespace Docking.Widgets
       /// <summary>
       /// Add all component start/create menu entries
       /// </summary>
-      private void AddComponentMenus(bool minimalistic = false)
+      protected void AddComponentMenus(List<ComponentFactoryInformation> componentInfos, bool minimalistic = false)
       {
          InstallFileOpenMenu();
 
@@ -336,8 +344,8 @@ namespace Docking.Widgets
          InstallEditMenu();
 
          // get all menu entries first
-         List<KeyValuePair<string, TaggedLocalizedImageMenuItem>> menu = new List<KeyValuePair<string, TaggedLocalizedImageMenuItem>>();
-         foreach (ComponentFactoryInformation cfi in ComponentManager.ComponentFinder.ComponentInfos)
+         var pathMenus = new List<KeyValuePair<string, TaggedLocalizedImageMenuItem>>();
+         foreach (ComponentFactoryInformation cfi in componentInfos)
          {
             if (cfi.MenuPath == null)
                continue;
@@ -346,22 +354,22 @@ namespace Docking.Widgets
                continue;
 
             // the last name is the menu name, all others are menu/sub-menu names
-            String[] m = cfi.MenuPath.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+            String[] menuName = cfi.MenuPath.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
 
             // as a minimum submenu-name & menu-name must exist
-            Debug.Assert(m.Length >= 2);
+            Debug.Assert(menuName.Length >= 2);
 
             // build path again
-            StringBuilder builder = new StringBuilder();
-            for (int i = 0; i < m.Length - 1; i++)
+            var path = new StringBuilder();
+            for (int i = 0; i < menuName.Length - 1; i++)
             {
                if (i > 0)
-                  builder.Append("\\");
-               builder.Append(m[i]);
+                  path.Append("\\");
+               path.Append(menuName[i]);
             }
 
             // use last entry as menu name and create
-            var item = new TaggedLocalizedImageMenuItem(m[m.Length - 1]);
+            var item = new TaggedLocalizedImageMenuItem(menuName[menuName.Length - 1]);
             item.Tag = cfi;
             // TODO: make the menu image visible if you know how
             Gdk.Pixbuf pb = cfi.Icon;
@@ -369,14 +377,14 @@ namespace Docking.Widgets
                item.Image = new Image(pb);
             item.Activated += ComponentHandleActivated;
 
-            menu.Add(new KeyValuePair<string, TaggedLocalizedImageMenuItem>(builder.ToString(), item));
+            pathMenus.Add(new KeyValuePair<string, TaggedLocalizedImageMenuItem>(path.ToString(), item));
          }
 
          // after collecting sort by path and name before add to menu
-         menu.Sort((p1, p2) => (p1.Key + p1.Value.LabelText).CompareTo(p2.Key + p2.Value.LabelText));
-         foreach (var kvp in menu)
+         pathMenus.Sort((p1, p2) => (p1.Key + p1.Value.LabelText).CompareTo(p2.Key + p2.Value.LabelText));
+         foreach (var pathMenuPair in pathMenus)
          {
-            AppendMenuItem(kvp.Key, kvp.Value);
+            AppendMenuItem(pathMenuPair.Key, pathMenuPair.Value);
          }
          mMenuBar.ShowAll();
       }
@@ -985,10 +993,7 @@ namespace Docking.Widgets
          }
 
          ComponentManager.AddLayout(TGSettings.DEFAULT_LAYOUT_NAME, false);
-         if (mDockFrame != null)
-         {
-            mDockFrame.CurrentLayout = !String.IsNullOrEmpty(layout) ? layout : TGSettings.DEFAULT_LAYOUT_NAME;
-         }
+         mDockFrame.CurrentLayout = !String.IsNullOrEmpty(layout) ? layout : TGSettings.DEFAULT_LAYOUT_NAME;
 
          bool installLayoutMenu = ComponentManager.LicenseGroup.IsEnabled("MENU_Layout");
          if (installLayoutMenu)
@@ -1027,15 +1032,9 @@ namespace Docking.Widgets
          ComponentManager.Settings1.SaveSetting(instance, "y", y);
          ComponentManager.Settings1.SaveSetting(instance, "w", w);
          ComponentManager.Settings1.SaveSetting(instance, "h", h);
-
-         if (mDockFrame != null)
-         {
-            ComponentManager.Settings1.SaveSetting(instance, "layout", mDockFrame.CurrentLayout);
-            ComponentManager.Settings1.SaveSetting(instance, "TabAlgorithm", (int)mDockFrame.TabType);
-         }
-
+         ComponentManager.Settings1.SaveSetting(instance, "layout", mDockFrame.CurrentLayout);
+         ComponentManager.Settings1.SaveSetting(instance, "TabAlgorithm", (int)mDockFrame.TabType);
          ComponentManager.Settings1.SaveSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", Docking.Widgets.FileChooserDialogLocalized.InitialFolderToShow);
-
          ComponentManager.Settings1.SaveSetting(instance, "MaxRecentFiles", ComponentManager.MaxRecentFiles);
          ComponentManager.Settings1.SaveSetting(instance, "RecentFiles", RecentFiles());
       }
