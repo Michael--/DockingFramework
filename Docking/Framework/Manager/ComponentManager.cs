@@ -429,43 +429,7 @@ namespace Docking.Components
          return openedArchiveFiles > 0;
       }
 
-      public String OpenFolderDialog(string title, string startFolder = null)
-      {
-         return DialogProvider.OpenFolderDialog(title, startFolder);
-      }
-
-      public String OpenFileDialog(string prompt, FileFilterExt filter = null, string startFolder = null)
-      {
-         return DialogProvider.OpenFileDialog(prompt, filter, startFolder);
-      }
-
-      public String OpenFileDialog(string title, List<FileFilterExt> filters, string startFolder = null)
-      {
-         return DialogProvider.OpenFileDialog(title, filters, startFolder);
-      }
-
-      public string[] OpenFilesDialog(string prompt, FileFilterExt filter = null, string startFolder = null)
-      {
-         return DialogProvider.OpenFilesDialog(prompt, filter, startFolder);
-      }
-
-      public string[] OpenFilesDialog(string title, List<FileFilterExt> filters, string startFolder = null)
-      {
-         return DialogProvider.OpenFilesDialog(title, filters, startFolder);
-      }
-
-      public String SaveFileDialog(string prompt, FileFilterExt filter = null, string currentFilename = null)
-      {
-         return DialogProvider.SaveFileDialog(prompt, filter, currentFilename);
-      }
-
-      public String SaveFileDialog(string title, List<FileFilterExt> filters = null, string currentFilename = null)
-      {
-         return DialogProvider.SaveFileDialog(title, filters, currentFilename);
-      }
-
       #region Configuration
-
 
       public void AddComponent(object o)
       {
