@@ -21,6 +21,8 @@ namespace Docking.Components
       public const string CONFIG_ROOT_ELEMENT = "DockingConfiguration";
       public const string DEFAULT_LAYOUT_NAME = "Default"; // TODO can we localize this string? Careful, the name is persisted...
 
+      private string mCONFIGFILE;
+      private string mDEFAULTCONFIGFILE;
 
       private XmlDocument mXmlDocument;
       private XmlNode     mXmlNode;
@@ -30,16 +32,15 @@ namespace Docking.Components
       /// </summary>
       public TGSettings()
       {
-         TweakConfigurationFileAction = () => { };
+         TweakConfigurationFileAction = (o) => { };
 
-         CONFIGFILE        = System.IO.Path.Combine(AssemblyInfoExt.LocalSettingsFolder, "config.xml");
-         DEFAULTCONFIGFILE = System.IO.Path.Combine(AssemblyInfoExt.Directory, "defaultconfig.xml");
+         mCONFIGFILE        = System.IO.Path.Combine(AssemblyInfoExt.LocalSettingsFolder, "config.xml");
+         mDEFAULTCONFIGFILE = System.IO.Path.Combine(AssemblyInfoExt.Directory, "defaultconfig.xml");
       }
 
-      public string CONFIGFILE { get; private set; }
-      public string DEFAULTCONFIGFILE { get; private set; }
 
-      public String ConfigurationFilename { get; set; }
+      public string NewFilename { get; set; }
+
       public bool IsReadonly { get; private set; }
 
 
@@ -532,11 +533,11 @@ namespace Docking.Components
       {
          if (string.IsNullOrEmpty(filename))
          {
-            filename = Path.Combine(AssemblyInfoExt.LocalSettingsFolder, "config.xml");
+            filename = mCONFIGFILE;
          }
 
-         ConfigurationFilename = filename;
-         mXmlDocument          = new XmlDocument();
+         NewFilename  = filename;
+         mXmlDocument = new XmlDocument();
 
          if (!File.Exists(filename))
          {
@@ -566,26 +567,34 @@ namespace Docking.Components
 
       public void SaveConfigurationFile()
       {
-         if (!string.IsNullOrEmpty(ConfigurationFilename))
+         if (!string.IsNullOrEmpty(NewFilename))
          {
             try
             {
-               string dir = Path.GetDirectoryName(ConfigurationFilename);
+               string dir = Path.GetDirectoryName(NewFilename);
                if (!Directory.Exists(dir))
                {
                   Directory.CreateDirectory(dir);
                }
 
                // open the file exclusively for writing, i.e., prevent other instances of us from interfering!
-               using (FileStream f = new FileStream(ConfigurationFilename, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+               using (FileStream f = new FileStream(NewFilename, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
                {
                   mXmlDocument.Save(f);
                }
             }
             catch(Exception)
             {
-               //this.MessageWriteLine("Failed to save configuration file '{0}': {1}", ConfigurationFilename, e.ToString());
+               //this.MessageWriteLine("Failed to save configuration file '{0}': {1}", NewFilename, e.ToString());
             }
+         }
+      }
+
+      public void DeleteFile()
+      {
+         if (File.Exists(mCONFIGFILE))
+         {
+            File.Delete(mCONFIGFILE);
          }
       }
 
@@ -803,11 +812,13 @@ namespace Docking.Components
                throw new Exception(string.Format("config file '{0}' not found", configfile));
             }
 
-            CONFIGFILE = configfile;
+            mCONFIGFILE = configfile;
          }
-         else if (!File.Exists(CONFIGFILE))
+         else if (!File.Exists(mCONFIGFILE))
          {
-            string dir = System.IO.Path.GetDirectoryName(CONFIGFILE);
+            string dir = System.IO.Path.GetDirectoryName(mCONFIGFILE);
+
+            //create dir if necessary
             if (!string.IsNullOrEmpty(dir))
             {
                if (!Directory.Exists(dir))
@@ -821,9 +832,10 @@ namespace Docking.Components
                }
             }
 
-            if (File.Exists(DEFAULTCONFIGFILE))
+            //copy default to actual file
+            if (File.Exists(mDEFAULTCONFIGFILE))
             {
-               File.Copy(DEFAULTCONFIGFILE, CONFIGFILE);
+               File.Copy(mDEFAULTCONFIGFILE, mCONFIGFILE);
             }
          }
       }

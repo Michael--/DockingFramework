@@ -537,11 +537,11 @@ namespace Docking.Widgets
             string filename = ComponentManager.DialogProvider.SaveFileDialog("Save Config As...", new List<FileFilterExt>()
             {
                new FileFilterExt("*.xml", "Config File")
-            }, ComponentManager.Settings1.ConfigurationFilename);
+            }, ComponentManager.Settings1.NewFilename);
 
             if (filename != null)
             {
-               ComponentManager.Settings1.ConfigurationFilename = filename;
+               ComponentManager.Settings1.NewFilename = filename;
                ComponentManager.SaveConfigurationFile();
             }
          };

@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
 using System.Globalization;
-using System.Runtime.InteropServices;
 using Docking.Tools;
 using Docking.Widgets;
 using Docking.Framework;
@@ -546,7 +545,7 @@ namespace Docking.Components
 
       public void LoadConfigurationFile()
       {
-         Settings1.LoadConfigurationFile(Settings1.CONFIGFILE);
+         Settings1.LoadConfigurationFile();
       }
 
       public void SaveConfigurationFile()
@@ -974,6 +973,27 @@ namespace Docking.Components
 
       #endregion
 
+      #region ScrollTo globally
+
+      public delegate bool ScrollFunc(object sender, double lat, double lon, int percent, bool repaint);
+
+      private ScrollFunc mRegisteredScrollFuncs = (p1, p2, p3, p4, p5) => { return true; };
+
+      public void RegisterScrollToHandler(ScrollFunc fn)
+      {
+         mRegisteredScrollFuncs += fn;
+      }
+
+      // Set "percent" to zero if this always should happen.
+      // If it is larger than zero, then the scroll only happens when the coordinate leaves that percentage range of the screen.
+      // Returns true if such scroll has happened.
+      public bool ScrollTo(object sender, double lat, double lon, int percent, bool triggerRepaint)
+      {
+         return mRegisteredScrollFuncs(sender, lat, lon, percent, triggerRepaint);
+      }
+
+      #endregion
+
       public string ReadResource(String id)
       {
          Assembly asm = Assembly.GetCallingAssembly();
@@ -1120,7 +1140,7 @@ namespace Docking.Components
 
    public class LicenseFile
    {
-      public delegate TResult DecodeFunc<T1, T2, T3, T4, T5, T6, out TResult>(T1 arg1, out T2 arg2, out T3 arg3, out T4 arg4, out T5 arg5, out T6 arg6);
+      public delegate bool DecodeFunc(string s, out bool b1, out bool b2, out string s1, out string s2, out string s3);
 
       internal LicenseFile()
       {
@@ -1131,7 +1151,7 @@ namespace Docking.Components
       public static string LICENSEFILE { get; private set; }
 
 
-      public void Decode(DecodeFunc<string, bool, bool, string, string, string, bool> decoder, out List<KeyValuePair<string, bool>> licenseOptions, out DateTime expireDate)
+      public void Decode(DecodeFunc decoder, out List<KeyValuePair<string, bool>> licenseOptions, out DateTime expireDate)
       {
          licenseOptions = new List<KeyValuePair<string, bool>>();
          expireDate     = DateTime.MinValue;
