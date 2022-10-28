@@ -13,6 +13,7 @@ using System.Xml.Serialization;
 using Docking.Tools;
 using Docking.Widgets;
 using Gtk;
+using System.Diagnostics;
 
 namespace Docking.Components
 {
@@ -32,8 +33,6 @@ namespace Docking.Components
       /// </summary>
       public TGSettings()
       {
-         TweakConfigurationFileAction = (o) => { };
-
          mCONFIGFILE        = System.IO.Path.Combine(AssemblyInfoExt.LocalSettingsFolder, "config.xml");
          mDEFAULTCONFIGFILE = System.IO.Path.Combine(AssemblyInfoExt.Directory, "defaultconfig.xml");
       }
@@ -42,9 +41,6 @@ namespace Docking.Components
       public string NewFilename { get; set; }
 
       public bool IsReadonly { get; private set; }
-
-
-      public System.Action TweakConfigurationFileAction { get; set; }
 
       public void SetFilename(string filename)
       {
@@ -560,7 +556,7 @@ namespace Docking.Components
             mXmlNode = mXmlDocument.AppendChild(mXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT));
          }
 
-         TweakConfigurationFileAction();
+         PerformDownwardsCompatibility();
 
          IsReadonly = LoadSetting("", "readonly", false);
       }
@@ -836,6 +832,32 @@ namespace Docking.Components
             if (File.Exists(mDEFAULTCONFIGFILE))
             {
                File.Copy(mDEFAULTCONFIGFILE, mCONFIGFILE);
+            }
+         }
+      }
+
+      private void PerformDownwardsCompatibility()
+      {
+         Version versionConfig = new Version(LoadSetting("", "ConfigSavedByVersion", "0.0.0.0"));
+         Version versionAsm = AssemblyInfoExt.Version;
+
+         Debug.WriteLine("TempoGiusto assembly version: {0}", versionAsm);
+
+         if (versionConfig.Major != 0 && versionConfig.Minor != 0)
+         {
+            if ((versionConfig.Major < 1) ||
+                (versionConfig.Major == 1 && versionConfig.Minor < 1))
+            {
+               RemapComponent("TempoGiusto.MapViewer.MapViewer", "TempoGiusto.MapExplorer.MapExplorer");
+               RemapComponent("TempoGiusto.MapViewer.MapLayers", "TempoGiusto.MapExplorer.MapExplorerLayers");
+               RemapComponent("TempoGiusto.MapViewer.GeoFinder", "TempoGiusto.MapExplorer.GeoFinder");
+               RemapComponent("TempoGiusto.MapViewerFUnit.MapViewerFUnit", "TempoGiusto.MapViewer.MapViewer");
+            }
+
+            if ((versionConfig.Major < 1) ||
+                (versionConfig.Major == 1 && versionConfig.Minor < 3))
+            {
+               RemapComponent("TempoGiusto.Routing.Routes", "TempoGiusto.Routing.RoutesFromLog");
             }
          }
       }

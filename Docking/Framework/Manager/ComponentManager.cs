@@ -100,11 +100,6 @@ namespace Docking.Components
 
       public IPersistency Persistence { get { return Settings1 as IPersistency; } }
 
-      public System.Action TweakConfigurationFileAction
-      {
-         set { Settings1.TweakConfigurationFileAction += value; }
-      }
-
       public DialogProvider DialogProvider { get; internal set; }
 
       #endregion
