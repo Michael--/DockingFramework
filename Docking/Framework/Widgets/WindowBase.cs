@@ -18,15 +18,12 @@ namespace Docking.Widgets
 
       private bool mRecursionFlag = false; //workaround
 
-      private Gdk.WindowState mWindowState;
-
       private Statusbar     mStatusBar;
       private Toolbar       mToolBar;
       private MenuBar       mMenuBar;
       private Menu          mLanguageBaseMenu = null;
       private ImageMenuItem m_DeleteLayout;
       private Menu          mExportSubmenu = new Menu();
-      private DockFrame     mDockFrame;
 
       private TaggedLocalizedCheckedMenuItem mTA_Proven;
       private TaggedLocalizedCheckedMenuItem mTA_Smooth;
@@ -76,6 +73,10 @@ namespace Docking.Widgets
          MessageBox.Init(ComponentManager);
       }
 
+      protected DockFrame DockFrame { get; set; }
+
+      public Gdk.WindowState WindowState { get; set; }
+
       public ImageMenuItem MenuCut { get; private set; }
       public ImageMenuItem MenuCopy { get; private set; }
       public ImageMenuItem MenuPaste { get; private set; }
@@ -86,7 +87,7 @@ namespace Docking.Widgets
 
       protected void SetDockFrame(DockFrame frame)
       {
-         mDockFrame = frame;
+         DockFrame = frame;
       }
 
       protected void SetMenuBar(MenuBar menuBar)
@@ -153,7 +154,7 @@ namespace Docking.Widgets
       // This function is an ugly workaround for GTK:
       // After modifying a menu, you need to call .ShowAll() on its root element to properly make all menus and submenus show up.
       // Without this call, some of them may not be visible.
-      public void ModifyingTheMenuIsFinished()
+      public void OnModifyingMenuFinished()
       {
          mMenuBar.ShowAll();
       }
@@ -162,11 +163,11 @@ namespace Docking.Widgets
       {
          string instance = "MainWindow";
 
-         mDockFrame.TabType = (DockFrame.TabAlgorithm)ComponentManager.Settings1.LoadSetting(instance, "TabAlgorithm", (int)DockFrame.TabAlgorithm.Proven);
+         DockFrame.TabType = (DockFrame.TabAlgorithm)ComponentManager.Settings1.LoadSetting(instance, "TabAlgorithm", (int)DockFrame.TabAlgorithm.Proven);
 
          UpdateTabAlgorithmMenu();
 
-         ComponentManager.Settings1.LoadLayout(mDockFrame);
+         ComponentManager.Settings1.LoadLayout(DockFrame);
       }
 
 
@@ -248,7 +249,7 @@ namespace Docking.Widgets
 
          try
          {
-            foreach (DockItem item in mDockFrame.GetItems())
+            foreach (DockItem item in DockFrame.GetItems())
             {
                if (item.Content != null)
                {
@@ -275,7 +276,7 @@ namespace Docking.Widgets
          }
 
          // after localization change, the child elements may need re-layouting
-         //mDockFrame.ResizeChildren(); // TODO this breaks VirtualListView layout, commented it out
+         //DockFrame.ResizeChildren(); // TODO this breaks VirtualListView layout, commented it out
 
          if (isvis && triggerRedraw)
             Show();
@@ -386,7 +387,8 @@ namespace Docking.Widgets
          {
             AppendMenuItem(pathMenuPair.Key, pathMenuPair.Value);
          }
-         mMenuBar.ShowAll();
+
+         OnModifyingMenuFinished();
       }
 
       private void ComponentHandleActivated(object sender, EventArgs e)
@@ -400,13 +402,13 @@ namespace Docking.Widgets
       private void AppendExportMenuQuickHack(MenuItem item)
       {
          mExportSubmenu.Append(item);
-         mMenuBar.ShowAll();
+         OnModifyingMenuFinished();
       }
 
       public void RemoveExportMenuQuickHack(MenuItem item)
       {
          mExportSubmenu.Remove(item);
-         mMenuBar.ShowAll();
+         OnModifyingMenuFinished();
       }
 
       public Menu FindOrCreateExportSubmenu(String text)
@@ -434,7 +436,7 @@ namespace Docking.Widgets
          m_DeleteLayout = new TaggedLocalizedImageMenuItem("Delete Current Layout");
          m_DeleteLayout.Activated += (object sender, EventArgs e) =>
          {
-            if (mDockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME)
+            if (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME)
             {
                ResponseType result = MessageBox.Show(this, MessageType.Question,
                                          ButtonsType.YesNo,
@@ -443,11 +445,11 @@ namespace Docking.Widgets
                if (result == ResponseType.Yes)
                {
                   MenuItem nitem = sender as MenuItem;
-                  mDockFrame.DeleteLayout(mDockFrame.CurrentLayout);
-                  RemoveMenuItem(nitem.Parent, mDockFrame.CurrentLayout);
-                  mDockFrame.CurrentLayout = TGSettings.DEFAULT_LAYOUT_NAME;
-                  CheckMenuItem(nitem.Parent, mDockFrame.CurrentLayout);
-                  m_DeleteLayout.Sensitive = (mDockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
+                  DockFrame.DeleteLayout(DockFrame.CurrentLayout);
+                  RemoveMenuItem(nitem.Parent, DockFrame.CurrentLayout);
+                  DockFrame.CurrentLayout = TGSettings.DEFAULT_LAYOUT_NAME;
+                  CheckMenuItem(nitem.Parent, DockFrame.CurrentLayout);
+                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
                }
             }
          };
@@ -472,12 +474,12 @@ namespace Docking.Widgets
             if (newLayoutName == null)
                return;
 
-            if (!mDockFrame.HasLayout(newLayoutName))
+            if (!DockFrame.HasLayout(newLayoutName))
             {
-               mDockFrame.CreateLayout(newLayoutName, !createEmptyLayout);
-               mDockFrame.CurrentLayout = newLayoutName;
+               DockFrame.CreateLayout(newLayoutName, !createEmptyLayout);
+               DockFrame.CurrentLayout = newLayoutName;
                AppendLayoutMenu(newLayoutName, false);
-               m_DeleteLayout.Sensitive = (mDockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
+               m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
             }
          };
 
@@ -485,11 +487,11 @@ namespace Docking.Widgets
          AppendMenuItem(@"Options\Layout", m_DeleteLayout);
          AppendMenuItem(@"Options\Layout", new SeparatorMenuItem());
 
-         foreach (String s in mDockFrame.Layouts)
+         foreach (String s in DockFrame.Layouts)
             AppendLayoutMenu(s, true);
 
-         m_DeleteLayout.Sensitive = (mDockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
-         mMenuBar.ShowAll();
+         m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
+         OnModifyingMenuFinished();
       }
 
       private void InstallFileOpenMenu()
@@ -507,7 +509,7 @@ namespace Docking.Widgets
                filters.AddRange(morefilters);
             }
 
-            foreach (DockItem d in mDockFrame.GetItems())
+            foreach (DockItem d in DockFrame.GetItems())
             {
                if (d.Content is IFileOpen)
                {
@@ -569,7 +571,7 @@ namespace Docking.Widgets
             {
                mTA_Smooth.Active = false;
                mTA_Active.Active = false;
-               mDockFrame.ChangeTabAlgorithm(DockFrame.TabAlgorithm.Proven);
+               DockFrame.ChangeTabAlgorithm(DockFrame.TabAlgorithm.Proven);
             }
          };
          mTA_Smooth.Activated += (o, e) =>
@@ -578,7 +580,7 @@ namespace Docking.Widgets
             {
                mTA_Proven.Active = false;
                mTA_Active.Active = false;
-               mDockFrame.ChangeTabAlgorithm(DockFrame.TabAlgorithm.Smooth);
+               DockFrame.ChangeTabAlgorithm(DockFrame.TabAlgorithm.Smooth);
             }
          };
          mTA_Active.Activated += (o, e) =>
@@ -587,7 +589,7 @@ namespace Docking.Widgets
             {
                mTA_Proven.Active = false;
                mTA_Smooth.Active = false;
-               mDockFrame.ChangeTabAlgorithm(DockFrame.TabAlgorithm.Active);
+               DockFrame.ChangeTabAlgorithm(DockFrame.TabAlgorithm.Active);
             }
          };
          AppendMenuItem(string.Format("{0}\\Tab Algorithm", baseMenu), mTA_Proven);
@@ -646,9 +648,9 @@ namespace Docking.Widgets
          if (mTA_Proven == null || mTA_Smooth == null || mTA_Active == null)
             return;
 
-         mTA_Proven.Active = mDockFrame.TabType == DockFrame.TabAlgorithm.Proven;
-         mTA_Smooth.Active = mDockFrame.TabType == DockFrame.TabAlgorithm.Smooth;
-         mTA_Active.Active = mDockFrame.TabType == DockFrame.TabAlgorithm.Active;
+         mTA_Proven.Active = DockFrame.TabType == DockFrame.TabAlgorithm.Proven;
+         mTA_Smooth.Active = DockFrame.TabType == DockFrame.TabAlgorithm.Smooth;
+         mTA_Active.Active = DockFrame.TabType == DockFrame.TabAlgorithm.Active;
       }
 
       protected void AppendMenuItem(String path, MenuItem item)
@@ -820,19 +822,19 @@ namespace Docking.Widgets
             String label = (nitem.Child as Label).Text;
 
             // double check
-            if (mDockFrame.HasLayout(label))
+            if (DockFrame.HasLayout(label))
             {
-               if (mDockFrame.CurrentLayout != label)
+               if (DockFrame.CurrentLayout != label)
                {
                   // uncheck all other
                   UncheckMenuChildren(nitem.Parent, nitem);
 
                   // before check selected layout
-                  mDockFrame.CurrentLayout = label;
+                  DockFrame.CurrentLayout = label;
                   if (!nitem.Active)
                      nitem.Active = true;
                   ComponentManager.MessageWriteLine(String.Format("CurrentLayout={0}", label));
-                  m_DeleteLayout.Sensitive = (mDockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
+                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
                }
                else
                   if (!nitem.Active)
@@ -847,7 +849,7 @@ namespace Docking.Widgets
          {
             UncheckMenuChildren(item.Parent, item);
          }
-         item.Active = (name == mDockFrame.CurrentLayout);
+         item.Active = (name == DockFrame.CurrentLayout);
          item.ShowAll();
       }
 
@@ -966,88 +968,6 @@ namespace Docking.Widgets
          }
       }
 
-      public void LoadPersistency()
-      {
-         LoadPersistencyIntern();
-
-         string instance = "MainWindow";
-
-         //IsReadonly = persistency.LoadSetting("", "readonly", false); // exceptionally read earlier in LoadConfigurationFile(), not here
-
-         int windowstate = ComponentManager.Settings1.LoadSetting(instance, "windowstate", 0);
-         int x = ComponentManager.Settings1.LoadSetting(instance, "x", -9999999);
-         int y = ComponentManager.Settings1.LoadSetting(instance, "y", -9999999);
-         int w = ComponentManager.Settings1.LoadSetting(instance, "w", -9999999);
-         int h = ComponentManager.Settings1.LoadSetting(instance, "h", -9999999);
-         string layout = ComponentManager.Settings1.LoadSetting(instance, "layout", "");
-
-         if (x != -9999999 && y != -9999999 && w != -9999999 && h != -9999999)
-         {
-            Resize(w, h);
-            Move(x, y);
-         }
-
-         if ((windowstate & (int)Gdk.WindowState.Maximized) != 0)
-         {
-            Maximize();
-         }
-
-         ComponentManager.AddLayout(TGSettings.DEFAULT_LAYOUT_NAME, false);
-         mDockFrame.CurrentLayout = !String.IsNullOrEmpty(layout) ? layout : TGSettings.DEFAULT_LAYOUT_NAME;
-
-         bool installLayoutMenu = ComponentManager.LicenseGroup.IsEnabled("MENU_Layout");
-         if (installLayoutMenu)
-         {
-            InstallLayoutMenu(layout);
-         }
-
-         string dir = ComponentManager.Settings1.LoadSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", "");
-
-         if (!string.IsNullOrEmpty(dir) && Directory.Exists(dir))
-         {
-            Docking.Widgets.FileChooserDialogLocalized.InitialFolderToShow = dir;
-         }
-
-         ComponentManager.MaxRecentFiles = ComponentManager.Settings1.LoadSetting(instance, "MaxRecentFiles", 9);
-         List<string> recentfiles = ComponentManager.Settings1.LoadSetting(instance, "RecentFiles", new List<string>());
-
-         UpdateRecentFilesMenu(recentfiles);
-      }
-
-      public void SavePersistency() // TODO abolish, replace by implementing IPersistable
-      {
-         SavePersistencyIntern();
-
-         string instance = "MainWindow";
-
-         ComponentManager.Settings1.SaveSetting("", "ConfigSavedByVersion", AssemblyInfoExt.Version.ToString());
-         ComponentManager.Settings1.SaveSetting("", "readonly", ComponentManager.Settings1.IsReadonly);
-
-         int x, y, w, h;
-         GetPosition(out x, out y);
-         GetSize(out w, out h);
-
-         ComponentManager.Settings1.SaveSetting(instance, "windowstate", (int)mWindowState);
-         ComponentManager.Settings1.SaveSetting(instance, "x", x);
-         ComponentManager.Settings1.SaveSetting(instance, "y", y);
-         ComponentManager.Settings1.SaveSetting(instance, "w", w);
-         ComponentManager.Settings1.SaveSetting(instance, "h", h);
-         ComponentManager.Settings1.SaveSetting(instance, "layout", mDockFrame.CurrentLayout);
-         ComponentManager.Settings1.SaveSetting(instance, "TabAlgorithm", (int)mDockFrame.TabType);
-         ComponentManager.Settings1.SaveSetting(instance, "FileChooserDialogLocalized.InitialFolderToShow", Docking.Widgets.FileChooserDialogLocalized.InitialFolderToShow);
-         ComponentManager.Settings1.SaveSetting(instance, "MaxRecentFiles", ComponentManager.MaxRecentFiles);
-         ComponentManager.Settings1.SaveSetting(instance, "RecentFiles", RecentFiles());
-      }
-
-      protected virtual void LoadPersistencyIntern()
-      {
-         //nothing to do
-      }
-
-      protected virtual void SavePersistencyIntern()
-      {
-         //nothing to do
-      }
 
       public Gdk.Pixbuf Screenshot()
       {
@@ -1163,7 +1083,7 @@ namespace Docking.Widgets
 
       private void OnWindowStateChanged(object sender, WindowStateEventArgs args)
       {
-         mWindowState = args.Event.NewWindowState;
+         WindowState = args.Event.NewWindowState;
       }
 
       private static void MakeWidgetReceiveDropEvents(Widget widget, DragDataReceivedHandler callback)
@@ -1250,234 +1170,5 @@ namespace Docking.Widgets
          }
          return result;
       }
-   }
-
-
-   /// <summary>
-   /// Basically a factory for various dialog types
-   /// </summary>
-   public class DialogProvider
-   {
-      private readonly MainWindowBase mMainWindowBase;
-
-      internal DialogProvider(MainWindowBase mainWindowBase)
-      {
-         mMainWindowBase = mainWindowBase;
-      }
-
-      #region Dialogs
-      public String OpenFolderDialog(string title, string startFolder = null)
-      {
-         String result = null;
-
-         var dlg = new FileChooserDialogLocalized(title, mMainWindowBase, FileChooserAction.SelectFolder,
-                                              "Select".L(), ResponseType.Accept,
-                                              "Cancel".L(), ResponseType.Cancel);
-
-         if (!String.IsNullOrEmpty(startFolder))
-            dlg.SetCurrentFolder(startFolder);
-
-         if (RunFileChooserDialogLocalized(dlg, null) == (int)ResponseType.Accept)
-            result = dlg.Filename;
-
-         dlg.Destroy();
-         return result;
-      }
-
-      public String OpenFileDialog(string prompt, FileFilterExt filter = null, string startFolder = null)
-      {
-         List<FileFilterExt> filters = new List<FileFilterExt>();
-         if (filter != null)
-         {
-            filters.Add(filter);
-         }
-
-         return OpenFileDialog(prompt, filters, startFolder);
-      }
-
-      public String OpenFileDialog(string title, List<FileFilterExt> filters, string startFolder = null)
-      {
-         string result = null;
-
-         var dlg = new FileChooserDialogLocalized(title, mMainWindowBase, FileChooserAction.Open,
-                                              "Open".L(), ResponseType.Accept,
-                                              "Cancel".L(), ResponseType.Cancel);
-         if (!String.IsNullOrEmpty(startFolder))
-         {
-            dlg.SetCurrentFolder(startFolder);
-         }
-
-         if (RunFileChooserDialogLocalized(dlg, filters) == (int)ResponseType.Accept)
-         {
-            result = dlg.Filename;
-            mMainWindowBase.AddRecentFile(result);
-         }
-
-         dlg.Destroy();
-         return result;
-      }
-
-      public string[] OpenFilesDialog(string prompt, FileFilterExt filter = null, string startFolder = null)
-      {
-         List<FileFilterExt> filters = new List<FileFilterExt>();
-         if (filter != null)
-         {
-            filters.Add(filter);
-         }
-
-         return OpenFilesDialog(prompt, filters, startFolder);
-      }
-
-      public string[] OpenFilesDialog(string title, List<FileFilterExt> filters, string startFolder = null)
-      {
-         string[] result = null;
-
-         var dlg = new FileChooserDialogLocalized(title, mMainWindowBase, FileChooserAction.Open,
-                                              "Open".L(), ResponseType.Accept,
-                                              "Cancel".L(), ResponseType.Cancel);
-         if (!String.IsNullOrEmpty(startFolder))
-         {
-            dlg.SetCurrentFolder(startFolder);
-         }
-
-         dlg.SelectMultiple = true;
-
-         if (RunFileChooserDialogLocalized(dlg, filters) == (int)ResponseType.Accept)
-         {
-            result = dlg.Filenames;
-            if (result != null)
-            {
-               foreach (string filename in result)
-               {
-                  mMainWindowBase.AddRecentFile(filename);
-               }
-            }
-         }
-
-         dlg.Destroy();
-         return result;
-      }
-
-      public String SaveFileDialog(string prompt, FileFilterExt filter = null, string currentFilename = null)
-      {
-         List<FileFilterExt> filters = new List<FileFilterExt>();
-         if (filter != null)
-         {
-            filters.Add(filter);
-         }
-         return SaveFileDialog(prompt, filters, currentFilename);
-      }
-
-      public String SaveFileDialog(string title, List<FileFilterExt> filters = null, string currentFilename = null)
-      {
-         string result = null;
-
-         var dlg = new FileChooserDialogLocalized(title, mMainWindowBase, FileChooserAction.Save,
-                                              "Save".L(), ResponseType.Accept,
-                                              "Cancel".L(), ResponseType.Cancel);
-         if (currentFilename != null)
-         {
-            var dirname = System.IO.Path.GetDirectoryName(currentFilename);
-            if (dirname != null && dirname.Length > 0)
-            {
-               dlg.SetCurrentFolderUri(dirname);
-            }
-
-            var filename = System.IO.Path.GetFileName(currentFilename);
-            if (filename != null && filename.Length > 0)
-            {
-               dlg.CurrentName = filename;
-            }
-         }
-
-         if (RunFileChooserDialogLocalized(dlg, filters) == (int)ResponseType.Accept)
-         {
-            result = dlg.Filename;
-
-            FileFilter selectedFilter = dlg.Filter;
-            if (selectedFilter != null)
-            {
-               foreach (FileFilterExt f in filters)
-               {
-                  if (f == selectedFilter)
-                  {
-                     bool correct_extension_found = false;
-                     string firstext = null;
-                     foreach (string pattern in f.GetPattern())
-                     {
-                        string ext = pattern.TrimStart('*');
-                        if (firstext == null)
-                           firstext = ext;
-                        if (result.EndsWith(ext, true, null))
-                        {
-                           correct_extension_found = true;
-                           break;
-                        }
-                     }
-                     if (!correct_extension_found && firstext != null)
-                        result += firstext;
-                     break;
-                  }
-               }
-            }
-
-            if (File.Exists(result) &&
-               MessageBox.Show(MessageType.Question, ButtonsType.YesNo, "File '{0}' already exists.\nDo you want to overwrite it?", result) != ResponseType.Yes)
-               result = null;
-         }
-
-         if (result != null)
-         {
-            mMainWindowBase.AddRecentFile(result);
-         }
-         dlg.Destroy();
-         return result;
-      }
-
-      public int SelectComponentDialog(ref List<ComponentFactoryInformation> info, ref List<Component> components)
-      {
-         var dlg = new ComponentSelectorDialog(mMainWindowBase, info, components);
-         int result = dlg.Run();
-         dlg.GetSelectedComponents(ref info, ref components);
-         dlg.Hide();
-
-         return result;
-      }
-
-      private int RunFileChooserDialogLocalized(FileChooserDialogLocalized dlg, List<FileFilterExt> filters)
-      {
-         dlg.ShowHidden = true;
-
-         if (filters != null && filters.Count > 0)
-         {
-            if (filters.Count > 1)
-            {
-               FileFilterExt combinedfilter = new FileFilterExt();
-               foreach (FileFilterExt filter in filters)
-                  foreach (string pattern in filter.GetAdjustedPattern())
-                     combinedfilter.AddPattern(pattern);
-               combinedfilter.Name = "All Known File Types".L();
-               dlg.AddFilter(combinedfilter);
-            }
-
-            foreach (FileFilterExt filter in filters)
-            {
-               dlg.AddFilter(filter);
-            }
-
-            dlg.AddFilter(new FileFilterExt("*", "All Files".L()) { Name = "All Files".L() });
-         }
-
-#if false
-         // we sadly cannot do this here, because we need the getters inside dlg (like .Filename), and they will no longer have proper contents after .Destroy()
-         int result = dlg.Run();
-         dlg.Destroy();
-         return result;
-#endif
-
-         return dlg.Run();
-      }
-
-      #endregion
    }
 }

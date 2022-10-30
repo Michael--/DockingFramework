@@ -31,6 +31,11 @@ namespace Docking.Components
       public  int             MaxRecentFiles                    = 9;
       private bool            mInitialLoadOfComponentsCompleted = false;
 
+      private System.Action           mSavePersistencyOnShutdownAction = () => { };
+      private System.Func<Gdk.Pixbuf> mScreenshotAction       = () => { return new Gdk.Pixbuf(IntPtr.Zero); };
+
+      private ScrollFunc mRegisteredScrollFuncs = (p1, p2, p3, p4, p5) => { return true; };
+
       private DockVisualStyle mSelectedStyle;
       private DockVisualStyle mNormalStyle;
       /// <summary>
@@ -99,6 +104,22 @@ namespace Docking.Components
       public TGSettings Settings1 { get; set; }
 
       public IPersistency Persistence { get { return Settings1 as IPersistency; } }
+
+      public delegate bool ScrollFunc(object sender, double lat, double lon, int percent, bool repaint);
+      public void RegisterScrollToHandler(ScrollFunc fn)
+      {
+         mRegisteredScrollFuncs += fn;
+      }
+
+      public void RegisterSavePersistencyOnShutdownHandler(System.Action handler)
+      {
+         mSavePersistencyOnShutdownAction = handler;
+      }
+
+      public void RegisterScreenshotHandler(System.Func<Gdk.Pixbuf> handler)
+      {
+         mScreenshotAction = handler;
+      }
 
       public DialogProvider DialogProvider { get; internal set; }
 
@@ -430,8 +451,8 @@ namespace Docking.Components
                 var component = item.Content as Component;
                 System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
                 w.Start();
-                var allComponents = CollectAllComponentsOfType<Component>(component);
-                var allIPersistable = CollectAllComponentsOfType<IPersistable>(component);
+                var allComponents = AllComponentsOfType<Component>(component);
+                var allIPersistable = AllComponentsOfType<IPersistable>(component);
 
                 foreach (var c in allComponents)
                    c.DockItem = item;
@@ -484,7 +505,7 @@ namespace Docking.Components
             if (item.Content is Component)
             {
                var component = item.Content as Component;
-               var allComponents = CollectAllComponentsOfType<Component>(component);
+               var allComponents = AllComponentsOfType<Component>(component);
                foreach (var c in allComponents)
                {
                   c.Loaded();
@@ -504,7 +525,7 @@ namespace Docking.Components
       {
          foreach (DockItem item in DockFrame.GetItems())
          {
-            var allIPersistable = CollectAllComponentsOfType<IPersistable>(item.Content);
+            var allIPersistable = AllComponentsOfType<IPersistable>(item.Content);
             foreach (var p in allIPersistable)
             {
                try
@@ -556,7 +577,7 @@ namespace Docking.Components
          GtkDispatcher.Instance.InitiateShutdown(save_persistency, beforeShutdownAction);
       }
 
-      private bool QuitInternal(bool save_persistency, System.Action thingsToDoBeforeShutdown = null)
+      private bool QuitInternal(bool save_persistency, System.Action beforeShutdown = null)
       {
          foreach (DockItem item in DockFrame.GetItems())
             if ((item.Content != null) && (item.Content is Component))
@@ -567,7 +588,7 @@ namespace Docking.Components
 
          if (save_persistency)
          {
-            MainWindowBase.SavePersistency();
+            mSavePersistencyOnShutdownAction();
 
             if(Settings1.IsReadonly)
                MessageWriteLine("skipping configuration saving because it is readonly");
@@ -583,8 +604,8 @@ namespace Docking.Components
 
          GtkDispatcher.Instance.IsShutdown = true;
 
-         if(thingsToDoBeforeShutdown!=null)
-            thingsToDoBeforeShutdown();
+         if(beforeShutdown!=null)
+            beforeShutdown();
 
          Gtk.Application.Quit();
          return true;
@@ -687,8 +708,8 @@ namespace Docking.Components
             if (item.Content is Component)
             {
                var component = item.Content as Component;
-               var allComponents = CollectAllComponentsOfType<Component>(component);
-               var allIPersistable = CollectAllComponentsOfType<IPersistable>(component);
+               var allComponents = AllComponentsOfType<Component>(component);
+               var allIPersistable = AllComponentsOfType<IPersistable>(component);
 
                foreach (var c in allComponents)
                   c.DockItem = item;
@@ -728,14 +749,14 @@ namespace Docking.Components
          return item;
       }
 
-      private IEnumerable<T> CollectAllComponentsOfType<T>(Widget widget)
+      private static IEnumerable<T> AllComponentsOfType<T>(Widget widget)
       {
          var list = new List<T>();
-         CollectAllComponentsOfType<T>(widget, list);
+         AllComponentsOfType<T>(widget, list);
          return list;
       }
 
-      private void CollectAllComponentsOfType<T>(object widget, List<T> list)
+      private static void AllComponentsOfType<T>(object widget, List<T> list)
       {
          if (widget is T)
             list.Add((T)widget);
@@ -743,7 +764,7 @@ namespace Docking.Components
          {
             foreach (var c in (widget as Container).AllChildren)
                if (c is Container)
-                  CollectAllComponentsOfType<T>(c as Container, list);
+                  AllComponentsOfType<T>(c as Container, list);
          }
       }
 
@@ -970,15 +991,6 @@ namespace Docking.Components
 
       #region ScrollTo globally
 
-      public delegate bool ScrollFunc(object sender, double lat, double lon, int percent, bool repaint);
-
-      private ScrollFunc mRegisteredScrollFuncs = (p1, p2, p3, p4, p5) => { return true; };
-
-      public void RegisterScrollToHandler(ScrollFunc fn)
-      {
-         mRegisteredScrollFuncs += fn;
-      }
-
       // Set "percent" to zero if this always should happen.
       // If it is larger than zero, then the scroll only happens when the coordinate leaves that percentage range of the screen.
       // Returns true if such scroll has happened.
@@ -1009,7 +1021,7 @@ namespace Docking.Components
 
       public Gdk.Pixbuf Screenshot()
       {
-         return MainWindowBase.Screenshot();
+         return mScreenshotAction();
       }
    }
 
