@@ -123,12 +123,16 @@
     <Compile Include="Framework\Interfaces\IPersistable.cs" />
     <Compile Include="Framework\Interfaces\IPersistency.cs" />
     <Compile Include="Framework\Interfaces\IScript.cs" />
+    <Compile Include="Framework\Manager\LicenseFile.cs" />
     <Compile Include="Framework\Manager\LicenseGroup.cs" />
     <Compile Include="Framework\Manager\Localization.cs" />
+    <Compile Include="Framework\Manager\LogWriter.cs" />
     <Compile Include="Framework\Manager\Settings.cs" />
     <Compile Include="Framework\Manager\Scripting.cs" />
     <Compile Include="Framework\Tools\AssemblyInfoExt.cs" />
+    <Compile Include="Framework\Tools\HTTPFileLoader.cs" />
     <Compile Include="Framework\Tools\Mouse.cs" />
+    <Compile Include="Framework\Tools\PlatformFonts.cs" />
     <Compile Include="Framework\Tools\QueueInvoke.cs" />
     <Compile Include="Framework\Tools\DispenseInvoke.cs" />
     <Compile Include="Framework\Tools\ResourceLoader_Docking.cs" />
