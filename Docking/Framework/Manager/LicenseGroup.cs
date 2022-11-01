@@ -18,20 +18,18 @@ namespace Docking.Components
       /// </summary>
       private readonly Dictionary<string, State> m_Groups = new Dictionary<string, State>();
 
-      static LicenseGroup()
-      {
-         DefaultState = State.DISABLED;
-      }
-
+      /// <summary>
+      /// Initializes a new instance
+      /// </summary>
       internal LicenseGroup()
       {
-         //nothing to do
+         DefaultState = State.DISABLED;
       }
 
       /// <summary>
       /// The default state for not registered groups
       /// </summary>
-      public static State DefaultState { get; set; }
+      public State DefaultState { get; set; }
 
       /// <summary>
       /// return true if any group in given multiple-groups string is enabled
@@ -74,6 +72,14 @@ namespace Docking.Components
             {
                m_Groups.Add(group.ToLowerInvariant(), enabled ? State.ENABLED : State.DISABLED);
             }
+         }
+      }
+
+      public void Assign(LicenseGroup group)
+      {
+         foreach (var pair in group.m_Groups)
+         {
+            m_Groups[pair.Key] = pair.Value;
          }
       }
 

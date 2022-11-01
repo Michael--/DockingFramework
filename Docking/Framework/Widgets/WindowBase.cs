@@ -48,7 +48,7 @@ namespace Docking.Widgets
       protected MainWindowBase(string[] args, string default_language, string application_name, string pythonApplicationObjectName = null)
          : base(WindowType.Toplevel)
       {
-         Title                            = ApplicationName = application_name;
+         Title                            = application_name;
          mCmdLineArgs                     = args;
          ComponentManager                 = new ComponentManager();
          ComponentManager.MainWindowBase  = this;
@@ -70,7 +70,7 @@ namespace Docking.Widgets
 
          WindowStateEvent += OnWindowStateChanged;
 
-         MessageBox.Init(ComponentManager);
+         MessageBox.Initialize(this, Title, ComponentManager.LogWriter);
       }
 
       protected DockFrame DockFrame { get; set; }
@@ -81,9 +81,12 @@ namespace Docking.Widgets
       public ImageMenuItem MenuCopy { get; private set; }
       public ImageMenuItem MenuPaste { get; private set; }
 
-      public string ApplicationName { get; private set; }
-
       public ComponentManager ComponentManager { get; private set; }
+
+      public bool IsBatchModeEnabled()
+      {
+         return ComponentManager.CurrentLicenseCoversTheCreationOfComponent("TempoGiusto.BatchMode");
+      }
 
       protected void SetDockFrame(DockFrame frame)
       {
@@ -215,6 +218,11 @@ namespace Docking.Widgets
 
             item.Active = ComponentManager.Localization.CurrentLanguageCode == code;
          }
+      }
+
+      public void Quit()
+      {
+         ComponentManager.Quit(false);
       }
 
       protected void OnLanguageActivated(object sender, EventArgs e)

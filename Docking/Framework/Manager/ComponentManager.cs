@@ -78,8 +78,6 @@ namespace Docking.Components
 
       public PythonScriptEngine ScriptEngine { get; private set; }
 
-      public string ApplicationName { get; private set; }
-
       public bool Visible
       {
          get { return MainWindowBase.Visible; }
@@ -100,7 +98,7 @@ namespace Docking.Components
 
       #region private properties
 
-      public TGSettings Settings1 { get; set; }
+      public TGSettings Settings1 { get; internal set; }
 
       public IPersistency Persistence { get { return Settings1 as IPersistency; } }
 
@@ -134,7 +132,6 @@ namespace Docking.Components
       public LicenseGroup LicenseGroup { get; private set; }
 
       public Localization Localization { get; internal set; }
-      public bool OperateInBatchMode { get; set; }
 
       public bool PowerDown
       {

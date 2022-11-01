@@ -44,7 +44,7 @@ namespace Docking.Components
 
       public void SetFilename(string filename)
       {
-         ValidateConfigFilename(filename);
+         EnsureConfigFileExists(filename);
       }
 
       public string LoadSetting(string instance, string key, string defaultval)
@@ -799,7 +799,12 @@ namespace Docking.Components
 
       #endregion
 
-      public void ValidateConfigFilename(string configfile)
+      /// <summary>
+      /// Validates that configfile refers to an existing file on file system -or-
+      /// when configfile is null ensures that config.xml does exist or will be created with the content from defaultconfig.xml.
+      /// </summary>
+      /// <param name="configfile"></param>
+      private void EnsureConfigFileExists(string configfile)
       {
          if (!string.IsNullOrEmpty(configfile))
          {
