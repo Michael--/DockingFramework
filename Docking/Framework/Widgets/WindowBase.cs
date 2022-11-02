@@ -616,7 +616,7 @@ namespace Docking.Widgets
                item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png"));
                item.AddAccelerator("activate", ComponentManager.AccelGroup, new AccelKey(Gdk.Key.F4, Gdk.ModifierType.Mod1Mask, AccelFlags.Visible));
                item.AddAccelerator("activate", ComponentManager.AccelGroup, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
-               item.Activated += OnQuitAndDoNotSaveConfigActionActivated;
+               item.Activated += (sender, args) => ComponentManager.Quit(false);
                AppendMenuItem("File", item);
             }
          }
@@ -625,8 +625,8 @@ namespace Docking.Widgets
             if (!minimalistic)
             {
                ImageMenuItem item = new TaggedLocalizedImageMenuItem("Quit Without Saving Config");
-               item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png"));
-               item.Activated += OnQuitAndDoNotSaveConfigActionActivated;
+               item.Image     =  new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png"));
+               item.Activated += (sender, args) => ComponentManager.Quit(false) ;
                AppendMenuItem("File", item);
             }
 
@@ -635,20 +635,10 @@ namespace Docking.Widgets
                item.Image = new Image(Gdk.Pixbuf.LoadFromResource("Docking.Framework.Resources.Quit-16.png"));
                item.AddAccelerator("activate", ComponentManager.AccelGroup, new AccelKey(Gdk.Key.F4, Gdk.ModifierType.Mod1Mask, AccelFlags.Visible));
                item.AddAccelerator("activate", ComponentManager.AccelGroup, new AccelKey(Gdk.Key.Q, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
-               item.Activated += OnQuitActionActivated;
+               item.Activated += (sender, args) => ComponentManager.Quit(true);
                AppendMenuItem("File", item);
             }
          }
-      }
-
-      protected void OnQuitAndDoNotSaveConfigActionActivated(object sender, EventArgs args)
-      {
-         ComponentManager.Quit(false);
-      }
-
-      public void OnQuitActionActivated(object sender, EventArgs args)
-      {
-         ComponentManager.Quit(true);
       }
 
       private void UpdateTabAlgorithmMenu()
@@ -733,7 +723,7 @@ namespace Docking.Widgets
          return foundmenu;
       }
 
-      private Menu CreateMenu(String name, MenuShell menuShell)
+      private static Menu CreateMenu(String name, MenuShell menuShell)
       {
          // append new menu
          // todo: currently append at the end, may a dedicated position desired
@@ -749,7 +739,7 @@ namespace Docking.Widgets
          return menu;
       }
 
-      private void RemoveMenuItem(object baseMenu, string name)
+      private static void RemoveMenuItem(object baseMenu, string name)
       {
          if (baseMenu is Menu)
          {
@@ -1094,6 +1084,8 @@ namespace Docking.Widgets
          WindowState = args.Event.NewWindowState;
       }
 
+      #region Drag & Drop Support
+
       private static void MakeWidgetReceiveDropEvents(Widget widget, DragDataReceivedHandler callback)
       {
 #if false // for debugging to see which events get fired put breakpoints at the return statements
@@ -1178,5 +1170,7 @@ namespace Docking.Widgets
          }
          return result;
       }
+
+      #endregion
    }
 }

@@ -201,7 +201,7 @@ namespace Docking.Components
             if (info.ComponentType.ToString() == s)
             {
                DockItem item = ComponentManager.CreateComponent(info, true);
-               return GetComponentIdentifier(item);
+               return ComponentManager.GetComponentIdentifier(item);
             }
          }
 
@@ -213,28 +213,7 @@ namespace Docking.Components
       /// </summary>
       public List<string> ListInstances()
       {
-         List<string> result = new List<string>();
-         foreach (DockItem item in ComponentManager.DockFrame.GetItems())
-         {
-            if (item.Content == null)
-            {
-               continue;
-            }
-
-            Component component = item.Content as Component;
-            if (component == null || component.GetScriptingInstance() == null)
-            {
-               continue;
-            }
-
-            string cid = GetComponentIdentifier(item);
-            if (cid != null)
-            {
-               result.Add(cid);
-            }
-         }
-
-         return result;
+         return ComponentManager.ListScriptingInstances();
       }
 
       /// <summary>
@@ -242,27 +221,7 @@ namespace Docking.Components
       /// </summary>
       public object GetInstance(string identifier)
       {
-         foreach (DockItem item in ComponentManager.DockFrame.GetItems())
-         {
-            if (item.Content == null)
-            {
-               continue;
-            }
-
-            Component component = item.Content as Component;
-            if (component == null || component.GetScriptingInstance() == null)
-            {
-               continue;
-            }
-
-            string cid = GetComponentIdentifier(item);
-            if (cid != null && cid == identifier)
-            {
-               return component.GetScriptingInstance();
-            }
-         }
-
-         return null;
+         return ComponentManager.GetScriptingInstance(identifier);
       }
 
       /// <summary>
@@ -271,56 +230,7 @@ namespace Docking.Components
       /// <returns></returns>
       public string[] GetInstances()
       {
-         List<string> result = new List<string>();
-         foreach (DockItem item in ComponentManager.DockFrame.GetItems())
-         {
-            if (item.Content == null)
-            {
-               continue;
-            }
-
-            Component component = item.Content as Component;
-            if (component.GetScriptingInstance() == null)
-            {
-               continue;
-            }
-
-            string cid = GetComponentIdentifier(item);
-            if (cid != null)
-            {
-               result.Add(cid);
-            }
-         }
-
-         return result.ToArray();
-      }
-
-      /// <summary>
-      /// Gets a simple component instance identification string.
-      /// This normally is identical to the component window title.
-      /// For non-multi-instance components, this normally is a human-readable text like "Map Explorer".
-      /// For multi-instance components, this at the end has a number, for example "Map Explorer 2".
-      /// </summary>
-      private string GetComponentIdentifier(DockItem item)
-      {
-         if (item == null)
-         {
-            return null;
-         }
-
-         Component comp = item.Content as Component;
-         if (comp == null)
-         {
-            return null;
-         }
-
-         string name = comp is ILocalizableComponent
-                          ? (comp as ILocalizableComponent).Name
-                          : item.Content.Name;
-
-         return item.InstanceIndex > 1
-                   ? (name + " " + item.InstanceIndex)
-                   : name;
+         return ComponentManager.ListScriptingInstances().ToArray();
       }
    }
 }

@@ -37,6 +37,7 @@ namespace Docking.Components
 
       private DockVisualStyle mSelectedStyle;
       private DockVisualStyle mNormalStyle;
+      private DockFrame       mDockFrame;
       /// <summary>
       /// Relation between any object and its parent DockItem
       /// Need to find fast the DockItem for any user selection of an object
@@ -126,7 +127,6 @@ namespace Docking.Components
 
       public AccelGroup AccelGroup { get; private set; }
       internal DockItem CurrentDockItem { get; private set; }
-      internal DockFrame DockFrame { get; private set; }
 
       public ComponentFinder ComponentFinder { get; private set; }
       public LicenseGroup LicenseGroup { get; private set; }
@@ -159,34 +159,34 @@ namespace Docking.Components
 
       public void SetDockFrame(DockFrame df)
       {
-         DockFrame = df;
-         DockFrame.DockItemRemoved += HandleDockItemRemoved;
-         DockFrame.CreateItem = this.CreateItem;
+         mDockFrame = df;
+         mDockFrame.DockItemRemoved += HandleDockItemRemoved;
+         mDockFrame.CreateItem = this.CreateItem;
 
          var style = new DockVisualStyle();
          style.PadTitleLabelColor = Styles.PadLabelColor;
          style.PadBackgroundColor = Styles.PadBackground;
          style.InactivePadBackgroundColor = Styles.InactivePadBackground;
-         DockFrame.DefaultVisualStyle = style;
+         mDockFrame.DefaultVisualStyle = style;
 
-         mNormalStyle = DockFrame.DefaultVisualStyle;
-         mSelectedStyle = DockFrame.DefaultVisualStyle.Clone();
+         mNormalStyle = mDockFrame.DefaultVisualStyle;
+         mSelectedStyle = mDockFrame.DefaultVisualStyle.Clone();
          mSelectedStyle.PadBackgroundColor = new Gdk.Color(100, 160, 255);
       }
 
       public void AddLayout(string name, bool copyCurrent)
       {
-         if (!DockFrame.HasLayout(name))
+         if (!mDockFrame.HasLayout(name))
          {
-            DockFrame.CreateLayout(name, copyCurrent);
+            mDockFrame.CreateLayout(name, copyCurrent);
          }
       }
 
       private void DeleteLayout(string name)
       {
-         if(name != DockFrame.CurrentLayout)
+         if(name != mDockFrame.CurrentLayout)
          {
-            DockFrame.DeleteLayout(name);
+            mDockFrame.DeleteLayout(name);
          }
       }
 
@@ -274,7 +274,7 @@ namespace Docking.Components
             }**/
 
             // search already created instances of components if they can handle this file:
-            foreach (DockItem item in DockFrame.GetItems())
+            foreach (DockItem item in mDockFrame.GetItems())
             {
                Component c = item.Content as Component;
                if (c is IFileOpen && (c as IFileOpen).CanOpenFile(filename))
@@ -419,7 +419,7 @@ namespace Docking.Components
          foreach(ComponentFactoryInformation cfi in autocreate)
          {
             bool found = false;
-            foreach(DockItem item in DockFrame.GetItems())
+            foreach(DockItem item in mDockFrame.GetItems())
             {
                if(item.Content!=null && item.Content.GetType()==cfi.ComponentType)
                {
@@ -440,7 +440,7 @@ namespace Docking.Components
 
          // tell all components about load state
          // time for late initialization and/or loading persistence
-          foreach(DockItem item in DockFrame.GetItems())
+          foreach(DockItem item in mDockFrame.GetItems())
           {
              if (item.Content is Component)
              {
@@ -496,7 +496,7 @@ namespace Docking.Components
             AddComponent(o);
          }
 
-         foreach (DockItem item in DockFrame.GetItems())
+         foreach (DockItem item in mDockFrame.GetItems())
          {
             if (item.Content is Component)
             {
@@ -519,7 +519,7 @@ namespace Docking.Components
 
       private void ComponentsSave()
       {
-         foreach (DockItem item in DockFrame.GetItems())
+         foreach (DockItem item in mDockFrame.GetItems())
          {
             var allIPersistable = AllComponentsOfType<IPersistable>(item.Content);
             foreach (var p in allIPersistable)
@@ -535,16 +535,16 @@ namespace Docking.Components
             }
          }
 
-         Settings1.SaveLayout(DockFrame);
+         Settings1.SaveLayout(mDockFrame);
       }
 
       private void ComponentsRemove()
       {
-         foreach (DockItem item in DockFrame.GetItems())
+         foreach (DockItem item in mDockFrame.GetItems())
          {
             if (item.Content is Component)
             {
-               foreach (DockItem other in DockFrame.GetItems())
+               foreach (DockItem other in mDockFrame.GetItems())
                {
                   if (other != item)
                   {
@@ -575,7 +575,7 @@ namespace Docking.Components
 
       private bool QuitInternal(bool save_persistency, System.Action beforeShutdown = null)
       {
-         foreach (DockItem item in DockFrame.GetItems())
+         foreach (DockItem item in mDockFrame.GetItems())
             if ((item.Content != null) && (item.Content is Component))
                if (!(item.Content as Component).IsCloseOK())
                   return false; // close has been canceled, for example by a dialog prompt which asks for saving an edited document
@@ -594,7 +594,7 @@ namespace Docking.Components
             ComponentsRemove();
          }
 
-         foreach (DockItem item in DockFrame.GetItems())
+         foreach (DockItem item in mDockFrame.GetItems())
             if ((item.Content != null) && (item.Content is Component))
                (item.Content as Component).Closed();
 
@@ -632,13 +632,18 @@ namespace Docking.Components
          return cfi!=null && LicenseGroup.IsEnabled(cfi.LicenseGroup);
       }
 
-      public DockItem CreateComponent(string typename, bool initCalls)
+      public void CreateComponent(string typename, bool initCalls)
       {
-         ComponentFactoryInformation cfi = ComponentFinder.FindComponent(typename);
-         return cfi==null ? null : CreateComponent(cfi, initCalls);
+         CreateComponentIntern(typename, initCalls);
       }
 
-      public DockItem CreateComponent(ComponentFactoryInformation cfi, bool initCalls)
+      private DockItem CreateComponentIntern(string typename, bool initCalls)
+      {
+         ComponentFactoryInformation cfi = ComponentFinder.FindComponent(typename);
+         return cfi == null ? null : CreateComponent(cfi, initCalls);
+      }
+
+      internal DockItem CreateComponent(ComponentFactoryInformation cfi, bool initCalls)
       {
          if (!LicenseGroup.IsEnabled(cfi.LicenseGroup))
             return null;
@@ -649,9 +654,9 @@ namespace Docking.Components
          // We'll only create a new instance if no such is found.
          if(!cfi.MultiInstance)
          {
-            DockItem di = DockFrame.GetItem(name);
+            DockItem di = mDockFrame.GetItem(name);
             if(di==null)
-               di = DockFrame.GetItem(name+"-1"); // this can occur when a component's setting MultiInstance is enabled/disabled during debugging
+               di = mDockFrame.GetItem(name+"-1"); // this can occur when a component's setting MultiInstance is enabled/disabled during debugging
             if(di!=null)
             {
                if(!di.Visible)
@@ -663,7 +668,7 @@ namespace Docking.Components
          }
          else
          {
-            DockItem[] dis = DockFrame.GetItemsContainingSubstring(name); // TODO make a better, more precise match, see TODO there
+            DockItem[] dis = mDockFrame.GetItemsContainingSubstring(name); // TODO make a better, more precise match, see TODO there
             foreach(DockItem di in dis)
             {
                if(!di.Visible)
@@ -680,7 +685,7 @@ namespace Docking.Components
                instance++;
                name = cfi.ComponentType.ToString() + "-" + instance.ToString();
             }
-            while(DockFrame.GetItem(name)!=null);
+            while(mDockFrame.GetItem(name)!=null);
          }
 
          // when we get here, a new instance of the desired component needs to be created
@@ -781,7 +786,7 @@ namespace Docking.Components
                isc.SetScript(null, null);
 
             CurrentDockItem = null;
-            foreach(DockItem other in DockFrame.GetItems())
+            foreach(DockItem other in mDockFrame.GetItems())
             {
                if(other != item && other.Content is Component)
                   (other.Content as Component).FocusChanged(null);
@@ -789,7 +794,7 @@ namespace Docking.Components
          }
 
          // tell all other about removed component
-         foreach(DockItem other in DockFrame.GetItems())
+         foreach(DockItem other in mDockFrame.GetItems())
          {
             if(other != item && other.Content is Component)
                (other.Content as Component).ComponentRemoved(item.Content);
@@ -837,8 +842,8 @@ namespace Docking.Components
          // keep component factory info of creation
          component.ComponentInfo = cfi;
 
-         DockItem item = new DockItem(DockFrame, id, component);
-         DockFrame.AddItem(item);
+         DockItem item = new DockItem(mDockFrame, id, component);
+         mDockFrame.AddItem(item);
 
          AddSelectNotifier(item, item.Content);
          AddSelectNotifier(item, item.TitleTab);
@@ -966,13 +971,99 @@ namespace Docking.Components
                }
 
                // notify all other components that the current item changed
-               foreach(DockItem other in DockFrame.GetItems())
+               foreach(DockItem other in mDockFrame.GetItems())
                {
                   if(other != item && other.Content is Component)
                      (other.Content as Component).FocusChanged(CurrentDockItem.Content);
                }
             }
          }
+      }
+
+      /// <summary>
+      /// Returns a list of ids of all currently instantiated components (including hidden ones).
+      /// </summary>
+      public List<string> ListScriptingInstances()
+      {
+         List<string> result = new List<string>();
+         foreach (DockItem item in mDockFrame.GetItems())
+         {
+            if (item.Content == null)
+            {
+               continue;
+            }
+
+            Component component = item.Content as Component;
+            if (component == null || component.GetScriptingInstance() == null)
+            {
+               continue;
+            }
+
+            string cid = GetComponentIdentifier(item);
+            if (cid != null)
+            {
+               result.Add(cid);
+            }
+         }
+
+         return result;
+      }
+
+      /// <summary>
+      /// Returns a specific component instance, identified by its brief, unique instance identifier string.
+      /// </summary>
+      public object GetScriptingInstance(string identifier)
+      {
+         foreach (DockItem item in mDockFrame.GetItems())
+         {
+            if (item.Content == null)
+            {
+               continue;
+            }
+
+            Component component = item.Content as Component;
+            if (component == null || component.GetScriptingInstance() == null)
+            {
+               continue;
+            }
+
+            string cid = GetComponentIdentifier(item);
+            if (cid != null && cid == identifier)
+            {
+               return component.GetScriptingInstance();
+            }
+         }
+
+         return null;
+      }
+
+
+      /// <summary>
+      /// Gets a simple component instance identification string.
+      /// This normally is identical to the component window title.
+      /// For non-multi-instance components, this normally is a human-readable text like "Map Explorer".
+      /// For multi-instance components, this at the end has a number, for example "Map Explorer 2".
+      /// </summary>
+      internal static string GetComponentIdentifier(DockItem item)
+      {
+         if (item == null)
+         {
+            return null;
+         }
+
+         Component comp = item.Content as Component;
+         if (comp == null)
+         {
+            return null;
+         }
+
+         string name = comp is ILocalizableComponent
+                          ? (comp as ILocalizableComponent).Name
+                          : item.Content.Name;
+
+         return item.InstanceIndex > 1
+                   ? (name + " " + item.InstanceIndex)
+                   : name;
       }
 
       #endregion
@@ -1006,13 +1097,10 @@ namespace Docking.Components
             return null;
          }
 
-         StreamReader reader = new StreamReader(s);
-         if (reader == null)
+         using(var reader = new StreamReader(s))
          {
-            return null;
+            return reader.ReadToEnd();
          }
-
-         return reader.ReadToEnd();
       }
 
       public Gdk.Pixbuf Screenshot()
