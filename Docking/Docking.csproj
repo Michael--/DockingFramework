@@ -130,7 +130,6 @@
     <Compile Include="Framework\Manager\Settings.cs" />
     <Compile Include="Framework\Manager\Scripting.cs" />
     <Compile Include="Framework\Tools\AssemblyInfoExt.cs" />
-    <Compile Include="Framework\Tools\HTTPFileLoader.cs" />
     <Compile Include="Framework\Tools\Mouse.cs" />
     <Compile Include="Framework\Tools\PlatformFonts.cs" />
     <Compile Include="Framework\Tools\QueueInvoke.cs" />
@@ -156,9 +155,7 @@
     <Compile Include="Framework\Tools\StringTools.cs" />
     <Compile Include="Framework\Tools\LocalizationExtensions.cs" />
     <Compile Include="Framework\Tools\GtkSharpExtensions.cs" />
-    <Compile Include="Framework\Tools\WebClient2.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Framework\Tools\WebClient2.cs" />
     <Compile Include="Framework\Tools\JobInformation.cs" />
     <Compile Include="Framework\Tools\TaskInformation.cs" />
     <Compile Include="Framework\Tools\WorkerThread.cs" />

@@ -28,9 +28,9 @@ namespace Docking.Components
 
       public bool EnableLogging { get; set; }
 
-      public bool SetLogFile(string filename, bool append)
+      public void OpenFile(string filename, bool append)
       {
-         if (filename != null && filename.Length > 0)
+         if (!string.IsNullOrEmpty(filename))
          {
             try
             {
@@ -38,22 +38,20 @@ namespace Docking.Components
             }
             catch(Exception e)
             {
-               string msg = String.Format("cannot open log file '{0}' for writing: {1}", filename, e);
+               string errmsg = String.Format("cannot open log file '{0}' for writing: {1}", filename, e);
 
-               Console.Error.WriteLine(msg);
+               Console.Error.WriteLine(errmsg);
                Console.Error.Flush();
 
-               MessageWriteLine(msg);
+               MessageWriteLine(errmsg);
                mLogFile = null;
 
-               return false;
+               throw new Exception(errmsg, e);
             }
 
             MessageWriteLine("=== {0} === {1} ===============================================================================",
                              DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), Title);
          }
-
-         return true;
       }
 
       public void AddMessageReceiver(string id, IMessage message)

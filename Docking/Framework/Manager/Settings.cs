@@ -693,12 +693,17 @@ namespace Docking.Components
          XmlNode layouts = mXmlNode.SelectSingleNode("layouts");
          if (layouts != null)
          {
-            MemoryStream ms = new MemoryStream();
-            XmlTextWriter xmlWriter = new XmlTextWriter(ms, Encoding.UTF8);
-            layouts.WriteTo(xmlWriter);
-            xmlWriter.Flush();
-            XmlReader xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray()));
-            dockFrame.LoadLayouts(xmlReader);
+            using(var ms = new MemoryStream())
+            using(var xmlWriter = new XmlTextWriter(ms, Encoding.UTF8))
+            {
+               layouts.WriteTo(xmlWriter);
+               xmlWriter.Flush();
+
+               using(var xmlReader = new XmlTextReader(new MemoryStream(ms.ToArray())))
+               {
+                  dockFrame.LoadLayouts(xmlReader);
+               }
+            }
          }
       }
 

@@ -444,14 +444,18 @@ namespace Docking.Components
           {
              if (item.Content is Component)
              {
-                var component = item.Content as Component;
-                System.Diagnostics.Stopwatch w = new System.Diagnostics.Stopwatch();
+                var w = new System.Diagnostics.Stopwatch();
                 w.Start();
+
+                var component = item.Content as Component;
                 var allComponents = AllComponentsOfType<Component>(component);
                 var allIPersistable = AllComponentsOfType<IPersistable>(component);
 
                 foreach (var c in allComponents)
+                {
                    c.DockItem = item;
+                }
+
                 foreach (var c in allIPersistable)
                 {
                    try
@@ -512,8 +516,10 @@ namespace Docking.Components
          total.Stop();
 
          #if DEBUG
-         if(total.ElapsedMilliseconds>1500)
+         if (total.ElapsedMilliseconds > 1500)
+         {
             MessageWriteLine("ComponentsLoaded() total time = {0}s", total.Elapsed.TotalSeconds.ToString(CultureInfo.InvariantCulture));
+         }
          #endif
       }
 

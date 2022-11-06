@@ -66,8 +66,6 @@ namespace Docking.Widgets
 
          AddAccelGroup(ComponentManager.AccelGroup);
 
-         MakeWidgetReceiveDropEvents(Toplevel, OnDragDataReceived);
-
          WindowStateEvent += OnWindowStateChanged;
 
          MessageBox.Initialize(this, Title, ComponentManager.LogWriter);
@@ -166,7 +164,8 @@ namespace Docking.Widgets
       {
          string instance = "MainWindow";
 
-         DockFrame.TabType = (DockFrame.TabAlgorithm)ComponentManager.Settings1.LoadSetting(instance, "TabAlgorithm", (int)DockFrame.TabAlgorithm.Proven);
+         DockFrame.TabType = (DockFrame.TabAlgorithm)
+            ComponentManager.Settings1.LoadSetting(instance, "TabAlgorithm", (int)DockFrame.TabAlgorithm.Proven);
 
          UpdateTabAlgorithmMenu();
 
@@ -1083,94 +1082,5 @@ namespace Docking.Widgets
       {
          WindowState = args.Event.NewWindowState;
       }
-
-      #region Drag & Drop Support
-
-      private static void MakeWidgetReceiveDropEvents(Widget widget, DragDataReceivedHandler callback)
-      {
-#if false // for debugging to see which events get fired put breakpoints at the return statements
-        widget.DragBegin += (sender, args) => { return; };
-        widget.DragDataDelete += (sender, args) => { return; };
-        widget.DragDataGet += (sender, args) => { return; };
-        widget.DragDrop += (sender, args) => { return; };
-        widget.DragEnd += (sender, args) => { return; };
-        widget.DragFailed += (sender, args) => { return; };
-        widget.DragLeave += (sender, args) => { return; };
-        widget.DragMotion += (sender, args) => { return; };
-#endif
-
-         widget.DragDataReceived += callback;
-         Gtk.Drag.DestSet(widget, DestDefaults.All, sMapMIMEtoEnum,
-                          Gdk.DragAction.Default |
-                          Gdk.DragAction.Copy |
-                          //Gdk.DragAction.Move
-                          Gdk.DragAction.Link
-         //Gdk.DragAction.Private
-         //Gdk.DragAction.Ask
-         );
-      }
-
-      private void OnDragDataReceived(object sender, DragDataReceivedArgs args)
-      {
-         bool ok = false;
-         if (args != null && args.SelectionData != null)
-         {
-            switch ((DragDropDataType)args.Info)
-            {
-               case DragDropDataType.Text:
-               case DragDropDataType.URL:
-               case DragDropDataType.URLList:
-               {
-                  var http = new HTTPFileLoader(ComponentManager);
-                  List<string> uris = ParseURLListRFC2483(args.SelectionData.Data);
-                  foreach (string uri in uris)
-                  {
-                     ok = http.OpenURL(uri);
-                  }
-
-                  break;
-               }
-            }
-            Gtk.Drag.Finish(args.Context, true, false, args.Time);
-         }
-      }
-
-      // our own enum to which we map the various MIME types we receive via drag+drop
-      enum DragDropDataType
-      {
-         Unknown,
-         Text,
-         URL,
-         URLList
-      }
-
-      private readonly static TargetEntry[] sMapMIMEtoEnum = new TargetEntry[] {
-         new TargetEntry("text/plain", 0, (uint)DragDropDataType.Text),            // does not work yet, we don't get drop events for this type currently >:(
-         new TargetEntry("STRING", 0, (uint)DragDropDataType.Text),                // does not work yet, we don't get drop events for this type currently >:(
-         new TargetEntry("text/x-uri", 0, (uint)DragDropDataType.URL),             // does not work yet, we don't get drop events for this type currently >:(
-         new TargetEntry("text/x-moz-url", 0, (uint)DragDropDataType.URL),         // does not work yet, we don't get drop events for this type currently >:(
-         new TargetEntry("application/x-bookmark", 0, (uint)DragDropDataType.URL), // does not work yet, we don't get drop events for this type currently >:(
-         new TargetEntry("application/x-mswinurl", 0, (uint)DragDropDataType.URL), // does not work yet, we don't get drop events for this type currently >:(
-         new TargetEntry("_NETSCAPE_URL", 0, (uint)DragDropDataType.URL),          // does not work yet, we don't get drop events for this type currently >:(
-         new TargetEntry("text/uri-list", 0, (uint)DragDropDataType.URLList),      // THE ONLY THING THAT CURRENTLY WORKS FROM THIS LIST
-      };
-
-      private static List<string> ParseURLListRFC2483(byte[] input)
-      {
-         List<string> result = new List<string>();
-         string[] lines = Encoding.UTF8.GetString(input).Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-         foreach (string line in lines)
-         {
-            if (line.StartsWith("#"))
-               continue;
-            string s = line.Trim();
-            if (s == "\0" || string.IsNullOrEmpty(s))
-               continue;
-            result.Add(s);
-         }
-         return result;
-      }
-
-      #endregion
    }
 }

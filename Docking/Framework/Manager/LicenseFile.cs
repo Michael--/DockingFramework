@@ -12,6 +12,9 @@ namespace Docking.Components
 
       public delegate bool DecodeFunc(string s, out bool b1, out bool b2, out string s1, out string s2, out string s3);
 
+      /// <summary>
+      /// Initialies a new LicenseFile instance
+      /// </summary>
       internal LicenseFile()
       {
          mFilename = Path.Combine(AssemblyInfoExt.LocalSettingsFolder, "license.txt");
@@ -54,9 +57,10 @@ namespace Docking.Components
       {
          try
          {
-            StreamWriter file = new StreamWriter(mFilename, false);
-            file.Write(LicenseContent);
-            file.Close();
+            using(var writer = new StreamWriter(mFilename, false))
+            {
+               writer.Write(LicenseContent);
+            }
          }
          catch
          {
@@ -70,7 +74,7 @@ namespace Docking.Components
       {
          try
          {
-            if (!File.Exists(mFilename) || (new FileInfo(mFilename)).Length > 10000)
+            if (new FileInfo(mFilename).Length > 10000)
             {
                return false;
             }
