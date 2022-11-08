@@ -157,6 +157,8 @@ namespace Docking.Components
 
       public IArchive Archive { get; set; }
 
+      public IWebDownload WebDownload { get; set; }
+
       public void SetDockFrame(DockFrame df)
       {
          mDockFrame = df;

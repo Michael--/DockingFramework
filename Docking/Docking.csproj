@@ -123,6 +123,7 @@
     <Compile Include="Framework\Interfaces\IPersistable.cs" />
     <Compile Include="Framework\Interfaces\IPersistency.cs" />
     <Compile Include="Framework\Interfaces\IScript.cs" />
+    <Compile Include="Framework\Interfaces\IWebDownload.cs" />
     <Compile Include="Framework\Manager\LicenseFile.cs" />
     <Compile Include="Framework\Manager\LicenseGroup.cs" />
     <Compile Include="Framework\Manager\Localization.cs" />
@@ -155,7 +156,6 @@
     <Compile Include="Framework\Tools\StringTools.cs" />
     <Compile Include="Framework\Tools\LocalizationExtensions.cs" />
     <Compile Include="Framework\Tools\GtkSharpExtensions.cs" />
-    <Compile Include="Framework\Tools\WebClient2.cs" />
     <Compile Include="Framework\Tools\JobInformation.cs" />
     <Compile Include="Framework\Tools\TaskInformation.cs" />
     <Compile Include="Framework\Tools\WorkerThread.cs" />
@@ -287,6 +287,7 @@
     </Content>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
       <LogicalName>gui.stetic</LogicalName>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <Content Include="Languages\Docking-zh-CHS.resx">
       <LastGenOutput>Docking-default.Designer.cs</LastGenOutput>

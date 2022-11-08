@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
-using Docking.Components;
+using Docking.Framework.Interfaces;
 using Docking.Tools;
 using Docking.Widgets;
 using Gtk;
@@ -259,24 +259,19 @@ namespace Docking.Components
          string url = string.Format(@"http://translate.google.com/translate_a/t?client=j&text={0}&hl=en&sl={1}&tl={2}",
                   System.Web.HttpUtility.UrlEncode(text), fromCulture, toCulture);
 
+         // MUST add a known browser user agent or else response encoding doen't return UTF-8 (WTF Google?)
+         var webRequestInfo = new WebRequestInfo()
+         {
+            Headers =
+            {
+               {HttpRequestHeader.UserAgent, "Mozilla/5.0"},
+               {HttpRequestHeader.AcceptCharset, "UTF-8"}
+            },
+            Encoding = Encoding.UTF8 // Make sure we have response encoding to UTF-8
+         };
+
          // Retrieve Translation with HTTP GET call
-         string html = null;
-         try
-         {
-            WebClient2 web = new WebClient2();
-
-            // MUST add a known browser user agent or else response encoding doen't return UTF-8 (WTF Google?)
-            web.Headers.Add(HttpRequestHeader.UserAgent, "Mozilla/5.0");
-            web.Headers.Add(HttpRequestHeader.AcceptCharset, "UTF-8");
-
-            // Make sure we have response encoding to UTF-8
-            web.Encoding = Encoding.UTF8;
-            html = web.DownloadString(url);
-         }
-         catch
-         {
-            return null;
-         }
+         string html = ComponentManager.WebDownload.DownloadString(url, webRequestInfo);
 
          // Extract out trans":"...[Extracted]...","from the JSON string
          return Regex.Match(html, "trans\":(\".*?\"),\"", RegexOptions.IgnoreCase).Groups[1].Value.Trim(new char[] { '"' });
