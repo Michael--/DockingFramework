@@ -115,7 +115,7 @@ namespace Docking.Components
 
          if (EnableLogging)
          {
-            GtkDispatcher.Instance.Invoke(() => SendToReceivers(message));
+            GtkDispatcher.Instance.Invoke2(() => SendToReceivers(message));
          }
       }
 

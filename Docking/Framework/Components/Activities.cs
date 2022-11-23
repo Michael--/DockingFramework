@@ -1,9 +1,9 @@
+
 using System;
-using System.Collections.Generic;
-using Docking.Components;
 using Docking.Widgets;
 using Docking.Tools;
 using Gtk;
+using Docking.Framework.Tools;
 
 namespace Docking.Components
 {
@@ -112,12 +112,12 @@ namespace Docking.Components
 
         void HandleAdded (object sender, JobInformationEventArgs e)
         {
-            Gtk.Application.Invoke(delegate { AddJob(e.JobInformation); });
+            GtkDispatcher.Instance.Invoke(delegate { AddJob(e.JobInformation); });
         }
 
         void HandleRemoved (object sender, JobInformationEventArgs e)
         {
-            Gtk.Application.Invoke(delegate { RemoveJob(e.JobInformation); });
+            GtkDispatcher.Instance.Invoke(delegate { RemoveJob(e.JobInformation); });
         }
 
         void AddJob(JobInfo job)
@@ -141,7 +141,7 @@ namespace Docking.Components
 
         void HandleProgressChanged (object sender, JobInformationEventArgs e)
         {
-            Gtk.Application.Invoke(delegate
+            GtkDispatcher.Instance.Invoke(delegate
             {
                 lock(listStore)
                 {

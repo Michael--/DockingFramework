@@ -1,97 +1,39 @@
-﻿using System;
+﻿
+using Docking.Framework.Tools;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Docking.Tools
 {
    /// <summary>
-   /// Encapsulate Gtk.Application.Invoke and ensure that only the last invoke in the queue will be processed.
+   /// Encapsulate GtkDispatcher.Instance.Invoke and ensure that only the last invoke in the queue will be processed.
    /// Other pending handler will be discarded.
    /// Some statistics are collected to have a look about queued invokes.
    /// </summary>
-   public class QueueInvoke
+   internal class QueueInvoke
    {
-      private QueueInvoke(string callerFileName, int callerLineNumber)
-      {
-         CallerFileName = callerFileName;
-         CallerLineNumber = callerLineNumber;
-
-         lock (mQueueInvoke)
-         {
-            Debug.Assert(!mQueueInvoke.ContainsKey(GetHashCode()), "Create only once");
-            mQueueInvoke.Add(GetHashCode(), this);
-         }
-      }
-
-      private string CallerFileName { get;  set; }
-      private int CallerLineNumber { get; set; }
-
-      public override int GetHashCode()
-      {
-         return CalculateHashCode(CallerFileName, CallerLineNumber);
-      }
-
-      private static int CalculateHashCode(string callerFileName, int callerLineNumber)
-      {
-         return callerFileName.GetHashCode() ^ callerLineNumber.GetHashCode();
-      }
-
-      private int mCount = 0; // total count of Invoke calls
-      private int mCancelCount = 0; // total count of ignored calls due to shadowed by a newer call
-      private int mQueueCount = 0; // current queue count 
-      private int mQueueCountMax = 0; // max queue count
-      private static Dictionary<int, QueueInvoke> mQueueInvoke = new Dictionary<int, QueueInvoke>(); // all instances created at while life time
-
-      private static QueueInvoke GetInstance(string callerFileName, int callerLineNumber)
-      {
-         lock (mQueueInvoke)
-         {
-            QueueInvoke value;
-            if (!mQueueInvoke.TryGetValue(CalculateHashCode(callerFileName, callerLineNumber), out value))
-               value = new QueueInvoke(callerFileName, callerLineNumber);
-            return value;
-         }
-      }
-
-      public static IEnumerable<string> Statistic
-      {
-         get
-         {
-            lock (mQueueInvoke)
-            {
-
-               List<string> result = new List<string>();
-               foreach (var s in mQueueInvoke.Values)
-                  result.Add(s.DebugInformation);
-               return result;
-            }
-         }
-      }
-
-      private string DebugInformation
-      {
-         get
-         {
-            return string.Format("QueueInvoke({0}, {1}) calls={2} ignored={3} maxqueued={4}", CallerFileName, CallerLineNumber, mCount, mCancelCount, mQueueCountMax);
-         }
-      }
+      public int mCount         = 0; // total count of Invoke calls
+      public int mQueueCount    = 0; // current queue count
+      public int mQueueCountMax = 0; // max queue count
+      public int mCancelCount   = 0; // total count of ignored calls due to shadowed by a newer call
 
       /// <summary>
-      /// Invoke call, perform handler in the main GUI thread, comparable to Gtk.Application.Invoke, but only last invoke in queue will be executed
+      /// Initialies a new instance.
+      /// </summary>
+      public QueueInvoke()
+      { }
+
+      /// <summary>
+      /// Invoke call, perform handler in the main GUI thread, comparable to GtkDispatcher.Instance.Invoke, but only last invoke in queue will be executed
       /// </summary>
       /// <param name="handler"></param>
-      public static void Invoke(EventHandler handler, [CallerFilePathAttribute] string callerFileName = "", [CallerLineNumberAttribute] int callerLineNumber = 0)
+      public void InvokeLast(EventHandler handler)
       {
-         var instance = QueueInvoke.GetInstance(callerFileName, callerLineNumber);
-         instance.Invoke(handler);
+         InvokeLastQueuedHandler(handler);
       }
 
-      private void Invoke(EventHandler handler)
+      private void InvokeLastQueuedHandler(EventHandler handler)
       {
          // some statistic
          Interlocked.Increment(ref mQueueCount);
@@ -100,19 +42,109 @@ namespace Docking.Tools
          // save current point of queued handler
          int current = Interlocked.Increment(ref mCount);
 
-         Gtk.Application.Invoke((o, e) =>
+         GtkDispatcher.Instance.Invoke((o, e) =>
          {
             // care statistic
             Interlocked.Decrement(ref mQueueCount);
 
             // call handler only of at top of queue
             if (current == mCount)
+            {
                handler(o, e);
+            }
 
             // other queued handler are ignored
             else
+            {
                Interlocked.Increment(ref mCancelCount);
+            }
          });
+      }
+   }
+
+
+   /// <summary>
+   /// List of <see cref="QueueInvoke"/> instances
+   /// </summary>
+   internal class QueueInvokeList
+   {
+      private struct CallerInfo
+      {
+         public string Filename { get; set; }
+         public int Linenumber { get; set; }
+
+         /// <inheritdoc />
+         public override bool Equals(object obj)
+         {
+            if (obj is CallerInfo)
+            {
+               var info = (CallerInfo)obj;
+               return info.Filename.Equals(Filename) &&
+                      info.Linenumber.Equals(Linenumber);
+            }
+            else
+            {
+               return false;
+            }
+         }
+
+         /// <inheritdoc />
+         public override int GetHashCode()
+         {
+            return Filename.GetHashCode() ^ Linenumber.GetHashCode();
+         }
+      }
+
+      private readonly Dictionary<CallerInfo, QueueInvoke> mQueueInvoke = new Dictionary<CallerInfo, QueueInvoke>(); // all instances created at while life time
+
+      /// <summary>
+      /// Initializes a new instance
+      /// </summary>
+      public QueueInvokeList()
+      { }
+
+      public IEnumerable<string> Statistic
+      {
+         get
+         {
+            lock (mQueueInvoke)
+            {
+               var result = new List<string>();
+               foreach (var pair in mQueueInvoke)
+               {
+                  var info = string.Format("QueueInvoke({0}, {1}) calls={2} ignored={3} maxqueued={4}",
+                                           pair.Key.Filename,
+                                           pair.Key.Linenumber,
+                                           pair.Value.mCount,
+                                           pair.Value.mCancelCount,
+                                           pair.Value.mQueueCountMax);
+                  result.Add(info);
+               }
+
+               return result;
+            }
+         }
+      }
+
+      public QueueInvoke GetInstance(string callerFileName, int callerLineNumber)
+      {
+         lock (mQueueInvoke)
+         {
+            QueueInvoke value;
+            var caller = new CallerInfo()
+            {
+               Filename = callerFileName,
+               Linenumber = callerLineNumber
+            };
+
+            if (!mQueueInvoke.TryGetValue(caller, out value))
+            {
+               value = new QueueInvoke();
+               mQueueInvoke.Add(caller, value);
+            }
+
+            return value;
+         }
       }
    }
 }

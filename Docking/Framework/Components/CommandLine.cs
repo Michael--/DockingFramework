@@ -141,7 +141,7 @@ namespace Docking.Components
             }
             else
             {
-               Gtk.Application.Invoke(delegate
+               GtkDispatcher.Instance.Invoke(delegate
                {
                   ConsoleView.WriteOutput(s);
                });

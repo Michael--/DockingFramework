@@ -29,6 +29,7 @@ using System;
 using System.Collections.Generic;
 using Gtk;
 using System.Runtime.InteropServices;
+using Docking.Framework.Tools;
 
 namespace Docking.Helper
 {
@@ -418,7 +419,7 @@ namespace Docking.Helper
 
          // Delay the call to the leave handler since the pointer may be
          // entering a child widget, in which case the event doesn't have to be fired
-         Gtk.Application.Invoke (delegate {
+         GtkDispatcher.Instance.Invoke(delegate {
             if (!Inside)
                LeaveHandler ();
          });
