@@ -68,11 +68,6 @@ namespace Docking.Components
          GtkDispatcher.Instance.RegisterShutdownHandler(QuitInternal);
       }
 
-      public bool IsMainThread
-      {
-         get { return GtkDispatcher.Instance.IsMainThread; }
-      }
-
       public LogWriter LogWriter { get; private set; }
 
       public LicenseFile LicenseFile { get; set; }

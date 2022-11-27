@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,6 +61,14 @@ namespace Docking.Framework.Tools
       /// Indicates whether application is shutting down.
       /// </summary>
       public bool IsShutdown { get; internal set; }
+
+      /// <summary>
+      /// Asserts inoked on main thread.
+      /// </summary>
+      public void AssertMainThread()
+      {
+         Debug.Assert(IsMainThread);
+      }
 
       /// <summary>
       /// Registers callbacks which will be invoked when application's shutdown initiated.
