@@ -30,8 +30,8 @@ namespace Docking.Tools
          }
          catch (FormatException)
          {
-             if (Localization.mLogger != null)
-                 Localization.mLogger.MessageWriteLine("FormatLocalized Exception: key='{0}' fmt='{1}'", key, Localized(key));
+            Localization.sLogger.MessageWriteLine("FormatLocalized Exception: key='{0}' fmt='{1}'", key, Localized(key));
+
             return Localized(key);
          }
       }

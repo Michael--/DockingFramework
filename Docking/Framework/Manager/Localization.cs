@@ -14,21 +14,22 @@ namespace Docking.Components
 {
    public class Localization
    {
-      private static string   mCurrentLanguageCode;
-      private static string   mCurrentLanguageName;
-      private static string   mDefaultLanguageCode;
-      private static string   mDefaultLanguageName;
-      private static Language mDefaultLanguage;
-      private static Language mCurrentLanguage;
+      private static string   sCurrentLanguageCode;
+      private static string   sCurrentLanguageName;
+      private static string   sDefaultLanguageCode;
+      private static string   sDefaultLanguageName;
+      private static Language sDefaultLanguage;
+      private static Language sCurrentLanguage;
 
-      public static  bool              ComplainAboutMissingLocalizations;
-      public static  IMessageWriteLine mLogger;
+      public static bool sComplainAboutMissingLocalizations;
+
+      public static IMessageWriteLine sLogger;
 
       private static readonly string sPreferredUserCultureThreeletterISOLanguageName
          = System.Threading.Thread.CurrentThread.CurrentCulture.ThreeLetterISOLanguageName.ToLowerInvariant();
 
-      private          string                       mFolder;
-      private readonly Dictionary<string, Language> Languages = new Dictionary<string, Language>();
+      private          string                       mResxFolder;
+      private readonly Dictionary<string, Language> mLanguages = new Dictionary<string, Language>();
 
       /// <summary>
       /// Initializes a new instance.
@@ -37,28 +38,28 @@ namespace Docking.Components
       /// <param name="logger">The message logger</param>
       internal Localization(string default_language, IMessageWriteLine logger)
       {
-         mDefaultLanguageCode = mDefaultLanguageName = default_language;
-         mLogger               = logger;
+         sDefaultLanguageCode = sDefaultLanguageName = default_language;
+         sLogger               = logger;
       }
 
       public string CurrentLanguageCode
       {
-         get { return mCurrentLanguageCode; }
+         get { return sCurrentLanguageCode; }
       }
 
       public string CurrentLanguageName
       {
-         get { return mCurrentLanguageName; }
+         get { return sCurrentLanguageName; }
       }
 
       public string DefaultLanguageCode
       {
-         get { return mDefaultLanguageCode; }
+         get { return sDefaultLanguageCode; }
       }
 
       public string DefaultLanguageName
       {
-         get { return mDefaultLanguageName; }
+         get { return sDefaultLanguageName; }
       }
 
       public int CurrentChangeCount
@@ -66,7 +67,7 @@ namespace Docking.Components
          get
          {
             int changes = 0;
-            foreach (Node n in mCurrentLanguage.Nodes.Values)
+            foreach (Node n in sCurrentLanguage.Nodes.Values)
             {
                if (n.Changed)
                {
@@ -221,7 +222,7 @@ namespace Docking.Components
       {
          List<string> av = new List<string>();
 
-         foreach (KeyValuePair<string, Language> kvp in Languages)
+         foreach (KeyValuePair<string, Language> kvp in mLanguages)
          {
             string code = kvp.Value.Code;
             string name = kvp.Value.Code;
@@ -245,16 +246,16 @@ namespace Docking.Components
          }
 
          Language newLanguage;
-         if (code != mCurrentLanguageCode && Languages.TryGetValue(code, out newLanguage))
+         if (code != sCurrentLanguageCode && mLanguages.TryGetValue(code, out newLanguage))
          {
-            mCurrentLanguageCode = code;
-            mCurrentLanguageName = code;
-            mCurrentLanguage     = newLanguage;
+            sCurrentLanguageCode = code;
+            sCurrentLanguageName = code;
+            sCurrentLanguage     = newLanguage;
 
             Node node;
-            if (mCurrentLanguage.Nodes.TryGetValue("LANGUAGE_NAME", out node))
+            if (sCurrentLanguage.Nodes.TryGetValue("LANGUAGE_NAME", out node))
             {
-               mCurrentLanguageName = node.Value as string;
+               sCurrentLanguageName = node.Value as string;
             }
 
             return true;
@@ -265,33 +266,33 @@ namespace Docking.Components
 
       public void SearchForResources(string fullFilepath)
       {
-         mFolder = Path.GetDirectoryName(fullFilepath);
+         mResxFolder = Path.GetDirectoryName(fullFilepath);
          String name = Path.GetFileName(fullFilepath);
 
-         string[] files = Directory.GetFiles(mFolder, name);
-         foreach (string f in files)
+         string[] fnames = Directory.GetFiles(mResxFolder, name);
+         foreach (string fname in fnames)
          {
-            Read(f);
+            Read(fname);
          }
 
-         Languages.TryGetValue(mDefaultLanguageCode, out mDefaultLanguage);
-         if (mDefaultLanguage != null)
+         mLanguages.TryGetValue(sDefaultLanguageCode, out sDefaultLanguage);
+         if (sDefaultLanguage != null)
          {
             Node node;
-            if (mDefaultLanguage.Nodes.TryGetValue("LANGUAGE_NAME", out node))
+            if (sDefaultLanguage.Nodes.TryGetValue("LANGUAGE_NAME", out node))
             {
-               mDefaultLanguageName = node.Value as string;
+               sDefaultLanguageName = node.Value as string;
             }
          }
 
-         SetLanguage(mDefaultLanguageCode);
+         SetLanguage(sDefaultLanguageCode);
       }
 
       public void WriteChangedResourceFiles()
       {
          // 1st: find out which file contains changes and prepare writing
          Dictionary<string, ResXResourceWriter> resourceWriter = new Dictionary<string, ResXResourceWriter>();
-         foreach (Language l in Languages.Values)
+         foreach (Language l in mLanguages.Values)
          {
             foreach (Node n in l.Nodes.Values)
             {
@@ -300,7 +301,7 @@ namespace Docking.Components
                   continue;
                }
 
-               string filename = String.Format("{0}/{1}-{2}.resx", mFolder, n.Base, l.Code);
+               string filename = String.Format("{0}/{1}-{2}.resx", mResxFolder, n.Base, l.Code);
                if (resourceWriter.ContainsKey(filename)) // already considered
                {
                   continue;
@@ -320,11 +321,11 @@ namespace Docking.Components
          }
 
          // 2nd: write any node for any open resource file
-         foreach (Language l in Languages.Values)
+         foreach (Language l in mLanguages.Values)
          {
             foreach (Node n in l.Nodes.Values)
             {
-               string filename = String.Format("{0}/{1}-{2}.resx", mFolder, n.Base, l.Code);
+               string filename = String.Format("{0}/{1}-{2}.resx", mResxFolder, n.Base, l.Code);
                ResXResourceWriter rw;
                if (resourceWriter.TryGetValue(filename, out rw))
                {
@@ -348,33 +349,33 @@ namespace Docking.Components
 
       public Dictionary<string, Node> GetDefaultNodes()
       {
-         return mDefaultLanguage.Nodes;
+         return sDefaultLanguage.Nodes;
       }
 
       public int GetCurrentHashcode()
       {
-         return mCurrentLanguage.GetHashCode();
+         return sCurrentLanguage.GetHashCode();
       }
 
       public Node FindCurrentNode(string key)
       {
          Node node = null;
-         mCurrentLanguage.Nodes.TryGetValue(key, out node);
+         sCurrentLanguage.Nodes.TryGetValue(key, out node);
          return node;
       }
 
       public void AddNewCurrentNode(Node node)
       {
-         if (!mCurrentLanguage.Nodes.ContainsKey(node.Key))
+         if (!sCurrentLanguage.Nodes.ContainsKey(node.Key))
          {
-            mCurrentLanguage.Nodes.Add(node.Key, node);
+            sCurrentLanguage.Nodes.Add(node.Key, node);
          }
       }
 
       public Node FindDefaultNode(string key)
       {
          Node node = null;
-         mDefaultLanguage.Nodes.TryGetValue(key, out node);
+         sDefaultLanguage.Nodes.TryGetValue(key, out node);
          return node;
       }
 
@@ -388,19 +389,19 @@ namespace Docking.Components
          string key2 = StringTools.StripSpecialCharacters((String.IsNullOrEmpty(prefix) ? "" : prefix + ".") + key);
 
          Node node = null;
-         if (mCurrentLanguage != null && mCurrentLanguage.Nodes.TryGetValue(key2, out node) && (node.Value as String).Length > 0)
+         if (sCurrentLanguage != null && sCurrentLanguage.Nodes.TryGetValue(key2, out node) && (node.Value as String).Length > 0)
          {
             return node.Value as string;
          }
 
-         if (mDefaultLanguage != null && mDefaultLanguage.Nodes.TryGetValue(key2, out node) && (node.Value as String).Length > 0)
+         if (sDefaultLanguage != null && sDefaultLanguage.Nodes.TryGetValue(key2, out node) && (node.Value as String).Length > 0)
          {
             return node.Value as string;
          }
 
-         if (ComplainAboutMissingLocalizations)
+         if (sComplainAboutMissingLocalizations)
          {
-            mLogger.MessageWriteLine("Missing localization key '{0}'", key2);
+            sLogger.MessageWriteLine("Missing localization key '{0}'", key2);
          }
 
          return key;
@@ -412,10 +413,11 @@ namespace Docking.Components
          String name = Path.GetFileNameWithoutExtension(filename);
          int i = name.LastIndexOf('-');
          Debug.Assert(i > 0);
+
          i = name.LastIndexOf('-', i - 1);
          Debug.Assert(i > 0);
-         if (i <= 0)
-         {
+
+         if (i <= 0) {
             return;
          }
 
@@ -423,35 +425,39 @@ namespace Docking.Components
          string code = name.Substring(i + 1);
 
          Language lang;
-         if (!Languages.TryGetValue(code, out lang))
-         {
+         if (!mLanguages.TryGetValue(code, out lang)) {
             lang = new Language(code);
-            Languages.Add(code, lang);
+            mLanguages.Add(code, lang);
          }
 
          try
          {
-            ResXResourceReader rr = new ResXResourceReader(filename);
-            rr.UseResXDataNodes = true;
-            IDictionaryEnumerator dict = rr.GetEnumerator();
-            while (dict.MoveNext())
+            using(var reader = new ResXResourceReader(filename))
             {
-               ResXDataNode node = dict.Value as ResXDataNode;
-               string key = node.Name;
-               object obj = node.GetValue((ITypeResolutionService)null);
-               Debug.Assert(obj is string);
-               string value = obj as string;
-               string comment = node.Comment;
+               reader.UseResXDataNodes = true;
+               IDictionaryEnumerator dict = reader.GetEnumerator();
 
-               Node n = new Node(key, value, comment, basename, value, comment);
+               while (dict.MoveNext())
+               {
+                  ResXDataNode node = dict.Value as ResXDataNode;
+                  string key = node.Name;
+                  object obj = node.GetValue((ITypeResolutionService)null);
 
-               if (!lang.Nodes.ContainsKey(key))
-               {
-                  lang.Nodes.Add(key, n);
-               }
-               else
-               {
-                  mLogger.MessageWriteLine("Localization: Key '{0}' already exists", key);
+                  Debug.Assert(obj is string);
+
+                  string value = obj as string;
+                  string comment = node.Comment;
+
+                  Node n = new Node(key, value, comment, basename, value, comment);
+
+                  if (!lang.Nodes.ContainsKey(key))
+                  {
+                     lang.Nodes.Add(key, n);
+                  }
+                  else
+                  {
+                     sLogger.MessageWriteLine("Localization: Key '{0}' already exists", key);
+                  }
                }
             }
          }

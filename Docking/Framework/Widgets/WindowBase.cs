@@ -113,7 +113,7 @@ namespace Docking.Widgets
       /// <summary>
       /// Push message to the statusbar, return unique ID used to pop message
       /// </summary>
-      public uint PushStatusbar(String txt)
+      public uint StatusbarPushText(String txt)
       {
          uint id = mStatusBarUniqueId++;
          if (mStatusBar != null)
@@ -124,7 +124,7 @@ namespace Docking.Widgets
       /// <summary>
       /// Pop a message from the statusbar.
       /// </summary>
-      public void PopStatusbar(uint id)
+      public void StatusbarPopText(uint id)
       {
          if (mStatusBar != null)
             mStatusBar.Pop(id);
@@ -247,11 +247,11 @@ namespace Docking.Widgets
             UpdateLanguage(triggerRedraw);
       }
 
-      public void UpdateLanguage(bool triggerRedraw)
+      public void UpdateLanguage(bool forceRedraw)
       {
-         bool isvis = this.Visible;
+         bool wasVisible = this.Visible;
 
-         if (isvis && triggerRedraw)
+         if (wasVisible && forceRedraw)
             Hide();
 
          try
@@ -276,7 +276,7 @@ namespace Docking.Widgets
          }
          catch (Exception e)
          {
-            if (isvis && triggerRedraw)
+            if (wasVisible && forceRedraw)
                Show();
 
             throw e;
@@ -285,7 +285,7 @@ namespace Docking.Widgets
          // after localization change, the child elements may need re-layouting
          //DockFrame.ResizeChildren(); // TODO this breaks VirtualListView layout, commented it out
 
-         if (isvis && triggerRedraw)
+         if (wasVisible && forceRedraw)
             Show();
       }
 
@@ -418,15 +418,15 @@ namespace Docking.Widgets
          OnModifyingMenuFinished();
       }
 
-      public Menu FindOrCreateExportSubmenu(String text)
+      public Menu ExportSubmenu(String menuText)
       {
          foreach (TaggedImageMenuItem m in mExportSubmenu.Children)
          {
-            if (m.LabelText == text)
+            if (m.LabelText == menuText)
                return m.Submenu as Menu;
          }
 
-         var submenuItem = new TaggedLocalizedImageMenuItem(text);
+         var submenuItem = new TaggedLocalizedImageMenuItem(menuText);
          submenuItem.Submenu = new Menu();
          AppendExportMenuQuickHack(submenuItem);
          return submenuItem.Submenu as Menu;
