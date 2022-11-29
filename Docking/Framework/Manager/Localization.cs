@@ -307,11 +307,12 @@ namespace Docking.Components
                   continue;
                }
 
-               ResXResourceWriter rw = new ResXResourceWriter(new FileStream(
-                                                                 filename, FileMode.Create, FileAccess.ReadWrite,
-                                                                 FileShare.None // open the file exclusively for writing, i.e., prevent other instances of us from interfering
-                                                              ));
-               resourceWriter.Add(filename, rw);
+               // open the file exclusively for writing, i.e., prevent other instances of us from interfering
+               using (var writer = new ResXResourceWriter(
+                         new FileStream(filename, FileMode.Create, FileAccess.ReadWrite, FileShare.None)))
+               {
+                  resourceWriter.Add(filename, writer);
+               }
             }
          }
 
