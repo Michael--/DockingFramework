@@ -12,6 +12,20 @@ using Docking.Framework.Interfaces;
 
 namespace Docking.Widgets
 {
+
+   public static class MainAppWindowInstance
+   {
+      public static Gtk.Window GtkWindow
+      {
+         get { return SingleInstance; }
+      }
+
+      public static MainWindowBase SingleInstance
+      {
+         get; internal set;
+      }
+   }
+
    public class MainWindowBase : Gtk.Window, IMenuService
    {
       private enum FileType { DLT, NDS, MISC }
@@ -48,12 +62,13 @@ namespace Docking.Widgets
       protected MainWindowBase(string[] args, string default_language, string application_name, string pythonApplicationObjectName = null)
          : base(WindowType.Toplevel)
       {
-         Title                            = application_name;
-         mCmdLineArgs                     = args;
+         Title                        = application_name;
+         mCmdLineArgs                 = args;
+
+         MainAppWindowInstance.SingleInstance = this;
+
          ComponentManager                 = new ComponentManager();
-         ComponentManager.MainWindowBase  = this;
          ComponentManager.LogWriter.Title = Title;
-         ComponentManager.DialogProvider  = new DialogProvider(this);
          ComponentManager.Localization    = new Localization(default_language, ComponentManager.LogWriter);
          ComponentManager.Localization.SearchForResources(
             System.IO.Path.Combine(
@@ -529,7 +544,7 @@ namespace Docking.Widgets
                }
             }
 
-            String filename = ComponentManager.DialogProvider.OpenFileDialog("Open file...", filters);
+            String filename = DialogProvider.OpenFileDialog("Open file...", filters);
             if (filename != null)
                ComponentManager.OpenFile(filename);
          };
@@ -543,10 +558,11 @@ namespace Docking.Widgets
          menuItem.AddAccelerator("activate", ComponentManager.AccelGroup, new AccelKey(Gdk.Key.S, Gdk.ModifierType.ControlMask, AccelFlags.Visible));
          menuItem.Activated += (sender, e) =>
          {
-            string filename = ComponentManager.DialogProvider.SaveFileDialog("Save Config As...", new List<FileFilterExt>()
-            {
-               new FileFilterExt("*.xml", "Config File")
-            }, ComponentManager.Settings1.NewFilename);
+            string filename = DialogProvider.SaveFileDialog("Save Config As...",
+                                                            new List<FileFilterExt>()
+                                                            {
+                                                               new FileFilterExt("*.xml", "Config File")
+                                                            }, ComponentManager.Settings1.NewFilename);
 
             if (filename != null)
             {

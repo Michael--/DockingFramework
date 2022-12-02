@@ -74,23 +74,9 @@ namespace Docking.Components
 
       public PythonScriptEngine ScriptEngine { get; private set; }
 
-      public bool Visible
-      {
-         get { return MainWindowBase.Visible; }
-         set
-         {
-            MainWindowBase.Visible      = value;
-            LogWriter.EnableLogging = value;
-         }
-      }
-
       public IReadOnlyCollection<object> Components { get { return mComponents; } }
 
-      public Gtk.Window MainWindow { get { return MainWindowBase; } }
-
-      internal MainWindowBase MainWindowBase { get; set; }
-
-      public IMenuService MenuService { get { return MainWindowBase; } }
+      public IMenuService MenuService { get { return MainAppWindowInstance.SingleInstance; } }
 
       #region private properties
 
@@ -113,8 +99,6 @@ namespace Docking.Components
       {
          mScreenshotAction = handler;
       }
-
-      public DialogProvider DialogProvider { get; internal set; }
 
       #endregion
 
@@ -956,9 +940,9 @@ namespace Docking.Components
                CurrentDockItem.Widget.VisualStyle = mSelectedStyle;
                CurrentDockItem.Widget.QueueDraw();
 
-               MainWindowBase.MenuCut.Sensitive   = CurrentDockItem.Content is ICut;
-               MainWindowBase.MenuCopy.Sensitive  = CurrentDockItem.Content is ICopy;
-               MainWindowBase.MenuPaste.Sensitive = CurrentDockItem.Content is IPaste;
+               MainAppWindowInstance.SingleInstance.MenuCut.Sensitive   = CurrentDockItem.Content is ICut;
+               MainAppWindowInstance.SingleInstance.MenuCopy.Sensitive  = CurrentDockItem.Content is ICopy;
+               MainAppWindowInstance.SingleInstance.MenuPaste.Sensitive = CurrentDockItem.Content is IPaste;
 
                // notify all IPropertyViewers
                if(!(CurrentDockItem.Content is IPropertyViewer))

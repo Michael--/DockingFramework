@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using Docking.Widgets;
 using IronPython.Hosting;
 using IronPython.Runtime;
 using Microsoft.Scripting;
@@ -132,20 +133,25 @@ namespace Docking.Components
    /// </summary>
    internal class ComponentManagerScripting
    {
+      private readonly ComponentManager mComponentManager;
+
       public ComponentManagerScripting(ComponentManager cm)
       {
-         ComponentManager = cm;
+         mComponentManager = cm;
       }
 
-      private ComponentManager ComponentManager { get; set; }
 
       /// <summary>
       /// set the visibility of the main window
       /// </summary>
       public bool Visible
       {
-         get { return ComponentManager.Visible; }
-         set { ComponentManager.Visible = value; }
+         get { return MainAppWindowInstance.GtkWindow.Visible; }
+         set
+         {
+            MainAppWindowInstance.GtkWindow.Visible     = value;
+            mComponentManager.LogWriter.EnableLogging = value;
+         }
       }
 
       /// <summary>
@@ -153,7 +159,7 @@ namespace Docking.Components
       /// </summary>
       public void Quit()
       {
-         ComponentManager.Quit(true);
+         mComponentManager.Quit(true);
       }
 
       /// <summary>
@@ -161,7 +167,7 @@ namespace Docking.Components
       /// </summary>
       public void MessageWriteLine(String message)
       {
-         ComponentManager.MessageWriteLine(message);
+         mComponentManager.LogWriter.MessageWriteLine(message);
       }
 
       /// <summary>
@@ -169,7 +175,7 @@ namespace Docking.Components
       /// </summary>
       public bool OpenFile(string filename, bool syncronous = false)
       {
-         return ComponentManager.OpenFile(filename, syncronous);
+         return mComponentManager.OpenFile(filename, syncronous);
       }
 
       /// <summary>
@@ -177,14 +183,14 @@ namespace Docking.Components
       /// </summary>
       public String OpenFileDialog(string prompt)
       {
-         return ComponentManager.DialogProvider.OpenFileDialog(prompt);
+         return DialogProvider.OpenFileDialog(prompt);
       }
 
       /// lists all available component types which you can instantiate using CreateComponent()
       public List<string> ListComponentTypes()
       {
          List<string> result = new List<string>();
-         foreach (ComponentFactoryInformation info in ComponentManager.ComponentFinder.ComponentInfos)
+         foreach (ComponentFactoryInformation info in mComponentManager.ComponentFinder.ComponentInfos)
          {
             result.Add(info.ComponentType.ToString());
          }
@@ -196,11 +202,11 @@ namespace Docking.Components
       /// Returned is the unique instance identification string.
       public string CreateComponent(string s)
       {
-         foreach (ComponentFactoryInformation info in ComponentManager.ComponentFinder.ComponentInfos)
+         foreach (ComponentFactoryInformation info in mComponentManager.ComponentFinder.ComponentInfos)
          {
             if (info.ComponentType.ToString() == s)
             {
-               DockItem item = ComponentManager.CreateComponent(info, true);
+               DockItem item = mComponentManager.CreateComponent(info, true);
                return ComponentManager.GetComponentIdentifier(item);
             }
          }
@@ -213,7 +219,7 @@ namespace Docking.Components
       /// </summary>
       public List<string> ListInstances()
       {
-         return ComponentManager.ListScriptingInstances();
+         return mComponentManager.ListScriptingInstances();
       }
 
       /// <summary>
@@ -221,7 +227,7 @@ namespace Docking.Components
       /// </summary>
       public object GetInstance(string identifier)
       {
-         return ComponentManager.GetScriptingInstance(identifier);
+         return mComponentManager.GetScriptingInstance(identifier);
       }
 
       /// <summary>
@@ -230,7 +236,7 @@ namespace Docking.Components
       /// <returns></returns>
       public string[] GetInstances()
       {
-         return ComponentManager.ListScriptingInstances().ToArray();
+         return mComponentManager.ListScriptingInstances().ToArray();
       }
    }
 }
