@@ -149,8 +149,7 @@ namespace Docking.Components
          get { return MainAppWindowInstance.GtkWindow.Visible; }
          set
          {
-            MainAppWindowInstance.GtkWindow.Visible     = value;
-            mComponentManager.LogWriter.EnableLogging = value;
+            MainAppWindowInstance.GtkWindow.Visible = value;
          }
       }
 

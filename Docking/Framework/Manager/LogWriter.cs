@@ -20,13 +20,10 @@ namespace Docking.Components
 
       internal LogWriter()
       {
-         Title         = String.Empty;
-         EnableLogging = false;
+         Title = String.Empty;
       }
 
       public string Title { get; set; }
-
-      public bool EnableLogging { get; set; }
 
       public void OpenFile(string filename, bool append)
       {
@@ -97,10 +94,7 @@ namespace Docking.Components
             message = "(invalid format string)";
          }
 
-         if (!EnableLogging)
-         {
-            Console.WriteLine(message);
-         }
+         Console.WriteLine(message);
 
          if (mLogFile != null)
          {
@@ -113,10 +107,7 @@ namespace Docking.Components
             return;
          }
 
-         if (EnableLogging)
-         {
-            GtkDispatcher.Instance.Invoke2(() => SendToReceivers(message));
-         }
+         GtkDispatcher.Instance.Invoke2(() => SendToReceivers(message));
       }
 
       private void SendToReceivers(String message)
