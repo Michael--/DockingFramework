@@ -458,7 +458,7 @@ namespace Docking.Widgets
          m_DeleteLayout = new TaggedLocalizedImageMenuItem("Delete Current Layout");
          m_DeleteLayout.Activated += (object sender, EventArgs e) =>
          {
-            if (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME)
+            if (DockFrame.CurrentLayout != Components.Settings.DEFAULT_LAYOUT_NAME)
             {
                ResponseType result = MessageBox.Show(this, MessageType.Question,
                                          ButtonsType.YesNo,
@@ -469,9 +469,9 @@ namespace Docking.Widgets
                   MenuItem nitem = sender as MenuItem;
                   DockFrame.DeleteLayout(DockFrame.CurrentLayout);
                   RemoveMenuItem(nitem.Parent, DockFrame.CurrentLayout);
-                  DockFrame.CurrentLayout = TGSettings.DEFAULT_LAYOUT_NAME;
+                  DockFrame.CurrentLayout = Components.Settings.DEFAULT_LAYOUT_NAME;
                   CheckMenuItem(nitem.Parent, DockFrame.CurrentLayout);
-                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
+                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != Components.Settings.DEFAULT_LAYOUT_NAME);
                }
             }
          };
@@ -501,7 +501,7 @@ namespace Docking.Widgets
                DockFrame.CreateLayout(newLayoutName, !createEmptyLayout);
                DockFrame.CurrentLayout = newLayoutName;
                AppendLayoutMenu(newLayoutName, false);
-               m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
+               m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != Components.Settings.DEFAULT_LAYOUT_NAME);
             }
          };
 
@@ -512,7 +512,7 @@ namespace Docking.Widgets
          foreach (String s in DockFrame.Layouts)
             AppendLayoutMenu(s, true);
 
-         m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
+         m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != Components.Settings.DEFAULT_LAYOUT_NAME);
          OnModifyingMenuFinished();
       }
 
@@ -847,7 +847,7 @@ namespace Docking.Widgets
                   if (!nitem.Active)
                      nitem.Active = true;
                   ComponentManager.MessageWriteLine(String.Format("CurrentLayout={0}", label));
-                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != TGSettings.DEFAULT_LAYOUT_NAME);
+                  m_DeleteLayout.Sensitive = (DockFrame.CurrentLayout != Components.Settings.DEFAULT_LAYOUT_NAME);
                }
                else
                   if (!nitem.Active)

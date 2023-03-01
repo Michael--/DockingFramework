@@ -56,7 +56,7 @@ namespace Docking.Components
       /// </summary>
       internal ComponentManager()
       {
-         Settings1 = new TGSettings();
+         Settings1 = new Settings();
 
          AccelGroup      = new AccelGroup();
          LicenseFile     = new LicenseFile();
@@ -80,7 +80,7 @@ namespace Docking.Components
 
       #region private properties
 
-      public TGSettings Settings1 { get; internal set; }
+      public Settings Settings1 { get; internal set; }
 
       public IPersistency Persistence { get { return Settings1 as IPersistency; } }
 

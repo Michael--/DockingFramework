@@ -17,7 +17,7 @@ using System.Diagnostics;
 
 namespace Docking.Components
 {
-   public class TGSettings : IPersistency
+   public class Settings : IPersistency
    {
       public const string CONFIG_ROOT_ELEMENT = "DockingConfiguration";
       public const string DEFAULT_LAYOUT_NAME = "Default"; // TODO can we localize this string? Careful, the name is persisted...
@@ -31,7 +31,7 @@ namespace Docking.Components
       /// <summary>
       /// Initializes a new instance.
       /// </summary>
-      public TGSettings()
+      public Settings()
       {
          mCONFIGFILE        = System.IO.Path.Combine(AssemblyInfoExt.LocalSettingsFolder, "config.xml");
          mDEFAULTCONFIGFILE = System.IO.Path.Combine(AssemblyInfoExt.Directory, "defaultconfig.xml");
