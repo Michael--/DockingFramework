@@ -556,7 +556,7 @@ namespace Docking.Components
             mXmlNode = mXmlDocument.AppendChild(mXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT));
          }
 
-         PerformDownwardsCompatibility();
+         ApplyDownwardsCompatibilityConfigSettingMappings();
 
          IsReadonly = LoadSetting("", "readonly", false);
       }
@@ -846,7 +846,7 @@ namespace Docking.Components
          }
       }
 
-      private void PerformDownwardsCompatibility()
+      private void ApplyDownwardsCompatibilityConfigSettingMappings()
       {
          Version versionConfig = new Version(LoadSetting("", "ConfigSavedByVersion", "0.0.0.0"));
          Version versionAsm = AssemblyInfoExt.Version;
