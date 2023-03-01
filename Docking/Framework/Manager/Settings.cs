@@ -525,7 +525,7 @@ namespace Docking.Components
          }
       }
 
-      public void LoadConfigurationFile(String filename = null)
+      public void LoadConfigurationFile(String filename = null, ApplyDownwardsCompatibilityConfigSettingMappingsFunction remapper = null)
       {
          if (string.IsNullOrEmpty(filename))
          {
@@ -556,7 +556,8 @@ namespace Docking.Components
             mXmlNode = mXmlDocument.AppendChild(mXmlDocument.CreateElement(CONFIG_ROOT_ELEMENT));
          }
 
-         ApplyDownwardsCompatibilityConfigSettingMappings();
+         if(remapper!=null)
+            remapper();
 
          IsReadonly = LoadSetting("", "readonly", false);
       }
@@ -593,6 +594,8 @@ namespace Docking.Components
             File.Delete(mCONFIGFILE);
          }
       }
+
+      public delegate void ApplyDownwardsCompatibilityConfigSettingMappingsFunction();
 
       public void RemapComponent(string from, string to)
       {
@@ -842,29 +845,6 @@ namespace Docking.Components
             if (File.Exists(mDEFAULTCONFIGFILE))
             {
                File.Copy(mDEFAULTCONFIGFILE, mCONFIGFILE);
-            }
-         }
-      }
-
-      private void ApplyDownwardsCompatibilityConfigSettingMappings()
-      {
-         Version versionConfig = new Version(LoadSetting("", "ConfigSavedByVersion", "0.0.0.0"));
-         Version versionAsm = AssemblyInfoExt.Version;
-         if (versionConfig.Major != 0 && versionConfig.Minor != 0)
-         {
-            if ((versionConfig.Major < 1) ||
-                (versionConfig.Major == 1 && versionConfig.Minor < 1))
-            {
-               RemapComponent("TempoGiusto.MapViewer.MapViewer", "TempoGiusto.MapExplorer.MapExplorer");
-               RemapComponent("TempoGiusto.MapViewer.MapLayers", "TempoGiusto.MapExplorer.MapExplorerLayers");
-               RemapComponent("TempoGiusto.MapViewer.GeoFinder", "TempoGiusto.MapExplorer.GeoFinder");
-               RemapComponent("TempoGiusto.MapViewerFUnit.MapViewerFUnit", "TempoGiusto.MapViewer.MapViewer");
-            }
-
-            if ((versionConfig.Major < 1) ||
-                (versionConfig.Major == 1 && versionConfig.Minor < 3))
-            {
-               RemapComponent("TempoGiusto.Routing.Routes", "TempoGiusto.Routing.RoutesFromLog");
             }
          }
       }

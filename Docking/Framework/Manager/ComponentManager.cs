@@ -542,9 +542,9 @@ namespace Docking.Components
          }
       }
 
-      public void LoadConfigurationFile()
+      public void LoadConfigurationFile(Settings.ApplyDownwardsCompatibilityConfigSettingMappingsFunction remapper = null)
       {
-         Settings1.LoadConfigurationFile();
+         Settings1.LoadConfigurationFile(null, remapper);
       }
 
       public void SaveConfigurationFile()
