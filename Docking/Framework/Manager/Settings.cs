@@ -850,9 +850,6 @@ namespace Docking.Components
       {
          Version versionConfig = new Version(LoadSetting("", "ConfigSavedByVersion", "0.0.0.0"));
          Version versionAsm = AssemblyInfoExt.Version;
-
-         Debug.WriteLine("TempoGiusto assembly version: {0}", versionAsm);
-
          if (versionConfig.Major != 0 && versionConfig.Minor != 0)
          {
             if ((versionConfig.Major < 1) ||
